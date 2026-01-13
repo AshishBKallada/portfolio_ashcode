@@ -118,6 +118,7 @@ export default function MinimalSection() {
           style={{ display: 'block' }}
         />
       </div>
+      
     </section>
   );
 }

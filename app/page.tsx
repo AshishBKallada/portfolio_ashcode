@@ -15,6 +15,7 @@ import Footer from "./components/Footer";
 import CustomCursor from "./components/CustomCursor";
 import MarqueeSection from "./components/MarqueeSection";
 import CameraSection from "./components/CameraSection";
+import BlogSection from "./components/BlogSection";
 
 export default function Home() {
   useEffect(() => {
@@ -60,9 +61,12 @@ export default function Home() {
         <MinimalSection />
         <ProjectsSection />
         <CameraSection />
+
+        <BlogSection />
+
         <ExperienceSection />
-        <MarqueeSection />
         <ContactSection />
+        <MarqueeSection />
         <Footer />
       </section>
       <CustomCursor />

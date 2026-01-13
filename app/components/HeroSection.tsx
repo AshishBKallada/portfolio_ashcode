@@ -109,7 +109,7 @@ export default function HeroSection() {
         </div>
         
         <h1 className="absolute top-8 md:top-12 lg:top-16 xl:top-20 text-[10rem] md:text-[16rem] lg:text-[20rem] xl:text-[24rem] font-chaney text-black dark:text-white opacity-20 select-none z-0">
-          灰碼
+          灰碼 
         </h1>
         
         <div ref={imageRef} className="relative bottom-0 z-10 flex items-end">

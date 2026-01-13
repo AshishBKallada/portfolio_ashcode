@@ -87,7 +87,7 @@ export default function SkillsSection({
       id="skills" 
       className="w-full min-h-screen py-20 px-4 md:px-6 relative overflow-hidden grayscale "
       style={{
-        backgroundImage: "url('/skillbg1.png')",
+        backgroundImage: "url('/stones.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

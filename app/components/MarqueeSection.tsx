@@ -4,40 +4,67 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 export default function MarqueeSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
   const isScrollingDown = useRef(false);
+  const marqueeAnimation = useRef<gsap.core.Tween | null>(null);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const marquee = marqueeRef.current;
+    if (!marquee) return;
 
-    const marquees = container.querySelectorAll<HTMLElement>(".marquee");
-    const arrows = container.querySelectorAll<HTMLElement>(".marquee img");
+    // Initial animation - moving right
+    // Get the width of one set of items for seamless loop
+    const firstItem = marquee.querySelector<HTMLElement>(':first-child');
+    const marqueeWidth = firstItem ? firstItem.offsetWidth * 4 : 0;
+
+    marqueeAnimation.current = gsap.to(marquee, {
+      x: marqueeWidth,
+      duration: 20,
+      ease: "none",
+      repeat: -1,
+    });
 
     const handleWheel = (e: WheelEvent) => {
+      const firstItem = marquee.querySelector<HTMLElement>(':first-child');
+      const marqueeWidth = firstItem ? firstItem.offsetWidth * 4 : 0;
+
+      const icons = marquee.querySelectorAll<HTMLElement>('.marquee-icon');
+      
       if (e.deltaY > 0 && !isScrollingDown.current) {
+        // Scrolling down - reverse direction
         isScrollingDown.current = true;
-        gsap.to(marquees, {
-          x: "-200%",
-          duration: 4,
+        marqueeAnimation.current?.kill();
+
+        marqueeAnimation.current = gsap.to(marquee, {
+          x: -marqueeWidth,
+          duration: 20,
           ease: "none",
           repeat: -1,
         });
-        gsap.to(arrows, {
+
+        // Rotate all icons (marquee moving left)
+        gsap.to(icons, {
           rotate: 180,
           duration: 0.3,
+          ease: "power2.out",
         });
       } else if (e.deltaY < 0 && isScrollingDown.current) {
+        // Scrolling up - back to original direction
         isScrollingDown.current = false;
-        gsap.to(marquees, {
-          x: "0%",
-          duration: 4,
+        marqueeAnimation.current?.kill();
+
+        marqueeAnimation.current = gsap.to(marquee, {
+          x: marqueeWidth,
+          duration: 20,
           ease: "none",
           repeat: -1,
         });
-        gsap.to(arrows, {
+
+        // Rotate all icons back (marquee moving right)
+        gsap.to(icons, {
           rotate: 0,
           duration: 0.3,
+          ease: "power2.out",
         });
       }
     };
@@ -46,29 +73,26 @@ export default function MarqueeSection() {
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      marqueeAnimation.current?.kill();
     };
   }, []);
 
   const marqueeText = "THRIVE BEYOND LIMITS";
-  const marquees = Array(6).fill(null);
+  const marqueeItems = Array(8).fill(null);
 
   return (
-    <section className="w-full bg-black py-8 overflow-hidden">
-      <div ref={containerRef} className="flex">
-        {marquees.map((_, index) => (
-          <div
-            key={index}
-            className="marquee flex-shrink-0 flex items-center justify-center gap-4 px-6"
-            style={{ transform: "translateX(-100%)" }}
-          >
-            <h1 className="text-2xl md:text-3xl font-bold text-white whitespace-nowrap">
+    <section className="w-full bg-white overflow-hidden border-t border-black/10 py-3 relative">
+      <div ref={marqueeRef} className="flex whitespace-nowrap items-center">
+        {marqueeItems.map((_, i) => (
+          <div key={i} className="inline-flex items-center gap-4 px-8 flex-shrink-0">
+            <span className="text-sm md:text-base font-medium text-black/60">
               {marqueeText}
-            </h1>
+            </span>
             <img
               src="/yinyang-abstract-back-white-swirl-white-background-splashing.png"
               alt="Yin Yang"
-              className="h-8 md:h-12 w-auto text-white"
-              style={{ filter: "drop-shadow(0 0 10px white)" }}
+              className="marquee-icon h-8 md:h-12 w-auto opacity-100"
+              // style={{ filter: "drop-shadow(0 0 10px rgba(0, 0, 0, 0.3))" }}
             />
           </div>
         ))}
