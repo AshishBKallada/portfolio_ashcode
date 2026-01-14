@@ -107,37 +107,53 @@ export default function ProjectsSection({
       id="projects"
       className="relative w-full h-screen overflow-hidden bg-white dark:bg-black"
     >
-      <div className="absolute top-10 left-6 z-20 text-black dark:text-white">
-        <h2 className="text-4xl md:text-5xl font-bold font-chaney">Projects</h2>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">Scroll to explore →</p>
+      {/* Top Section - Hero */}
+      <div className="w-full flex flex-col md:flex-row items-start justify-between px-6 md:px-12 lg:px-16 xl:px-20 pt-12 md:pt-16 lg:pt-20 pb-8 md:pb-12">
+        {/* Left Side - Heading */}
+        <div className="w-full md:w-1/2 mb-8 md:mb-0">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-black dark:text-white leading-tight font-chaney mb-4">
+            Projects
+          </h1>
+          <p className="text-lg md:text-xl text-black/80 dark:text-white/80 font-safiro">
+            Scroll to explore →
+          </p>
+        </div>
+
+        {/* Right Side - Description */}
+        <div className="w-full md:w-1/2 md:pl-8 lg:pl-12">
+          <p className="text-sm md:text-base text-black/70 dark:text-white/70 leading-relaxed font-safiro">
+            Libérez-vous de la complexité: ASHCODE pilote vos projets — pérennes ou éphémères — de bout en bout. Accompagnement clé en main, conception sur-mesure, vous vous concentrez sur l'essentiel.
+          </p>
+        </div>
       </div>
 
       <div
         ref={horizontalRef}
-        className="flex h-full"
+        className="flex absolute bottom-12 left-0 w-full"
+        style={{ height: "auto" }}
       >
         {pages.map((page, pageIndex) => (
           <div
             key={pageIndex}
-            className="min-w-screen w-screen h-full flex items-center justify-center px-6 md:px-12"
+            className="min-w-screen w-screen flex items-end px-6 md:px-12 lg:px-16 xl:px-20"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 max-w-7xl w-full border border-black dark:border-white">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full items-end">
               {page.map((project, index) => (
                 <div
                   key={`${pageIndex}-${index}`}
-                  className="p-8 md:p-10 border-b border-r border-black dark:border-white last:border-b-0"
+                  className="bg-white dark:bg-black border border-black dark:border-white p-6 md:p-8 lg:p-10 min-h-[200px] md:min-h-[00px] lg:min-h-[400px] flex flex-col"
                 >
-                  <h3 className="text-xl md:text-2xl font-chaney text-black dark:text-white mb-4">
+                  <h3 className="text-xl md:text-2xl font-chaney text-black dark:text-white mb-3 md:mb-4">
                     {project.title}
                   </h3>
-                  <p className="text-lg md:text-xl text-zinc-700 dark:text-zinc-300 leading-relaxed mb-4">
+                  <p className="text-base md:text-lg text-black/70 dark:text-white/70 leading-relaxed mb-4 md:mb-6 font-safiro flex-grow">
                     {project.description}
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mt-auto">
                     {project.tech.map((tech, techIndex) => (
                       <span
                         key={techIndex}
-                        className="text-sm text-zinc-500 dark:text-zinc-400"
+                        className="text-xs md:text-sm text-black/50 dark:text-white/50 font-safiro"
                       >
                         {tech}
                         {techIndex < project.tech.length - 1 && <span className="mx-1">·</span>}
