@@ -71,7 +71,7 @@ export default function MinimalSection() {
     <section
       ref={sectionRef}
       id="minimal"
-      className="w-full min-h-screen relative overflow-hidden"
+      className="w-full min-h-screen relative overflow-hidden bg-white"
       style={{ isolation: 'isolate' }}
     >
       {/* Text Section - Behind */}

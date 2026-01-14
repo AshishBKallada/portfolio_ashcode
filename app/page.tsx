@@ -58,9 +58,10 @@ export default function Home() {
       {/* Remaining sections */}
       <section className="relative w-full bg-zinc-50 dark:bg-black z-20">
         <SkillsSection />
-        <MinimalSection />
-        <ProjectsSection />
         <CameraSection />
+
+        <ProjectsSection />
+        <MinimalSection />
 
         <BlogSection />
 

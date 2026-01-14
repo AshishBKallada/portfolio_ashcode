@@ -104,7 +104,7 @@ export default function BlogSection() {
         </div>
       </div>
 
-      <div className="min-h-screen w-full px-6 md:px-12 lg:px-16 py-12 md:py-16 flex items-center relative z-10">
+      <div className="min-h-screen w-full px-6 md:px-12 lg:px-16 py-12 md:py-16 flex items-center justify-center relative z-10">
         {/* Main Content */}
         <div className="max-w-[1600px] mx-auto flex flex-col gap-8 w-full">
         {/* Blog Title with (3) indicator */}

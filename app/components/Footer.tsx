@@ -4,22 +4,8 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="w-full pt-16 pb-0 h-screen px-6 md:px-12 bg-white relative overflow-hidden">
+    <footer className="w-full pt-16 pb-0 px-6 md:px-12 bg-white relative overflow-hidden border-t border-black/10">
       <div className="max-w-[1400px] mx-auto">
-        {/* Large Heading Text */}
-        <div className="mb-56">
-          <h2 className="text-4xl md:text-6xl lg:text-6xl font-bold text-black leading-tight tracking-tight font-chaney">
-            <span className="flex items-start gap-3">
-              <span className="w-3 h-3 bg-gray-500 mt-3 flex-shrink-0"></span>
-              <span>
-                BUILDING DIGITAL<br />
-                EXPERIENCES THAT<br />
-                MAKE A DIFFERENCE
-              </span>
-            </span>
-          </h2>
-        </div>
-
         {/* Left Section - Text Content */}
         <div className="grid grid-cols-2 gap-x-12 gap-y-8">
           {/* Top Left - Get in Touch */}
@@ -97,27 +83,10 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Image in bottom right corner with ASHCODE text to the left */}
-        <div className="absolute bottom-0 right-0 flex items-end gap-4 z-10">
-          {/* ASHCODE text to the left of image */}
-          <div className="text-2xl md:text-3xl text-gray-600 font-medium pb-2">
-            ASHCODE<span className="text-gray-500">›</span>
-          </div>
-          
-          {/* Image */}
-          <div className="relative w-64 h-64 md:w-80 md:h-80">
-            <Image
-              src="/katana-sword-with-japanese-sun.png"
-              alt="Footer Image"
-              fill
-              className="object-contain object-center"
-              priority
-            />
-          </div>
-        </div>
+       
 
         {/* Bottom Row - Copyright and Made By in one line */}
-        <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-black">
+        <div className="mt-8 flex items-center gap-4 text-sm text-black whitespace-nowrap">
           <span>© {new Date().getFullYear()} ASHCODE</span>
           <span>MADE BY ASHCODE</span>
         </div>

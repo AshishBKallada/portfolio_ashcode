@@ -79,25 +79,35 @@ export default function ContactSection() {
       const firstHero = contactHeroes[0];
       const bottomHeroes = Array.from(contactHeroes).slice(1);
       
+      // Calculate actual content heights
+      const firstHeroContent = firstHero.querySelector('.border');
+      const firstHeroHeight = firstHeroContent ? firstHeroContent.scrollHeight : 400;
+      
       contactHeroes.forEach((hero) => {
+        const content = hero.querySelector('.border');
+        const contentHeight = content ? content.scrollHeight : 400;
         gsap.set(hero, { height: 0, overflow: "hidden" });
+        // Store the target height
+        (hero as any).targetHeight = contentHeight;
       });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: ".parent-contact",
-          start: "top 120%",
-          end: "bottom -120%",
+          start: "top 80%",
+          end: "+=150%",
           scrub: true,
         },
       });
 
       tl.to(firstHero, {
-        height: "30vh",
+        height: firstHeroHeight,
         duration: 1,
       })
       .to(bottomHeroes, {
-        height: "60vh",
+        height: function(index, target) {
+          return (target as any).targetHeight || 600;
+        },
         duration: 1,
       }, "-=0.5");
     }, section);
@@ -108,7 +118,7 @@ export default function ContactSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="w-full min-h-screen flex flex-col bg-white ">
+    <section ref={sectionRef} className="w-full min-h-screen flex flex-col bg-white pb-32">
       <div className="w-full h-16 md:h-24 lg:h-32 bg-white"></div>
       <div className="p-4">
         <div className="">
