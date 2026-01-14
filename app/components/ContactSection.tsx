@@ -1,152 +1,32 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
-
 export default function ContactSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const getInTouchOption = {
-    id: "contact",
-    timeEstimate: "1 minute",
-    title: "GET IN TOUCH.",
-    description: "Use a traditional contact form to send us a quick message. We usually reply the same day.",
-    image: "/pillar2.png",
-  };
-
-  const otherOptions = [
-    {
-      id: "brief",
-      timeEstimate: "2-5 minutes",
-      title: "SUBMIT A NEW BRIEF.",
-      description: "In just 5 steps provide us with all the most vital information about your project so we can get started sooner.",
-      image: "/scroll-with-japanese-calligraphy-wooden-stand-with-two-rolledup-scrolls.jpg",
-    },
-    {
-      id: "call",
-      timeEstimate: "3 minutes",
-      title: "BOOK A FREE CALL.",
-      description: "Book a free 30-minute consultation with one of our Creative Directors to see if we'll be a good fit for your project.",
-      image: "/hand-dials-old-red-rotary-phone-dusted-with-time.jpg",
-    },
-  ];
-
-  const renderContactCard = (option: typeof getInTouchOption, showImage: boolean = true) => {
-    return (
-      <div className="bg-white text-black relative overflow-hidden group cursor-pointer transition-all duration-300 h-full">
-        <div className={`h-full flex flex-col ${showImage ? 'justify-between' : 'justify-start'} p-4 md:p-6 lg:p-8 xl:p-10`}>
-          <div className="flex flex-col">
-            <div className="bg-zinc-200 text-black group-hover:bg-zinc-300 inline-block px-3 py-1.5 rounded-full text-xs font-medium mb-8 w-fit transition-colors duration-300">
-              {option.timeEstimate}
-            </div>
-
-            <h2 className="text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-bold mb-6 leading-tight tracking-tight uppercase font-chaney">
-              {option.title}
-            </h2>
-
-            <p className="text-sm md:text-base lg:text-sm leading-tight max-w-sm opacity-80">
-              {option.description}
-            </p>
-          </div>
-
-          {showImage && (
-            <div className="relative w-48 md:w-56 lg:w-64 h-48 md:h-56 lg:h-64 self-start">
-              <Image
-                src={option.image}
-                alt={option.title}
-                fill
-                className="object-cover object-center grayscale transition-transform duration-500 group-hover:scale-105"
-                sizes="(max-width: 768px) 192px, 256px"
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const allOptions = [getInTouchOption, ...otherOptions];
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const ctx = gsap.context(() => {
-      const contactHeroes = section.querySelectorAll<HTMLElement>(".contact-hero");
-      const firstHero = contactHeroes[0];
-      const bottomHeroes = Array.from(contactHeroes).slice(1);
-      
-      // Calculate actual content heights
-      const firstHeroContent = firstHero.querySelector('.border');
-      const firstHeroHeight = firstHeroContent ? firstHeroContent.scrollHeight : 400;
-      
-      contactHeroes.forEach((hero) => {
-        const content = hero.querySelector('.border');
-        const contentHeight = content ? content.scrollHeight : 400;
-        gsap.set(hero, { height: 0, overflow: "hidden" });
-        // Store the target height
-        (hero as any).targetHeight = contentHeight;
-      });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".parent-contact",
-          start: "top 80%",
-          end: "+=150%",
-          scrub: true,
-        },
-      });
-
-      tl.to(firstHero, {
-        height: firstHeroHeight,
-        duration: 1,
-      })
-      .to(bottomHeroes, {
-        height: function(index, target) {
-          return (target as any).targetHeight || 600;
-        },
-        duration: 1,
-      }, "-=0.5");
-    }, section);
-
-    return () => {
-      ctx.revert();
-    };
-  }, []);
-
   return (
-    <section ref={sectionRef} className="w-full min-h-screen flex flex-col bg-white pb-32">
-      <div className="w-full h-16 md:h-24 lg:h-32 bg-white"></div>
-      <div className="p-4">
-        <div className="">
-          <h1 className="text-[16vw] md:text-[12vw] font-chaney uppercase leading-[0.8] text-black">
-            Contact
-          </h1>
-        </div>
-        <div className="w-full parent-contact flex flex-col gap-4">
-          <div className="w-full contact-hero mb-4 flex gap-4 overflow-hidden">
-            <div className="w-full border border-black h-full">
-              {renderContactCard(getInTouchOption, false)}
-            </div>
-          </div>
-          <div className="w-full flex flex-col md:flex-row gap-4">
-            {otherOptions.map((option) => (
-              <div
-                key={option.id}
-                className={`contact-hero flex-1 mb-4 flex gap-4 overflow-hidden ${option.id === "brief" ? "md:border-r-0" : ""}`}
-              >
-                <div className={`w-full border border-black h-full ${option.id === "brief" ? "md:border-r border-black" : ""}`}>
-                  {renderContactCard(option, option.id !== "call")}
-                </div>
-              </div>
-            ))}
-          </div>
+    <section className="w-full min-h-screen flex flex-col justify-between bg-white px-4 md:px-6 lg:px-8 py-12 md:py-16">
+      <div className="w-full md:w-1/2">
+        <h1 className="text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] font-bold text-black dark:text-white leading-tight font-chaney uppercase">
+          <span className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl align-top inline-block">
+            HURRY<br />
+            AND<br />
+            CONTACT
+          </span>
+        </h1>
+      </div>
+      
+      {/* Bottom Center - Three Rectangular Buttons */}
+      <div className="w-full flex justify-center">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+          <button className="px-6 md:px-8 py-3 md:py-4 border border-black text-black text-sm md:text-base font-medium font-safiro cursor-pointer hover:-translate-y-1 transition-all duration-200">
+            GET IN TOUCH
+          </button>
+          <button className="px-6 md:px-8 py-3 md:py-4 border border-black text-black text-sm md:text-base font-medium font-safiro cursor-pointer hover:-translate-y-1 transition-all duration-200">
+            SEND A BRIEF
+          </button>
+          <button className="px-6 md:px-8 py-3 md:py-4 border border-black text-black text-sm md:text-base font-medium font-safiro cursor-pointer hover:-translate-y-1 transition-all duration-200">
+            BOOK A CALL
+          </button>
         </div>
       </div>
-      <div className="w-full h-16 md:h-24 lg:h-32 bg-white"></div>
     </section>
   );
 }

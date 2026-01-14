@@ -67,7 +67,7 @@ export default function Home() {
 
         <ExperienceSection />
         <ContactSection />
-        <MarqueeSection />
+        {/* <MarqueeSection /> */}
         <Footer />
       </section>
       <CustomCursor />
