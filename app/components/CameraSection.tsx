@@ -18,12 +18,21 @@ export default function CameraSection() {
     const text = textRef.current;
     if (!section || !image || !text) return;
 
-    gsap.set(image, { scale: 0.3 });
+    gsap.set(image, { scale: 0.1 });
     gsap.set(text, { opacity: 1 });
 
     const ctx = gsap.context(() => {
       gsap.to(image, {
-        scale: 2,
+        scale: 1.5,
+        rotate: 10,
+        rotation: 10,
+        rotationX: 10,
+        rotationY: 10,
+        rotationZ: 10,
+        rotationOrigin: "center center",
+        rotationXOrigin: "center center",
+        rotationYOrigin: "center center",
+        rotationZOrigin: "center center",
         ease: "none",
         scrollTrigger: {
           trigger: section,

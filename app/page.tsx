@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
 import AboutMeSection from "./components/AboutMeSection";
 import SkillsSection from "./components/SkillsSection";
+import SkillsSection2 from "./components/SkillsSection2";
 import MinimalSection from "./components/MinimalSection";
 import ProjectsSection from "./components/ProjectsSection";
 import ExperienceSection from "./components/ExperienceSection";
@@ -16,6 +17,7 @@ import CustomCursor from "./components/CustomCursor";
 import MarqueeSection from "./components/MarqueeSection";
 import CameraSection from "./components/CameraSection";
 import BlogSection from "./components/BlogSection";
+import Projects2 from "./components/Projects2";
 
 export default function Home() {
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative w-full min-h-screen bg-zinc-50 dark:bg-black">
+    <main className="absolute w-full min-h-screen bg-zinc-50 dark:bg-black">
       <Navbar />
 
       {/* 1st Screen: Sticky Hero background */}
@@ -50,24 +52,25 @@ export default function Home() {
       {/* 2nd Screen: About Me scrolling over Hero */}
       <section
         id="about"
-        className="relative min-h-screen w-full flex items-center justify-center bg-white dark:bg-zinc-950 text-black dark:text-white z-10"
+        className="relative min-h-screen w-full flex items-center justify-center bg-black text-white z-10"
       >
         <AboutMeSection />
       </section>
 
       {/* Remaining sections */}
       <section className="relative w-full bg-zinc-50 dark:bg-black z-20">
-        <SkillsSection />
+        {/* <SkillsSection /> */}
+        <SkillsSection2 />
         <CameraSection />
 
-        <ProjectsSection />
+        {/* <ProjectsSection /> */}
+        <Projects2 /> 
         <MinimalSection />
 
         <BlogSection />
 
         <ExperienceSection />
-        <ContactSection />
-        {/* <MarqueeSection /> */}
+        <MarqueeSection />
         <Footer />
       </section>
       <CustomCursor />
