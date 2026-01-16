@@ -100,7 +100,6 @@ export default function Navbar() {
         ease: "power2.out",
       });
 
-      // Animate menu items
       if (menuItemsRef.current.length > 0) {
         tl.to(
           menuItemsRef.current,
@@ -186,7 +185,7 @@ export default function Navbar() {
     },
   ];
 
-  const socialLinks = ["INSTAGRAM", "LINKEDIN", "FACEBOOK", "SUBSTACK"];
+  const socialLinks = ["INSTAGRAM", "LINKEDIN", "GITHUB"];
 
   return (
     <>
@@ -218,8 +217,8 @@ export default function Navbar() {
           transform: "translateX(100%)"
         }}
       >
-        <div className="absolute top-[5%] left-[5%] text-white text-xl md:text-2xl font-bold uppercase tracking-wider">
-          ASH-KOODO
+        <div className="absolute top-[5%] left-[5%] text-white text-xl md:text-2xl font-bold font-chaney uppercase tracking-wider">
+          ASHU-KODO
         </div>
 
         <button
@@ -246,9 +245,8 @@ export default function Navbar() {
                     ref={(el) => {
                       if (el) menuItemsRef.current[index] = el;
                     }}
-                    className="text-3xl md:text-4xl font-bold text-white uppercase tracking-wider cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap"
+                    className="text-3xl md:text-4xl font-bold font-chaney text-white uppercase tracking-wider cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap"
                     style={{
-                      fontFamily: "monospace",
                       letterSpacing: "0.15em",
                     }}
                   >

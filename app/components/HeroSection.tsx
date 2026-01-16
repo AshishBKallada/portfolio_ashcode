@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
@@ -16,7 +16,7 @@ export default function HeroSection() {
     const hero = heroRef.current;
     const image = imageRef.current;
     const podium = podiumRef.current;
-    if (!hero || !image) return;  
+    if (!hero || !image) return;
 
     const ctx = gsap.context(() => {
       gsap.to(image, {
@@ -58,7 +58,7 @@ export default function HeroSection() {
         duration: 0.5,
         ease: "power2.out",
       });
-      
+
     };
 
     const handlePointerLeave = () => {
@@ -84,10 +84,7 @@ export default function HeroSection() {
     <div ref={heroRef} className="w-full h-full flex items-end justify-center relative overflow-hidden">
       <div className="absolute bottom-12 left-12 z-20 max-w-xs md:max-w-sm">
         <p className="text-xs md:text-sm text-black leading-none font-safiro">
-          They say development is an art, and developers are artists. 
-          In my years, I've learned that code is our canvas, logic our brush, 
-          and every line we write tells a story.
-        </p>
+          In 2021, I bought my first laptop just for gaming. Today, I'm a developer writing thousands of lines of code daily. Funny how things work out.        </p>
       </div>
 
       <div className="absolute bottom-12 right-12 z-20 max-w-xs md:max-w-sm">
@@ -95,7 +92,7 @@ export default function HeroSection() {
           Full Stack Developer
         </p>
       </div>
-      
+
       <div className="relative w-full max-w-5xl flex items-end justify-center h-full">
         <div ref={podiumRef} className="absolute bottom-0 z-[1] flex items-end justify-center w-full">
           <Image
@@ -107,11 +104,11 @@ export default function HeroSection() {
             priority
           />
         </div>
-        
+
         <h1 className="absolute top-8 md:top-12 lg:top-16 xl:top-20 text-[10rem] md:text-[16rem] lg:text-[20rem] xl:text-[24rem] font-chaney text-black dark:text-white opacity-20 select-none z-0">
-          灰碼 
+          灰碼
         </h1>
-        
+
         <div ref={imageRef} className="relative bottom-0 z-10 flex items-end">
           <Image
             src="/person-garment.png"

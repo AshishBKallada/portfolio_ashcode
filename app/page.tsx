@@ -6,12 +6,9 @@ import Lenis from "lenis";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
 import AboutMeSection from "./components/AboutMeSection";
-import SkillsSection from "./components/SkillsSection";
 import SkillsSection2 from "./components/SkillsSection2";
 import MinimalSection from "./components/MinimalSection";
-import ProjectsSection from "./components/ProjectsSection";
 import ExperienceSection from "./components/ExperienceSection";
-import ContactSection from "./components/ContactSection";
 import Footer from "./components/Footer";
 import CustomCursor from "./components/CustomCursor";
 import MarqueeSection from "./components/MarqueeSection";
@@ -41,7 +38,6 @@ export default function Home() {
     <main className="absolute w-full min-h-screen bg-zinc-50 dark:bg-black">
       <Navbar />
 
-      {/* 1st Screen: Sticky Hero background */}
       <section
         id="home"
         className="sticky top-0 h-screen w-full flex items-center justify-center z-0"
@@ -49,7 +45,6 @@ export default function Home() {
         <HeroSection />
       </section>
 
-      {/* 2nd Screen: About Me scrolling over Hero */}
       <section
         id="about"
         className="relative min-h-screen w-full flex items-center justify-center bg-black text-white z-10"
@@ -57,18 +52,12 @@ export default function Home() {
         <AboutMeSection />
       </section>
 
-      {/* Remaining sections */}
       <section className="relative w-full bg-zinc-50 dark:bg-black z-20">
-        {/* <SkillsSection /> */}
         <SkillsSection2 />
         <CameraSection />
-
-        {/* <ProjectsSection /> */}
         <Projects2 /> 
         <MinimalSection />
-
         <BlogSection />
-
         <ExperienceSection />
         <MarqueeSection />
         <Footer />

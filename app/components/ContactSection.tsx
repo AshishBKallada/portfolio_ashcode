@@ -13,7 +13,6 @@ export default function ContactSection() {
         </h1>
       </div>
       
-      {/* Bottom Center - Three Rectangular Buttons */}
       <div className="w-full flex justify-center">
         <div className="flex flex-col md:flex-row gap-4 md:gap-6">
           <button className="px-6 md:px-8 py-3 md:py-4 border border-black text-black text-sm md:text-base font-medium font-safiro cursor-pointer hover:-translate-y-1 transition-all duration-200">

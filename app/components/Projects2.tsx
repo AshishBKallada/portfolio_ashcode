@@ -24,10 +24,8 @@ export default function Projects2({
   ];
 
   useEffect(() => {
-    // Reserved for future animations if needed
   }, []);
 
-  // Rotations and positions for overlapping effect
   const cardPositions = [
     { x: 0, y: 0, rotation: -5, zIndex: 1 },
     { x: 60, y: -20, rotation: 3, zIndex: 2 },
@@ -42,22 +40,18 @@ export default function Projects2({
       ref={sectionRef}
       className="relative w-full min-h-screen bg-black py-10 px-4 md:px-6 lg:px-8"
     >
-      {/* Top Section - Header */}
       <div className="w-full flex items-center justify-between mb-16 md:mb-20">
-        {/* Left - Heading */}
         <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white font-chaney uppercase">
           <span className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-chaney uppercase tracking-wider whitespace-nowrap">
             FEATURED CLIENT PROJECTS
           </span>
         </h2>
 
-        {/* Right - Button */}
         <button className="border border-white text-white px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-safiro hover:bg-white hover:text-black transition-colors whitespace-nowrap">
           VIEW ALL PROJECTS →
         </button>
       </div>
 
-      {/* Images Container */}
       <div className="relative w-full flex items-center justify-center min-h-[600px] md:min-h-[700px] lg:min-h-[800px]">
           {projectImages.map((imageSrc, index) => {
             const position = cardPositions[index % cardPositions.length];

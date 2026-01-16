@@ -37,8 +37,6 @@ export default function BlogSection() {
     const rightMarquee = rightMarqueeRef.current;
     if (!rightMarquee) return;
 
-    // Initial animation - right moving right
-    // Get the width of one set of items for seamless loop
     const rightFirstItem = rightMarquee.querySelector<HTMLElement>(':first-child');
     const rightWidth = rightFirstItem ? rightFirstItem.offsetWidth * 4 : 0;
 
@@ -54,7 +52,6 @@ export default function BlogSection() {
       const rightWidth = rightFirstItem ? rightFirstItem.offsetWidth * 4 : 0;
 
       if (e.deltaY > 0 && !isScrollingDown.current) {
-        // Scrolling down - reverse direction
         isScrollingDown.current = true;
         rightMarqueeAnimation.current?.kill();
 
@@ -65,7 +62,6 @@ export default function BlogSection() {
           repeat: -1,
         });
       } else if (e.deltaY < 0 && isScrollingDown.current) {
-        // Scrolling up - back to original direction
         isScrollingDown.current = false;
         rightMarqueeAnimation.current?.kill();
 
@@ -91,7 +87,6 @@ export default function BlogSection() {
 
   return (
     <div className="min-h-screen w-full bg-white text-black relative overflow-hidden">
-      {/* Bottom Marquee - Moving Right */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden border-t border-black/10 py-3">
         <div ref={rightMarqueeRef} className="flex whitespace-nowrap">
           {marqueeItems.map((_, i) => (
@@ -105,18 +100,14 @@ export default function BlogSection() {
       </div>
 
       <div className="min-h-screen w-full px-6 md:px-12 lg:px-16 py-12 md:py-16 flex items-center justify-center relative z-10">
-        {/* Main Content */}
         <div className="max-w-[1600px] mx-auto flex flex-col gap-8 w-full">
-        {/* Blog Title with (3) indicator */}
         <div className="relative inline-block">
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-none">
             Blog<sup className="align-super text-xs md:text-sm ml-2 mb-12 font-normal">(3)</sup>
           </h1>
         </div>
 
-        {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12 lg:gap-20 items-start">
-          {/* Left Column - ABOUT Section */}
           <div className="flex flex-col gap-3">
             <h2 className="text-xs md:text-sm uppercase tracking-wider font-semibold text-black border-b border-black/20 pb-3">
               ABOUT
@@ -126,9 +117,7 @@ export default function BlogSection() {
             </p>
           </div>
 
-          {/* Right Column - Blog Post List */}
           <div className="flex flex-col">
-            {/* Headers Row - DATE and NAME aligned above their columns */}
             <div className="grid grid-cols-[140px_1fr] md:grid-cols-[160px_1fr] gap-6 pb-3 border-b border-black/20 mb-0">
               <div className="text-xs md:text-sm uppercase tracking-wider font-semibold text-black/60">
                 DATE
@@ -138,7 +127,6 @@ export default function BlogSection() {
               </div>
             </div>
 
-            {/* Blog Posts */}
             <div className="flex flex-col">
               {blogPosts.map((post, index) => (
                 <Link

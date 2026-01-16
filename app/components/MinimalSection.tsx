@@ -19,7 +19,6 @@ export default function MinimalSection() {
     if (!section || !image || !text) return;
 
     const ctx = gsap.context(() => {
-      // Image animation: scale up and move out of view
       gsap.fromTo(
         image,
         {
@@ -40,7 +39,6 @@ export default function MinimalSection() {
         }
       );
 
-      // Text animation: scale from smaller to current size
       gsap.fromTo(
         text,
         {
@@ -74,11 +72,9 @@ export default function MinimalSection() {
       className="w-full min-h-screen relative overflow-hidden bg-white"
       style={{ isolation: 'isolate' }}
     >
-      {/* Text Section - Behind */}
       <div className="absolute inset-0 flex items-center justify-center px-6 py-16" style={{ zIndex: 1 }}>
         <div ref={textRef} className="relative w-full max-w-8xl shadow-none rounded-3xl p-10 md:p-14 lg:p-16 overflow-hidden">
           <div className="flex flex-col items-center justify-center text-center space-y-6">
-            {/* Main heading - large centered text */}
             <div className="space-y-1 mb-8">
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-chaney text-black dark:text-white">
                 <span className="font-dancing">Building</span>{" "}
@@ -92,12 +88,10 @@ export default function MinimalSection() {
               </h2>
             </div>
 
-            {/* Descriptive paragraph */}
             <p className="text-sm md:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed max-w-2xl mt-6">
               Web applications, mobile apps, APIs, databases, cloud infrastructure, and scalable systems; all built with modern technologies and best practices.
             </p>
 
-            {/* Bottom text */}
             <div className="mt-12 text-xs text-zinc-500 dark:text-zinc-400">
               trusted by passion
             </div>
@@ -105,7 +99,6 @@ export default function MinimalSection() {
         </div>
       </div>
 
-      {/* Image Section - Above */}
       <div 
         ref={imageRef}
         className="absolute inset-0 pointer-events-none overflow-hidden" 

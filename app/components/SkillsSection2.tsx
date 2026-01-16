@@ -42,22 +42,19 @@ export default function SkillsSection2({
         { ref: uiColumn, direction: -100 }, // Left
         { ref: frontendColumn, direction: 100 }, // Right
         { ref: backendColumn, direction: -100 }, // Left
-        { ref: deploymentColumn, direction: 100 }, // Right
+        { ref: deploymentColumn, direction: 100 },
       ];
 
-      // Collect all items with their directions
       const allItems: Array<{ item: HTMLElement; direction: number }> = [];
       
       columns.forEach((column) => {
         const items = gsap.utils.toArray<HTMLElement>(column.ref.children);
         items.forEach((item) => {
           allItems.push({ item, direction: column.direction });
-          // Set initial states
           gsap.set(item, { x: column.direction, opacity: 0.2 });
         });
       });
 
-      // Create a single timeline for all items
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: section,
@@ -91,16 +88,12 @@ export default function SkillsSection2({
       ref={sectionRef}
       className="w-full min-h-screen py-20 px-6 md:px-12 lg:px-16 flex flex-col items-center justify-center bg-white"
     >
-      {/* Heading */}
       <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-black font-chaney mb-12 md:mb-16 text-center">
         SUPERPOWERS
       </h2>
 
-      {/* Two Columns Layout */}
       <div className="flex items-start justify-center gap-4 md:gap-6 lg:gap-8 w-full max-w-7xl">
-        {/* Left Column */}
         <div className="flex flex-col gap-8 md:gap-10">
-          {/* UI Section */}
           <div className="flex flex-col gap-3 md:gap-4">
             <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-right">
               UI
@@ -117,7 +110,6 @@ export default function SkillsSection2({
             </div>
           </div>
 
-          {/* Backend Section */}
           <div className="flex flex-col gap-3 md:gap-4">
             <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-right">
               Backend
@@ -135,9 +127,7 @@ export default function SkillsSection2({
           </div>
         </div>
 
-        {/* Right Column */}
         <div className="flex flex-col gap-8 md:gap-10">
-          {/* Frontend Section */}
           <div className="flex flex-col gap-3 md:gap-4">
             <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-left">
               Frontend
@@ -154,7 +144,6 @@ export default function SkillsSection2({
             </div>
           </div>
 
-          {/* Deployment Section */}
           <div className="flex flex-col gap-3 md:gap-4">
             <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-left">
               Deployment
