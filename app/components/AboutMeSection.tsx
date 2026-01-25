@@ -27,19 +27,19 @@ export default function AboutMeSection({
         <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-12 items-center">
           <div className="space-y-4">
           
-            <p className="text-xl md:text-2xl text-white leading-relaxed max-w-3xl">
-              I bridge the gap between abstract imagination and technical precision. By merging high-performance engineering with intentional design, I craft digital experiences that feel intuitive and move with purpose. To me, code is more than logic, it’s a medium for storytelling, ensuring every interaction leaves a lasting impression.
+            <p className="text-xl md:text-2xl text-black leading-relaxed max-w-3xl">
+              I bridge the gap between abstract imagination and technical precision. By merging high-performance engineering with intentional design, I craft digital experiences that feel intuitive and move with purpose. To me, code is more than logic, it's a medium for storytelling, ensuring every interaction leaves a lasting impression.
             </p>
           </div>
 
          
         </div>
 
-        <div className="mt-56 text-sm text-white leading-relaxed max-w-xl">
-          <span className="text-white font-semibold">Mentor</span>
-          <span className="text-white/70"> and </span>
-          <span className="text-white font-semibold">Full Stack Developer </span>
-          <span className="text-white/70">
+        <div className="mt-56 text-sm text-black leading-relaxed max-w-xl">
+          <span className="text-black font-semibold">Mentor</span>
+          <span className="text-black/70"> and </span>
+          <span className="text-black font-semibold">Full Stack Developer </span>
+          <span className="text-black/70">
             building scalable applications and performant digital experiences that work effortlessly for the people who use them          </span>
         </div>
         <div className="w-full flex justify-end absolute bottom-0 right-0 pb-4 pointer-events-none" style={{ zIndex: 10 }}>

@@ -64,35 +64,35 @@ export default function ExperienceSection({
         </div>
 
         <div className="sticky top-0 w-full flex flex-col lg:flex-row min-h-screen z-20">
-          <div className="w-full lg:w-2/3 h-screen lg:h-auto lg:min-h-screen flex-shrink-0 bg-black relative overflow-hidden flex items-center justify-center px-1 md:px-2 lg:px-3 py-2">
+          <div className="w-full lg:w-2/3 h-screen lg:h-auto lg:min-h-screen flex-shrink-0 bg-white relative overflow-hidden flex items-center justify-center px-1 md:px-2 lg:px-3 py-2">
             <div className="w-full max-w-3xl flex flex-col gap-8">
-              <div className="text-xs md:text-sm text-white uppercase tracking-wider font-safiro">
+              <div className="text-xs md:text-sm text-black uppercase tracking-wider font-safiro">
                 OCT 2024 - PRESENT / BEYONDSCALE TECHNOLOGIES
               </div>
               
               <div className="flex flex-col gap-6">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight font-chaney uppercase">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-black leading-tight font-chaney uppercase">
                   WEB DEVELOPER
                 </h1>
                 
                 <div className="max-w-2xl">
-                  <p className="text-white text-sm md:text-base lg:text-lg leading-relaxed font-safiro">
-                    Successfully delivered <span className="font-semibold text-white">16+ projects</span> while leading and mentoring junior developers. Worked on high-impact <span className="font-semibold text-white">government projects for Andhra Pradesh</span>, ensuring quality standards and timely delivery of critical applications.
+                  <p className="text-black text-sm md:text-base lg:text-lg leading-relaxed font-safiro">
+                    Successfully delivered <span className="font-semibold text-black">16+ projects</span> while leading and mentoring junior developers. Worked on high-impact <span className="font-semibold text-black">government projects for Andhra Pradesh</span>, ensuring quality standards and timely delivery of critical applications.
                   </p>
                 </div>
               </div>
 
-              <div className="text-white text-xs md:text-sm font-safiro">
+              <div className="text-black text-xs md:text-sm font-safiro">
               </div>
             </div>
           </div>
 
-          <div className="w-full lg:w-1/3 h-screen lg:h-auto lg:min-h-screen flex-shrink-0 bg-black relative overflow-hidden flex items-center justify-center">
+          <div className="w-full lg:w-1/3 h-screen lg:h-auto lg:min-h-screen flex-shrink-0 bg-white relative overflow-hidden flex items-center justify-center">
             <div className="flex flex-col items-center">
-              <div className="text-7xl md:text-8xl lg:text-9xl xl:text-[12rem] font-bold text-white/20 font-chaney">
+              <div className="text-7xl md:text-8xl lg:text-9xl xl:text-[12rem] font-bold text-black/20 font-chaney">
                 15<sup>+</sup>
               </div>
-              <div className="text-xs md:text-sm text-white/20 font-safiro uppercase tracking-widest mt-1">
+              <div className="text-xs md:text-sm text-black/20 font-safiro uppercase tracking-widest mt-1">
                 projects
               </div>
             </div>

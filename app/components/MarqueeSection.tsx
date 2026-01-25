@@ -55,8 +55,8 @@ export default function MarqueeSection() {
       <div className="overflow-hidden mb-4">
         <div ref={marqueeRow1Ref} className="flex whitespace-nowrap items-center">
           {[...row1Items, ...row1Items].map((item, i) => (
-            <div key={i} className="inline-flex items-center px-6 md:px-12 flex-shrink-0">
-              <span className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-black font-chaney uppercase">
+            <div key={i} className="inline-flex items-center px-16 md:px-36 flex-shrink-0">
+              <span className="text-[20rem] md:text-[28rem] lg:text-[36rem] xl:text-[44rem] font-bold text-black/10 font-chaney uppercase leading-none">
                 {item}
               </span>
             </div>
@@ -69,7 +69,7 @@ export default function MarqueeSection() {
         <div ref={marqueeRow2Ref} className="flex whitespace-nowrap items-center">
           {[...row2Items, ...row2Items].map((item, i) => (
             <div key={i} className="inline-flex items-center px-6 md:px-12 flex-shrink-0">
-              <span className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-black font-chaney uppercase">
+              <span className="text-8xl md:text-[10rem] lg:text-[12rem] xl:text-[14rem] font-bold text-black font-chaney uppercase">
                 {item}
               </span>
             </div>

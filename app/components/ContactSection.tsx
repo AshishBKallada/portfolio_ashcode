@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 export default function ContactSection() {
   const marqueeRow1Ref = useRef<HTMLDivElement>(null);
   const marqueeRow2Ref = useRef<HTMLDivElement>(null);
+  const marqueeRow3Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const row1 = marqueeRow1Ref.current;
@@ -33,6 +34,20 @@ export default function ContactSection() {
         repeat: -1,
       });
     }
+
+    const row3 = marqueeRow3Ref.current;
+    if (row3) {
+      const firstItem = row3.querySelector<HTMLElement>(':first-child');
+      const row3Width = firstItem ? firstItem.offsetWidth * 2 : 0;
+
+      gsap.to(row3, {
+        x: row3Width / 2,
+        duration: 28,
+        ease: "none",
+        repeat: -1,
+      });
+    }
+    
   }, []);
 
   const row1Items = [
@@ -72,7 +87,22 @@ export default function ContactSection() {
             ))}
           </div>
         </div>
+
+        <div className="overflow-hidden"> 
+          <div ref={marqueeRow3Ref} className="flex whitespace-nowrap items-center">
+            {[...row1Items, ...row2Items, ...row1Items, ...row2Items].map((item, i) => (
+              <div key={i} className="inline-flex items-center px-6 md:px-12 flex-shrink-0">
+                <span className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-black font-chaney uppercase">
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      
       </div>
+
+    
       
       {/* Bottom Center - Three Rectangular Buttons */}
       <div className="w-full flex justify-center">

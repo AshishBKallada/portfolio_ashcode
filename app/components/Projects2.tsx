@@ -1,14 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
 import { getAllProjects } from "@/app/data/projects";
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface Projects2Props {
   animationDelay?: number;
@@ -19,109 +14,18 @@ export default function Projects2({
   animationDelay = 0,
   duration = 1,
 }: Projects2Props) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const buttonContainerRef = useRef<HTMLDivElement>(null);
   const [activeProject, setActiveProject] = useState(1);
-  const router = useRouter();
-
   const projects = getAllProjects();
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    const button = buttonRef.current;
-    const buttonContainer = buttonContainerRef.current;
-
-    if (!section || !button || !buttonContainer) return;
-
-    const ctx = gsap.context(() => {
-      const getButtonBottomPosition = () => {
-        const rect = buttonContainer.getBoundingClientRect();
-        const sectionRect = section.getBoundingClientRect();
-        const scrollY = window.scrollY;
-        return (rect.top + scrollY + rect.height - button.offsetHeight) - (sectionRect.top + scrollY) - 100;
-      };
-
-      gsap.set(button, {
-        position: "fixed",
-        top: "100px",
-        left: "50%",
-        x: "-50%",
-        y: 0,
-        zIndex: 50,
-        opacity: 0,
-        pointerEvents: "none",
-      });
-
-      const distance = getButtonBottomPosition();
-
-      const mainScrollTrigger = ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: "bottom bottom",
-        onEnter: () => {
-          gsap.to(button, {
-            opacity: 1,
-            pointerEvents: "auto",
-            duration: 0.3,
-          });
-        },
-        onLeave: () => {
-          gsap.set(button, {
-            opacity: 0,
-            pointerEvents: "none",
-          });
-        },
-        onEnterBack: () => {
-          gsap.to(button, {
-            opacity: 1,
-            pointerEvents: "auto",
-            duration: 0.3,
-          });
-        },
-        onLeaveBack: () => {
-          gsap.set(button, {
-            opacity: 0,
-            pointerEvents: "none",
-          });
-        },
-      });
-
-      gsap.to(button, {
-        y: distance,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
-        },
-      });
-    }, section);
-
-    return () => {
-      ctx.revert();
-    };
-  }, []);
+  const currentProject = projects.find(p => p.id === activeProject) || projects[0];
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative w-full min-h-screen bg-white text-black py-20 px-8 md:px-16 lg:px-24"
-    >
-      <div className="w-full mb-12 lg:mb-16">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-black font-chaney uppercase">
-          <span className="text-base md:text-lg lg:text-xl xl:text-2xl font-chaney uppercase tracking-wider whitespace-nowrap">
-            FEATURED PROJECTS
-          </span>
-        </h2>
-      </div>
+    <section className="relative w-full min-h-screen bg-white text-black py-20 px-8 md:px-16 lg:px-24">
+    
    
-
-      <div className="w-full h-full flex flex-row gap-12 lg:gap-12">
-        <div className="w-3/4 flex flex-col justify-between">
-          <div className="flex flex-row gap-2 flex-wrap">
-            {projects.map((project, index) => {
+      <div className="w-full h-full flex flex-row gap-12 lg:gap-16 xl:gap-20 items-start">
+        {/* Left Column - All Project Names (Small) */}
+        <div className="w-1/4 flex flex-col gap-8 lg:gap-10 xl:gap-12">
+          {projects.map((project) => {
               const isActive = activeProject === project.id;
               return (
                 <Link
@@ -131,47 +35,54 @@ export default function Projects2({
                   onMouseEnter={() => setActiveProject(project.id)}
                 >
                   <p
-                    className={`text-xl md:text-2xl lg:text-3xl xl:text-4xl font-safiro transition-all duration-300 leading-tight block ${
+                  className={`text-xs md:text-sm lg:text-base font-safiro transition-all duration-300 leading-tight ${
                       isActive
                         ? "font-bold text-black"
                         : "font-normal text-zinc-300"
                     }`}
                   >
-                    {project.name} ({String(project.id).padStart(2, '0')})
-                    {index < projects.length - 1 && (
-                      <span className="text-zinc-300"> /</span>
-                    )}
+                  {String(project.id).padStart(2, '0')}/ {project.name.toUpperCase()}
                   </p>
                 </Link>
               );
             })}
           </div>
 
-          <div className="mt-4 lg:mt-6 flex flex-row gap-32 items-start">
-            <div className="text-xs md:text-sm text-zinc-400 font-safiro uppercase tracking-wider whitespace-nowrap">
-              04 METHOD
-            </div>
-            <p className="text-sm md:text-base text-black leading-relaxed max-w-lg font-safiro">
-              The scope of my work covers all stages within Web Development and Digital Solutions. I offer an end to end level of service from early concepts through to practical completion and deployment.
-            </p>
+        {/* Center Column - Project Image */}
+        <div className="w-2/4 flex items-center justify-center">
+          <div className="relative w-full h-[60vh] lg:h-[70vh] max-w-3xl">
+            <Image
+              key={`project-image-${currentProject.id}-${currentProject.image}`}
+              src={currentProject.image}
+              alt={currentProject.name}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-contain"
+              priority={activeProject === 1}
+              unoptimized
+            />
           </div>
         </div>
 
-        <div className="w-1/4 flex items-center justify-center min-h-[60vh] lg:min-h-[85vh]">
-          <div className="relative w-full h-full max-w-3xl">
-            <Image
-              src="/experience-image.jpg"
-              alt="Project Illustration"
-              width={900}
-              height={700}
-              className="w-full h-auto object-contain grayscale opacity-80"
-              priority
-            />
+        {/* Right Column - Project Description/Definition */}
+        <div className="w-1/4 flex items-start justify-start pt-8">
+          <div className="w-full">
+            <p className="text-xs md:text-sm lg:text-base text-black leading-tight font-safiro">
+              {currentProject.details.overview}
+            </p>
           </div>
         </div>
       </div>
 
-    
+      {/* View All Button - Bottom Right */}
+      <div className="absolute bottom-8 md:bottom-12 lg:bottom-16 right-8 md:right-16 lg:right-24">
+        <Link
+          href="/projects"
+          className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-white border border-black text-black font-safiro text-sm md:text-base uppercase tracking-wider transition-colors duration-300 hover:bg-black hover:text-white"
+        >
+          View All Projects →
+        </Link>
+      </div>
     </section>
   );
 }

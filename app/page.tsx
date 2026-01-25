@@ -46,7 +46,7 @@ export default function Home() {
 
       <section
         id="about"
-        className="relative min-h-screen w-full flex items-center justify-center bg-black text-white z-10"
+        className="relative min-h-screen w-full flex items-center justify-center bg-white text-black z-10"
       >
         <AboutMeSection />
       </section>

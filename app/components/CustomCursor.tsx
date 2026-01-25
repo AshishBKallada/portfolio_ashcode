@@ -12,8 +12,8 @@ export default function CustomCursor() {
 
     gsap.set(cursor, { x: -100, y: -100 });
 
-    const xTo = gsap.quickTo(cursor, "x", { duration: 0.25, ease: "power3.out" });
-    const yTo = gsap.quickTo(cursor, "y", { duration: 0.25, ease: "power3.out" });
+    const xTo = gsap.quickTo(cursor, "x", { duration: 0.6, ease: "power1.out" });
+    const yTo = gsap.quickTo(cursor, "y", { duration: 0.6, ease: "power1.out" });
 
     const handleMove = (e: PointerEvent) => {
       xTo(e.clientX);
@@ -32,9 +32,7 @@ export default function CustomCursor() {
       ref={cursorRef}
       className="pointer-events-none fixed top-0 left-0 z-[999]"
     >
-      <div className="w-5 h-5 rounded-full border border-black bg-transparent flex items-center justify-center">
-        <div className="w-[.5px] h-[.5px] rounded-full bg-black" />
-      </div>
+      <div className="w-4 h-4 bg-black" />
     </div>
   );
 }

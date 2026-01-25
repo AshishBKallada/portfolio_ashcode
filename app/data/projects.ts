@@ -21,7 +21,7 @@ export const projects: Project[] = [
     fullName: "E-commerce Platform (01)",
     slug: "ecommerce-platform",
     description: "Comprehensive web development services covering frontend, backend, and full-stack solutions.",
-    image: "/experience-image.jpg",
+    image: "/hero-background.jpg",
     details: {
       overview: "Full-stack web development services that encompass everything from modern frontend frameworks to robust backend architectures. I specialize in creating scalable, performant web applications that deliver exceptional user experiences.",
       technologies: ["React", "Next.js", "Node.js", "TypeScript", "PostgreSQL", "MongoDB", "Express"],
@@ -48,7 +48,7 @@ export const projects: Project[] = [
     fullName: "Management System (02)",
     slug: "management-system",
     description: "Native and cross-platform mobile application development for iOS and Android.",
-    image: "/experience-image.jpg",
+    image: "/vintage-camera-white-background.png",
     details: {
       overview: "Mobile application development services for both native and cross-platform solutions. I create intuitive, high-performance mobile apps that engage users and deliver seamless experiences across iOS and Android platforms.",
       technologies: ["React Native", "Flutter", "Swift", "Kotlin", "Firebase", "REST APIs"],
@@ -75,7 +75,7 @@ export const projects: Project[] = [
     fullName: "Task Manager (03)",
     slug: "task-manager",
     description: "User-centered design solutions that combine aesthetics with functionality.",
-    image: "/experience-image.jpg",
+    image: "/hand-dials-old-red-rotary-phone-dusted-with-time.jpg",
     details: {
       overview: "Comprehensive UI/UX design services focused on creating intuitive, beautiful, and functional user interfaces. I combine user research, design thinking, and modern design principles to craft experiences that users love.",
       technologies: ["Figma", "Adobe XD", "Sketch", "Principle", "After Effects", "Photoshop"],
@@ -102,7 +102,7 @@ export const projects: Project[] = [
     fullName: "Social Media Platform (04)",
     slug: "social-media-platform",
     description: "RESTful and GraphQL API development with comprehensive documentation and testing.",
-    image: "/experience-image.jpg",
+    image: "/freepik__talk__92491.png",
     details: {
       overview: "Professional API development services including RESTful and GraphQL APIs. I build scalable, well-documented APIs that enable seamless communication between frontend and backend systems.",
       technologies: ["Node.js", "Express", "GraphQL", "PostgreSQL", "MongoDB", "Redis", "JWT"],
@@ -129,7 +129,7 @@ export const projects: Project[] = [
     fullName: "Analytics Dashboard (05)",
     slug: "analytics-dashboard",
     description: "Cloud infrastructure setup, deployment, and management on AWS, Azure, and GCP.",
-    image: "/experience-image.jpg",
+    image: "/3d-rendering-triangle-water.jpg",
     details: {
       overview: "Cloud infrastructure services covering setup, deployment, and management. I help businesses migrate to the cloud and optimize their infrastructure for scalability, reliability, and cost-effectiveness.",
       technologies: ["AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "CI/CD"],
@@ -156,7 +156,7 @@ export const projects: Project[] = [
     fullName: "Booking System (06)",
     slug: "booking-system",
     description: "Database architecture, design, and optimization for relational and NoSQL databases.",
-    image: "/experience-image.jpg",
+    image: "/vintage-rotary-dial-phone-with-japanese-characters.jpg",
     details: {
       overview: "Comprehensive database design and optimization services. I create efficient, scalable database architectures that support your application's data requirements while ensuring performance and reliability.",
       technologies: ["PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch", "SQL Server"],
@@ -183,7 +183,7 @@ export const projects: Project[] = [
     fullName: "Learning Platform (07)",
     slug: "learning-platform",
     description: "CI/CD pipeline setup, containerization, and automated deployment solutions.",
-    image: "/experience-image.jpg",
+    image: "/scroll-with-japanese-calligraphy-wooden-stand-with-two-rolledup-scrolls.jpg",
     details: {
       overview: "DevOps and deployment services that streamline your development workflow. I set up CI/CD pipelines, containerization, and automated deployment processes to accelerate development cycles and ensure reliable releases.",
       technologies: ["Docker", "Kubernetes", "Jenkins", "GitHub Actions", "GitLab CI", "Terraform", "Ansible"],
