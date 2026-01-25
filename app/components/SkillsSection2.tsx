@@ -38,44 +38,88 @@ export default function SkillsSection2({
     if (!section || !uiColumn || !frontendColumn || !backendColumn || !deploymentColumn) return;
 
     const ctx = gsap.context(() => {
-      const columns = [
-        { ref: uiColumn, direction: -100 }, // Left
-        { ref: frontendColumn, direction: 100 }, // Right
-        { ref: backendColumn, direction: -100 }, // Left
-        { ref: deploymentColumn, direction: 100 },
-      ];
-
-      const allItems: Array<{ item: HTMLElement; direction: number }> = [];
+      // Group 1: UI (left) and Frontend (right) - animate together
+      const uiItems = gsap.utils.toArray<HTMLElement>(uiColumn.children);
+      const frontendItems = gsap.utils.toArray<HTMLElement>(frontendColumn.children);
       
-      columns.forEach((column) => {
-        const items = gsap.utils.toArray<HTMLElement>(column.ref.children);
-        items.forEach((item) => {
-          allItems.push({ item, direction: column.direction });
-          gsap.set(item, { x: column.direction, opacity: 0.2 });
-        });
-      });
+      // Group 2: Backend (left) and Deployment (right) - animate together
+      const backendItems = gsap.utils.toArray<HTMLElement>(backendColumn.children);
+      const deploymentItems = gsap.utils.toArray<HTMLElement>(deploymentColumn.children);
 
+      // Set initial states
+      uiItems.forEach((item) => gsap.set(item, { x: -100, opacity: 0.2 }));
+      frontendItems.forEach((item) => gsap.set(item, { x: 100, opacity: 0.2 }));
+      backendItems.forEach((item) => gsap.set(item, { x: -100, opacity: 0.2 }));
+      deploymentItems.forEach((item) => gsap.set(item, { x: 100, opacity: 0.2 }));
+
+      // Create timeline
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top 80%",
           end: "bottom 20%",
-          scrub: true,
+          scrub: 1,
         },
       });
 
-      allItems.forEach(({ item, direction }, index) => {
-        timeline.to(
-          item,
-          {
-            x: 0,
-            opacity: 1,
-            duration: 0.5,
-            ease: "power2.out",
-          },
-          index * 0.05
-        );
-      });
+      // Animate UI and Frontend together
+      const maxGroup1 = Math.max(uiItems.length, frontendItems.length);
+      for (let i = 0; i < maxGroup1; i++) {
+        if (uiItems[i]) {
+          timeline.to(
+            uiItems[i],
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.8,
+              ease: "none",
+            },
+            i * 0.08
+          );
+        }
+        if (frontendItems[i]) {
+          timeline.to(
+            frontendItems[i],
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.8,
+              ease: "none",
+            },
+            i * 0.08
+          );
+        }
+      }
+
+      // Animate Backend and Deployment together
+      const maxGroup2 = Math.max(backendItems.length, deploymentItems.length);
+      const startTime = maxGroup1 * 0.08;
+      for (let i = 0; i < maxGroup2; i++) {
+        if (backendItems[i]) {
+          timeline.to(
+            backendItems[i],
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.8,
+              ease: "none",
+            },
+            startTime + i * 0.08
+          );
+        }
+        if (deploymentItems[i]) {
+          timeline.to(
+            deploymentItems[i],
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.8,
+              ease: "none",
+            },
+            startTime + i * 0.08
+          );
+        }
+      }
     }, section);
 
     return () => {
@@ -88,12 +132,15 @@ export default function SkillsSection2({
       ref={sectionRef}
       className="w-full min-h-screen py-20 px-6 md:px-12 lg:px-16 flex flex-col items-center justify-center bg-white"
     >
+      {/* Heading */}
       <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-black font-chaney mb-12 md:mb-16 text-center">
-        SUPERPOWERS
+      TECHNIQUES
       </h2>
-
+      {/* Two Columns Layout */}
       <div className="flex items-start justify-center gap-4 md:gap-6 lg:gap-8 w-full max-w-7xl">
+        {/* Left Column */}
         <div className="flex flex-col gap-8 md:gap-10">
+          {/* UI Section */}
           <div className="flex flex-col gap-3 md:gap-4">
             <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-right">
               UI
@@ -110,6 +157,7 @@ export default function SkillsSection2({
             </div>
           </div>
 
+          {/* Backend Section */}
           <div className="flex flex-col gap-3 md:gap-4">
             <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-right">
               Backend
@@ -127,7 +175,9 @@ export default function SkillsSection2({
           </div>
         </div>
 
+        {/* Right Column */}
         <div className="flex flex-col gap-8 md:gap-10">
+          {/* Frontend Section */}
           <div className="flex flex-col gap-3 md:gap-4">
             <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-left">
               Frontend
@@ -144,6 +194,7 @@ export default function SkillsSection2({
             </div>
           </div>
 
+          {/* Deployment Section */}
           <div className="flex flex-col gap-3 md:gap-4">
             <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-left">
               Deployment

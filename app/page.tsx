@@ -11,7 +11,6 @@ import MinimalSection from "./components/MinimalSection";
 import ExperienceSection from "./components/ExperienceSection";
 import Footer from "./components/Footer";
 import CustomCursor from "./components/CustomCursor";
-import MarqueeSection from "./components/MarqueeSection";
 import CameraSection from "./components/CameraSection";
 import BlogSection from "./components/BlogSection";
 import Projects2 from "./components/Projects2";
@@ -54,12 +53,11 @@ export default function Home() {
 
       <section className="relative w-full bg-zinc-50 dark:bg-black z-20">
         <SkillsSection2 />
-        <CameraSection />
+        {/* <CameraSection /> */}
         <Projects2 /> 
         <MinimalSection />
         <BlogSection />
         <ExperienceSection />
-        <MarqueeSection />
         <Footer />
       </section>
       <CustomCursor />

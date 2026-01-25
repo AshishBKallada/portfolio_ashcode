@@ -12,20 +12,21 @@ interface BlogPost {
 
 const blogPosts: BlogPost[] = [
   {
+    date: "2026.1.18",
+    name: "The 'Rabbit Hole' Ritual: Why Curiosity is a Developer's Secret Weapon",
+    slug: "curiosity-driven-learning",
+  },
+  {
     date: "2026.1.11",
-    name: "The Creative Website Guide",
-    slug: "the-creative-website-guide",
+    name: "The Unsung Art: Nurturing Frontend Talent Through Teaching",
+    slug: "nurturing-frontend-talent-teaching",
   },
   {
     date: "2025.12.22",
-    name: "How to rewire your brain to be addicted to coding",
+    name: "Beyond the Cursor: Why the Best Developers Switch to 'Scientist Mode'",
     slug: "how-to-rewire-your-brain-to-be-addicted-to-coding",
   },
-  {
-    date: "2025.12.15",
-    name: "Everything You Need to Know To Make A Good Developer Portfolio Site",
-    slug: "everything-you-need-to-know-to-make-a-good-developer-portfolio-site",
-  },
+
 ];
 
 export default function BlogSection() {
@@ -103,7 +104,7 @@ export default function BlogSection() {
         <div className="max-w-[1600px] mx-auto flex flex-col gap-8 w-full">
         <div className="relative inline-block">
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-none">
-            Blog<sup className="align-super text-xs md:text-sm ml-2 mb-12 font-normal">(3)</sup>
+            Blog<sup className="align-super text-xs md:text-sm ml-2 mb-12 font-normal">(4)</sup>
           </h1>
         </div>
 

@@ -64,61 +64,55 @@ export default function ExperienceSection({
         </div>
 
         <div className="sticky top-0 w-full flex flex-col lg:flex-row min-h-screen z-20">
-          <div className="w-full lg:w-2/3 h-screen lg:h-auto lg:min-h-screen flex-shrink-0 bg-black relative overflow-hidden">
+          <div className="w-full lg:w-2/3 h-screen lg:h-auto lg:min-h-screen flex-shrink-0 bg-white relative overflow-hidden flex items-center justify-center p-6 md:p-12 lg:p-16">
+            <div className="w-full max-w-3xl flex flex-col gap-8">
+              <div className="text-xs md:text-sm text-black uppercase tracking-wider font-safiro">
+                OCT 2024 - PRESENT
+              </div>
+              
+              <div className="flex flex-col gap-6">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-black leading-tight font-chaney uppercase">
+                  WEB DEVELOPER
+                </h1>
+                
+                <div className="max-w-2xl">
+                  <p className="text-black text-sm md:text-base lg:text-lg leading-relaxed font-safiro">
+                    Successfully delivered <span className="font-semibold">16+ projects</span> while leading and mentoring junior developers. Worked on high-impact <span className="font-semibold">government projects for Andhra Pradesh</span>, ensuring quality standards and timely delivery of critical applications.
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-black text-xs md:text-sm font-safiro">
+                BeyondScale Technologies
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full lg:w-1/3 h-screen lg:h-auto bg-black lg:min-h-screen flex-shrink-0 relative overflow-hidden">
             <Image
               src="/me.jpeg"
               alt="Experience Background"
               fill
               className="object-cover object-top grayscale opacity-50"
             />       
-               <div className="absolute inset-0 bg-black/40 z-10"></div>
-
-            <div className="relative z-10 w-full h-full flex flex-col justify-between p-6 md:p-12 lg:p-16">
-              <div className="flex flex-col gap-6">
-                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
-                  <span className="text-black text-xl font-bold font-safiro">1</span>
-                </div>
-
-                <div className="max-w-xl">
-                  <p className="text-white text-sm md:text-base lg:text-lg leading-relaxed font-safiro">
-                    Successfully delivered <span className="font-semibold">16+ projects</span> while leading and mentoring junior developers. Worked on high-impact <span className="font-semibold">government projects for Andhra Pradesh</span>, ensuring quality standards and timely delivery of critical applications.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                <div className="overflow-visible">
-                  <h1 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-white leading-tight font-chaney uppercase">
-                    <span className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight font-chaney uppercase">
-                      WEB<br />DEVELOPER
-                    </span>
-                  </h1>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-full lg:w-1/3 h-screen lg:h-auto bg-black lg:min-h-screen flex-shrink-0 relative overflow-hidden">
-            <div className="relative w-full h-full p-6 md:p-12">
+            <div className="absolute inset-0 bg-black/10 z-10"></div>
+            
+            <div className="relative z-10 w-full h-full p-6 md:p-12">
               <div className="w-full h-full flex flex-col justify-between">
-                <div className="flex justify-between items-start">
-                  <div className="text-white text-xs md:text-sm uppercase tracking-wider font-safiro">
-                    OCT 2024 - PRESENT
+           
+
+                <div className="flex flex-col items-center justify-center gap-4 h-full w-full">
+                  <div className="flex flex-col items-center justify-center h-full w-full">
+                    <div className="text-7xl md:text-8xl lg:text-9xl font-bold text-white font-chaney">
+                      15+
+                    </div>
+                    <div className="text-white text-sm md:text-base font-safiro text-center">
+                      projects delivered
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <div className="text-7xl md:text-8xl lg:text-9xl font-bold text-white font-chaney">
-                    16+
-                  </div>
-                  <div className="text-white text-sm md:text-base font-safiro text-center">
-                    projects delivered
-                  </div>
-                </div>
-
-                <div className="text-white text-xs md:text-sm font-safiro">
-                  BeyondScale Technologies
-                </div>
+          
               </div>
             </div>
           </div>
@@ -148,7 +142,7 @@ export default function ExperienceSection({
                 Started my journey as a freelance developer, working with diverse clients to build <span className="font-semibold">custom web solutions</span>. Managed complete project lifecycles from initial consultation to deployment and maintenance. Developed proficiency in <span className="font-semibold">client communication, project management, and time estimation</span>.
               </p>
             </div>
-            </div>
+          </div>
         </div>
 
           <div className="absolute top-0 right-0 h-full flex flex-col justify-between items-end p-6 md:p-12 z-50">

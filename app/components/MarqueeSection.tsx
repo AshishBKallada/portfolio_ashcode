@@ -8,6 +8,7 @@ export default function MarqueeSection() {
   const marqueeRow2Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Row 1 - Scroll right
     const row1 = marqueeRow1Ref.current;
     if (row1) {
       const firstItem = row1.querySelector<HTMLElement>(':first-child');
@@ -21,6 +22,7 @@ export default function MarqueeSection() {
       });
     }
 
+    // Row 2 - Scroll left
     const row2 = marqueeRow2Ref.current;
     if (row2) {
       const firstItem = row2.querySelector<HTMLElement>(':first-child');
@@ -35,11 +37,13 @@ export default function MarqueeSection() {
     }
   }, []);
 
+  // Row 1 content
   const row1Items = [
     "ASHCODE", "16+", "FULL STACK DEVELOPER", "2024", "CODING MEETS PASSION", 
-    "26+",     "PROJECTS", "ASHCODE", "100%", "FULL STACK DEVELOPER", "CODING MEETS PASSION"
+    "26+", "PROJECTS", "ASHCODE", "100%", "FULL STACK DEVELOPER", "CODING MEETS PASSION"
   ];
 
+  // Row 2 content
   const row2Items = [
     "CODING MEETS PASSION", "ASHCODE", "50+", "FULL STACK DEVELOPER", "2024", 
     "PROJECTS", "ASHCODE", "26+", "CODING MEETS PASSION", "16+", "FULL STACK DEVELOPER"
@@ -47,6 +51,7 @@ export default function MarqueeSection() {
 
   return (
     <section className="w-full bg-white overflow-hidden py-8 md:py-12">
+      {/* Row 1 */}
       <div className="overflow-hidden mb-4">
         <div ref={marqueeRow1Ref} className="flex whitespace-nowrap items-center">
           {[...row1Items, ...row1Items].map((item, i) => (
@@ -59,6 +64,7 @@ export default function MarqueeSection() {
         </div>
       </div>
 
+      {/* Row 2 */}
       <div className="overflow-hidden">
         <div ref={marqueeRow2Ref} className="flex whitespace-nowrap items-center">
           {[...row2Items, ...row2Items].map((item, i) => (

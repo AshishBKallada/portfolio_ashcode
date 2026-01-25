@@ -113,8 +113,8 @@ export default function HeroSection() {
           <Image
             src="/person-garment.png"
             alt="Hero"
-            width={450}
-            height={1000}
+            width={380}
+            height={800}
             className="object-contain"
             priority
           />
