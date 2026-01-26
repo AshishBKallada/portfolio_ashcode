@@ -16,23 +16,24 @@ export default function AboutMeSection({
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Reserved for future animations if needed
   }, []);
 
   return (
     <div
       ref={sectionRef}
-      className="w-full min-h-screen flex items-center justify-center px-16 py-16"
+      className="w-full min-h-screen flex items-center justify-center px-16 py-16 bg-white"
     >
       <div className="relative w-full max-w-8xl shadow-none rounded-3xl p-10 md:p-14 lg:p-16 overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-12 items-center">
           <div className="space-y-4">
-          
+
             <p className="text-xl md:text-2xl text-black leading-relaxed max-w-3xl">
               I bridge the gap between abstract imagination and technical precision. By merging high-performance engineering with intentional design, I craft digital experiences that feel intuitive and move with purpose. To me, code is more than logic, it's a medium for storytelling, ensuring every interaction leaves a lasting impression.
             </p>
           </div>
 
-         
+
         </div>
 
         <div className="mt-56 text-sm text-black leading-relaxed max-w-xl">

@@ -58,6 +58,11 @@ export default function Navbar() {
           contact
         </Link>
       </div>
+      
+      {/* Book a call button */}
+      <button className="px-4 py-2 border border-black bg-white text-black text-xs md:text-sm hover:bg-black hover:text-white hover:cursor-pointer transition-colors dark:border-white dark:bg-black dark:text-white dark:hover:bg-white dark:hover:text-black">
+        Book a call
+      </button>
     </div>
   );
 }

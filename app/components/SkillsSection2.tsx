@@ -16,110 +16,118 @@ export default function SkillsSection2({
   duration = 1,
 }: SkillsSection2Props) {
   const sectionRef = useRef<HTMLElement>(null);
-  const uiColumnRef = useRef<HTMLDivElement>(null);
-  const frontendColumnRef = useRef<HTMLDivElement>(null);
-  const backendColumnRef = useRef<HTMLDivElement>(null);
-  const deploymentColumnRef = useRef<HTMLDivElement>(null);
+  const skillsContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Skills organized by category
+  const skillsByCategory = [
+    {
+      category: "Frontend",
+      skills: ["React", "Next.js", "React Native", "Tailwind CSS", "ShadCN", "Ant Design", "HTML", "CSS", "Bootstrap", "JavaScript", "Ajax", "jQuery", "Redux", "Framer-motion", "MUI"]
+    },
+    {
+      category: "Backend",
+      skills: ["Node.js", "Express.js", "TypeScript", "REST API", "MVC architecture", "Clean architecture", "JWT", "EJS", "gRPC", "Kafka"]
+    },
+    {
+      category: "Database",
+      skills: ["MongoDB", "PostgreSQL", "MySQL"]
+    },
+    {
+      category: "Integrations",
+      skills: ["Nodemailer", "Zegocloud", "Passport.js", "Firebase", "Socket.IO", "Cloudinary", "Razorpay", "Chart.js"]
+    },
+    {
+      category: "Deployment",
+      skills: ["NGINX", "AWS EC2", "Amazon Route 53", "Vercel", "Hostinger", "Render"]
+    },
+    {
+      category: "Testing",
+      skills: ["Mocha", "ESLint"]
+    },
+    {
+      category: "Familiar with",
+      skills: ["Data Structures and Algorithms", "Git", "GitHub", "Docker", "Kubernetes", "OOPS", "Figma", "Postman", "Moon Modeler", "Java", "PHP", "JSON", "CI/CD", "Microservices", "AWS"]
+    }
+  ];
 
-  const skillsData = {
-    UI: ["Figma", "Adobe XD", "Sketch", "Framer", "Principle", "After Effects"],
-    Frontend: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Vue.js"],
-    Backend: ["Node.js", "Express", "Python", "Django", "MongoDB", "PostgreSQL"],
-    Deployment: ["AWS", "Vercel", "Docker", "Kubernetes", "GitHub Actions", "CI/CD"],
-  };
+  // Create lines with category names
+  const skillLines: Array<{ category: string; skills: string[] }> = [];
+  skillsByCategory.forEach((categoryData) => {
+    skillLines.push({
+      category: categoryData.category,
+      skills: categoryData.skills
+    });
+  });
 
   useEffect(() => {
     const section = sectionRef.current;
-    const uiColumn = uiColumnRef.current;
-    const frontendColumn = frontendColumnRef.current;
-    const backendColumn = backendColumnRef.current;
-    const deploymentColumn = deploymentColumnRef.current;
-
-    if (!section || !uiColumn || !frontendColumn || !backendColumn || !deploymentColumn) return;
+    const skillsContainer = skillsContainerRef.current;
+    
+    if (!section || !skillsContainer) return;
 
     const ctx = gsap.context(() => {
-      // Group 1: UI (left) and Frontend (right) - animate together
-      const uiItems = gsap.utils.toArray<HTMLElement>(uiColumn.children);
-      const frontendItems = gsap.utils.toArray<HTMLElement>(frontendColumn.children);
-      
-      // Group 2: Backend (left) and Deployment (right) - animate together
-      const backendItems = gsap.utils.toArray<HTMLElement>(backendColumn.children);
-      const deploymentItems = gsap.utils.toArray<HTMLElement>(deploymentColumn.children);
+      // Get all line containers (div elements)
+      const skillLines = gsap.utils.toArray<HTMLElement>(skillsContainer.children);
 
-      // Set initial states
-      uiItems.forEach((item) => gsap.set(item, { x: -100, opacity: 0.2 }));
-      frontendItems.forEach((item) => gsap.set(item, { x: 100, opacity: 0.2 }));
-      backendItems.forEach((item) => gsap.set(item, { x: -100, opacity: 0.2 }));
-      deploymentItems.forEach((item) => gsap.set(item, { x: 100, opacity: 0.2 }));
-
-      // Create timeline
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: "top 80%",
-          end: "bottom 20%",
-          scrub: 1,
-        },
+      // Set initial state for all lines
+      gsap.set(skillLines, {
+        opacity: 0,
+        y: 50,
       });
 
-      // Animate UI and Frontend together
-      const maxGroup1 = Math.max(uiItems.length, frontendItems.length);
-      for (let i = 0; i < maxGroup1; i++) {
-        if (uiItems[i]) {
-          timeline.to(
-            uiItems[i],
-            {
-              x: 0,
-              opacity: 1,
-              duration: 0.8,
-              ease: "none",
-            },
-            i * 0.08
-          );
-        }
-        if (frontendItems[i]) {
-          timeline.to(
-            frontendItems[i],
-            {
-              x: 0,
-              opacity: 1,
-              duration: 0.8,
-              ease: "none",
-            },
-            i * 0.08
-          );
-        }
-      }
+      // Calculate scroll distance needed (one line per scroll increment)
+      const totalLines = skillLines.length;
+      const scrollDistance = totalLines * 200; // 200px per line
 
-      // Animate Backend and Deployment together
-      const maxGroup2 = Math.max(backendItems.length, deploymentItems.length);
-      const startTime = maxGroup1 * 0.08;
-      for (let i = 0; i < maxGroup2; i++) {
-        if (backendItems[i]) {
-          timeline.to(
-            backendItems[i],
-            {
-              x: 0,
-              opacity: 1,
-              duration: 0.8,
-              ease: "none",
-            },
-            startTime + i * 0.08
+      // Create scroll trigger with scrub for smooth, reversible animation
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top 80%",
+        end: `+=${scrollDistance}`,
+        scrub: 1,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          // Calculate which line should be visible
+          // When progress is 1, show all lines (use totalLines - 1 to include last line)
+          const currentLineIndex = Math.min(
+            Math.floor(progress * (totalLines)),
+            totalLines - 1
           );
-        }
-        if (deploymentItems[i]) {
-          timeline.to(
-            deploymentItems[i],
-            {
-              x: 0,
+          
+          // Animate lines one by one based on scroll progress
+          skillLines.forEach((line, index) => {
+            if (index <= currentLineIndex) {
+              // Show lines up to and including current index
+              gsap.to(line, {
+                opacity: 1,
+                y: 0,
+                duration: 0.3,
+                ease: "power2.out",
+              });
+            } else {
+              // Hide lines after current index
+              gsap.to(line, {
+                opacity: 0,
+                y: 50,
+                duration: 0.3,
+                ease: "power2.out",
+              });
+            }
+          });
+        },
+        onLeave: () => {
+          // Ensure all lines are visible when section is scrolled past
+          skillLines.forEach((line) => {
+            gsap.set(line, {
               opacity: 1,
-              duration: 0.8,
-              ease: "none",
-            },
-            startTime + i * 0.08
-          );
-        }
-      }
+              y: 0,
+            });
+          });
+        },
+        onEnterBack: () => {
+          // When scrolling back into section, maintain current state
+        },
+      });
     }, section);
 
     return () => {
@@ -134,83 +142,27 @@ export default function SkillsSection2({
     >
       {/* Heading */}
       <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-black font-chaney mb-12 md:mb-16 text-center">
-      TECHNIQUES
+        TECHNIQUES
       </h2>
-      {/* Two Columns Layout */}
-      <div className="flex items-start justify-center gap-4 md:gap-6 lg:gap-8 w-full max-w-7xl">
-        {/* Left Column */}
-        <div className="flex flex-col gap-8 md:gap-10">
-          {/* UI Section */}
-          <div className="flex flex-col gap-3 md:gap-4">
-            <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-right">
-              UI
-            </h3>
-            <div ref={uiColumnRef} className="flex flex-col">
-              {skillsData.UI.map((skill, index) => (
-                <div
-                  key={index}
-                  className="text-base md:text-lg lg:text-xl font-safiro text-black text-right"
-                >
-                  {skill}
-                </div>
-              ))}
-            </div>
+      
+      {/* Skills in multiple lines separated by / */}
+      <div ref={skillsContainerRef} className="flex flex-col gap-4 md:gap-6 lg:gap-8 w-full max-w-7xl">
+        {skillLines.map((line, lineIndex) => (
+          <div
+            key={lineIndex}
+            className="flex flex-wrap items-center justify-center gap-2 md:gap-4"
+          >
+            <span className="text-base md:text-lg lg:text-xl font-bold font-safiro text-black">
+              {line.category}:
+            </span>
+            {line.skills.map((skill, skillIndex) => (
+              <span key={skillIndex} className="skill-item text-base md:text-lg lg:text-xl font-safiro text-black inline-block">
+                {skill}
+                {skillIndex < line.skills.length - 1 && <span className="mx-2 md:mx-4 separator">/</span>}
+              </span>
+            ))}
           </div>
-
-          {/* Backend Section */}
-          <div className="flex flex-col gap-3 md:gap-4">
-            <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-right">
-              Backend
-            </h3>
-            <div ref={backendColumnRef} className="flex flex-col">
-              {skillsData.Backend.map((skill, index) => (
-                <div
-                  key={index}
-                  className="text-base md:text-lg lg:text-xl font-safiro text-black text-right"
-                >
-                  {skill}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column */}
-        <div className="flex flex-col gap-8 md:gap-10">
-          {/* Frontend Section */}
-          <div className="flex flex-col gap-3 md:gap-4">
-            <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-left">
-              Frontend
-            </h3>
-            <div ref={frontendColumnRef} className="flex flex-col">
-              {skillsData.Frontend.map((skill, index) => (
-                <div
-                  key={index}
-                  className="text-base md:text-lg lg:text-xl font-safiro text-black text-left"
-                >
-                  {skill}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Deployment Section */}
-          <div className="flex flex-col gap-3 md:gap-4">
-            <h3 className="text-base md:text-lg lg:text-xl font-bold text-black font-safiro mb-2 text-left">
-              Deployment
-            </h3>
-            <div ref={deploymentColumnRef} className="flex flex-col">
-              {skillsData.Deployment.map((skill, index) => (
-                <div
-                  key={index}
-                  className="text-base md:text-lg lg:text-xl font-safiro text-black text-left"
-                >
-                  {skill}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </section>
   );

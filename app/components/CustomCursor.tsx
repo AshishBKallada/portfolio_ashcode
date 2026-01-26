@@ -10,10 +10,11 @@ export default function CustomCursor() {
     const cursor = cursorRef.current;
     if (!cursor) return;
 
+    // Start off-screen
     gsap.set(cursor, { x: -100, y: -100 });
 
-    const xTo = gsap.quickTo(cursor, "x", { duration: 0.6, ease: "power1.out" });
-    const yTo = gsap.quickTo(cursor, "y", { duration: 0.6, ease: "power1.out" });
+    const xTo = gsap.quickTo(cursor, "x", { duration: 0.8, ease: "sine.out" });
+    const yTo = gsap.quickTo(cursor, "y", { duration: 0.8, ease: "sine.out" });
 
     const handleMove = (e: PointerEvent) => {
       xTo(e.clientX);

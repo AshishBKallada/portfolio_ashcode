@@ -81,7 +81,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <div ref={heroRef} className="w-full h-full flex items-end justify-center relative overflow-hidden">
+    <div ref={heroRef} className="w-full h-full flex items-end justify-center bg-white relative overflow-hidden">
       <div className="absolute bottom-12 left-12 z-20 max-w-xs md:max-w-sm">
         <p className="text-xs md:text-sm text-black leading-none font-safiro">
           In 2021, I bought my first laptop just for gaming. Today, I'm a developer writing thousands of lines of code daily. Funny how things work out.        </p>

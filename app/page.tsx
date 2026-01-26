@@ -14,6 +14,7 @@ import CustomCursor from "./components/CustomCursor";
 import CameraSection from "./components/CameraSection";
 import BlogSection from "./components/BlogSection";
 import Projects2 from "./components/Projects2";
+import SkillsSection from "./components/SkillsSection";
 
 export default function Home() {
   useEffect(() => {
@@ -46,13 +47,14 @@ export default function Home() {
 
       <section
         id="about"
-        className="relative min-h-screen w-full flex items-center justify-center bg-white text-black z-10"
+        className="relative min-h-screen w-full flex items-center justify-center bg-black text-white z-10"
       >
         <AboutMeSection />
       </section>
 
       <section className="relative w-full bg-zinc-50 dark:bg-black z-20">
-        <SkillsSection2 />
+        <SkillsSection />
+        {/* <SkillsSection2 /> */}
         {/* <CameraSection /> */}
         <Projects2 /> 
         <MinimalSection />
