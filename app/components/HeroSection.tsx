@@ -94,30 +94,35 @@ export default function HeroSection() {
       </div>
 
       <div className="relative w-full max-w-5xl flex items-end justify-center h-full">
-        <div ref={podiumRef} className="absolute bottom-0 z-[1] flex items-end justify-center w-full">
+        {/* <div ref={podiumRef} className="absolute bottom-0 z-[1] flex items-end justify-center w-full">
           <Image
-            src="/rocky-podium-isolated-white-background.png"
+            src="/heroglow1.png"
             alt="Rocky Podium"
             width={900}
             height={600}
             className="object-contain"
             priority
           />
-        </div>
+        </div> */}
 
-        <h1 className="absolute top-8 md:top-12 lg:top-16 xl:top-20 text-[10rem] md:text-[16rem] lg:text-[20rem] xl:text-[24rem] font-chaney text-black dark:text-white opacity-20 select-none z-0">
+        {/* <h1 className="absolute top-8 md:top-12 lg:top-16 xl:top-20 text-[10rem] md:text-[16rem] lg:text-[20rem] xl:text-[24rem] font-chaney text-black dark:text-white opacity-20 select-none z-0">
           灰碼
-        </h1>
+        </h1> */}
 
-        <div ref={imageRef} className="relative bottom-0 z-10 flex items-end">
-          <Image
-            src="/person-garment.png"
-            alt="Hero"
-            width={380}
+        <div ref={imageRef} className="relative -bottom-10 z-10 flex items-end">
+          <video
+            src="/heroglow2.mp4"
+            width={420}
             height={800}
             className="object-contain"
-            priority
-          />
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{ display: "block" }}
+          >
+            Sorry, your browser does not support embedded videos.
+          </video>
         </div>
       </div>
     </div>

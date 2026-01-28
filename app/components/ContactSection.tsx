@@ -47,7 +47,7 @@ export default function ContactSection() {
           <div ref={marqueeRow2Ref} className="flex whitespace-nowrap items-center">
             {[...row2Items, ...row2Items, ...row2Items, ...row2Items].map((item, i) => (
               <div key={i} className="inline-flex items-center px-8 md:px-16 lg:px-20 flex-shrink-0">
-                <span className="text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] font-bold text-black font-chaney uppercase">
+                <span className="text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] font-bold text-purple-900 font-chaney uppercase">
                   {item}
                 </span>
               </div>

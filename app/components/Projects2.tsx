@@ -176,7 +176,7 @@ export default function Projects2() {
                   src={project.image}
                   alt={project.name}
                   fill
-                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                  className="object-cover transition-all duration-300"
                 />
               </div>
               <p className="text-xs md:text-sm text-black leading-relaxed">

@@ -45,10 +45,11 @@ export default function AboutMeSection({
         </div>
         <div className="w-full flex justify-end absolute bottom-0 right-0 pb-4 pointer-events-none" style={{ zIndex: 10 }}>
           <div className="relative w-56 h-72 md:w-64 md:h-80 lg:w-72 lg:h-96 overflow-hidden">
+            
             <img
-              src="/3d-rendering-triangle-water.jpg"
+              src="/3d-triangle.png"
               alt="Portrait"
-              className="absolute bottom-0 right-0 w-4/5 h-4/5 object-cover grayscale"
+              className="absolute bottom-0 right-0 w-4/5 h-4/5 object-cover"
               style={{ zIndex: 2 }}
             />
           </div>

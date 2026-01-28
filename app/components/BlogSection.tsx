@@ -92,7 +92,7 @@ export default function BlogSection() {
         <div ref={rightMarqueeRef} className="flex whitespace-nowrap">
           {marqueeItems.map((_, i) => (
             <div key={`right-${i}`} className="inline-block px-8 flex-shrink-0">
-              <span className="text-sm md:text-base font-medium text-black/60">
+              <span className="text-sm md:text-base font-medium text-purple-900">
                 {marqueeText}
               </span>
             </div>
@@ -133,7 +133,7 @@ export default function BlogSection() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className={`group grid grid-cols-[140px_1fr] md:grid-cols-[160px_1fr] gap-6 py-3 transition-colors duration-200 cursor-pointer hover:bg-black ${index < blogPosts.length - 1 ? 'border-b border-black/20' : ''}`}
+                  className={`group grid grid-cols-[140px_1fr] md:grid-cols-[160px_1fr] gap-6 py-3 transition-colors duration-200 cursor-pointer hover:bg-purple-900 ${index < blogPosts.length - 1 ? 'border-b border-black/20' : ''}`}
                 >
                   <div className="text-sm md:text-base text-black group-hover:text-white transition-colors duration-200">{post.date}</div>
                   <div className="text-sm md:text-base text-black group-hover:text-white transition-colors duration-200 flex items-center justify-between">
