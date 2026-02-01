@@ -92,7 +92,7 @@ export default function BlogSection() {
         <div ref={rightMarqueeRef} className="flex whitespace-nowrap">
           {marqueeItems.map((_, i) => (
             <div key={`right-${i}`} className="inline-block px-8 flex-shrink-0">
-              <span className="text-sm md:text-base font-medium text-purple-900">
+              <span className="text-sm md:text-base font-medium text-gray-400">
                 {marqueeText}
               </span>
             </div>
@@ -100,10 +100,10 @@ export default function BlogSection() {
         </div>
       </div>
 
-      <div className="min-h-screen w-full px-6 md:px-12 lg:px-16 py-12 md:py-16 flex items-center justify-center relative z-10">
+      <div className=" w-full px-16 py-12 md:py-16 flex items-center justify-center relative z-10">
         <div className="max-w-[1600px] mx-auto flex flex-col gap-8 w-full">
         <div className="relative inline-block">
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-none">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold font-chaney leading-none">
             Blog<sup className="align-super text-xs md:text-sm ml-2 mb-12 font-normal">(4)</sup>
           </h1>
         </div>
@@ -133,7 +133,7 @@ export default function BlogSection() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className={`group grid grid-cols-[140px_1fr] md:grid-cols-[160px_1fr] gap-6 py-3 transition-colors duration-200 cursor-pointer hover:bg-purple-900 ${index < blogPosts.length - 1 ? 'border-b border-black/20' : ''}`}
+                  className={`group grid grid-cols-[140px_1fr] md:grid-cols-[160px_1fr] gap-6 py-3 transition-colors duration-200 cursor-pointer hover:bg-black ${index < blogPosts.length - 1 ? 'border-b border-black/20' : ''}`}
                 >
                   <div className="text-sm md:text-base text-black group-hover:text-white transition-colors duration-200">{post.date}</div>
                   <div className="text-sm md:text-base text-black group-hover:text-white transition-colors duration-200 flex items-center justify-between">

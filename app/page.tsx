@@ -15,6 +15,7 @@ import CameraSection from "./components/CameraSection";
 import BlogSection from "./components/BlogSection";
 import Projects2 from "./components/Projects2";
 import SkillsSection from "./components/SkillsSection";
+import StickyBottomBar from "./components/StickyBottomBar";
 
 export default function Home() {
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="absolute w-full min-h-screen bg-zinc-50 dark:bg-black">
+    <main className="absolute w-full min-h-screen bg-white">
       <Navbar />
 
       <section
@@ -47,21 +48,22 @@ export default function Home() {
 
       <section
         id="about"
-        className="relative min-h-screen w-full flex items-center justify-center bg-black text-white z-10"
+        className="relative min-h-screen w-full flex items-center justify-center bg-white text-black z-10"
       >
         <AboutMeSection />
       </section>
 
-      <section className="relative w-full bg-zinc-50 dark:bg-black z-20">
+      <section className="relative w-full bg-white z-20">
         <SkillsSection />
         {/* <SkillsSection2 /> */}
         {/* <CameraSection /> */}
         <Projects2 /> 
-        <MinimalSection />
+        {/* <MinimalSection /> */}
         <BlogSection />
         <ExperienceSection />
         <Footer />
       </section>
+      <StickyBottomBar />
       <CustomCursor />
     </main>
   );

@@ -83,14 +83,27 @@ export default function HeroSection() {
   return (
     <div ref={heroRef} className="w-full h-full flex items-end justify-center bg-white relative overflow-hidden">
       <div className="absolute bottom-12 left-12 z-20 max-w-xs md:max-w-sm">
-        <p className="text-xs md:text-sm text-black leading-none font-safiro">
-          In 2021, I bought my first laptop just for gaming. Today, I'm a developer writing thousands of lines of code daily. Funny how things work out.        </p>
+       <p className="text-sm md:text-base text-black leading-none font-safiro">
+       <span className="inline-block animate-bounce ml-2" aria-hidden="true">
+           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="inline-block text-black" style={{ verticalAlign: 'middle' }}>
+             <path d="M12 5v14"></path>
+             <path d="M19 12l-7 7-7-7"></path>
+           </svg>
+         </span> Scroll to explore
+       
+       </p>
       </div>
 
       <div className="absolute bottom-12 right-12 z-20 max-w-xs md:max-w-sm">
-        <p className="text-xs md:text-sm text-black leading-none font-safiro text-right">
-          Full Stack Developer
+        <p className="text-sm md:text-base text-black leading-none font-safiro text-right">
+          OP stuff <span className="inline-block animate-bounce ml-2" aria-hidden="true">
+           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="inline-block text-black" style={{ verticalAlign: 'middle' }}>
+             <path d="M12 5v14"></path>
+             <path d="M19 12l-7 7-7-7"></path>
+           </svg>
+         </span>
         </p>
+        
       </div>
 
       <div className="relative w-full max-w-5xl flex items-end justify-center h-full">

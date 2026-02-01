@@ -44,3 +44,14 @@ body {
 .font-dancing {
   font-family: var(--font-dancing), cursive;
 }
+
+/* Pixelated/dot-matrix font effect */
+.pixelated-text {
+  font-family: "Courier New", Courier, monospace;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  text-rendering: optimizeSpeed;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}

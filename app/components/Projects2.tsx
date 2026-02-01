@@ -1,189 +1,83 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import { gsap } from "gsap";
 import { getAllProjects } from "@/app/data/projects";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function Projects2() {
-  const [viewMode, setViewMode] = useState<2 | 3 | 5>(3); // 2, 3, or 5 items per row
-  const [showDescription, setShowDescription] = useState(false); // Toggle description visibility
-  const modalRef = useRef<HTMLDivElement>(null);
+  const [currentDateTime, setCurrentDateTime] = useState("");
   const allProjects = getAllProjects();
-  
-  // Get different projects for the grid (first 9 projects)
-  const gridProjects = allProjects.slice(0, 9);
-  
-  // Helper function to get 1 sentence description from project overview
-  const getDescription = (overview: string): string => {
-    const sentences = overview.split('. ').filter(s => s.trim().length > 0);
-    if (sentences.length >= 1) {
-      return `${sentences[0]}.`;
-    }
-    return overview;
-  };
+  const featuredProjects = allProjects.slice(0, 4);
 
-  // GSAP animation for modal
   useEffect(() => {
-    const modal = modalRef.current;
-    if (!modal) return;
+    const updateDateTime = () => {
+      const options: Intl.DateTimeFormatOptions = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      };
+      setCurrentDateTime(new Date().toLocaleString("en-US", options));
+    };
 
-    if (showDescription) {
-      // Show modal with drop animation
-      gsap.set(modal, { display: 'block', pointerEvents: 'auto' });
-      gsap.fromTo(
-        modal,
-        {
-          y: -20,
-          opacity: 0,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.4,
-          ease: "power3.out",
-        }
-      );
-    } else {
-      // Hide modal with reverse animation
-      gsap.to(modal, {
-        y: -20,
-        opacity: 0,
-        duration: 0.3,
-        ease: "power2.in",
-        onComplete: () => {
-          gsap.set(modal, { display: 'none', pointerEvents: 'none' });
-        }
-      });
-    }
-  }, [showDescription]);
+    updateDateTime();
+    const interval = setInterval(updateDateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <section className="relative w-full bg-white text-black">
-      <div className="w-full px-2 mx-auto py-12 md:py-16">
-        {/* Section Title with Icons */}
-        <div className="mb-3 md:mb-4 flex items-center gap-3">
-          <h1 className="text-lg md:text-xl lg:text-2xl text-black leading-tight">
-            <span className="text-base md:text-lg lg:text-xl  text-black leading-tight">
-              <span className="text-xs md:text-sm lg:text-base font-safiro text-black leading-tight">
-                featured <span className="text-gray-900">projects</span>
-              </span>
-            </span>
-          </h1>
-          
-          {/* Plus/Minus Icon with Modal */}
-          <div className="relative">
-            <button 
-              onClick={() => setShowDescription(!showDescription)}
-              className="w-4 h-4 md:w-5 md:h-5 cursor-pointer flex items-center justify-center"
-            >
-            {showDescription ? (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-full h-full text-black">
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-full h-full text-black">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            )}
-          </button>
-          
-          {/* Modal for Description - positioned below + icon, full width */}
-          <div
-            ref={modalRef}
-            className="absolute top-full left-[calc(-50vw+50%)] w-screen z-50 bg-white shadow-lg"
-            style={{ display: 'none' }}
-          >
-            <div className="w-full px-4 md:px-6 lg:px-8 py-4 md:py-5">
-              <p className="text-sm md:text-base text-black leading-relaxed max-w-7xl mx-auto">
-                A curated selection of my recent work showcasing innovative solutions and creative problem-solving across various domains. Dive in to explore a range of projects that highlight my skills in full-stack development, UI/UX design, and the implementation of modern technologies. Each project reflects my dedication to delivering impactful results and driving value through technology.
-              </p>
-            </div>
+    <section className="relative w-full min-h-screen bg-white overflow-hidden">
+      <div className="w-full px-16 py-12 md:py-16 flex items-center justify-center relative z-10">
+        <div className="max-w-[1600px] mx-auto flex flex-col gap-8 w-full">
+          <div className="relative inline-block mb-8 md:mb-12">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold font-chaney leading-none">
+              Work<sup className="align-super text-xs md:text-sm ml-2 mb-12 font-normal">({allProjects.length})</sup>
+            </h1>
           </div>
-        </div>
+        
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 mb-6 md:mb-8">
+          <div className="space-y-8 md:space-y-10">
           
-          {/* Three Icons */}
-          <div className="flex items-center gap-2 md:gap-3 ml-auto">
-            {/* Icon 1 - 2 items per row (List view - two vertical rectangles) */}
-            <div 
-              className={`w-4 h-4 md:w-5 md:h-5 cursor-pointer transition-opacity ${
-                viewMode === 2 ? 'opacity-100' : 'opacity-50'
-              }`}
-              onClick={() => setViewMode(2)}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full text-black">
-                <rect x="4" y="4" width="6" height="16" />
-                <rect x="14" y="4" width="6" height="16" />
-              </svg>
-            </div>
-            
-            {/* Icon 2 - 3 items per row (Grid view - four squares) */}
-            <div 
-              className={`w-4 h-4 md:w-5 md:h-5 cursor-pointer transition-opacity ${
-                viewMode === 3 ? 'opacity-100' : 'opacity-50'
-              }`}
-              onClick={() => setViewMode(3)}
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full text-black">
-                <rect x="3" y="3" width="8" height="8" />
-                <rect x="13" y="3" width="8" height="8" />
-                <rect x="3" y="13" width="8" height="8" />
-                <rect x="13" y="13" width="8" height="8" />
-              </svg>
-            </div>
-            
-            {/* Icon 3 - 5 items per row (Dense grid view) */}
-            <div 
-              className={`w-4 h-4 md:w-5 md:h-5 cursor-pointer transition-opacity ${
-                viewMode === 5 ? 'opacity-100' : 'opacity-50'
-              }`}
-              onClick={() => setViewMode(5)}
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full text-black">
-                <rect x="2" y="2" width="3.5" height="3.5" />
-                <rect x="6.5" y="2" width="3.5" height="3.5" />
-                <rect x="11" y="2" width="3.5" height="3.5" />
-                <rect x="15.5" y="2" width="3.5" height="3.5" />
-                <rect x="20" y="2" width="3.5" height="3.5" />
-                <rect x="2" y="7" width="3.5" height="3.5" />
-                <rect x="6.5" y="7" width="3.5" height="3.5" />
-                <rect x="11" y="7" width="3.5" height="3.5" />
-                <rect x="15.5" y="7" width="3.5" height="3.5" />
-                <rect x="20" y="7" width="3.5" height="3.5" />
-              </svg>
-            </div>
-          </div>
-          
-          {/* View All Button */}
-          <button className="px-4 py-2 border border-black bg-white text-black text-xs md:text-sm hover:bg-black hover:text-white transition-colors">
-            view all →
-          </button>
-        </div>
 
-        {/* Image Grid */}
-        <div className={`grid grid-cols-1 gap-3 md:gap-4 ${
-          viewMode === 2 
-            ? 'md:grid-cols-2' 
-            : viewMode === 3
-            ? 'md:grid-cols-3'
-            : 'md:grid-cols-5'
-        }`}>
-          {gridProjects.map((project, index) => (
-            <div key={index} className="flex flex-col">
-              <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden group cursor-pointer mb-2">
-                <Image
-                  src={project.image}
-                  alt={project.name}
-                  fill
-                  className="object-cover transition-all duration-300"
-                />
-              </div>
-              <p className="text-xs md:text-sm text-black leading-relaxed">
-                {getDescription(project.details.overview)}
+            <div>
+             
+              <p className="text-sm md:text-base text-black leading-relaxed">
+                For fresh initiatives and press inquiries, or simply send me an email at{" "}
+                <a href="mailto:essoo@aol.com" className="underline hover:no-underline">
+                  ashercode4u@gmail.com
+                </a>
               </p>
+               <button className="mt-3 px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition-colors text-sm md:text-base">
+                View All Projects →
+              </button>
             </div>
-          ))}
+          </div>
+          </div>
+
+          <div className="pt-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 pb-2 mb-6">
+              {featuredProjects.map((project) => (
+                <Link
+                  key={project.id}
+                  href={`/projects/${project.slug}`}
+                  className="relative w-full aspect-[4/3] overflow-hidden bg-gray-50 border border-black/10 hover:border-black hover:bg-gray-100 transition-all cursor-pointer flex items-center justify-center"
+                >
+                  <div className="text-center p-2 md:p-3">
+                    <div className="text-[10px] md:text-xs font-mono text-black/40 mb-1">
+                      {String(project.id).padStart(2, '0')}
+                    </div>
+                    <div className="text-xs md:text-sm font-safiro text-black font-medium">
+                      {project.name}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

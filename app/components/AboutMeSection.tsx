@@ -22,9 +22,9 @@ export default function AboutMeSection({
   return (
     <div
       ref={sectionRef}
-      className="w-full min-h-screen flex items-center justify-center px-16 py-16 bg-white"
+      className="w-full min-h-screen flex items-center justify-center px-4 py-12 md:py-16 py-16 bg-white"
     >
-      <div className="relative w-full max-w-8xl shadow-none rounded-3xl p-10 md:p-14 lg:p-16 overflow-hidden">
+      <div className="relative w-full max-w-8xl shadow-none rounded-3xl p-6 md:p-10 lg:p-12 overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-12 items-center">
           <div className="space-y-4">
 

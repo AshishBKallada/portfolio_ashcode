@@ -85,26 +85,25 @@ export default function SkillsSection() {
   return (
     <section
       id="skills" 
-      className="w-full min-h-[80vh] py-6 px-2 md:px-3 lg:px-4 bg-white flex items-center"
+      className="w-full min-h-[80vh] py-6 px-6 md:px-12 lg:px-16 bg-white flex items-center"
     >
-      <div className="relative w-full max-w-7xl mx-auto">
+      <div className="relative w-full max-w-8xl mx-auto">
         <div className="w-full">
-          <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-chaney pb-1">AQUIRED SKILLS</h2>
-          <div className="w-full h-0.5 bg-black mb-3"></div>
+          <div className="mb-12 md:mb-16">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold font-chaney leading-none text-black text-center md:text-left">
+              MODERN <br/>TECH STACK
+            </h1>
+          </div>
           
           <ul className="space-y-1 text-black text-sm md:text-base list-disc list-inside pl-3 py-6">
             {Object.entries(skillCategories).map(([category, skills]) => (
               <li key={category} className="mb-1 leading-relaxed">
-                <strong className="font-semibold">{category}:</strong> {skills.join(", ")}
+                <strong className="font-semibold text-sm md:text-base">{category}:</strong> {skills.join(", ")}
               </li>
             ))}
           </ul>
           
-          <div className="mt-56 text-sm text-black leading-relaxed max-w-xl">
-          <span className="text-black">
-            <span className="font-semibold">Throughout my journey</span>, I have learned new technologies and <span className="font-semibold">conducted my own research</span> to stay updated in the fast-changing tech world.
-          </span>
-        </div>
+        
         </div>
       </div>
     </section>

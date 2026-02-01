@@ -1,36 +1,40 @@
+"use client";
+
+import Image from "next/image";
+
 export default function MinimalSection() {
+
   return (
     <section
       id="minimal"
       className="w-full min-h-screen relative overflow-hidden bg-white"
     >
-      <div className="absolute inset-0 flex items-center justify-center px-6 py-16">
-        <div className="relative w-full max-w-8xl shadow-none rounded-3xl p-10 md:p-14 lg:p-16 overflow-hidden">
-          <div className="flex flex-col items-center justify-center text-center space-y-6">
-            <div className="space-y-1 mb-8">
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-chaney text-black dark:text-white">
-                <span className="font-dancing">Building</span>{" "}
-                <span className="font-chaney font-bold">Digital</span>
-              </h1>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-chaney font-bold text-black dark:text-white">
-                experiences with code
-              </h2>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-chaney font-bold text-black dark:text-white">
-                and creative solutions
-              </h2>
-            </div>
-
-            <p className="text-sm md:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed max-w-2xl mt-6">
-              Web applications, mobile apps, APIs, databases, cloud infrastructure, and scalable systems; all built with modern technologies and best practices.
-            </p>
-
-            <div className="mt-12 text-xs text-zinc-500 dark:text-zinc-400">
-              trusted by passion
-            </div>
+      <div className="w-full min-h-screen flex flex-col items-center justify-center px-4 md:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
+        {/* Horizontal Banner with GIF */}
+        <div className="w-full w-screen mb-8">
+          <div className="relative w-full h-[80px] overflow-hidden">
+            <Image
+              src="/300.gif"
+              alt="Creative banner"
+              fill
+              className="object-cover w-full h-full"
+              unoptimized
+            />
           </div>
         </div>
+
+        {/* Text Below Video - Left Aligned */}
+        <div className="w-full text-left space-y-1">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-safiro text-gray-800">
+            <span className="font-safiro font-bold text-5xl md:text-6xl lg:text-7xl xl:text-8xl">building</span>{" "}
+            <span className="font-safiro font-bold text-5xl md:text-6xl lg:text-7xl xl:text-8xl">digital</span>
+          </h1>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-safiro font-bold text-gray-800">
+            <span className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl">experiences with code</span>
+          </h2>
+         
+        </div>
       </div>
-      
     </section>
   );
 }

@@ -6,6 +6,7 @@ import Link from "next/link";
 export default function Navbar() {
   const [text, setText] = useState("ASHCODE");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [currentTime, setCurrentTime] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -18,6 +19,23 @@ export default function Navbar() {
       }, 300);
     }, 3000);
 
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const options: Intl.DateTimeFormatOptions = {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      };
+      setCurrentTime(now.toLocaleTimeString("en-US", options));
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -35,33 +53,11 @@ export default function Navbar() {
         {text}
       </Link>
       
-      <div className="flex items-center gap-3 md:gap-5 absolute left-1/2 md:left-[60%] transform -translate-x-1/2">
-        <span className="text-xs md:text-sm font-safiro text-gray-400 uppercase tracking-wide">
-          {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </span>
-        <Link
-          href="/projects"
-          className="text-xs md:text-sm font-safiro text-black dark:text-white uppercase tracking-wide hover:opacity-70 transition-opacity"
-        >
-          projects
-        </Link>
-        <Link
-          href="/#blog"
-          className="text-xs md:text-sm font-safiro text-black dark:text-white uppercase tracking-wide hover:opacity-70 transition-opacity"
-        >
-          blogs
-        </Link>
-        <Link
-          href="/#experience"
-          className="text-xs md:text-sm font-safiro text-black dark:text-white uppercase tracking-wide hover:opacity-70 transition-opacity"
-        >
-          contact
-        </Link>
-      </div>
+     
       
-      {/* Book a call button */}
-      <button className="px-4 py-2 border border-black bg-white text-black text-xs md:text-sm hover:bg-black hover:text-white hover:cursor-pointer transition-colors dark:border-white dark:bg-black dark:text-white dark:hover:bg-white dark:hover:text-black">
-        Book a call
+    
+      <button className="px-6 py-3 border border-black rounded-full bg-black text-white text-lg md:text-xl font-semibold hover:bg-black hover:text-white hover:cursor-pointer transition-colors dark:border-white dark:bg-black dark:text-white dark:hover:bg-white dark:hover:text-black">
+        Get in touch
       </button>
     </div>
   );
