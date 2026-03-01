@@ -45,6 +45,83 @@ body {
   font-family: var(--font-dancing), cursive;
 }
 
+/* Navbar marquee animation */
+@keyframes marquee-nav {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Generic marquee edge fade without extra DOM masks */
+.marquee-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* Subtle floating motion for footer images */
+@keyframes footer-float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(4deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes footer-float-alt {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(14px) rotate(-4deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.footer-float {
+  animation: footer-float 4s ease-in-out infinite;
+}
+
+.footer-float-alt {
+  animation: footer-float-alt 5s ease-in-out infinite;
+}
+
+/* Vertical float animation for elixir bottle */
+@keyframes elixir-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.elixir-float {
+  animation: elixir-float 3s ease-in-out infinite;
+}
+
 /* Pixelated/dot-matrix font effect */
 .pixelated-text {
   font-family: "Courier New", Courier, monospace;

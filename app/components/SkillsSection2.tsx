@@ -152,7 +152,7 @@ export default function SkillsSection2({
             key={lineIndex}
             className="flex flex-wrap items-center justify-center gap-2 md:gap-4"
           >
-            <span className="text-base md:text-lg lg:text-xl font-bold font-safiro text-black">
+            <span className="text-base md:text-lg lg:text-xl font-bold font-safiro text-black/50">
               {line.category}:
             </span>
             {line.skills.map((skill, skillIndex) => (

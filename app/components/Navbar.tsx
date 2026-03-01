@@ -1,64 +1,39 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Link from "next/link";
-
 export default function Navbar() {
-  const [text, setText] = useState("ASHCODE");
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [currentTime, setCurrentTime] = useState("");
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsAnimating(true);
-      setTimeout(() => {
-        setText((prev) => (prev === "ASHCODE" ? "Ashu-Kodo" : "ASHCODE"));
-        setTimeout(() => {
-          setIsAnimating(false);
-        }, 10);
-      }, 300);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-      };
-      setCurrentTime(now.toLocaleTimeString("en-US", options));
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div className="fixed top-6 left-0 right-0 z-50 flex justify-between items-center px-6">
-      <Link
-        href="/"
-        className="text-xl font-bold text-black dark:text-white font-chaney select-none tracking-wide inline-block transition-all ease-in-out hover:opacity-70"
-        style={{
-          transform: isAnimating ? "translateY(20px)" : "translateY(0)",
-          opacity: isAnimating ? 0 : 1,
-          transitionDuration: "300ms",
-        }}
-      >
-        {text}
-      </Link>
-      
-     
-      
-    
-      <button className="px-6 py-3 border border-black rounded-full bg-black text-white text-lg md:text-xl font-semibold hover:bg-black hover:text-white hover:cursor-pointer transition-colors dark:border-white dark:bg-black dark:text-white dark:hover:bg-white dark:hover:text-black">
-        Get in touch
-      </button>
+    <div className="fixed top-6 left-0 right-0 z-[1] px-4 md:px-8">
+      <div className="relative w-full max-w-4xl mx-auto h-7 md:h-8 overflow-hidden marquee-fade">
+        {/* Marquee text */}
+        <div
+          className="absolute flex items-center whitespace-nowrap h-full left-0"
+          style={{
+            animation: "marquee-nav 14s linear infinite",
+          }}
+        >
+          <span className="text-xs md:text-sm lg:text-base text-gray-500 font-safiro px-2">
+            PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER •
+          </span>
+          <span className="text-xs md:text-sm lg:text-base text-gray-500 font-safiro px-2">
+            PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER •
+          </span>
+          <span className="text-xs md:text-sm lg:text-base text-gray-500 font-safiro px-2">
+            PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER •
+          </span>  <span className="text-xs md:text-sm lg:text-base text-gray-500 font-safiro px-2">
+            PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER •
+          </span>
+        </div>
+
+        {/* Local keyframes for the navbar marquee */}
+        <style jsx>{`
+          @keyframes marquee-nav {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+        `}</style>
+      </div>
     </div>
   );
 }

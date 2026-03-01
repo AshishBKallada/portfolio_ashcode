@@ -1,181 +1,164 @@
-"use client";
-
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
+import Image from "next/image";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const marqueeRef = useRef<HTMLDivElement>(null);
-  const arrowRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const arrowAnimations = useRef<(gsap.core.Tween | null)[]>([]);
-  const [scrollDirection, setScrollDirection] = useState(0);
-  const lastScrollY = useRef(0);
-
-  useEffect(() => {
-    const marquee = marqueeRef.current;
-    if (marquee) {
-      const firstItem = marquee.querySelector<HTMLElement>(':first-child');
-      const marqueeWidth = firstItem ? firstItem.offsetWidth * 2 : 0;
-
-      gsap.to(marquee, {
-        x: -marqueeWidth,
-        duration: 30,
-        ease: "none",
-        repeat: -1,
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentScrollY = window.scrollY;
-          const scrollDelta = currentScrollY - lastScrollY.current;
-          const direction = scrollDelta > 0 ? 1 : -1;
-          
-          setScrollDirection(direction);
-          lastScrollY.current = currentScrollY;
-
-          // Rotate all arrows to point left or right based on scroll direction using GSAP
-          arrowRefs.current.forEach((arrow, index) => {
-            if (arrow) {
-              // Scroll down → point right (0deg), Scroll up → point left (180deg)
-              const targetRotation = direction > 0 ? 0 : 180;
-              
-              // Kill any existing animation for this arrow
-              if (arrowAnimations.current[index]) {
-                arrowAnimations.current[index]?.kill();
-              }
-              
-              // Animate to target rotation with GSAP
-              arrowAnimations.current[index] = gsap.to(arrow, {
-                rotation: targetRotation,
-                duration: 0.5,
-                ease: "power2.out",
-              });
-            }
-          });
-
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      // Clean up animations
-      arrowAnimations.current.forEach(anim => anim?.kill());
-    };
-  }, []);
 
   return (
-    <footer className="w-full  flex flex-col justify-between px-4 md:px-6 lg:px-8 py-8 bg-white relative">
-      {/* Contact Section at Top */}
+    <footer className="w-full flex flex-col bg-black">
+      {/* Top Gradient Section */}
+      <div 
+        className="relative w-full h-[30vh] md:h-[40vh]"
+        style={{
+          background: 'linear-gradient(to bottom, #FFFFFF 0%, #E9D5FF 10%, #C4B5FD 20%, #A78BFA 30%, #8B5CF6 40%, #6B46C1 50%, #4C1D95 60%, #2d1b4e 70%, #000000 80%, #000000 100%)'
+        }}
+      />
       
-      {/* Section Above Footer Content */}
-      <div className="w-full flex-1 flex flex-col md:flex-row gap-8 md:gap-0 mt-12 min-h-screen">
-        {/* Left Section - Equal Width */}
-        <div className="w-full md:w-1/2 flex-1 flex items-center">
-          <div className="flex flex-col">
-              <span className="text-3xl md:text-5xl lg:text-7xl xl:text-8xl font-bold text-black font-chaney uppercase leading-none">
-                ASH
-              </span>
-            
-                <span className="text-2xl md:text-5xl lg:text-7xl xl:text-8xl font-bold text-black font-chaney uppercase leading-none">
-                  CODE
-                </span>
-              
+      <div className="w-full flex flex-col px-4 md:px-6 lg:px-8 py-12 md:py-16">
+      {/* DAMN GOOD Banner Section (reference-style) */}
+      <section className="w-full mb-16 md:mb-20">
+        <div className="relative w-full max-w-6xl mx-auto py-16 md:py-20 bg-black overflow-hidden">
+          {/* Side micro copy */}
+          <div className="absolute left-4 md:left-8 top-1/3 text-[10px] md:text-xs tracking-[0.08em] text-gray-400 font-safiro uppercase">
+            <p>5:41 AM</p>
+            <p>DAMN MIST, 45°</p>
+          </div>
+          <div className="absolute right-4 md:right-8 top-1/3 text-[10px] md:text-xs tracking-[0.08em] text-gray-400 font-safiro uppercase text-right">
+            <p>VISIBILITY 4 MI</p>
+            <p>WINDS N 0 MPH</p>
+          </div>
+
+          {/* Main text */}
+          <div className="flex flex-col items-center justify-center relative z-10">
+            <span className="block text-[16vw] md:text-[11vw] leading-none font-chaney font-black text-white uppercase">
+              ASH
+            </span>
+            <span className="block text-[16vw] md:text-[11vw] leading-none font-chaney font-black text-white uppercase -mt-4 md:-mt-6">
+              CODE
+            </span>
+          </div>
+
+          {/* Corner imagery from public assets */}
+          {/* Cube (dice) bottom-left, overlapping "ASH" */}
+          <div className="absolute left-[-2rem] bottom-[-2rem] z-[20] footer-float">
+            <Image
+              src="/cube.png"
+              alt="Dice"
+              width={400}
+              height={400}
+            />
+          </div>
+
+          {/* Flight bottom-right, overlapping "CODE" */}
+          <div className="absolute right-[-2rem] bottom-[-2rem] z-20 footer-float-alt">
+            <Image
+              src="/flight.png"
+              alt="Jet"
+              width={400}
+              height={400}
+            />
+          </div>
+          <div className="absolute left-[12rem] top-[-3rem] z-1 footer-float-alt">
+            <Image
+              src="/boxing.png"
+              alt="Jet"
+              width={200}
+              height={200}
+            />
+          </div>
+
+          {/* Cards top-right, overlapping corner */}
+          <div className="absolute right-[8rem] top-0 z-20 footer-float">
+            <Image
+              src="/cards.png"
+              alt="Tiger"
+              width={220}
+              height={220}
+            />
           </div>
         </div>
+      </section>
 
-        {/* Right Section - Equal Width */}
-        <div className="w-full md:w-1/2 pl-0 md:pl-8 flex-1 flex flex-col justify-center">
-          <div className="text-black font-safiro">
-            {/* Text at the top of right section */}
-            <p className="text-xl md:text-2xl max-w-xl mb-8 md:mb-12 leading-relaxed">
-              creative journey? Join now and let's shape the future of the art world together!
-            </p>
-            <div className="space-y-4 md:space-y-6 flex flex-col">
+      {/* Main Content Section */}
+      <div className="w-full flex flex-col md:flex-row gap-12 md:gap-16 mb-12 md:mb-16">
+        {/* Left Section - Call to Action */}
+     
+
+        {/* Right Section - Contact Information */}
+        <div className="w-full md:w-1/2 md:ml-auto flex flex-col gap-8 md:gap-10">
+          {/* First Row - Connect */}
+          <div className="flex flex-col md:flex-row gap-8 md:gap-16 border-t border-gray-800 pt-4 md:pt-6">
+            <div className="md:w-1/3">
+              <h3 className="text-sm text-gray-400 font-safiro">
+                Connect
+              </h3>
+            </div>
+            <div className="md:w-2/3 flex flex-col gap-3 md:gap-4">
               <a 
-                href="#" 
-                className="block text-xl md:text-2xl text-black font-safiro border-b border-black pb-2 flex items-center justify-between group hover:opacity-70 transition-opacity"
-              >
-                <span>Get in touch.</span>
-                <span className="text-xl md:text-2xl -rotate-45">→</span>
-              </a>
-              <a 
-                href="https://www.instagram.com/aaah6__" 
+                href="https://x.com" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-xl md:text-2xl text-black font-safiro border-b border-black pb-2 flex items-center justify-between group hover:opacity-70 transition-opacity"
+                className="text-sm md:text-base text-white font-safiro hover:opacity-70 transition-opacity"
               >
-                <span>Send a brief.</span>
-                <span className="text-xl md:text-2xl -rotate-45">→</span>
+                X (Agency)
               </a>
               <a 
-                href="mailto:connect@ashcode.com" 
-                className="block text-xl md:text-2xl text-black font-safiro border-b border-black pb-2 flex items-center justify-between group hover:opacity-70 transition-opacity"
+                href="https://x.com" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm md:text-base text-white font-safiro hover:opacity-70 transition-opacity"
               >
-                <span>Book a call.</span>
-                <span className="text-xl md:text-2xl -rotate-45">→</span>
+                X (Founder)
               </a>
+              <a 
+                href="https://www.linkedin.com" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm md:text-base text-white font-safiro hover:opacity-70 transition-opacity"
+              >
+                LinkedIn
+              </a>
+            </div>
+          </div>
+
+          {/* Second Row - Email us */}
+          <div className="flex flex-col md:flex-row gap-8 md:gap-16 border-t border-gray-800 pt-4 md:pt-6">
+            <div className="md:w-1/3">
+            <h3 className="text-sm text-gray-400 font-safiro">
+            Email us
+              </h3>
+            </div>
+            <div className="md:w-2/3 flex flex-col gap-3 md:gap-4">
+              <div className="flex flex-col">
+                <a 
+                  href="mailto:connect@ashcode.com"
+                  className="text-sm md:text-base text-white font-safiro hover:opacity-70 transition-opacity"
+                >
+                  connect@ashcode.com
+                </a>
+                <span className="text-sm md:text-sm text-gray-400 font-safiro">
+                  (Project Enquiries)
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <a 
+                  href="mailto:hello@ashcode.com"
+                  className="text-sm md:text-base text-white font-safiro hover:opacity-70 transition-opacity"
+                >
+                  hello@ashcode.com
+                </a>
+                <span className="text-sm md:text-sm text-gray-400 font-safiro">
+                  (PR & Marketing)
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Footer Content */}
-      <div className="flex items-end">
-        
-        <div className="w-full flex flex-col  border-t border-black md:flex-row items-start md:items-end justify-between gap-6 md:gap-8 py-2">
-          {/* Left Section - Copyright */}
-          <div className="text-xs md:text-sm text-black font-safiro self-start">
-            <span>{currentYear} © ASHCODE</span>
-          </div>
-
-          {/* Center Section - Links */}
-          <div className="flex flex-col items-start text-xs md:text-sm text-black font-safiro">
-            <Link
-              href="/privacy-policy"
-              className="hover:opacity-70 transition-opacity whitespace-nowrap"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/terms-and-conditions"
-              className="hover:opacity-70 transition-opacity whitespace-nowrap"
-            >
-              Terms & Conditions
-            </Link>
-            <a
-              href="https://www.instagram.com/aaah6__"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:opacity-70 transition-opacity whitespace-nowrap"
-            >
-              Instagram
-            </a>
-            <a
-              href="https://www.linkedin.com/in/ashishbkallada"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:opacity-70 transition-opacity whitespace-nowrap"
-            >
-              LinkedIn
-            </a>
-          </div>
-
-          {/* Right Section - Credits */}
-          <div className="text-xs md:text-sm text-black font-safiro whitespace-nowrap self-start">
-            <span>Made by ASHCODE</span>
-          </div>
-        </div>
+      {/* Copyright Footer */}
+      <div className="w-full text-xs md:text-sm text-gray-500 font-safiro border-t border-gray-800 pt-4 md:pt-6 flex items-center justify-between">
+        <span>© {currentYear} ASHCODE</span>
+      </div>
       </div>
     </footer>
   );

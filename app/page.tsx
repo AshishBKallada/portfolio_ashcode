@@ -37,7 +37,7 @@ export default function Home() {
 
   return (
     <main className="absolute w-full min-h-screen bg-white">
-      <Navbar />
+      {/* <Navbar /> */}
 
       <section
         id="home"
@@ -63,7 +63,7 @@ export default function Home() {
         <ExperienceSection />
         <Footer />
       </section>
-      <StickyBottomBar />
+      {/* <StickyBottomBar /> */}
       <CustomCursor />
     </main>
   );

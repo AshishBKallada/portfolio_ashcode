@@ -86,7 +86,7 @@ export default function ExperienceSection({
           {/* Page 2: Experience Section 1 */}
           <div 
             ref={section1Ref}
-            className="w-screen h-screen flex-shrink-0 bg-black flex items-center justify-center px-16 relative overflow-hidden"
+            className="w-screen h-screen flex-shrink-0 bg-crimson-red flex items-center justify-center px-16 relative overflow-hidden"
           >
             {/* Empty section */}
           </div>

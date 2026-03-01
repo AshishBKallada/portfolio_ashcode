@@ -1,142 +1,30 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useRef } from "react";
 
 export default function HeroSection() {
-  const heroRef = useRef<HTMLDivElement | null>(null);
-  const imageRef = useRef<HTMLDivElement | null>(null);
-  const podiumRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const hero = heroRef.current;
-    const image = imageRef.current;
-    const podium = podiumRef.current;
-    if (!hero || !image) return;
-
-    const ctx = gsap.context(() => {
-      gsap.to(image, {
-        yPercent: 40,
-        ease: "none",
-        scrollTrigger: {
-          trigger: hero,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-    }, hero);
-
-    if (podium) {
-      gsap.to(podium, {
-        y: -15,
-        duration: 2,
-        ease: "power1.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-    }
-
-    const handlePointerMove = (e: PointerEvent) => {
-      const rect = hero.getBoundingClientRect();
-      const relX = (e.clientX - rect.left) / rect.width - 0.5;
-      const relY = (e.clientY - rect.top) / rect.height - 0.5;
-
-      gsap.to(image, {
-        x: relX * 30,
-        y: relY * 20,
-        duration: 0.5,
-        ease: "power2.out",
-      });
-      gsap.to(podium, {
-        x: -relX * 30,
-        y: -relY * 20,
-        duration: 0.5,
-        ease: "power2.out",
-      });
-
-    };
-
-    const handlePointerLeave = () => {
-      gsap.to(image, {
-        x: 0,
-        y: 0,
-        duration: 0.6,
-        ease: "power3.out",
-      });
-    };
-
-    hero.addEventListener("pointermove", handlePointerMove);
-    hero.addEventListener("pointerleave", handlePointerLeave);
-
-    return () => {
-      ctx.revert();
-      hero.removeEventListener("pointermove", handlePointerMove);
-      hero.removeEventListener("pointerleave", handlePointerLeave);
-    };
-  }, []);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   return (
-    <div ref={heroRef} className="w-full h-full flex items-end justify-center bg-white relative overflow-hidden">
-      <div className="absolute bottom-12 left-12 z-20 max-w-xs md:max-w-sm">
-       <p className="text-sm md:text-base text-black leading-none font-safiro">
-       <span className="inline-block animate-bounce ml-2" aria-hidden="true">
-           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="inline-block text-black" style={{ verticalAlign: 'middle' }}>
-             <path d="M12 5v14"></path>
-             <path d="M19 12l-7 7-7-7"></path>
-           </svg>
-         </span> Scroll to explore
-       
-       </p>
-      </div>
+    <div className="w-full h-full flex items-center justify-center bg-gray-50 relative overflow-hidden">
+      {/* Audio component */}
+      <audio
+        ref={audioRef}
+        src="/hero.mp3"
+        preload="auto"
+      />
 
-      <div className="absolute bottom-12 right-12 z-20 max-w-xs md:max-w-sm">
-        <p className="text-sm md:text-base text-black leading-none font-safiro text-right">
-          OP stuff <span className="inline-block animate-bounce ml-2" aria-hidden="true">
-           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="inline-block text-black" style={{ verticalAlign: 'middle' }}>
-             <path d="M12 5v14"></path>
-             <path d="M19 12l-7 7-7-7"></path>
-           </svg>
-         </span>
-        </p>
-        
-      </div>
-
-      <div className="relative w-full max-w-5xl flex items-end justify-center h-full">
-        {/* <div ref={podiumRef} className="absolute bottom-0 z-[1] flex items-end justify-center w-full">
-          <Image
-            src="/heroglow1.png"
-            alt="Rocky Podium"
-            width={900}
-            height={600}
-            className="object-contain"
-            priority
-          />
-        </div> */}
-
-        {/* <h1 className="absolute top-8 md:top-12 lg:top-16 xl:top-20 text-[10rem] md:text-[16rem] lg:text-[20rem] xl:text-[24rem] font-chaney text-black dark:text-white opacity-20 select-none z-0">
-          灰碼
-        </h1> */}
-
-        <div ref={imageRef} className="relative -bottom-10 z-10 flex items-end">
-          <video
-            src="/heroglow2.mp4"
-            width={420}
-            height={800}
-            className="object-contain"
-            autoPlay
-            loop
-            muted
-            playsInline
-            style={{ display: "block" }}
-          >
-            Sorry, your browser does not support embedded videos.
-          </video>
-        </div>
+      {/* Centered wizard image */}
+      <div className="flex items-end justify-end h-full">
+        <Image
+          src="/retro-pc.png"
+          alt="Wizard"
+          width={1200}
+          height={1200}
+          className="object-contain"
+          priority
+        />
       </div>
     </div>
   );
