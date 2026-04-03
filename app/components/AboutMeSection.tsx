@@ -1,162 +1,85 @@
-"use client";
+const ROWS = [
+  {
+    label: "Perspective",
+    index: "01",
+    lines: [
+      "I bridge the gap between abstract imagination and technical precision.",
+    ],
+  },
+  {
+    label: "Practice",
+    index: "02",
+    lines: [
+      "By merging high-performance engineering with intentional design,",
+      "I craft digital experiences that feel intuitive and move with purpose.",
+    ],
+  },
+] as const;
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import Image from "next/image";
+/** Fixed positions so SSR/CSR match; subtle reference-style noise */
+const GLITCH_MARKS: { char: string; left: number; top: number }[] = [
+  { char: "0x2f", left: 4, top: 11 },
+  { char: "·", left: 18, top: 7 },
+  { char: "7a", left: 72, top: 14 },
+  { char: "↳", left: 88, top: 22 },
+  { char: "4b", left: 12, top: 38 },
+  { char: "··", left: 55, top: 31 },
+  { char: "ff", left: 91, top: 44 },
+  { char: ">", left: 8, top: 62 },
+  { char: "01", left: 42, top: 58 },
+  { char: "<", left: 76, top: 67 },
+  { char: "∴", left: 28, top: 78 },
+  { char: "3c", left: 63, top: 82 },
+  { char: "·", left: 95, top: 88 },
+  { char: "ae", left: 15, top: 91 },
+  { char: "→", left: 50, top: 6 },
+];
 
-interface AboutMeSectionProps {
-  animationDelay?: number;
-  duration?: number;
-  trigger?: string | Element | null;
-}
-
-export default function AboutMeSection({
-  animationDelay = 0,
-  duration = 1.5,
-  trigger,
-}: AboutMeSectionProps) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const technicalTextRef = useRef<HTMLParagraphElement>(null);
-  const astronautRef = useRef<HTMLDivElement>(null);
-  const floatTweenRef = useRef<gsap.core.Tween | null>(null);
-
-  useEffect(() => {
-    let ctx: gsap.Context | undefined;
-    if (technicalTextRef.current) {
-      ctx = gsap.context(() => {
-        const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.4 });
-
-        tl.fromTo(
-          technicalTextRef.current,
-          { autoAlpha: 0, x: -60 },
-          {
-            autoAlpha: 1,
-            x: 0,
-            duration: duration,
-            ease: "power2.out",
-          }
-        )
-          .to(
-            technicalTextRef.current,
-            {
-              autoAlpha: 0,
-              x: 60,
-              duration: duration,
-              ease: "power2.in",
-            },
-            `+=0.8`
-          );
-      }, sectionRef);
-
-      // Clean up GSAP context on unmount
-      return () => {
-        ctx && ctx.revert();
-      };
-    }
-  }, [animationDelay, duration]);
-
-  // Floating astronaut animation
-  useEffect(() => {
-    if (!astronautRef.current) return;
-
-    const createRandomFloat = () => {
-      const randomX = (Math.random() - 0.5) * 200; // Random X between -100 and 100
-      const randomY = (Math.random() - 0.5) * 200; // Random Y between -100 and 100
-      const randomRotation = (Math.random() - 0.5) * 30; // Random rotation between -15 and 15
-      const randomDuration = 3 + Math.random() * 4; // Random duration between 3-7 seconds
-
-      return {
-        x: randomX,
-        y: randomY,
-        rotation: randomRotation,
-        duration: randomDuration,
-      };
-    };
-
-    const animateFloat = () => {
-      if (!astronautRef.current) return;
-      
-      const { x, y, rotation, duration } = createRandomFloat();
-      
-      floatTweenRef.current = gsap.to(astronautRef.current, {
-        x: `+=${x}`,
-        y: `+=${y}`,
-        rotation: `+=${rotation}`,
-        duration: duration,
-        ease: "sine.inOut",
-        onComplete: animateFloat, // Loop the animation
-      });
-    };
-
-    // Start the floating animation
-    animateFloat();
-
-    return () => {
-      if (astronautRef.current) {
-        gsap.killTweensOf(astronautRef.current);
-      }
-    };
-  }, []);
-
-
+export default function AboutMeSection() {
   return (
     <div
-      ref={sectionRef}
-      className="w-full min-h-screen flex flex-col py-0"
+      className="relative min-h-screen w-full overflow-hidden bg-black text-white"
+      style={{
+        backgroundImage: `
+          linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px)
+        `,
+        backgroundSize: "40px 40px",
+      }}
     >
-      {/* Top Section with Gradient */}
-      <div 
-        className="relative w-full flex-1 flex  justify-between px-6 md:px-12 lg:px-16 py-12 md:py-16 lg:py-20 overflow-hidden"
-        style={{
-          background: 'linear-gradient(to bottom, #000000 0%, #000000 20%, #2d1b4e 30%, #4C1D95 40%, #6B46C1 50%, #8B5CF6 60%, #A78BFA 70%, #C4B5FD 80%, #E9D5FF 90%, #FFFFFF 100%)'
-        }}
+      <div
+        className="pointer-events-none absolute inset-0 select-none"
+        aria-hidden
       >
-        {/* Floating Astronaut */}
-        <div
-          ref={astronautRef}
-          className="absolute pointer-events-none z-10"
-          style={{
-            top: '20%',
-            right: '10%',
-            width: '500px',
-            height: '500px',
-            transform: 'translate3d(0, 0, 0) rotate(0deg)',
-            willChange: 'transform',
-          }}
-        >
-          <Image
-            src="/3d-render-purple-witch-hat-icon.png"
-            alt="Astronaut"
-            width={500}
-            height={500}
-            className="object-contain"
-            style={{ willChange: "transform" }}
-          />
-        </div>
-
-        {/* Top Left Text */}
-        <div className="space-y-2 md:space-y-3 max-w-4xl relative z-20">
-          <p
-            ref={technicalTextRef}
-            className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight opacity-0"
-            style={{ willChange: "opacity, transform" }}
+        {GLITCH_MARKS.map(({ char, left, top }, i) => (
+          <span
+            key={i}
+            className="absolute font-mono text-[10px] tracking-wider text-white/[0.14] md:text-[11px]"
+            style={{ left: `${left}%`, top: `${top}%` }}
           >
-            I bridge the gap between abstract imagination and technical precision.
-          </p>
-        </div>
-
-    
+            {char}
+          </span>
+        ))}
       </div>
 
-      {/* Bottom Section with White Background */}
-      <div className="relative w-full bg-white px-6 md:px-12 lg:px-16 py-12 md:py-16 lg:py-20">
-        <div className="max-w-5xl space-y-4">
-          <p className="text-2xl md:text-3xl lg:text-4xl font-safiro text-black leading-tight">
-          By merging high-performance engineering with intentional design, I craft digital experiences that feel intuitive and move with purpose.
-          </p>
-        </div>
+      <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24 lg:px-14 lg:py-28">
+        {ROWS.map((row) => (
+          <div
+            key={row.index}
+            className="grid gap-8 border-b border-white/[0.12] py-12 last:border-b-0 md:grid-cols-[minmax(11rem,28%)_1fr] md:gap-16 md:gap-x-20 md:py-16 lg:py-20"
+          >
+            <h2 className="font-mono text-[11px] font-normal uppercase leading-snug tracking-[0.18em] text-white md:text-xs">
+              {row.label}{" "}
+              <span className="text-white/45">({row.index})</span>
+            </h2>
+            <ul className="space-y-3 font-mono text-[11px] font-normal uppercase leading-relaxed tracking-[0.14em] text-white/90 md:text-xs md:tracking-[0.16em]">
+              {row.lines.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
-

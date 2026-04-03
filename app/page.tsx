@@ -13,8 +13,8 @@ import Footer from "./components/Footer";
 import CustomCursor from "./components/CustomCursor";
 import CameraSection from "./components/CameraSection";
 import BlogSection from "./components/BlogSection";
-import Projects2 from "./components/Projects2";
 import SkillsSection from "./components/SkillsSection";
+import ContactSection from "./components/ContactSection";
 import StickyBottomBar from "./components/StickyBottomBar";
 
 export default function Home() {
@@ -41,23 +41,20 @@ export default function Home() {
 
       <section
         id="home"
-        className="sticky top-0 h-screen w-full flex items-center justify-center z-0"
+        className="sticky top-0 z-0 h-screen w-full min-h-0"
       >
         <HeroSection />
       </section>
 
-      <section
-        id="about"
-        className="relative min-h-screen w-full flex items-center justify-center bg-white text-black z-10"
-      >
+      <section id="about" className="relative z-10 w-full">
         <AboutMeSection />
       </section>
 
       <section className="relative w-full bg-white z-20">
         <SkillsSection />
+        <ContactSection />
         {/* <SkillsSection2 /> */}
         {/* <CameraSection /> */}
-        <Projects2 /> 
         {/* <MinimalSection /> */}
         <BlogSection />
         <ExperienceSection />
