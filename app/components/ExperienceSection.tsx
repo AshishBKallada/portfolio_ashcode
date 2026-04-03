@@ -15,51 +15,79 @@ export default function ExperienceSection({
   animationDelay = 0,
   duration = 1,
 }: ExperienceSectionProps) {
+  const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const section1Ref = useRef<HTMLDivElement>(null);
   const section2Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const section = sectionRef.current;
     const container = containerRef.current;
     const intro = introRef.current;
     const section1 = section1Ref.current;
     const section2 = section2Ref.current;
+    const wrap = container?.parentElement ?? null;
 
-    if (!container || !intro || !section1 || !section2) return;
+    if (!section || !container || !intro || !section1 || !section2 || !wrap)
+      return;
 
-    // Calculate total width for horizontal scroll
-    const introWidth = intro.offsetWidth;
-    const section1Width = section1.offsetWidth;
-    const section2Width = section2.offsetWidth;
-    const totalWidth = introWidth + section1Width + section2Width;
+    const scroller = document.getElementById("portfolio-main");
+    if (!scroller) return;
 
-    // Set container width
-    gsap.set(container, { width: totalWidth });
+    const panels = [intro, section1, section2];
 
-    // Create horizontal scroll animation
-    const scrollTrigger = ScrollTrigger.create({
-      trigger: container.parentElement,
-      start: "top top",
-      end: () => `+=${totalWidth - window.innerWidth}`,
-      pin: true,
-      scrub: 1,
-      anticipatePin: 1,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        const x = -(totalWidth - window.innerWidth) * progress;
-        gsap.set(container, { x: x });
-      },
-    });
+    const setup = () => {
+      ScrollTrigger.getAll().forEach((t) => {
+        if (t.trigger === section) t.kill();
+      });
 
+      const w = wrap.clientWidth;
+      panels.forEach((el) => {
+        el.style.width = `${w}px`;
+        el.style.minWidth = `${w}px`;
+      });
+
+      const totalWidth = w * 3;
+      gsap.set(container, { width: totalWidth, x: 0 });
+
+      const sc = scroller as HTMLElement;
+      ScrollTrigger.create({
+        trigger: section,
+        scroller: sc,
+        start: "top top",
+        end: () => `+=${Math.max(0, totalWidth - sc.clientWidth)}`,
+        pin: true,
+        scrub: 1,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          const x = -(totalWidth - sc.clientWidth) * progress;
+          gsap.set(container, { x });
+        },
+      });
+    };
+
+    setup();
+    window.addEventListener("resize", setup);
 
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      window.removeEventListener("resize", setup);
+      ScrollTrigger.getAll().forEach((t) => {
+        if (t.trigger === section) t.kill();
+      });
+      gsap.set(container, { clearProps: "width,x" });
+      panels.forEach((el) => {
+        el.style.width = "";
+        el.style.minWidth = "";
+      });
     };
   }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="experience"
       className="w-full bg-white overflow-hidden"
     >
@@ -84,17 +112,17 @@ export default function ExperienceSection({
           </div>
 
           {/* Page 2: Experience Section 1 */}
-          <div 
+          <div
             ref={section1Ref}
-            className="w-screen h-screen flex-shrink-0 bg-crimson-red flex items-center justify-center px-16 relative overflow-hidden"
+            className="h-screen flex-shrink-0 bg-crimson-red flex items-center justify-center px-16 relative overflow-hidden"
           >
             {/* Empty section */}
           </div>
 
           {/* Page 3: Experience Section 2 */}
-          <div 
+          <div
             ref={section2Ref}
-            className="w-screen h-screen flex-shrink-0 bg-white flex items-center justify-center px-16 relative"
+            className="h-screen flex-shrink-0 bg-white flex items-center justify-center px-16 relative"
           >
             {/* Empty section */}
           </div>

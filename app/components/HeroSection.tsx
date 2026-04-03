@@ -2,21 +2,17 @@
 
 import Image from "next/image";
 
-import HeroHeader from "./HeroHeader";
-
 export default function HeroSection() {
   return (
-    <div className="relative flex h-full min-h-0 w-full flex-col bg-white px-6 pt-6 text-black md:px-8 md:pt-8 lg:px-10 lg:pt-10">
-      <HeroHeader />
-
+    <div className="relative flex h-full min-h-0 w-full flex-col bg-black px-6 pt-6 text-white md:px-8 md:pt-8 lg:px-10 lg:pt-10">
       {/* Figure: pinned to bottom of hero section (viewport) */}
       <Image
-        src="/hero-figure.png"
+        src="/hero-figure-Photoroom.png"
         alt="Ashcode hero illustration"
         width={1200}
         height={1500}
         sizes="(max-width: 768px) 96vw, min(90vw, 72rem)"
-        className="pointer-events-none absolute bottom-0 left-1/2 z-[1] h-auto max-h-[min(90vh,1000px)] w-auto max-w-[min(calc(100vw-3rem),72rem)] -translate-x-1/2 object-contain object-bottom select-none"
+        className="pointer-events-none absolute bottom-0 left-1/2 z-[1] h-auto max-h-[min(90vh,1000px)] w-auto max-w-[min(100%,72rem)] -translate-x-1/2 object-contain object-bottom select-none"
         priority
       />
 
