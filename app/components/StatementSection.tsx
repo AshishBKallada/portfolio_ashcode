@@ -1,0 +1,61 @@
+"use client";
+
+import type { ColorScheme } from "../lib/color-scheme";
+
+/**
+ * Evolve-style statement block: column grid, large uppercase type
+ * with a vertical fade (canvas + gradient follow site color scheme).
+ */
+const DEFAULT_LINES = [
+  "STACKS ARE INFRASTRUCTURE.",
+  "DESIGN IS THE INTERFACE.",
+  "I BRIDGE MERN, APIs, AND",
+  "PIXEL-LEVEL DETAIL SO",
+  "VISION SHIPS AS MOMENTUM.",
+] as const;
+
+type StatementSectionProps = {
+  lines?: readonly string[];
+  className?: string;
+  id?: string;
+  colorScheme?: ColorScheme;
+};
+
+export default function StatementSection({
+  lines = DEFAULT_LINES,
+  className = "",
+  id = "statement-hero",
+  colorScheme = "dark",
+}: StatementSectionProps) {
+  const text = lines.join("\n");
+  const light = colorScheme === "light";
+
+  const gridStyle = light
+    ? {
+        backgroundImage:
+          "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(0,0,0,0.06) calc(8.333333% - 1px), rgba(0,0,0,0.06) 8.333333%)",
+      }
+    : {
+        backgroundImage:
+          "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(255,255,255,0.055) calc(8.333333% - 1px), rgba(255,255,255,0.055) 8.333333%)",
+      };
+
+  return (
+    <section
+      id={id}
+      className={`relative isolate min-h-[100dvh] w-full overflow-hidden text-left transition-colors duration-300 ${light ? "bg-white" : "bg-black"} ${className}`}
+      aria-label="Studio statement"
+    >
+      <div className="pointer-events-none absolute inset-0 z-0" style={gridStyle} aria-hidden />
+
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[min(100%,88rem)] items-end px-3 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[clamp(6rem,18vh,10rem)] md:px-4 md:pb-12 md:pt-[clamp(7rem,20vh,11rem)] lg:px-6">
+        <h2
+          className={`max-w-[min(100%,52rem)] font-safiro text-[clamp(1.15rem,4.2vw,3.35rem)] font-bold uppercase leading-[0.98] tracking-[0.01em] md:max-w-[min(100%,58rem)] md:leading-[0.96] md:tracking-[0.02em] lg:text-[clamp(1.35rem,3.85vw,3.85rem)] ${light ? "statement-fade-text-light" : "statement-fade-text"}`}
+          style={{ whiteSpace: "pre-line" }}
+        >
+          {text}
+        </h2>
+      </div>
+    </section>
+  );
+}

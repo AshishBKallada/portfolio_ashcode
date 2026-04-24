@@ -1,191 +1,180 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import type { ColorScheme } from "../lib/color-scheme";
+
 export const NAV_ITEMS = [
   { label: "Home", id: "home" },
-  { label: "Stack", id: "skills" },
-  { label: "Works", id: "works" },
-  { label: "About", id: "about" },
-  { label: "Contact", id: "contact" },
-  { label: "Blog", id: "blog" },
-  { label: "Experience", id: "experience" },
-  { label: "Outro", id: "footer" },
+  { label: "Footer", id: "footer" },
 ] as const;
 
 export type SectionId = (typeof NAV_ITEMS)[number]["id"];
 
-const SIDEBAR_VERTICAL_ROWS = [
-  "Design & development purveyors",
-  "MERN stack · Hand-crafted digital",
-] as const;
-
-function NavLinks({
-  className,
-  activeSection,
-  onNavigate,
-}: {
-  className?: string;
-  activeSection: SectionId;
-  onNavigate: (id: SectionId) => void;
-}) {
+function LogoMark({ dotClassName }: { dotClassName: string }) {
   return (
-    <>
-      {NAV_ITEMS.map((item) => (
-        <a
-          key={item.id}
-          href={item.id === "home" ? "#home" : `#${item.id}`}
-          className={`${className ?? ""} ${
-            activeSection === item.id
-              ? "font-semibold opacity-100"
-              : "opacity-55"
-          }`.trim()}
-          aria-current={activeSection === item.id ? "page" : undefined}
-          onClick={(e) => {
-            e.preventDefault();
-            onNavigate(item.id);
-          }}
-        >
-          {item.label}
-        </a>
+    <span className="inline-grid shrink-0 grid-cols-2 gap-[2px]" aria-hidden>
+      {Array.from({ length: 4 }).map((_, i) => (
+        <span
+          key={i}
+          className={`size-[3px] rounded-[1px] sm:size-[3.5px] ${dotClassName}`}
+        />
       ))}
-    </>
+    </span>
   );
 }
 
+/** Top bar: transparent; type color follows color scheme. */
 export default function AppSidebar({
   activeSection,
   onNavigate,
+  colorScheme,
+  onToggleColorScheme,
 }: {
   activeSection: SectionId;
   onNavigate: (id: SectionId) => void;
+  colorScheme: ColorScheme;
+  onToggleColorScheme: () => void;
 }) {
-  const year = new Date().getFullYear();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  const handleNavigate = useCallback(
+    (id: SectionId) => {
+      onNavigate(id);
+      closeMenu();
+    },
+    [onNavigate, closeMenu],
+  );
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        closeMenu();
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [menuOpen, closeMenu]);
+
+  const onDark = colorScheme === "dark";
 
   return (
-    <div className="contents">
-      {/* Desktop: in-flow column — partitions viewport with main (no overlay) */}
-      <aside
-        className="hidden h-full min-h-0 w-1/4 shrink-0 flex-row border-r border-black/15 bg-white text-black md:flex"
-        aria-label="Site navigation"
-      >
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overscroll-y-contain px-6 py-7 md:py-8 lg:px-8">
-          <a
-            href="#home"
-            className="mb-8 shrink-0 font-safiro text-lg font-bold lowercase tracking-normal"
-            onClick={(e) => {
-              e.preventDefault();
-              onNavigate("home");
-            }}
-          >
-            ashcode
-          </a>
-
-          <nav
-            className="flex min-w-0 shrink-0 flex-col gap-3.5 font-mono text-[11px] uppercase leading-snug tracking-[0.14em]"
-            aria-label="Primary"
-          >
-            <NavLinks
-              className="transition-opacity hover:opacity-80"
-              activeSection={activeSection}
-              onNavigate={onNavigate}
-            />
-          </nav>
-
-          <div className="min-w-0 flex-1" aria-hidden />
-
-          {/* Connect — bottom stack (below flex spacer) */}
-          <div className="min-w-0 shrink-0 border-t border-black/10 pt-5">
-            <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-black/45">
-              Connect
-            </p>
-            <div className="flex flex-col gap-2 font-safiro text-[10px] leading-snug text-black/85">
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="break-words hover:opacity-60"
-              >
-                GitHub
-              </a>
-
-              <a
-                href="https://www.linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="break-words hover:opacity-60"
-              >
-                LinkedIn
-              </a>
-            </div>
-          </div>
-
-          <div className="mt-6 min-w-0 shrink-0">
-            <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-black/45">
-              Email
-            </p>
-            <a
-              href="mailto:ashercode4u@gmail.com"
-              className="block font-safiro text-[10px] leading-snug break-all text-black/85 hover:opacity-60"
-            >
-              ashercode4u@gmail.com
-            </a>
-          </div>
-
-          <p className="mt-8 min-w-0 font-chaney text-[clamp(1.1rem,2.9vw,1.5rem)] font-bold uppercase leading-[0.98] tracking-[0.02em] text-black">
-            Full-stack developer.
-          </p>
-
-          <p className="mt-6 shrink-0 border-t border-black/10 pt-4 font-safiro text-[10px] text-black/50">
-            © {year} ASHCODE
-          </p>
-        </div>
-
-        {/* Vertical rail — two columns, reference-style */}
-        <div
-          className="flex shrink-0 flex-row items-center justify-center gap-1 self-stretch bg-white px-1 py-8 select-none sm:gap-1.5 sm:px-1.5"
-          aria-hidden
-        >
-          {SIDEBAR_VERTICAL_ROWS.map((line) => (
-            <span
-              key={line}
-              className="max-h-[min(78vh,36rem)] text-center font-mono text-[0.58rem] uppercase leading-tight tracking-[0.2em] text-black/38 [text-orientation:mixed] [writing-mode:vertical-rl] rotate-180 sm:text-[0.68rem] sm:tracking-[0.22em]"
-            >
-              {line}
-            </span>
-          ))}
-        </div>
-      </aside>
-
-      {/* Mobile: fixed top strip — same section links */}
-      <nav
-        className="fixed left-0 right-0 top-0 z-[60] flex items-center gap-3 overflow-x-auto border-b border-black/15 bg-white px-3 py-2.5 text-black md:hidden"
-        aria-label="Site navigation"
-      >
+    <header
+      className={`pointer-events-auto fixed left-0 right-0 top-0 z-[70] bg-transparent transition-colors duration-300 ${onDark ? "text-white" : "text-black"}`}
+      aria-label="Site"
+    >
+      <div className="mx-auto grid w-full max-w-[min(100%,88rem)] grid-cols-[1fr_auto] grid-rows-[auto_auto_auto] gap-x-4 gap-y-4 px-0 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] md:grid-cols-[auto_minmax(0,1fr)_auto_auto] md:grid-rows-1 md:gap-x-8 md:gap-y-0 lg:gap-x-12">
         <a
           href="#home"
-          className="shrink-0 font-safiro text-sm font-bold lowercase"
+          className="col-start-1 row-start-1 flex shrink-0 items-center gap-2.5 md:col-start-1 md:row-start-1"
           onClick={(e) => {
             e.preventDefault();
-            onNavigate("home");
+            handleNavigate("home");
           }}
         >
-          ashcode
+          <LogoMark dotClassName={onDark ? "bg-white" : "bg-black"} />
+          <span
+            className={`font-safiro text-sm font-medium lowercase tracking-[0.02em] md:text-base ${onDark ? "text-white" : "text-black"}`}
+          >
+            ashcode
+          </span>
         </a>
-        <span className="shrink-0 text-black/25" aria-hidden>
-          |
-        </span>
-        <div className="flex shrink-0 items-center gap-3 font-mono text-[10px] uppercase tracking-[0.12em]">
-          <NavLinks
-            className="whitespace-nowrap transition-opacity hover:opacity-80"
-            activeSection={activeSection}
-            onNavigate={onNavigate}
-          />
-        </div>
-      </nav>
 
-      {/* Mobile: compact footer (sidebar content not visible on narrow top bar) */}
-      <div className="fixed bottom-0 left-0 right-0 z-[55] border-t border-black/10 bg-white px-3 py-2 text-center font-safiro text-[9px] text-black/55 md:hidden">
-        <span>© {year} ASHCODE</span>
+        <div
+          ref={menuRef}
+          className="relative col-start-2 row-start-1 justify-self-end md:col-start-4 md:row-start-1 md:justify-self-end"
+        >
+          <div className="flex items-center gap-3 md:gap-5">
+            <span
+              className={`font-safiro text-xs font-medium tracking-wide md:text-sm ${onDark ? "text-white" : "text-black"}`}
+            >
+              EN
+            </span>
+            <button
+              type="button"
+              onClick={onToggleColorScheme}
+              className={`rounded-none border px-2.5 py-1.5 font-mono text-[9px] font-medium uppercase tracking-[0.14em] transition-opacity hover:opacity-80 md:px-3 md:text-[10px] ${
+                onDark
+                  ? "border-white/35 bg-transparent text-white"
+                  : "border-black/25 bg-transparent text-black"
+              }`}
+              aria-label={onDark ? "Switch to light theme" : "Switch to dark theme"}
+              title={onDark ? "Light theme" : "Dark theme"}
+            >
+              {onDark ? "Light" : "Dark"}
+            </button>
+            <button
+              type="button"
+              className={`inline-flex min-w-[10.5rem] items-center justify-start rounded-none border py-2.5 pl-3 pr-12 font-safiro text-[10px] font-semibold uppercase tracking-[0.18em] transition-opacity md:min-w-[12rem] md:pl-4 md:pr-16 md:text-[11px] ${
+                onDark
+                  ? "border-white bg-transparent text-white hover:bg-white/10"
+                  : "border-black bg-transparent text-black hover:bg-black/5"
+              }`}
+              aria-expanded={menuOpen}
+              aria-controls="site-menu-panel"
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              Menu
+            </button>
+          </div>
+
+          {menuOpen ? (
+            <div
+              id="site-menu-panel"
+              className="absolute right-0 top-[calc(100%+0.65rem)] z-[80] min-w-[10.5rem] rounded-2xl border border-black/10 bg-white p-4 text-black shadow-lg"
+            >
+              <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.14em] text-black/45">
+                Navigate
+              </p>
+              <nav className="flex flex-col gap-2 font-mono text-[11px] uppercase tracking-[0.12em]">
+                {NAV_ITEMS.map((item) => (
+                  <a
+                    key={item.id}
+                    href={item.id === "home" ? "#home" : `#${item.id}`}
+                    className={
+                      activeSection === item.id
+                        ? "font-semibold text-black"
+                        : "text-black/60 hover:text-black"
+                    }
+                    aria-current={activeSection === item.id ? "page" : undefined}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigate(item.id);
+                    }}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          ) : null}
+        </div>
+
+        <p
+          className={`col-span-2 row-start-2 max-w-[17rem] text-[10px] font-normal leading-[1.55] md:col-span-1 md:col-start-2 md:row-start-1 md:max-w-[15rem] md:justify-self-start lg:max-w-[17rem] lg:text-[11px] ${onDark ? "text-white/75" : "text-black/75"}`}
+        >
+          Pushing on a clearly marked &quot;Pull&quot; door with full confidence while others
+          watch.
+        </p>
+
+        <div
+          className={`col-span-2 row-start-3 flex flex-col gap-1.5 text-left text-[10px] leading-snug md:col-span-1 md:col-start-3 md:row-start-1 md:text-[11px] ${onDark ? "text-white/70" : "text-black/70"}`}
+        >
+          <a
+            href="mailto:ashercode4u@gmail.com"
+            className={`font-safiro font-normal tracking-tight hover:opacity-70 ${onDark ? "text-white" : "text-black"}`}
+          >
+            ashercode4u@gmail.com
+          </a>
+          <span className={`font-safiro ${onDark ? "text-white/50" : "text-black/50"}`}>
+            MERN stack · Build in public
+          </span>
+        </div>
       </div>
-    </div>
+    </header>
   );
 }

@@ -79,9 +79,9 @@ export default function SkillsSection() {
   return (
     <section
       id="skills"
-      className="relative flex min-h-0 w-full flex-col overflow-hidden bg-white"
+      className="relative flex w-full shrink-0 flex-col overflow-hidden bg-white"
     >
-      <div className="relative flex w-full flex-1 items-start bg-white px-6 pb-0 pt-6 md:px-12 md:pt-8 lg:px-16">
+      <div className="relative flex w-full items-start bg-white px-6 pb-8 pt-6 md:px-12 md:pb-10 md:pt-8 lg:px-16">
         <div className="relative z-10 mx-auto w-full max-w-8xl">
           <div className="w-full">
             <div className="mb-8 md:mb-10">

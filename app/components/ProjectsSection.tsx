@@ -78,7 +78,7 @@ export default function ProjectsSection() {
     <section
       ref={sectionRef}
       id="works"
-      className="flex h-full min-h-0 w-full flex-1 flex-col overflow-y-hidden bg-white text-black"
+      className="flex min-h-[min(100dvh,56rem)] w-full shrink-0 flex-col overflow-y-hidden bg-white text-black"
     >
       {/* Header — reference: left labels / center stack / right widget */}
       <header className="flex shrink-0 flex-col gap-6 px-6 pt-10 pb-6 md:flex-row md:items-start md:justify-between md:gap-4 md:px-10 md:pt-12 lg:px-14">

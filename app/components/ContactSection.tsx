@@ -6,7 +6,7 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-white text-black"
+      className="flex min-h-[min(100dvh,56rem)] w-full shrink-0 flex-col overflow-hidden bg-white text-black"
     >
       <div className="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-1 flex-col overflow-hidden px-6 pb-6 pt-8 md:px-12 md:pb-8 md:pt-10 lg:px-16">
         <header className="shrink-0">

@@ -2,10 +2,20 @@
 
 import Image from "next/image";
 
-export default function HeroSection() {
+import AudioPlayButton from "./AudioPlayButton";
+import type { ColorScheme } from "../lib/color-scheme";
+
+export default function HeroSection({ colorScheme = "dark" }: { colorScheme?: ColorScheme }) {
+  const light = colorScheme === "light";
+
   return (
-    <div className="relative flex h-full min-h-0 w-full flex-col bg-black px-6 pt-6 text-white md:px-8 md:pt-8 lg:px-10 lg:pt-10">
-      {/* Figure: pinned to bottom of hero section (viewport) */}
+    <div
+      className={`relative flex min-h-[100dvh] w-full flex-col px-6 pt-6 transition-colors duration-300 md:px-8 md:pt-8 lg:px-10 lg:pt-10 ${light ? "bg-white text-black" : "bg-black text-white"}`}
+    >
+      <div className="absolute right-6 top-24 z-20 md:right-8 md:top-28 lg:right-10 lg:top-32">
+        <AudioPlayButton src="/audio/hero.mp3" calloutOnLight={light} />
+      </div>
+
       <Image
         src="/hero-figure-Photoroom.png"
         alt="Ashcode hero illustration"
@@ -15,21 +25,6 @@ export default function HeroSection() {
         className="pointer-events-none absolute bottom-0 left-1/2 z-[1] h-auto max-h-[min(90vh,1000px)] w-auto max-w-[min(100%,72rem)] -translate-x-1/2 object-contain object-bottom select-none"
         priority
       />
-
-      {/* Bottom row */}
-      <footer className="relative z-20 mt-auto flex w-full shrink-0 flex-col items-start justify-end gap-6 pb-6 font-mono text-[11px] leading-snug tracking-[0.12em] sm:flex-row sm:items-end sm:justify-between sm:gap-8 md:pb-8 md:text-xs lg:pb-10">
-        <div className="flex flex-col uppercase">
-          <span>End-to-end web.</span>
-          <span>Shipped with MERN.</span>
-        </div>
-
-        <p className="max-w-[min(100%,22rem)] text-right uppercase leading-relaxed sm:max-w-xs md:max-w-md">
-          Arrested for crimes against boring code.<br />
-          Wanted for clean syntax, bleeding-edge stacks, and machine-like precision.<br />
-          Architect by day. Flash-man by night.<br />
-          MERN is my getaway car.
-        </p>
-      </footer>
     </div>
   );
 }

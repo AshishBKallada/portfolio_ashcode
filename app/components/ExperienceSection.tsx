@@ -89,7 +89,7 @@ export default function ExperienceSection({
     <section
       ref={sectionRef}
       id="experience"
-      className="w-full bg-white overflow-hidden"
+      className="w-full shrink-0 overflow-hidden bg-white"
     >
       {/* Horizontal Scroll Container */}
       <div className="relative w-full h-screen">

@@ -31,7 +31,7 @@ export default function BlogSection() {
   return (
     <div
       id="blog"
-      className="flex min-h-full w-full flex-1 flex-col justify-center bg-white px-6 py-4 text-black md:px-12 md:py-6 lg:px-16"
+      className="flex w-full shrink-0 flex-col justify-center bg-white px-6 py-12 text-black md:px-12 md:py-16 lg:px-16"
     >
       <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 md:gap-8">
         {/* Heading */}

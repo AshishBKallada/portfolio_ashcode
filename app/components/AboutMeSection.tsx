@@ -38,7 +38,8 @@ const GLITCH_MARKS: { char: string; left: number; top: number }[] = [
 export default function AboutMeSection() {
   return (
     <div
-      className="relative min-h-screen w-full overflow-hidden bg-black text-white"
+      id="about"
+      className="relative min-h-screen w-full shrink-0 overflow-hidden bg-black text-white"
       style={{
         backgroundImage: `
           linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
