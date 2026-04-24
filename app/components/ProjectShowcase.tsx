@@ -88,7 +88,7 @@ export default function ProjectShowcase({
 
           <figure className="lg:col-span-4">
             <div
-              className={`relative aspect-[3/4] w-full overflow-hidden ${light ? "bg-black/[0.04]" : "bg-white/[0.04]"}`}
+              className={`relative aspect-[3/4] w-full overflow-hidden`}
             >
               <Image
                 src={centerImage.src}
