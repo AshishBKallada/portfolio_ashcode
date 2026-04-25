@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
 
 export const NAV_ITEMS = [
   { label: "Home", id: "home" },
@@ -28,12 +29,61 @@ export default function AppSidebar({
 }: {
   onNavigate: (id: SectionId) => void;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
   const handleNavigate = useCallback(
     (id: SectionId) => {
       onNavigate(id);
+      setMenuOpen(false);
     },
     [onNavigate],
   );
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    window.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      window.removeEventListener("keydown", onEsc);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    gsap.killTweensOf(panel);
+    if (menuOpen) {
+      gsap.set(panel, { display: "block" });
+      gsap.fromTo(
+        panel,
+        { autoAlpha: 0, y: -8, scale: 0.96 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.28, ease: "power3.out" },
+      );
+    } else {
+      gsap.to(panel, {
+        autoAlpha: 0,
+        y: -8,
+        scale: 0.96,
+        duration: 0.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          gsap.set(panel, { display: "none" });
+        },
+      });
+    }
+  }, [menuOpen]);
 
   const onDark = true;
 
@@ -60,10 +110,75 @@ export default function AppSidebar({
         </a>
 
         <div
-          className="col-start-2 row-start-1 justify-self-end md:col-start-4 md:row-start-1 md:justify-self-end"
-          aria-hidden
+          ref={menuRef}
+          className="relative col-start-2 row-start-1 justify-self-end md:col-start-4 md:row-start-1 md:justify-self-end"
         >
-          <div className="h-9 w-[10.5rem] md:h-10 md:w-[12rem]" />
+          <button
+            type="button"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-expanded={menuOpen}
+            aria-label="Toggle menu"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-none border border-white/45 bg-black/20 text-white backdrop-blur-sm transition-colors hover:bg-white/10 md:h-10 md:w-10"
+          >
+            <span className="relative block h-3.5 w-4">
+              <span className="absolute left-0 top-0 block h-px w-4 bg-white" />
+              <span className="absolute left-0 top-[6px] block h-px w-4 bg-white" />
+              <span className="absolute left-0 top-[12px] block h-px w-4 bg-white" />
+            </span>
+          </button>
+
+          <div
+            ref={panelRef}
+            className={`absolute right-0 top-[calc(100%+0.7rem)] z-[90] w-[11.5rem] origin-top-right rounded-xl border border-black/12 bg-white p-3 text-black shadow-2xl ${
+              menuOpen ? "pointer-events-auto" : "pointer-events-none"
+            }`}
+            style={{ display: "none" }}
+          >
+            <nav className="flex flex-col gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleNavigate("home")}
+                className="text-left font-safiro text-[1.25rem] leading-none text-black/95 hover:text-black"
+              >
+                Work
+              </button>
+              <a className="font-safiro text-[1.25rem] leading-none text-black/95 hover:text-black" href="#services">
+                Services
+              </a>
+              <a className="font-safiro text-[1.25rem] leading-none text-black/95 hover:text-black" href="#pricing">
+                Pricing
+              </a>
+              <a className="font-safiro text-[1.25rem] leading-none text-black/95 hover:text-black" href="#approach">
+                Approach
+              </a>
+              <a
+                className="font-safiro text-[1.25rem] leading-none text-black/95 hover:text-black"
+                href="mailto:ashercode4u@gmail.com"
+              >
+                Book a Call
+              </a>
+            </nav>
+
+            <div className="my-2.5 h-px w-full bg-black/12" />
+
+            <p className="mb-1 font-mono text-[8px] uppercase tracking-[0.14em] text-black/45">
+              Resources
+            </p>
+            <div className="flex flex-col gap-0.5">
+              <a className="font-safiro text-[11px] text-black/75 hover:text-black" href="/projects">
+                Work
+              </a>
+              <a className="font-safiro text-[11px] text-black/75 hover:text-black" href="https://x.com" target="_blank" rel="noreferrer">
+                Twitter / X
+              </a>
+              <a className="font-safiro text-[11px] text-black/75 hover:text-black" href="https://linkedin.com" target="_blank" rel="noreferrer">
+                LinkedIn
+              </a>
+              <a className="font-safiro text-[11px] text-black/75 hover:text-black" href="/terms-and-conditions">
+                Terms of Service
+              </a>
+            </div>
+          </div>
         </div>
 
         <p

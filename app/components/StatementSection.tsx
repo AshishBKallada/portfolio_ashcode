@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { ColorScheme } from "../lib/color-scheme";
 
 /**
@@ -43,7 +44,7 @@ export default function StatementSection({
   return (
     <section
       id={id}
-      className={`relative isolate min-h-[100dvh] w-full overflow-hidden bg-transparent text-left transition-colors duration-300 ${className}`}
+      className={`relative isolate min-h-[145dvh] w-full overflow-hidden bg-transparent text-left transition-colors duration-300 ${className}`}
       aria-label="Studio statement"
     >
       <div className="pointer-events-none absolute inset-0 z-0" style={gridStyle} aria-hidden />
@@ -54,9 +55,20 @@ export default function StatementSection({
         >
           ASHCODE
         </p>
+        <div className=" mt-2 flex w-full justify-center md:mt-3">
+          <Image
+            src="/Gemini_Generated_Image_gvpp8fgvpp8fgvpp.png"
+            alt="Statement visual"
+            width={420}
+            height={420}
+            className="h-auto w-[min(90vw,90rem)] max-h-[60vh] object-fit"
+            priority
+          />
+        </div>
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[min(100%,88rem)] items-end px-3 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[clamp(7.5rem,23vh,12rem)] md:px-4 md:pb-12 md:pt-[clamp(9rem,24vh,13rem)] lg:px-6">
+      <div className="relative z-10 mx-auto flex min-h-[145dvh] w-full max-w-[min(100%,88rem)] flex-col items-start justify-end px-3 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[clamp(16rem,36vh,22rem)] md:px-4 md:pb-12 md:pt-[clamp(20rem,42vh,26rem)] lg:px-6">
+ 
         <h2
           className={`max-w-[min(100%,52rem)] font-chaney text-[clamp(0.95rem,3.2vw,2.4rem)] font-bold uppercase leading-[0.98] tracking-[0.01em] md:max-w-[min(100%,58rem)] md:leading-[0.96] md:tracking-[0.02em] lg:text-[clamp(1.1rem,2.85vw,2.8rem)] ${light ? "statement-fade-text-light" : "statement-fade-text"}`}
           style={{ whiteSpace: "pre-line" }}
