@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import Lenis from "lenis";
 
 import HeroSection from "./components/HeroSection";
 import Footer from "./components/Footer";
@@ -40,6 +41,36 @@ export default function Home() {
         }
       });
     }
+  }, []);
+
+  useEffect(() => {
+    const wrapper = document.getElementById("portfolio-main");
+    const content = document.getElementById("portfolio-content");
+    if (!wrapper || !content) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
+    const lenis = new Lenis({
+      wrapper,
+      content,
+      duration: 1.1,
+      smoothWheel: true,
+      syncTouch: true,
+      touchMultiplier: 1.1,
+    });
+
+    let rafId = 0;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      rafId = window.requestAnimationFrame(raf);
+    };
+    rafId = window.requestAnimationFrame(raf);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
   }, []);
 
   useEffect(() => {
@@ -89,35 +120,37 @@ export default function Home() {
           id="portfolio-main"
           className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-[2.65rem] md:pb-[2.85rem]"
         >
-          <section
-            id="home"
-            className="relative flex w-full shrink-0 flex-col bg-white transition-colors duration-300"
-          >
-            {/* Sticky hero: later sections scroll over it (higher z-index + opaque bg). */}
-            <div className="sticky top-0 z-0 min-h-[100dvh] w-full shrink-0">
-              <HeroSection colorScheme="dark" />
-            </div>
-            <div className="relative z-10 flex w-full flex-col isolate">
-              <StatementSection colorScheme="dark" className="-mt-[20vh] md:-mt-[24vh] lg:-mt-[28vh]" />
-         
-              <SkillSection colorScheme="dark" />
-              <div className="relative min-h-[200dvh]">
-                <ProjectShowcase
-                  colorScheme="dark"
-                  className="sticky top-0 z-0 min-h-[100dvh]"
-                />
+          <div id="portfolio-content" className="flex w-full flex-col">
+            <section
+              id="home"
+              className="relative flex w-full shrink-0 flex-col bg-white transition-colors duration-300"
+            >
+              {/* Sticky hero: later sections scroll over it (higher z-index + opaque bg). */}
+              <div className="sticky top-0 z-0 min-h-[100dvh] w-full shrink-0">
+                <HeroSection colorScheme="dark" />
               </div>
-            </div>
-          </section>
+              <div className="relative z-10 flex w-full flex-col isolate">
+                <StatementSection colorScheme="dark" className="-mt-[10vh] md:-mt-[18vh] lg:-mt-[28vh]" />
+          
+                <SkillSection colorScheme="dark" />
+                <div className="relative min-h-[100dvh] lg:min-h-[200dvh]">
+                  <ProjectShowcase
+                    colorScheme="dark"
+                    className="relative min-h-[100dvh] lg:sticky lg:top-0 lg:z-0"
+                  />
+                </div>
+              </div>
+            </section>
 
-          <section
-            id="footer"
-            className="relative z-30 -mt-[24vh] w-full shrink-0 md:-mt-[26vh] lg:-mt-[30vh]"
-          >
-            <Footer colorScheme="dark" />
-          </section>
+            <section
+              id="footer"
+              className="relative z-30 -mt-[8vh] w-full shrink-0 md:-mt-[14vh] lg:-mt-[30vh]"
+            >
+              <Footer colorScheme="dark" />
+            </section>
 
-          <CustomCursor />
+            <CustomCursor />
+          </div>
         </div>
       </main>
 

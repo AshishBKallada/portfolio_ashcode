@@ -1,6 +1,7 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -153,6 +154,15 @@ export default function ProjectShowcase({
               {eyebrow}
             </p>
           ) : null}
+          <Link
+            href="/projects"
+            className="relative mt-1 inline-flex min-h-11 items-end justify-start border border-white bg-transparent px-4 pb-2 pr-10 pt-3 font-safiro text-[11px] font-medium uppercase tracking-[0.14em] text-white transition-opacity hover:opacity-80 md:min-h-12 md:px-5 md:pb-2.5 md:pr-12 md:pt-3.5 md:text-xs"
+          >
+            See All
+            <span className="pointer-events-none absolute right-2 top-1 font-mono text-[14px] leading-none text-white md:right-2.5 md:top-1.5 md:text-[16px]">
+              ↗
+            </span>
+          </Link>
           <div className="flex max-w-full flex-col items-end gap-2 text-right md:gap-2.5">
             {paragraphs.map((p, i) => (
               <p

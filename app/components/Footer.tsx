@@ -37,7 +37,7 @@ export default function Footer({ colorScheme = "dark" }: { colorScheme?: ColorSc
 
   return (
     <footer
-      className={`relative isolate flex h-[100dvh] max-h-[100dvh] w-full shrink-0 flex-col overflow-hidden transition-colors duration-300 ${light ? "text-black" : "text-white"}`}
+      className={`relative isolate flex min-h-[100dvh] w-full shrink-0 flex-col overflow-hidden transition-colors duration-300 lg:h-[100dvh] lg:max-h-[100dvh] ${light ? "text-black" : "text-white"}`}
     >
       <Image
         src="/hero-bgx.jpg"
@@ -47,7 +47,7 @@ export default function Footer({ colorScheme = "dark" }: { colorScheme?: ColorSc
         sizes="100vw"
         priority
       />
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-black/35" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-black/25" />
       <div
         className="pointer-events-none absolute inset-0 z-[2]"
         style={{
@@ -57,7 +57,7 @@ export default function Footer({ colorScheme = "dark" }: { colorScheme?: ColorSc
       />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[3] h-28 bg-gradient-to-b from-black/65 to-transparent md:h-36" />
 
-      <div className="relative z-10 flex h-[68dvh] w-full flex-col items-center justify-center px-4 py-8 md:py-10">
+      <div className="relative z-10 flex min-h-[56dvh] w-full flex-col items-center justify-center px-4 py-8 md:min-h-[62dvh] md:py-10 lg:h-[68dvh] lg:min-h-0">
         <div className="flex flex-col items-center justify-center">
           <span
             className={`block text-center font-chaney text-[16vw] font-black uppercase leading-none md:text-[11vw] ${bigType}`}
@@ -72,8 +72,8 @@ export default function Footer({ colorScheme = "dark" }: { colorScheme?: ColorSc
         </div>
       </div>
 
-      <div className={`relative z-10 h-[32dvh] overflow-hidden border-t ${borderT}`}>
-        <div className="mx-auto w-full max-w-[min(100%,88rem)] px-4 pb-4 pt-3 md:px-6 md:pb-5 md:pt-4 lg:px-8">
+      <div className={`relative z-10 h-auto overflow-visible border-t ${borderT} md:min-h-[38dvh] lg:h-[32dvh] lg:min-h-0`}>
+        <div className="mx-auto w-full max-w-[min(100%,88rem)] px-4 pb-5 pt-4 md:px-6 md:pb-6 md:pt-5 lg:px-8">
           <div
             className={`grid grid-cols-1 gap-0 divide-y md:grid-cols-4 md:divide-x md:divide-y-0 ${light ? "divide-black/10" : "divide-white/10"}`}
           >
