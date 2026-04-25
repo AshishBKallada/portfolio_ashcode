@@ -13,25 +13,12 @@ import AppSidebar, {
   type SectionId,
 } from "./components/AppSidebar";
 import MainColumnMarquee from "./components/MainColumnMarquee";
-import { COLOR_SCHEME_STORAGE_KEY, type ColorScheme } from "./lib/color-scheme";
 
 const SECTION_IDS = new Set<SectionId>(NAV_ITEMS.map((item) => item.id));
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState<SectionId>("home");
-  const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
-
-  const toggleColorScheme = useCallback(() => {
-    setColorScheme((prev) => {
-      const next: ColorScheme = prev === "dark" ? "light" : "dark";
-      try {
-        localStorage.setItem(COLOR_SCHEME_STORAGE_KEY, next);
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }, []);
+  const colorScheme = "light" as const;
 
   const onNavigate = useCallback((id: SectionId) => {
     setActiveSection(id);
@@ -40,17 +27,6 @@ export default function Home() {
     requestAnimationFrame(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  }, []);
-
-  useLayoutEffect(() => {
-    try {
-      const stored = localStorage.getItem(COLOR_SCHEME_STORAGE_KEY);
-      if (stored === "light" || stored === "dark") {
-        setColorScheme(stored);
-      }
-    } catch {
-      /* ignore */
-    }
   }, []);
 
   useLayoutEffect(() => {
@@ -104,7 +80,7 @@ export default function Home() {
     };
   }, []);
 
-  const shellBg = colorScheme === "dark" ? "bg-black" : "bg-white";
+  const shellBg = "bg-white";
 
   return (
     <div className={`relative flex h-[100dvh] w-full min-h-0 flex-col transition-colors duration-300 ${shellBg}`}>
@@ -115,35 +91,39 @@ export default function Home() {
         >
           <section
             id="home"
-            className={`relative flex w-full shrink-0 flex-col transition-colors duration-300 ${colorScheme === "dark" ? "bg-black" : "bg-white"}`}
+            className="relative flex w-full shrink-0 flex-col bg-white transition-colors duration-300"
           >
             {/* Sticky hero: later sections scroll over it (higher z-index + opaque bg). */}
             <div className="sticky top-0 z-0 min-h-[100dvh] w-full shrink-0">
-              <HeroSection colorScheme={colorScheme} />
+              <HeroSection colorScheme="dark" />
             </div>
             <div className="relative z-10 flex w-full flex-col isolate">
-              <StatementSection colorScheme={colorScheme} />
-              <SkillSection colorScheme={colorScheme} />
-              <ProjectShowcase colorScheme={colorScheme} />
+              <StatementSection colorScheme="dark" className="-mt-[20vh] md:-mt-[24vh] lg:-mt-[28vh]" />
+         
+              <SkillSection colorScheme="dark" />
+              <div className="relative min-h-[200dvh]">
+                <ProjectShowcase
+                  colorScheme="dark"
+                  className="sticky top-0 z-0 min-h-[100dvh]"
+                />
+              </div>
             </div>
           </section>
 
-          <section id="footer" className="relative w-full shrink-0">
-            <Footer colorScheme={colorScheme} />
+          <section
+            id="footer"
+            className="relative z-30 -mt-[24vh] w-full shrink-0 md:-mt-[26vh] lg:-mt-[30vh]"
+          >
+            <Footer colorScheme="dark" />
           </section>
 
           <CustomCursor />
         </div>
       </main>
 
-      <AppSidebar
-        activeSection={activeSection}
-        onNavigate={onNavigate}
-        colorScheme={colorScheme}
-        onToggleColorScheme={toggleColorScheme}
-      />
+      <AppSidebar onNavigate={onNavigate} />
 
-      <MainColumnMarquee colorScheme={colorScheme} />
+      <MainColumnMarquee colorScheme="dark" />
     </div>
   );
 }

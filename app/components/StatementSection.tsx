@@ -43,12 +43,20 @@ export default function StatementSection({
   return (
     <section
       id={id}
-      className={`relative isolate min-h-[100dvh] w-full overflow-hidden text-left transition-colors duration-300 ${light ? "bg-white" : "bg-black"} ${className}`}
+      className={`relative isolate min-h-[100dvh] w-full overflow-hidden bg-transparent text-left transition-colors duration-300 ${className}`}
       aria-label="Studio statement"
     >
       <div className="pointer-events-none absolute inset-0 z-0" style={gridStyle} aria-hidden />
 
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[min(100%,88rem)] items-end px-3 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[clamp(6rem,18vh,10rem)] md:px-4 md:pb-12 md:pt-[clamp(7rem,20vh,11rem)] lg:px-6">
+      <div className="pointer-events-none absolute inset-x-0 top-4 z-20 px-3 text-center md:top-6 md:px-4 lg:top-8 lg:px-6">
+        <p
+          className={`font-chaney text-[clamp(2.8rem,13vw,10rem)] font-bold uppercase leading-none tracking-[0.08em] ${light ? "text-black/85" : "text-white/85"}`}
+        >
+          ASHCODE
+        </p>
+      </div>
+
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[min(100%,88rem)] items-end px-3 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[clamp(7.5rem,23vh,12rem)] md:px-4 md:pb-12 md:pt-[clamp(9rem,24vh,13rem)] lg:px-6">
         <h2
           className={`max-w-[min(100%,52rem)] font-safiro text-[clamp(1.15rem,4.2vw,3.35rem)] font-bold uppercase leading-[0.98] tracking-[0.01em] md:max-w-[min(100%,58rem)] md:leading-[0.96] md:tracking-[0.02em] lg:text-[clamp(1.35rem,3.85vw,3.85rem)] ${light ? "statement-fade-text-light" : "statement-fade-text"}`}
           style={{ whiteSpace: "pre-line" }}

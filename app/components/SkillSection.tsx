@@ -157,7 +157,7 @@ export default function SkillSection({
   return (
     <section
       id={id}
-      className={`relative isolate w-full overflow-hidden py-14 transition-colors duration-300 md:py-20 lg:py-24 ${light ? "bg-white text-black" : "bg-[#0a0a0a] text-white"} ${className}`}
+      className={`relative isolate w-full overflow-hidden bg-transparent py-14 transition-colors duration-300 md:py-20 lg:py-24 ${light ? "text-black" : "text-white"} ${className}`}
       aria-label="Skills and capabilities"
     >
       <div
@@ -195,31 +195,31 @@ export default function SkillSection({
           {rows.map((row, i) => (
             <li key={`${row.name}-${i}`} className="w-full">
               <div
-                className={`group w-full border-b transition-colors duration-200 ease-out ${light ? "border-black/[0.1] hover:bg-black hover:border-white/15" : "border-white/[0.1] hover:bg-white hover:border-black/[0.08]"}`}
+                className={`group w-full border-b transition-colors duration-200 ease-out ${light ? "border-black/[0.1] hover:bg-black/[0.04] hover:border-black/[0.2]" : "border-white/[0.1] hover:bg-white/[0.06] hover:border-white/[0.2]"}`}
               >
                 <div
-                  className={`${innerShell} grid grid-cols-2 gap-x-4 gap-y-1 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)_4rem_minmax(0,1.4fr)] md:gap-x-10 md:gap-y-0 md:py-2.5 lg:py-3`}
+                  className={`${innerShell} grid grid-cols-2 gap-x-4 gap-y-1 py-2 transition-transform duration-200 ease-out group-hover:scale-[1.02] md:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)_4rem_minmax(0,1.4fr)] md:gap-x-10 md:gap-y-0 md:py-2.5 lg:py-3`}
                 >
                   <span
-                    className={`self-center font-mono text-[11px] font-medium uppercase leading-snug tracking-[0.11em] transition-colors md:text-xs md:tracking-[0.13em] lg:text-sm ${light ? "text-black/90 group-hover:text-white" : "text-white/95 group-hover:text-black"}`}
+                    className={`self-center font-mono text-[11px] font-medium uppercase leading-snug tracking-[0.11em] transition-colors md:text-xs md:tracking-[0.13em] lg:text-sm ${light ? "text-black/90 group-hover:text-black" : "text-white/95 group-hover:text-white"}`}
                   >
                     {row.name}
                   </span>
                   <span
-                    className={`self-center font-mono text-[11px] font-normal uppercase leading-snug tracking-[0.1em] transition-colors md:text-xs md:tracking-[0.12em] lg:text-sm ${light ? "text-black/55 group-hover:text-white/85" : "text-white/60 group-hover:text-black"}`}
+                    className={`self-center font-mono text-[11px] font-normal uppercase leading-snug tracking-[0.1em] transition-colors md:text-xs md:tracking-[0.12em] lg:text-sm ${light ? "text-black/55 group-hover:text-black/85" : "text-white/60 group-hover:text-white/90"}`}
                   >
                     {row.stack}
                   </span>
                   <span
-                    className={`hidden self-center text-right font-mono text-[10px] lowercase tracking-normal transition-colors md:block md:text-[11px] lg:text-xs ${light ? "text-black/45 group-hover:text-white/70" : "text-white/50 group-hover:text-black/70"}`}
+                    className={`hidden self-center text-right font-mono text-[10px] lowercase tracking-normal transition-colors md:block md:text-[11px] lg:text-xs ${light ? "text-black/45 group-hover:text-black/70" : "text-white/50 group-hover:text-white/75"}`}
                   >
                     {row.index}
                   </span>
                   <span
-                    className={`col-span-2 self-center text-left font-mono text-[10px] font-normal uppercase leading-relaxed tracking-[0.09em] transition-colors md:col-span-1 md:text-right md:text-[11px] md:leading-relaxed md:tracking-[0.1em] lg:text-xs ${light ? "text-black/55 group-hover:text-white/85" : "text-white/55 group-hover:text-black"}`}
+                    className={`col-span-2 self-center text-left font-mono text-[10px] font-normal uppercase leading-relaxed tracking-[0.09em] transition-colors md:col-span-1 md:text-right md:text-[11px] md:leading-relaxed md:tracking-[0.1em] lg:text-xs ${light ? "text-black/55 group-hover:text-black/85" : "text-white/55 group-hover:text-white/90"}`}
                   >
                     <span
-                      className={`mr-2 transition-colors md:hidden ${light ? "text-black/40 group-hover:text-white/55" : "text-white/40 group-hover:text-black/55"}`}
+                      className={`mr-2 transition-colors md:hidden ${light ? "text-black/40 group-hover:text-black/55" : "text-white/40 group-hover:text-white/60"}`}
                     >
                       {row.index}
                     </span>

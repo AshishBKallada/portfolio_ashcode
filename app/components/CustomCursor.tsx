@@ -33,7 +33,7 @@ export default function CustomCursor() {
       ref={cursorRef}
       className="custom-cursor pointer-events-none fixed top-0 left-0 z-[999]"
     >
-      <div className="w-4 h-4 bg-black" />
+      <div className="w-4 h-4 bg-white" />
     </div>
   );
 }

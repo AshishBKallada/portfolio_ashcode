@@ -1,8 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
-import type { ColorScheme } from "../lib/color-scheme";
+import { useCallback } from "react";
 
 export const NAV_ITEMS = [
   { label: "Home", id: "home" },
@@ -26,41 +24,18 @@ function LogoMark({ dotClassName }: { dotClassName: string }) {
 
 /** Top bar: transparent; type color follows color scheme. */
 export default function AppSidebar({
-  activeSection,
   onNavigate,
-  colorScheme,
-  onToggleColorScheme,
 }: {
-  activeSection: SectionId;
   onNavigate: (id: SectionId) => void;
-  colorScheme: ColorScheme;
-  onToggleColorScheme: () => void;
 }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  const closeMenu = useCallback(() => setMenuOpen(false), []);
-
   const handleNavigate = useCallback(
     (id: SectionId) => {
       onNavigate(id);
-      closeMenu();
     },
-    [onNavigate, closeMenu],
+    [onNavigate],
   );
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onDoc = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        closeMenu();
-      }
-    };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [menuOpen, closeMenu]);
-
-  const onDark = colorScheme === "dark";
+  const onDark = true;
 
   return (
     <header
@@ -85,73 +60,10 @@ export default function AppSidebar({
         </a>
 
         <div
-          ref={menuRef}
-          className="relative col-start-2 row-start-1 justify-self-end md:col-start-4 md:row-start-1 md:justify-self-end"
+          className="col-start-2 row-start-1 justify-self-end md:col-start-4 md:row-start-1 md:justify-self-end"
+          aria-hidden
         >
-          <div className="flex items-center gap-3 md:gap-5">
-            <span
-              className={`font-safiro text-xs font-medium tracking-wide md:text-sm ${onDark ? "text-white" : "text-black"}`}
-            >
-              EN
-            </span>
-            <button
-              type="button"
-              onClick={onToggleColorScheme}
-              className={`rounded-none border px-2.5 py-1.5 font-mono text-[9px] font-medium uppercase tracking-[0.14em] transition-opacity hover:opacity-80 md:px-3 md:text-[10px] ${
-                onDark
-                  ? "border-white/35 bg-transparent text-white"
-                  : "border-black/25 bg-transparent text-black"
-              }`}
-              aria-label={onDark ? "Switch to light theme" : "Switch to dark theme"}
-              title={onDark ? "Light theme" : "Dark theme"}
-            >
-              {onDark ? "Light" : "Dark"}
-            </button>
-            <button
-              type="button"
-              className={`inline-flex min-w-[10.5rem] items-center justify-start rounded-none border py-2.5 pl-3 pr-12 font-safiro text-[10px] font-semibold uppercase tracking-[0.18em] transition-opacity md:min-w-[12rem] md:pl-4 md:pr-16 md:text-[11px] ${
-                onDark
-                  ? "border-white bg-transparent text-white hover:bg-white/10"
-                  : "border-black bg-transparent text-black hover:bg-black/5"
-              }`}
-              aria-expanded={menuOpen}
-              aria-controls="site-menu-panel"
-              onClick={() => setMenuOpen((o) => !o)}
-            >
-              Menu
-            </button>
-          </div>
-
-          {menuOpen ? (
-            <div
-              id="site-menu-panel"
-              className="absolute right-0 top-[calc(100%+0.65rem)] z-[80] min-w-[10.5rem] rounded-2xl border border-black/10 bg-white p-4 text-black shadow-lg"
-            >
-              <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.14em] text-black/45">
-                Navigate
-              </p>
-              <nav className="flex flex-col gap-2 font-mono text-[11px] uppercase tracking-[0.12em]">
-                {NAV_ITEMS.map((item) => (
-                  <a
-                    key={item.id}
-                    href={item.id === "home" ? "#home" : `#${item.id}`}
-                    className={
-                      activeSection === item.id
-                        ? "font-semibold text-black"
-                        : "text-black/60 hover:text-black"
-                    }
-                    aria-current={activeSection === item.id ? "page" : undefined}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavigate(item.id);
-                    }}
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </nav>
-            </div>
-          ) : null}
+          <div className="h-9 w-[10.5rem] md:h-10 md:w-[12rem]" />
         </div>
 
         <p
