@@ -2,6 +2,10 @@
 
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import Lenis from "lenis";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 import HeroSection from "./components/HeroSection";
 import Footer from "./components/Footer";
@@ -9,17 +13,14 @@ import ProjectShowcase from "./components/ProjectShowcase";
 import SkillSection from "./components/SkillSection";
 import StatementSection from "./components/StatementSection";
 import CustomCursor from "./components/CustomCursor";
-import AppSidebar, {
-  NAV_ITEMS,
-  type SectionId,
-} from "./components/AppSidebar";
+import AppSidebar from "./components/AppSidebar";
+import { NAV_ITEMS, type SectionId } from "./lib/nav-items";
 import MainColumnMarquee from "./components/MainColumnMarquee";
 
 const SECTION_IDS = new Set<SectionId>(NAV_ITEMS.map((item) => item.id));
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState<SectionId>("home");
-  const colorScheme = "light" as const;
 
   const onNavigate = useCallback((id: SectionId) => {
     setActiveSection(id);
@@ -60,6 +61,11 @@ export default function Home() {
       touchMultiplier: 1.1,
     });
 
+    lenis.on("scroll", ScrollTrigger.update);
+    const onResize = () => ScrollTrigger.refresh();
+    window.addEventListener("resize", onResize);
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+
     let rafId = 0;
     const raf = (time: number) => {
       lenis.raf(time);
@@ -68,6 +74,7 @@ export default function Home() {
     rafId = window.requestAnimationFrame(raf);
 
     return () => {
+      window.removeEventListener("resize", onResize);
       window.cancelAnimationFrame(rafId);
       lenis.destroy();
     };
@@ -111,7 +118,7 @@ export default function Home() {
     };
   }, []);
 
-  const shellBg = "bg-white";
+  const shellBg = "bg-transparent";
 
   return (
     <div className={`relative flex h-[100dvh] w-full min-h-0 flex-col transition-colors duration-300 ${shellBg}`}>
@@ -123,20 +130,21 @@ export default function Home() {
           <div id="portfolio-content" className="flex w-full flex-col">
             <section
               id="home"
-              className="relative flex w-full shrink-0 flex-col bg-white transition-colors duration-300"
+              className="relative flex w-full shrink-0 flex-col bg-transparent transition-colors duration-300"
             >
               {/* Sticky hero: later sections scroll over it (higher z-index + opaque bg). */}
               <div className="sticky top-0 z-0 min-h-[100dvh] w-full shrink-0">
-                <HeroSection colorScheme="dark" />
+                <HeroSection colorScheme="light" />
               </div>
-              <div className="relative z-10 flex w-full flex-col isolate">
-                <StatementSection colorScheme="dark" className="-mt-[10vh] md:-mt-[18vh] lg:-mt-[28vh]" />
-          
-                <SkillSection colorScheme="dark" />
-                <div className="relative min-h-[100dvh] lg:min-h-[200dvh]">
+              <div className="relative z-10 flex w-full flex-col isolate bg-transparent">
+                <StatementSection colorScheme="light" className="-mt-[10vh] md:-mt-[18vh] lg:-mt-[28vh]" />
+              </div>
+              <div className="relative z-10 flex w-full flex-col bg-white text-neutral-950">
+                <SkillSection colorScheme="light" />
+                <div className="relative min-h-[100dvh] bg-white pb-[max(3rem,8vh)] lg:min-h-[200dvh] lg:pb-[max(4rem,14vh)]">
                   <ProjectShowcase
-                    colorScheme="dark"
-                    className="relative min-h-[100dvh] lg:sticky lg:top-0 lg:z-0"
+                    colorScheme="light"
+                    className="relative min-h-[100dvh] bg-white lg:sticky lg:top-0 lg:z-0"
                   />
                 </div>
               </div>
@@ -144,9 +152,9 @@ export default function Home() {
 
             <section
               id="footer"
-              className="relative z-30 -mt-[8vh] w-full shrink-0 md:-mt-[14vh] lg:-mt-[30vh]"
+              className="relative z-30 -mt-[5vh] w-full shrink-0 md:-mt-[8vh] lg:-mt-[14vh]"
             >
-              <Footer colorScheme="dark" />
+              <Footer colorScheme="light" />
             </section>
 
             <CustomCursor />
@@ -156,7 +164,7 @@ export default function Home() {
 
       <AppSidebar onNavigate={onNavigate} />
 
-      <MainColumnMarquee colorScheme="dark" />
+      <MainColumnMarquee />
     </div>
   );
 }

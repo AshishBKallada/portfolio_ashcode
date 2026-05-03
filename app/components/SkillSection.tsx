@@ -1,8 +1,14 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import type { ColorScheme } from "../lib/color-scheme";
+import { mainScrollScroller, prefersReducedMotion } from "../lib/main-scroller";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export type SkillRow = {
   /** Primary label — e.g. skill or domain name */
@@ -142,27 +148,78 @@ export default function SkillSection({
   centerImage,
   className = "",
   id = "skills",
-  colorScheme = "dark",
+  colorScheme = "light",
 }: SkillSectionProps) {
   const light = colorScheme === "light";
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    const section = sectionRef.current;
+    if (!section) return;
+    const scroller = mainScrollScroller();
+    const sc = scroller ? { scroller } : {};
+    const header = section.querySelector(".skill-header-row");
+    const rowEls = section.querySelectorAll<HTMLElement>(".skill-anim-row");
+
+    const ctx = gsap.context(() => {
+      if (header) {
+        gsap.from(header, {
+          y: 28,
+          opacity: 0,
+          duration: 0.75,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: header,
+            start: "top 92%",
+            toggleActions: "play none none reverse",
+            ...sc,
+          },
+        });
+      }
+      if (rowEls.length) {
+        gsap.from(rowEls, {
+          x: -20,
+          opacity: 0,
+          stagger: { each: 0.055, from: "start" },
+          duration: 0.55,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 88%",
+            toggleActions: "play none none reverse",
+            ...sc,
+          },
+        });
+      }
+    }, section);
+
+    return () => ctx.revert();
+  }, [rows.length]);
+
   const innerShell =
     "mx-auto w-full max-w-[min(100%,90rem)] px-5 md:px-10 lg:px-14";
 
   const gridBg = light
-    ? `repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(0,0,0,0.06) calc(8.333333% - 1px), rgba(0,0,0,0.06) 8.333333%),
-            repeating-linear-gradient(180deg, transparent 0, transparent calc(2.125rem - 1px), rgba(0,0,0,0.05) calc(2.125rem - 1px), rgba(0,0,0,0.05) 2.125rem)`
-    : `repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(255,255,255,0.045) calc(8.333333% - 1px), rgba(255,255,255,0.045) 8.333333%),
-            repeating-linear-gradient(180deg, transparent 0, transparent calc(2.125rem - 1px), rgba(255,255,255,0.045) calc(2.125rem - 1px), rgba(255,255,255,0.045) 2.125rem)`;
+    ? `repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(0,0,0,0.05) calc(8.333333% - 1px), rgba(0,0,0,0.05) 8.333333%),
+            repeating-linear-gradient(180deg, transparent 0, transparent calc(2.125rem - 1px), rgba(0,0,0,0.04) calc(2.125rem - 1px), rgba(0,0,0,0.04) 2.125rem)`
+    : `repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(255,255,255,0.03) calc(8.333333% - 1px), rgba(255,255,255,0.03) 8.333333%),
+            repeating-linear-gradient(180deg, transparent 0, transparent calc(2.125rem - 1px), rgba(255,255,255,0.028) calc(2.125rem - 1px), rgba(255,255,255,0.028) 2.125rem)`;
 
   return (
     <section
+      ref={sectionRef}
       id={id}
-      className={`relative isolate w-full overflow-hidden bg-transparent py-14 transition-colors duration-300 md:py-20 lg:py-24 ${light ? "text-black" : "text-white"} ${className}`}
+      className={`relative isolate w-full overflow-hidden py-14 transition-colors duration-300 md:py-20 lg:py-24 ${light ? "bg-white text-black" : "bg-transparent text-white"} ${className}`}
       aria-label="Skills and capabilities"
     >
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{ backgroundImage: gridBg }}
+        aria-hidden
+      />
+      <div
+        className={`pointer-events-none absolute inset-0 z-[1] ${light ? "bg-transparent" : "bg-black/[0.3]"}`}
         aria-hidden
       />
 
@@ -181,7 +238,7 @@ export default function SkillSection({
       <div className="relative z-10 w-full">
         <div className={innerShell}>
           <div
-            className={`mb-4 grid grid-cols-2 gap-x-4 gap-y-2 border-b pb-4 font-mono text-[10px] font-normal uppercase tracking-[0.16em] md:mb-6 md:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)_4rem_minmax(0,1.4fr)] md:gap-x-10 md:gap-y-0 md:pb-5 md:text-[11px] lg:text-xs ${light ? "border-black/12 text-black/45" : "border-white/15 text-white/45"}`}
+            className={`skill-header-row mb-4 grid grid-cols-2 gap-x-4 gap-y-2 border-b pb-4 font-mono text-[10px] font-normal uppercase tracking-[0.16em] md:mb-6 md:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)_4rem_minmax(0,1.4fr)] md:gap-x-10 md:gap-y-0 md:pb-5 md:text-[11px] lg:text-xs ${light ? "border-black/12 text-black/45" : "border-white/15 text-white/45"}`}
             aria-hidden
           >
             <span>{labels.name}</span>
@@ -195,31 +252,31 @@ export default function SkillSection({
           {rows.map((row, i) => (
             <li key={`${row.name}-${i}`} className="w-full">
               <div
-                className={`group w-full border-b transition-colors duration-200 ease-out ${light ? "border-black/[0.1] hover:bg-black/[0.04] hover:border-black/[0.2]" : "border-white/[0.1] hover:bg-white/[0.06] hover:border-white/[0.2]"}`}
+                className={`skill-anim-row group w-full border-b transition-colors duration-200 ease-out ${light ? "border-black/[0.1] hover:border-black hover:bg-black" : "border-white/[0.1] hover:border-black hover:bg-black"}`}
               >
                 <div
-                  className={`${innerShell} grid grid-cols-2 gap-x-4 gap-y-1 py-2 transition-transform duration-200 ease-out group-hover:scale-[1.02] md:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)_4rem_minmax(0,1.4fr)] md:gap-x-10 md:gap-y-0 md:py-2.5 lg:py-3`}
+                  className={`${innerShell} grid grid-cols-2 gap-x-4 gap-y-1 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)_4rem_minmax(0,1.4fr)] md:gap-x-10 md:gap-y-0 md:py-2.5 lg:py-3`}
                 >
                   <span
-                    className={`self-center font-mono text-[11px] font-medium uppercase leading-snug tracking-[0.11em] transition-colors md:text-xs md:tracking-[0.13em] lg:text-sm ${light ? "text-black/90 group-hover:text-black" : "text-white/95 group-hover:text-white"}`}
+                    className={`self-center font-mono text-[11px] font-medium uppercase leading-snug tracking-[0.11em] transition-colors duration-200 md:text-xs md:tracking-[0.13em] lg:text-sm ${light ? "text-black/90 group-hover:text-white" : "text-white/95 group-hover:text-white"}`}
                   >
                     {row.name}
                   </span>
                   <span
-                    className={`self-center font-mono text-[11px] font-normal uppercase leading-snug tracking-[0.1em] transition-colors md:text-xs md:tracking-[0.12em] lg:text-sm ${light ? "text-black/55 group-hover:text-black/85" : "text-white/60 group-hover:text-white/90"}`}
+                    className={`self-center font-mono text-[11px] font-normal uppercase leading-snug tracking-[0.1em] transition-colors duration-200 md:text-xs md:tracking-[0.12em] lg:text-sm ${light ? "text-black/55 group-hover:text-white/85" : "text-white/60 group-hover:text-white/85"}`}
                   >
                     {row.stack}
                   </span>
                   <span
-                    className={`hidden self-center text-right font-mono text-[10px] lowercase tracking-normal transition-colors md:block md:text-[11px] lg:text-xs ${light ? "text-black/45 group-hover:text-black/70" : "text-white/50 group-hover:text-white/75"}`}
+                    className={`hidden self-center text-right font-mono text-[10px] lowercase tracking-normal transition-colors duration-200 md:block md:text-[11px] lg:text-xs ${light ? "text-black/45 group-hover:text-white/70" : "text-white/50 group-hover:text-white/70"}`}
                   >
                     {row.index}
                   </span>
                   <span
-                    className={`col-span-2 self-center text-left font-mono text-[10px] font-normal uppercase leading-relaxed tracking-[0.09em] transition-colors md:col-span-1 md:text-right md:text-[11px] md:leading-relaxed md:tracking-[0.1em] lg:text-xs ${light ? "text-black/55 group-hover:text-black/85" : "text-white/55 group-hover:text-white/90"}`}
+                    className={`col-span-2 self-center text-left font-mono text-[10px] font-normal uppercase leading-relaxed tracking-[0.09em] transition-colors duration-200 md:col-span-1 md:text-right md:text-[11px] md:leading-relaxed md:tracking-[0.1em] lg:text-xs ${light ? "text-black/55 group-hover:text-white/90" : "text-white/55 group-hover:text-white/90"}`}
                   >
                     <span
-                      className={`mr-2 transition-colors md:hidden ${light ? "text-black/40 group-hover:text-black/55" : "text-white/40 group-hover:text-white/60"}`}
+                      className={`mr-2 transition-colors duration-200 md:hidden ${light ? "text-black/40 group-hover:text-white/65" : "text-white/40 group-hover:text-white/65"}`}
                     >
                       {row.index}
                     </span>

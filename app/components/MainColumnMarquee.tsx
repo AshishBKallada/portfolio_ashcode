@@ -3,14 +3,12 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
-import type { ColorScheme } from "../lib/color-scheme";
-
 const MARQUEE_TEXT =
   "Ashcode • blog • monthly notes • engineering • curiosity • build in public";
 
 const MARQUEE_REPEAT = 8;
 
-export default function MainColumnMarquee({ colorScheme = "dark" }: { colorScheme?: ColorScheme }) {
+export default function MainColumnMarquee() {
   const trackRef = useRef<HTMLDivElement>(null);
   const tweenRef = useRef<gsap.core.Tween | null>(null);
 
@@ -50,15 +48,9 @@ export default function MainColumnMarquee({ colorScheme = "dark" }: { colorSchem
     };
   }, []);
 
-  const isMarqueeLight = colorScheme === "light";
-
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-[50] overflow-hidden px-6 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] transition-colors duration-300 md:px-12 lg:px-16 ${
-        isMarqueeLight
-          ? "border-t border-white/15 bg-black"
-          : "border-t border-black/10 bg-white"
-      }`}
+      className="fixed bottom-0 left-0 right-0 z-[50] overflow-hidden border-t border-white/12 bg-black px-6 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] transition-colors duration-300 md:px-12 lg:px-16"
       aria-hidden
     >
       <div className="w-full overflow-hidden">
@@ -66,9 +58,7 @@ export default function MainColumnMarquee({ colorScheme = "dark" }: { colorSchem
           {Array.from({ length: MARQUEE_REPEAT }).map((_, i) => (
             <span
               key={`marquee-${i}`}
-              className={`inline-block flex-shrink-0 px-8 font-safiro text-xs font-medium md:text-sm ${
-                isMarqueeLight ? "text-white/65" : "text-black/60"
-              }`}
+              className="inline-block flex-shrink-0 px-8 font-safiro text-xs font-medium text-white/75 md:text-sm"
             >
               {MARQUEE_TEXT}
             </span>

@@ -41,14 +41,14 @@ export default function ProjectPage({
 
   if (!project) {
     return (
-      <main className="relative w-full min-h-screen bg-white text-black">
+      <main className="relative w-full min-h-screen bg-transparent text-white">
         <Navbar />
         <section className="relative w-full min-h-screen flex items-center justify-center py-20 px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-black font-chaney mb-4">Project Not Found</h1>
+            <h1 className="text-4xl font-bold text-white font-chaney mb-4">Project Not Found</h1>
             <Link
               href="/projects"
-              className="text-black hover:text-zinc-600 font-safiro underline"
+              className="text-white hover:text-white/80 font-safiro underline"
             >
               Back to All Projects
             </Link>
@@ -60,24 +60,24 @@ export default function ProjectPage({
   }
 
   return (
-    <main className="relative w-full min-h-screen bg-white text-black">
+    <main className="relative w-full min-h-screen bg-transparent text-white">
       <Navbar />
       
       <section className="relative w-full min-h-screen py-20 px-8 md:px-16 lg:px-24">
         <div className="mb-8">
           <Link
             href="/projects"
-            className="text-sm text-zinc-600 hover:text-black font-safiro transition-colors"
+            className="text-sm text-white/60 hover:text-white font-safiro transition-colors"
           >
             ← Back to All Projects
           </Link>
         </div>
 
         <div className="w-full mb-12 lg:mb-16">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-black font-chaney uppercase mb-4">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white font-chaney uppercase mb-4">
             {project.fullName}
           </h1>
-          <p className="text-lg md:text-xl text-zinc-600 font-safiro max-w-3xl">
+          <p className="text-lg md:text-xl text-white/70 font-safiro max-w-3xl">
             {project.description}
           </p>
         </div>
@@ -93,25 +93,25 @@ export default function ProjectPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20 mb-16">
           <div className="lg:col-span-2">
-            <h2 className="text-2xl md:text-3xl font-bold text-black font-chaney uppercase mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white font-chaney uppercase mb-6">
               Overview
             </h2>
-            <p className="text-base md:text-lg text-black font-safiro leading-relaxed mb-8">
+            <p className="text-base md:text-lg text-white font-safiro leading-relaxed mb-8">
               {project.details.overview}
             </p>
 
-            <h2 className="text-2xl md:text-3xl font-bold text-black font-chaney uppercase mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white font-chaney uppercase mb-6">
               Solution
             </h2>
-            <p className="text-base md:text-lg text-black font-safiro leading-relaxed mb-8">
+            <p className="text-base md:text-lg text-white font-safiro leading-relaxed mb-8">
               {project.details.solution}
             </p>
 
             <div className="mb-8">
-              <h3 className="text-xl md:text-2xl font-bold text-black font-chaney uppercase mb-4">
+              <h3 className="text-xl md:text-2xl font-bold text-white font-chaney uppercase mb-4">
                 Features
               </h3>
-              <ul className="list-disc list-inside space-y-2 text-base md:text-lg text-black font-safiro">
+              <ul className="list-disc list-inside space-y-2 text-base md:text-lg text-white font-safiro">
                 {project.details.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}
@@ -119,10 +119,10 @@ export default function ProjectPage({
             </div>
 
             <div className="mb-8">
-              <h3 className="text-xl md:text-2xl font-bold text-black font-chaney uppercase mb-4">
+              <h3 className="text-xl md:text-2xl font-bold text-white font-chaney uppercase mb-4">
                 Challenges
               </h3>
-              <ul className="list-disc list-inside space-y-2 text-base md:text-lg text-black font-safiro">
+              <ul className="list-disc list-inside space-y-2 text-base md:text-lg text-white font-safiro">
                 {project.details.challenges.map((challenge, index) => (
                   <li key={index}>{challenge}</li>
                 ))}
@@ -132,14 +132,14 @@ export default function ProjectPage({
 
           <div className="lg:col-span-1">
             <div className="sticky top-24">
-              <h3 className="text-xl md:text-2xl font-bold text-black font-chaney uppercase mb-4">
+              <h3 className="text-xl md:text-2xl font-bold text-white font-chaney uppercase mb-4">
                 Technologies
               </h3>
               <div className="flex flex-wrap gap-2 mb-8">
                 {project.details.technologies.map((tech, index) => (
                   <span
                     key={index}
-                    className="px-4 py-2 bg-zinc-100 text-black text-sm font-safiro rounded"
+                    className="px-4 py-2 bg-white/10 text-white text-sm font-safiro rounded"
                   >
                     {tech}
                   </span>
@@ -153,7 +153,7 @@ export default function ProjectPage({
           {prevProject ? (
             <Link
               href={`/projects/${prevProject.slug}`}
-              className="text-sm md:text-base text-black hover:text-zinc-600 font-safiro transition-colors"
+              className="text-sm md:text-base text-white hover:text-white/80 font-safiro transition-colors"
             >
               ← {prevProject.name}
             </Link>
@@ -164,7 +164,7 @@ export default function ProjectPage({
           {nextProject ? (
             <Link
               href={`/projects/${nextProject.slug}`}
-              className="text-sm md:text-base text-black hover:text-zinc-600 font-safiro transition-colors"
+              className="text-sm md:text-base text-white hover:text-white/80 font-safiro transition-colors"
             >
               {nextProject.name} →
             </Link>

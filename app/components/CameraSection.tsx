@@ -63,7 +63,7 @@ export default function CameraSection() {
   return (
     <section 
       ref={sectionRef} 
-      className="w-full h-[90vh] flex items-center justify-center bg-white dark:bg-zinc-950 py-20 px-6 relative z-30"
+      className="w-full h-[90vh] flex items-center justify-center bg-transparent dark:bg-zinc-950 py-20 px-6 relative z-30"
     >
       <div className="absolute inset-0 flex items-center justify-center">
         <div 
@@ -71,14 +71,14 @@ export default function CameraSection() {
           className="flex flex-col items-center justify-center text-center space-y-6 z-0"
         >
           <div className="space-y-1">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-chaney text-black dark:text-white">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-chaney text-white">
               <span className="font-dancing">Crafting</span>{" "}
               <span className="font-chaney font-bold">Precision</span>
             </h1>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-chaney font-bold text-black dark:text-white">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-chaney font-bold text-white">
               with every line of code
             </h2>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-chaney font-bold text-black dark:text-white">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-chaney font-bold text-white">
               and every pixel placed
             </h2>
           </div>

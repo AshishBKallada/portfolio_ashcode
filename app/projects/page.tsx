@@ -28,21 +28,20 @@ export default function ProjectsPage() {
   const projects = getAllProjects();
 
   return (
-    <main className="relative w-full min-h-screen overflow-hidden bg-black text-white">
-      <div className="pointer-events-none fixed inset-0 z-0 bg-[url('/hero-bgx.jpg')] bg-cover bg-center bg-fixed" />
-      <div className="pointer-events-none fixed inset-0 z-[1] bg-black/45" />
+    <main className="relative w-full min-h-screen overflow-hidden bg-transparent text-white">
+      <div className="pointer-events-none fixed inset-0 z-0 bg-transparent" />
       <div
-        className="pointer-events-none fixed inset-0 z-[2]"
+        className="pointer-events-none fixed inset-0 z-[1]"
         style={{
           backgroundImage:
             "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(255,255,255,0.06) calc(8.333333% - 1px), rgba(255,255,255,0.06) 8.333333%)",
         }}
       />
 
-      <section className="relative z-10 w-full min-h-screen py-20 px-2 md:px-4 lg:px-6">
-        <div className="w-full mb-12 lg:mb-16">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white font-chaney uppercase">
-            <span className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-chaney uppercase tracking-wider text-white/95">
+      <section className="relative z-10 w-full min-h-screen px-2 py-20 md:px-4 lg:px-6">
+        <div className="mb-12 w-full lg:mb-16">
+          <h1 className="font-chaney text-4xl font-bold uppercase text-white md:text-5xl lg:text-6xl xl:text-7xl">
+            <span className="font-chaney text-2xl uppercase tracking-wider text-white/90 md:text-3xl lg:text-4xl xl:text-5xl">
               ALL PROJECTS
             </span>
           </h1>
@@ -57,20 +56,20 @@ export default function ProjectsPage() {
             >
               <div className="relative mb-4 aspect-square w-full [perspective:1200px]">
                 <div className="relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-                  <div className="absolute inset-0 overflow-hidden bg-white/10 [backface-visibility:hidden]">
+                  <div className="absolute inset-0 overflow-hidden bg-neutral-100 [backface-visibility:hidden]">
                     <Image
                       src={project.image}
                       alt={project.name}
                       fill
                       className="object-cover"
                     />
-                    <div className="pointer-events-none absolute inset-0 bg-black/35" />
+                    <div className="pointer-events-none absolute inset-0 bg-black/10" />
                   </div>
-                  <div className="absolute inset-0 flex flex-col justify-end overflow-y-auto bg-black p-4 [backface-visibility:hidden] [transform:rotateY(180deg)] md:p-5">
+                  <div className="absolute inset-0 flex flex-col justify-end overflow-y-auto border border-white/15 bg-black/[0.06] p-4 backdrop-blur-md [backface-visibility:hidden] [transform:rotateY(180deg)] md:p-5">
                     <h2 className="font-safiro text-lg font-bold text-white md:text-xl">
                       {project.fullName}
                     </h2>
-                    <p className="mt-1 font-safiro text-xs leading-relaxed text-white/85 md:text-sm">
+                    <p className="mt-1 font-safiro text-xs leading-relaxed text-white/75 md:text-sm">
                       {project.description}
                     </p>
                   </div>
@@ -83,7 +82,7 @@ export default function ProjectsPage() {
         <div className="mt-16 flex justify-center">
           <Link
             href="/"
-            className="border border-white bg-transparent px-10 py-4 text-sm md:text-base font-safiro text-white transition-colors hover:bg-white/10"
+            className="border border-white/25 bg-transparent px-10 py-4 font-safiro text-sm text-white transition-colors hover:bg-white/10 md:text-base"
           >
             ← Back to Home
           </Link>

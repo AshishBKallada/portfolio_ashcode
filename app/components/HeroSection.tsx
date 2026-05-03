@@ -1,87 +1,117 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 
 import AudioPlayButton from "./AudioPlayButton";
 import type { ColorScheme } from "../lib/color-scheme";
+import { prefersReducedMotion } from "../lib/main-scroller";
 
-const HERO_ROTATION_IMAGES = [
-  "/hero-bg2.png",
-  "/hero-figure-Photoroom.png",
+const HERO_IMAGE = "/hero-latestx.png";
 
-  "/hero-bg3.png",
-  "/hero-figure-Photoroom.png",
-
-] as const;
-
-export default function HeroSection({ colorScheme = "dark" }: { colorScheme?: ColorScheme }) {
+export default function HeroSection({ colorScheme = "light" }: { colorScheme?: ColorScheme }) {
   const light = colorScheme === "light";
-  const [heroImageIndex, setHeroImageIndex] = useState(0);
-  const flashRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const bgScaleRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setHeroImageIndex((prev) => (prev + 1) % HERO_ROTATION_IMAGES.length);
-    }, 2800);
-    return () => window.clearInterval(timer);
-  }, []);
+  useLayoutEffect(() => {
+    if (prefersReducedMotion()) return;
+    const root = rootRef.current;
+    const bg = bgScaleRef.current;
+    const audio = audioRef.current;
+    if (!root || !bg) return;
 
-  useEffect(() => {
-    const flashEl = flashRef.current;
-    if (!flashEl) return;
+    const ctx = gsap.context(() => {
+      const bgStart = light ? 1.12 : 1.14;
+      const bgEnd = light ? 1 : 0.98;
+      if (light) {
+        gsap.set(bg, {
+          scale: bgStart,
+          y: 56,
+          opacity: 0,
+          filter: "blur(12px)",
+          transformOrigin: "50% 100%",
+        });
+      } else {
+        gsap.set(bg, {
+          scale: bgStart,
+          transformOrigin: "50% 100%",
+        });
+      }
+      if (audio) gsap.set(audio, { x: 28, opacity: 0 });
 
-    gsap.killTweensOf(flashEl);
-    gsap.set(flashEl, { opacity: 0 });
-    const tl = gsap.timeline();
-    tl.to(flashEl, { opacity: 0.9, duration: 0.06, ease: "power2.out" })
-      .to(flashEl, { opacity: 0.12, duration: 0.11, ease: "power2.out" })
-      .to(flashEl, { opacity: 0.45, duration: 0.05, ease: "power2.out" })
-      .to(flashEl, { opacity: 0, duration: 0.16, ease: "power2.out" });
-  }, [heroImageIndex]);
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      if (light) {
+        tl.to(
+          bg,
+          { scale: bgEnd, y: 0, opacity: 1, filter: "blur(0px)", duration: 1.35 },
+          0,
+        );
+      } else {
+        tl.to(bg, { scale: bgEnd, duration: 1.45 }, 0);
+      }
+      if (audio) {
+        tl.to(audio, { x: 0, opacity: 1, duration: 0.75, ease: "power2.out" }, light ? 0.32 : 0.22);
+      }
+    }, root);
+
+    return () => ctx.revert();
+  }, [light]);
+
+  const lightGridStyle = {
+    backgroundImage:
+      "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(0,0,0,0.034) calc(8.333333% - 1px), rgba(0,0,0,0.034) 8.333333%)",
+  } as const;
 
   return (
     <div
-      className={`relative flex min-h-[100dvh] w-full flex-col px-6 pt-6 transition-colors duration-300 md:px-8 md:pt-8 lg:px-10 lg:pt-10 ${light ? "bg-white text-black" : "bg-black text-white"}`}
+      ref={rootRef}
+      className={`relative flex min-h-[100dvh] w-full flex-col overflow-hidden px-0 pt-0 transition-colors duration-300 ${light ? "bg-transparent text-white" : "bg-black text-white"}`}
     >
-      <Image
-        src="/hero-bgx.jpg"
-        alt=""
-        fill
-        className="pointer-events-none absolute inset-0 z-0 object-cover"
-        sizes="100vw"
-        priority
-      />
-      <div
-        className={`pointer-events-none absolute inset-0 z-[1] ${
-          light
-            ? "bg-gradient-to-b from-white/30 via-white/12 to-white/35"
-            : "bg-gradient-to-b from-black/45 via-black/28 to-black/55"
-        }`}
-      />
+      {light ? (
+        <>
+          <div ref={bgScaleRef} className="pointer-events-none absolute inset-0 z-0">
+            <Image
+              src={HERO_IMAGE}
+              alt="Ashcode hero illustration"
+              fill
+              className="grayscale object-cover object-bottom"
+              sizes="100vw"
+              priority
+            />
+          </div>
+          <div
+            className="pointer-events-none absolute inset-0 z-[1]"
+            style={lightGridStyle}
+            aria-hidden
+          />
+        </>
+      ) : (
+        <>
+          <div ref={bgScaleRef} className="pointer-events-none absolute inset-0 z-0">
+            <Image
+              src={HERO_IMAGE}
+              alt=""
+              fill
+              className="object-cover object-bottom"
+              sizes="100vw"
+              priority
+            />
+          </div>
+          <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/45 via-black/28 to-black/55" />
+          <div className="pointer-events-none absolute inset-0 z-[1] bg-black/[0.32]" aria-hidden />
+        </>
+      )}
 
-      <div className="absolute right-6 top-24 z-20 md:right-8 md:top-28 lg:right-10 lg:top-32">
+      <div
+        ref={audioRef}
+        className="absolute right-4 top-24 z-20 md:right-6 md:top-28 lg:right-8 lg:top-32"
+      >
         <AudioPlayButton src="/audio/hero.mp3" calloutOnLight={light} />
       </div>
 
-      <Image
-        src={HERO_ROTATION_IMAGES[heroImageIndex]}
-        alt="Ashcode hero illustration"
-        width={1200}
-        height={1500}
-        sizes="(max-width: 768px) 96vw, min(90vw, 72rem)"
-        className="pointer-events-none absolute bottom-0 left-1/2 z-[2] h-auto max-h-[min(90vh,1000px)] w-auto max-w-[min(100%,72rem)] -translate-x-1/2 object-contain object-bottom select-none"
-        priority
-      />
-      <div
-        ref={flashRef}
-        className="pointer-events-none absolute inset-0 z-[30] opacity-0"
-        style={{
-          background:
-            "radial-gradient(circle at 50% 42%, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.75) 24%, rgba(255,255,255,0.18) 52%, rgba(255,255,255,0) 76%)",
-        }}
-      />
     </div>
   );
 }

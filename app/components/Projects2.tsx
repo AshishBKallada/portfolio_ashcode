@@ -20,7 +20,7 @@ function ProjectCard({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-2xl font-bold leading-tight text-black md:text-3xl">
+      <h3 className="text-2xl font-bold leading-tight text-white md:text-3xl">
         {name}
       </h3>
       <div className="relative w-full aspect-video overflow-hidden rounded-lg">
@@ -155,7 +155,7 @@ export default function Projects2() {
       />
       
       {/* Main Content Section */}
-      <div className="relative w-full flex-1 bg-white px-6 py-16 md:px-12 md:py-24 lg:px-16 lg:py-32">
+      <div className="relative w-full flex-1 bg-transparent px-6 py-16 md:px-12 md:py-24 lg:px-16 lg:py-32">
         {/* Randomly positioned cube-float images */}
       {cubePositions.map((pos, index) => (
         <div
@@ -185,7 +185,7 @@ export default function Projects2() {
 
       {/* Section Heading with Circular Button at right side */}
       <div className="relative z-10 mx-auto mb-16 max-w-7xl flex items-center justify-center gap-6 md:mb-24 md:justify-between">
-        <h2 className="max-w-3xl text-center mx-auto text-3xl font-bold leading-tight text-black md:text-4xl lg:text-5xl flex-1">
+        <h2 className="max-w-3xl text-center mx-auto text-3xl font-bold leading-tight text-white md:text-4xl lg:text-5xl flex-1">
           <span className="text-[#6B46C1]">Projects</span>{" "}
           {"We Never Get Bored Of Talking About"}
         </h2>

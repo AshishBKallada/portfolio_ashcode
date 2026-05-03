@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prune:public": "node scripts/prune-public-assets.mjs",
+    "sync:downloads-image": "node scripts/sync-downloads-image.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

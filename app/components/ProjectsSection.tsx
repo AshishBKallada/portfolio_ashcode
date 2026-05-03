@@ -78,20 +78,20 @@ export default function ProjectsSection() {
     <section
       ref={sectionRef}
       id="works"
-      className="flex min-h-[min(100dvh,56rem)] w-full shrink-0 flex-col overflow-y-hidden bg-white text-black"
+      className="flex min-h-[min(100dvh,56rem)] w-full shrink-0 flex-col overflow-y-hidden bg-transparent text-white"
     >
       {/* Header — reference: left labels / center stack / right widget */}
       <header className="flex shrink-0 flex-col gap-6 px-6 pt-10 pb-6 md:flex-row md:items-start md:justify-between md:gap-4 md:px-10 md:pt-12 lg:px-14">
         <nav
-          className="order-2 font-mono text-[10px] uppercase tracking-[0.16em] text-black/55 md:order-1 md:max-w-[8rem] md:pt-1 md:leading-relaxed"
+          className="order-2 font-mono text-[10px] uppercase tracking-[0.16em] text-white/55 md:order-1 md:max-w-[8rem] md:pt-1 md:leading-relaxed"
           aria-label="Works sections"
         >
-          <span className="font-semibold text-black">Works</span>
-          <span className="text-black/35"> · </span>
+          <span className="font-semibold text-white">Works</span>
+          <span className="text-white/35"> · </span>
           <span>Index</span>
-          <span className="text-black/35"> · </span>
+          <span className="text-white/35"> · </span>
           <span>Stack</span>
-          <span className="text-black/35"> · </span>
+          <span className="text-white/35"> · </span>
           <span>About</span>
         </nav>
 
@@ -103,14 +103,14 @@ export default function ProjectsSection() {
           <p className="mt-1 font-chaney text-[clamp(1.35rem,3.4vw,2.25rem)] font-bold uppercase leading-[1.02] tracking-[0.04em]">
             Selected work
           </p>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-black/50 md:text-[11px]">
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-white/50 md:text-[11px]">
             (AC/S/2026)
           </p>
         </div>
 
-        <div className="order-3 hidden max-w-[11rem] border border-black/15 bg-white px-2.5 py-2 font-mono text-[9px] uppercase leading-snug tracking-[0.08em] text-black/70 sm:block md:pt-1">
-          <span className="block text-black/45">Now shipping</span>
-          <span className="mt-0.5 block font-semibold text-black">
+        <div className="order-3 hidden max-w-[11rem] border border-black/15 bg-black/[0.04] px-2.5 py-2 font-mono text-[9px] uppercase leading-snug tracking-[0.08em] text-white/70 backdrop-blur-sm sm:block md:pt-1">
+          <span className="block text-white/45">Now shipping</span>
+          <span className="mt-0.5 block font-semibold text-white">
             MERN · APIs · Interfaces
           </span>
         </div>
@@ -143,10 +143,10 @@ export default function ProjectsSection() {
                     sizes="(max-width: 768px) 72vw, 40vw"
                   />
                 </div>
-                <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-black/45">
+                <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-white/45">
                   {project.fullName.split("(")[0].trim()}
-                  <span className="text-black/35"> · </span>
-                  <span className="text-black/55">2026</span>
+                  <span className="text-white/35"> · </span>
+                  <span className="text-white/55">2026</span>
                 </p>
               </Link>
             </article>
@@ -175,7 +175,7 @@ export default function ProjectsSection() {
             style={{ left: `${scrollProgress * 100}%` }}
             aria-hidden
           />
-          <div className="mt-3 flex justify-between font-mono text-[9px] uppercase tracking-[0.2em] text-black/40">
+          <div className="mt-3 flex justify-between font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">
             {TIMELINE_MONTHS.map((m) => (
               <span key={m}>{m}</span>
             ))}

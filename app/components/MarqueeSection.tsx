@@ -50,13 +50,13 @@ export default function MarqueeSection() {
   ];
 
   return (
-    <section className="w-full bg-white overflow-hidden py-8 md:py-12">
+    <section className="w-full bg-transparent overflow-hidden py-8 md:py-12">
       {/* Row 1 */}
       <div className="overflow-hidden mb-4">
         <div ref={marqueeRow1Ref} className="flex whitespace-nowrap items-center">
           {[...row1Items, ...row1Items].map((item, i) => (
             <div key={i} className="inline-flex items-center px-16 md:px-36 flex-shrink-0">
-              <span className="text-[20rem] md:text-[28rem] lg:text-[36rem] xl:text-[44rem] font-bold text-black/10 font-chaney uppercase leading-none">
+              <span className="text-[20rem] md:text-[28rem] lg:text-[36rem] xl:text-[44rem] font-bold text-white/10 font-chaney uppercase leading-none">
                 {item}
               </span>
             </div>
@@ -69,7 +69,7 @@ export default function MarqueeSection() {
         <div ref={marqueeRow2Ref} className="flex whitespace-nowrap items-center">
           {[...row2Items, ...row2Items].map((item, i) => (
             <div key={i} className="inline-flex items-center px-6 md:px-12 flex-shrink-0">
-              <span className="text-8xl md:text-[10rem] lg:text-[12rem] xl:text-[14rem] font-bold text-black font-chaney uppercase">
+              <span className="text-8xl md:text-[10rem] lg:text-[12rem] xl:text-[14rem] font-bold text-white font-chaney uppercase">
                 {item}
               </span>
             </div>

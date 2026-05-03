@@ -46,7 +46,7 @@ export default function StickyBottomBar() {
           <span className="text-xs md:text-sm lg:text-base font-semibold text-white font-safiro">
               ASHISH B KALLADA
             </span>
-          <span className="text-[11px] md:text-xs text-gray-400 font-safiro">
+          <span className="text-[11px] md:text-xs text-white/50 font-safiro">
             <div className="relative min-w-sm h-5 md:h-6 overflow-hidden marquee-fade">
                 {/* Marquee text */}
                 <div
@@ -55,10 +55,10 @@ export default function StickyBottomBar() {
                     animation: 'marquee-bottombar 12s linear infinite'
                   }}
                 >
-                <span className="text-[11px] md:text-xs text-gray-400 font-safiro px-2">
+                <span className="text-[11px] md:text-xs text-white/50 font-safiro px-2">
                     PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER • 
                   </span>
-                <span className="text-[11px] md:text-xs text-gray-400 font-safiro px-2">
+                <span className="text-[11px] md:text-xs text-white/50 font-safiro px-2">
                     PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER • 
                   </span>
                 </div>

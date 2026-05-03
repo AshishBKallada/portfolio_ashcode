@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: transparent;
+  --foreground: #fafafa;
 }
 
 @theme inline {
@@ -15,8 +15,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: transparent;
+    --foreground: #fafafa;
   }
 }
 
@@ -26,8 +26,8 @@ html {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: transparent;
+  color: #fafafa;
   font-family: var(--font-safiro), Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }
@@ -77,6 +77,44 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Statement on dark hero: strong at top, opacity drops toward bottom of block */
+.statement-fade-text-hero {
+  background-image: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.95) 18%,
+    rgba(255, 255, 255, 0.78) 42%,
+    rgba(255, 255, 255, 0.48) 68%,
+    rgba(255, 255, 255, 0.22) 88%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Light canvas: near-black fading out downward */
+.statement-fade-text-hero-light {
+  background-image: linear-gradient(
+    180deg,
+    #0a0a0a 0%,
+    rgba(10, 10, 10, 0.92) 18%,
+    rgba(23, 23, 23, 0.72) 42%,
+    rgba(23, 23, 23, 0.42) 68%,
+    rgba(23, 23, 23, 0.2) 88%,
+    rgba(23, 23, 23, 0.08) 100%
+  );
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Navbar marquee animation */
@@ -154,6 +192,19 @@ body {
 
 .elixir-float {
   animation: elixir-float 3s ease-in-out infinite;
+}
+
+@keyframes nav-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.nav-drawer-panel {
+  animation: nav-drawer-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* Pixelated/dot-matrix font effect */

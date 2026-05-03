@@ -89,7 +89,7 @@ export default function ExperienceSection({
     <section
       ref={sectionRef}
       id="experience"
-      className="w-full shrink-0 overflow-hidden bg-white"
+      className="w-full shrink-0 overflow-hidden bg-transparent"
     >
       {/* Horizontal Scroll Container */}
       <div className="relative w-full h-screen">
@@ -100,11 +100,11 @@ export default function ExperienceSection({
           {/* Page 1: My journey so far */}
           <div 
             ref={introRef}
-            className="w-screen h-screen flex-shrink-0 bg-white flex items-center justify-center px-16"
+            className="w-screen h-screen flex-shrink-0 bg-transparent flex items-center justify-center px-16"
           >
             <div className="text-center">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-black font-chaney">
-                <span className="text-base md:text-lg lg:text-xl font-bold text-black font-chaney">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white font-chaney">
+                <span className="text-base md:text-lg lg:text-xl font-bold text-white font-chaney">
                   my journey so far !
                 </span>
               </h2>
@@ -122,7 +122,7 @@ export default function ExperienceSection({
           {/* Page 3: Experience Section 2 */}
           <div
             ref={section2Ref}
-            className="h-screen flex-shrink-0 bg-white flex items-center justify-center px-16 relative"
+            className="h-screen flex-shrink-0 bg-transparent flex items-center justify-center px-16 relative"
           >
             {/* Empty section */}
           </div>

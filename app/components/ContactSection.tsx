@@ -6,11 +6,11 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="flex min-h-[min(100dvh,56rem)] w-full shrink-0 flex-col overflow-hidden bg-white text-black"
+      className="flex min-h-[min(100dvh,56rem)] w-full shrink-0 flex-col overflow-hidden bg-transparent text-white"
     >
       <div className="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-1 flex-col overflow-hidden px-6 pb-6 pt-8 md:px-12 md:pb-8 md:pt-10 lg:px-16">
         <header className="shrink-0">
-          <p className="ml-auto max-w-[min(100%,20rem)] text-right font-safiro text-[0.7rem] font-normal leading-snug text-black sm:max-w-md md:max-w-lg md:text-xs">
+          <p className="ml-auto max-w-[min(100%,20rem)] text-right font-safiro text-[0.7rem] font-normal leading-snug text-white sm:max-w-md md:max-w-lg md:text-xs">
             I&apos;m Ash / ashcode—full-stack MERN, detail-obsessed, allergic to vague handoffs. I build APIs,
             interfaces, and the glue between them; I don&apos;t stay in one lane when the problem needs more.
           </p>
@@ -50,7 +50,7 @@ export default function ContactSection() {
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-col gap-2 border-t border-black/10 pt-5 font-safiro text-xs font-semibold text-black md:flex-row md:flex-wrap md:items-center md:gap-x-8 md:gap-y-1 md:pt-6 md:text-sm">
+          <div className="flex shrink-0 flex-col gap-2 border-t border-black/10 pt-5 font-safiro text-xs font-semibold text-white md:flex-row md:flex-wrap md:items-center md:gap-x-8 md:gap-y-1 md:pt-6 md:text-sm">
             <a
               href="mailto:ashercode4u@gmail.com"
               className="w-fit transition-opacity hover:opacity-60"

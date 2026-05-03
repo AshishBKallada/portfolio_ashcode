@@ -268,7 +268,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
   }
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-transparent text-white">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-20 md:py-28">
@@ -280,10 +280,10 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
               </h1>
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
                 <div className="flex flex-col gap-2">
-                  <div className="text-sm text-black/70 font-safiro">
+                  <div className="text-sm text-white/70 font-safiro">
                     <span className="font-semibold">{post.author}</span>
                   </div>
-                  <div className="text-sm text-black/60 font-safiro">
+                  <div className="text-sm text-white/60 font-safiro">
                     {post.date} • {post.readTime}
                   </div>
                 </div>
@@ -321,7 +321,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
                   {section.paragraphs.map((paragraph, pIndex) => (
                     <p
                       key={pIndex}
-                      className="text-base md:text-lg leading-relaxed text-black/80 font-safiro mb-6"
+                      className="text-base md:text-lg leading-relaxed text-white/80 font-safiro mb-6"
                     >
                       {paragraph}
                     </p>
@@ -339,7 +339,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
               <div className="mb-4">
                 <p className="font-semibold text-base font-safiro">{post.sidebar.author.name}</p>
               </div>
-              <p className="text-sm text-black/70 leading-relaxed font-safiro">
+              <p className="text-sm text-white/70 leading-relaxed font-safiro">
                 {post.sidebar.author.description}
               </p>
             </div>
@@ -393,7 +393,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
                 {post.sidebar.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="text-sm text-black/70 font-safiro"
+                    className="text-sm text-white/70 font-safiro"
                   >
                     {tag}
                     {index < post.sidebar.tags.length - 1 && ","}

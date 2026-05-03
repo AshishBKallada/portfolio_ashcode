@@ -138,10 +138,10 @@ export default function SkillsSection2({
   return (
     <section
       ref={sectionRef}
-      className="w-full min-h-screen py-20 px-6 md:px-12 lg:px-16 flex flex-col items-center justify-center bg-white"
+      className="w-full min-h-screen py-20 px-6 md:px-12 lg:px-16 flex flex-col items-center justify-center bg-transparent"
     >
       {/* Heading */}
-      <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-black font-chaney mb-12 md:mb-16 text-center">
+      <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white font-chaney mb-12 md:mb-16 text-center">
         TECHNIQUES
       </h2>
       
@@ -152,11 +152,11 @@ export default function SkillsSection2({
             key={lineIndex}
             className="flex flex-wrap items-center justify-center gap-2 md:gap-4"
           >
-            <span className="text-base md:text-lg lg:text-xl font-bold font-safiro text-black/50">
+            <span className="text-base md:text-lg lg:text-xl font-bold font-safiro text-white/50">
               {line.category}:
             </span>
             {line.skills.map((skill, skillIndex) => (
-              <span key={skillIndex} className="skill-item text-base md:text-lg lg:text-xl font-safiro text-black inline-block">
+              <span key={skillIndex} className="skill-item text-base md:text-lg lg:text-xl font-safiro text-white inline-block">
                 {skill}
                 {skillIndex < line.skills.length - 1 && <span className="mx-2 md:mx-4 separator">/</span>}
               </span>

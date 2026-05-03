@@ -40,7 +40,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${chaneyUltraExtended.variable} ${safiroMedium.variable} ${dancingScript.variable} antialiased`}
+        className={`${chaneyUltraExtended.variable} ${safiroMedium.variable} ${dancingScript.variable} bg-transparent text-white antialiased`}
       >
         {children}
       </body>

@@ -9,15 +9,15 @@ export default function Navbar() {
             animation: "marquee-nav 14s linear infinite",
           }}
         >
-          <span className="text-xs md:text-sm lg:text-base text-gray-500 font-safiro px-2">
+          <span className="text-xs md:text-sm lg:text-base text-white/55 font-safiro px-2">
             PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER •
           </span>
-          <span className="text-xs md:text-sm lg:text-base text-gray-500 font-safiro px-2">
+          <span className="text-xs md:text-sm lg:text-base text-white/55 font-safiro px-2">
             PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER •
           </span>
-          <span className="text-xs md:text-sm lg:text-base text-gray-500 font-safiro px-2">
+          <span className="text-xs md:text-sm lg:text-base text-white/55 font-safiro px-2">
             PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER •
-          </span>  <span className="text-xs md:text-sm lg:text-base text-gray-500 font-safiro px-2">
+          </span>  <span className="text-xs md:text-sm lg:text-base text-white/55 font-safiro px-2">
             PRODUCT BUILDER, NEXT.JS ENTHUSIAST, CREATIVE DEVELOPER •
           </span>
         </div>

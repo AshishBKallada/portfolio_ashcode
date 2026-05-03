@@ -79,15 +79,15 @@ export default function SkillsSection() {
   return (
     <section
       id="skills"
-      className="relative flex w-full shrink-0 flex-col overflow-hidden bg-white"
+      className="relative flex w-full shrink-0 flex-col overflow-hidden bg-transparent"
     >
-      <div className="relative flex w-full items-start bg-white px-6 pb-8 pt-6 md:px-12 md:pb-10 md:pt-8 lg:px-16">
+      <div className="relative flex w-full items-start bg-transparent px-6 pb-8 pt-6 md:px-12 md:pb-10 md:pt-8 lg:px-16">
         <div className="relative z-10 mx-auto w-full max-w-8xl">
           <div className="w-full">
             <div className="mb-8 md:mb-10">
               <div className="flex flex-col gap-1.5 md:gap-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-center font-chaney text-4xl font-bold leading-none text-black md:text-left md:text-5xl lg:text-6xl">
+                  <h1 className="text-center font-chaney text-4xl font-bold leading-none text-white md:text-left md:text-5xl lg:text-6xl">
                     ILLEGAL
                   </h1>
 
@@ -106,7 +106,7 @@ export default function SkillsSection() {
                   </p>
                 </div>
 
-                <h1 className="text-center font-chaney text-4xl font-bold leading-none text-black md:text-left md:text-5xl lg:text-6xl">
+                <h1 className="text-center font-chaney text-4xl font-bold leading-none text-white md:text-left md:text-5xl lg:text-6xl">
                   TECH STACK
                 </h1>
               </div>
@@ -117,7 +117,7 @@ export default function SkillsSection() {
                 {Object.keys(skillCategories).map((category) => (
                   <div
                     key={category}
-                    className="font-safiro text-[0.625rem] leading-snug text-black/70 md:text-[0.6875rem]"
+                    className="font-safiro text-[0.625rem] leading-snug text-white/70 md:text-[0.6875rem]"
                   >
                     {category}
                   </div>
@@ -131,7 +131,7 @@ export default function SkillsSection() {
                       {skills.map((skill) => (
                         <div
                           key={`${category}-${skill}`}
-                          className="font-safiro text-[0.625rem] leading-snug text-black/80 md:text-[0.6875rem]"
+                          className="font-safiro text-[0.625rem] leading-snug text-white/80 md:text-[0.6875rem]"
                         >
                           {skill}
                         </div>
