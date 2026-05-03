@@ -121,7 +121,9 @@ export default function Home() {
   const shellBg = "bg-transparent";
 
   return (
-    <div className={`relative flex h-[100dvh] w-full min-h-0 flex-col transition-colors duration-300 ${shellBg}`}>
+    <div
+      className={`relative flex h-[100dvh] max-h-[100dvh] w-full min-h-0 flex-col overflow-hidden transition-colors duration-300 ${shellBg}`}
+    >
       <main className={`flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden transition-colors duration-300 ${shellBg}`}>
         <div
           id="portfolio-main"

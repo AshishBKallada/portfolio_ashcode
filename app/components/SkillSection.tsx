@@ -1,28 +1,19 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
 
 import type { ColorScheme } from "../lib/color-scheme";
-import { mainScrollScroller, prefersReducedMotion } from "../lib/main-scroller";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export type SkillRow = {
-  /** Primary label — e.g. skill or domain name */
   name: string;
-  /** Stack / platform / layer */
   stack: string;
-  /** Short index label, e.g. "(a.)" */
   index: string;
-  /** Comma-separated or free-text detail column */
   tags: string;
 };
 
-/** Same taxonomy as the former `SkillsSection` — one row per skill. */
-const SKILL_CATEGORIES: Record<string, readonly string[]> = {
+/** Same taxonomy as before — exported for reuse. */
+export const SKILL_CATEGORIES: Record<string, readonly string[]> = {
   Frontend: [
     "React",
     "Next.js",
@@ -95,7 +86,6 @@ const SKILL_CATEGORIES: Record<string, readonly string[]> = {
   ],
 };
 
-/** One row per skill — tall list; pass as `rows={buildFlatSkillRows()}` if you need it. */
 export function buildFlatSkillRows(): SkillRow[] {
   const rows: SkillRow[] = [];
   let n = 0;
@@ -114,180 +104,119 @@ export function buildFlatSkillRows(): SkillRow[] {
   return rows;
 }
 
-/** One row per category — compact, Evolve-style dense block with all skills in the last column. */
-function buildCompactCategoryRows(): SkillRow[] {
-  return Object.entries(SKILL_CATEGORIES).map(([category, skills], i) => ({
-    name: category.replace(/-/g, " ").toUpperCase(),
-    stack: `${skills.length} tools`,
-    index: `(${String.fromCharCode(97 + i)}.)`,
-    tags: skills.map((s) => s.toUpperCase()).join(", "),
-  }));
+export type SkillTile = {
+  id: string;
+  skill: string;
+  category: string;
+};
+
+/** Flat list (e.g. exports, tests). UI groups by category instead. */
+export function buildAllSkillTiles(): SkillTile[] {
+  const out: SkillTile[] = [];
+  for (const [category, skills] of Object.entries(SKILL_CATEGORIES)) {
+    for (const skill of skills) {
+      out.push({
+        id: `${category}:${skill}`,
+        skill,
+        category,
+      });
+    }
+  }
+  return out;
 }
 
-const DEFAULT_ROWS: SkillRow[] = buildCompactCategoryRows();
-
 type SkillSectionProps = {
-  rows?: SkillRow[];
-  /** Column labels above the grid (Evolve-style). */
-  labels?: { name: string; stack: string; index: string; tags: string };
-  /** Optional center image; row hovers pass underneath (lower z-index). */
+  /** Override category → skills map; defaults to `SKILL_CATEGORIES`. */
+  categories?: Record<string, readonly string[]>;
+  title?: string;
+  subtitle?: string;
   centerImage?: { src: string | StaticImageData; alt: string; width: number; height: number };
   className?: string;
   id?: string;
   colorScheme?: ColorScheme;
+  rows?: SkillRow[];
+  labels?: { name: string; stack: string; index: string; tags: string };
 };
 
 export default function SkillSection({
-  rows = DEFAULT_ROWS,
-  labels = {
-    name: "Category",
-    stack: "Scope",
-    index: "",
-    tags: "Tools & skills",
-  },
+  categories = SKILL_CATEGORIES,
+  title = "Stack & tools",
+  subtitle = "Skills grouped by where they sit in the stack—pick a lane, then scan the tags.",
   centerImage,
   className = "",
   id = "skills",
   colorScheme = "light",
 }: SkillSectionProps) {
   const light = colorScheme === "light";
-  const sectionRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    if (prefersReducedMotion()) return;
-    const section = sectionRef.current;
-    if (!section) return;
-    const scroller = mainScrollScroller();
-    const sc = scroller ? { scroller } : {};
-    const header = section.querySelector(".skill-header-row");
-    const rowEls = section.querySelectorAll<HTMLElement>(".skill-anim-row");
+  const shell = "mx-auto w-full max-w-[min(100%,90rem)] px-5 md:px-10 lg:px-14";
 
-    const ctx = gsap.context(() => {
-      if (header) {
-        gsap.from(header, {
-          y: 28,
-          opacity: 0,
-          duration: 0.75,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: header,
-            start: "top 92%",
-            toggleActions: "play none none reverse",
-            ...sc,
-          },
-        });
-      }
-      if (rowEls.length) {
-        gsap.from(rowEls, {
-          x: -20,
-          opacity: 0,
-          stagger: { each: 0.055, from: "start" },
-          duration: 0.55,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 88%",
-            toggleActions: "play none none reverse",
-            ...sc,
-          },
-        });
-      }
-    }, section);
+  const heading = light ? "text-neutral-950" : "text-white";
+  const sub = light ? "text-neutral-600" : "text-white/65";
+  const catHeading = light
+    ? "font-safiro text-lg font-semibold tracking-[-0.02em] text-neutral-950 md:text-xl"
+    : "font-safiro text-lg font-semibold text-white md:text-xl";
+  const tagLight =
+    "inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1.5 font-safiro text-[12px] font-medium leading-none text-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition hover:border-black/18 hover:shadow-sm md:text-[13px]";
+  const tagDark =
+    "inline-flex items-center rounded-full border border-white/12 bg-white/[0.07] px-3 py-1.5 font-safiro text-[12px] font-medium text-white/95 transition hover:bg-white/[0.1] md:text-[13px]";
+  const arrowRing = light
+    ? "inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/12 bg-white text-lg text-neutral-900 shadow-sm transition hover:border-black/25 hover:bg-neutral-50 md:h-12 md:w-12"
+    : "inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/5 text-lg text-white transition hover:bg-white/10 md:h-12 md:w-12";
 
-    return () => ctx.revert();
-  }, [rows.length]);
-
-  const innerShell =
-    "mx-auto w-full max-w-[min(100%,90rem)] px-5 md:px-10 lg:px-14";
-
-  const gridBg = light
-    ? `repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(0,0,0,0.05) calc(8.333333% - 1px), rgba(0,0,0,0.05) 8.333333%),
-            repeating-linear-gradient(180deg, transparent 0, transparent calc(2.125rem - 1px), rgba(0,0,0,0.04) calc(2.125rem - 1px), rgba(0,0,0,0.04) 2.125rem)`
-    : `repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(255,255,255,0.03) calc(8.333333% - 1px), rgba(255,255,255,0.03) 8.333333%),
-            repeating-linear-gradient(180deg, transparent 0, transparent calc(2.125rem - 1px), rgba(255,255,255,0.028) calc(2.125rem - 1px), rgba(255,255,255,0.028) 2.125rem)`;
+  const groups = Object.entries(categories);
 
   return (
     <section
-      ref={sectionRef}
       id={id}
-      className={`relative isolate w-full overflow-hidden py-14 transition-colors duration-300 md:py-20 lg:py-24 ${light ? "bg-white text-black" : "bg-transparent text-white"} ${className}`}
+      className={`relative isolate w-full py-16 transition-colors duration-300 md:py-20 lg:py-24 ${light ? "bg-white text-neutral-950" : "bg-zinc-950 text-white"} ${className}`}
       aria-label="Skills and capabilities"
     >
-      <div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{ backgroundImage: gridBg }}
-        aria-hidden
-      />
-      <div
-        className={`pointer-events-none absolute inset-0 z-[1] ${light ? "bg-transparent" : "bg-black/[0.3]"}`}
-        aria-hidden
-      />
-
       {centerImage ? (
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.06]">
           <Image
             src={centerImage.src}
             alt={centerImage.alt}
             width={centerImage.width}
             height={centerImage.height}
-            className="h-auto max-h-[min(72vh,38rem)] w-auto max-w-[min(42vw,20rem)] object-contain opacity-95 md:max-w-[min(36vw,22rem)]"
+            className="h-auto max-h-[min(60vh,28rem)] w-auto max-w-[min(50vw,18rem)] object-contain"
           />
         </div>
       ) : null}
 
-      <div className="relative z-10 w-full">
-        <div className={innerShell}>
-          <div
-            className={`skill-header-row mb-4 grid grid-cols-2 gap-x-4 gap-y-2 border-b pb-4 font-mono text-[10px] font-normal uppercase tracking-[0.16em] md:mb-6 md:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)_4rem_minmax(0,1.4fr)] md:gap-x-10 md:gap-y-0 md:pb-5 md:text-[11px] lg:text-xs ${light ? "border-black/12 text-black/45" : "border-white/15 text-white/45"}`}
-            aria-hidden
-          >
-            <span>{labels.name}</span>
-            <span className="md:col-auto">{labels.stack}</span>
-            <span className="hidden text-right md:block">{labels.index}</span>
-            <span className="col-span-2 text-right md:col-span-1">{labels.tags}</span>
-          </div>
+      <div className={`relative z-10 w-full ${shell}`}>
+        <h2 className={`font-safiro text-[clamp(2rem,5vw,3.25rem)] font-semibold leading-[1.08] tracking-[-0.02em] ${heading}`}>
+          {title}
+        </h2>
+        <p className={`mt-3 max-w-2xl font-safiro text-[15px] leading-relaxed md:text-base ${sub}`}>{subtitle}</p>
+
+        <div className="mt-6">
+          <Link href="/#project" className={arrowRing} aria-label="Scroll to projects">
+            →
+          </Link>
         </div>
 
-        <ul className="flex w-full flex-col">
-          {rows.map((row, i) => (
-            <li key={`${row.name}-${i}`} className="w-full">
-              <div
-                className={`skill-anim-row group w-full border-b transition-colors duration-200 ease-out ${light ? "border-black/[0.1] hover:border-black hover:bg-black" : "border-white/[0.1] hover:border-black hover:bg-black"}`}
-              >
-                <div
-                  className={`${innerShell} grid grid-cols-2 gap-x-4 gap-y-1 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)_4rem_minmax(0,1.4fr)] md:gap-x-10 md:gap-y-0 md:py-2.5 lg:py-3`}
-                >
-                  <span
-                    className={`self-center font-mono text-[11px] font-medium uppercase leading-snug tracking-[0.11em] transition-colors duration-200 md:text-xs md:tracking-[0.13em] lg:text-sm ${light ? "text-black/90 group-hover:text-white" : "text-white/95 group-hover:text-white"}`}
-                  >
-                    {row.name}
-                  </span>
-                  <span
-                    className={`self-center font-mono text-[11px] font-normal uppercase leading-snug tracking-[0.1em] transition-colors duration-200 md:text-xs md:tracking-[0.12em] lg:text-sm ${light ? "text-black/55 group-hover:text-white/85" : "text-white/60 group-hover:text-white/85"}`}
-                  >
-                    {row.stack}
-                  </span>
-                  <span
-                    className={`hidden self-center text-right font-mono text-[10px] lowercase tracking-normal transition-colors duration-200 md:block md:text-[11px] lg:text-xs ${light ? "text-black/45 group-hover:text-white/70" : "text-white/50 group-hover:text-white/70"}`}
-                  >
-                    {row.index}
-                  </span>
-                  <span
-                    className={`col-span-2 self-center text-left font-mono text-[10px] font-normal uppercase leading-relaxed tracking-[0.09em] transition-colors duration-200 md:col-span-1 md:text-right md:text-[11px] md:leading-relaxed md:tracking-[0.1em] lg:text-xs ${light ? "text-black/55 group-hover:text-white/90" : "text-white/55 group-hover:text-white/90"}`}
-                  >
-                    <span
-                      className={`mr-2 transition-colors duration-200 md:hidden ${light ? "text-black/40 group-hover:text-white/65" : "text-white/40 group-hover:text-white/65"}`}
-                    >
-                      {row.index}
-                    </span>
-                    {row.tags}
-                  </span>
-                </div>
-              </div>
-            </li>
+        <div className="mt-12 space-y-12 md:mt-14 md:space-y-14">
+          {groups.map(([category, skills]) => (
+            <section key={category} aria-labelledby={`skill-cat-${slugId(category)}`}>
+              <h3 id={`skill-cat-${slugId(category)}`} className={catHeading}>
+                {category}
+              </h3>
+              <ul className="mt-3 flex list-none flex-wrap gap-2 md:mt-4 md:gap-2.5">
+                {skills.map((skill) => (
+                  <li key={`${category}-${skill}`}>
+                    <span className={light ? tagLight : tagDark}>{skill}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );
+}
+
+function slugId(s: string) {
+  return s.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "").toLowerCase() || "group";
 }

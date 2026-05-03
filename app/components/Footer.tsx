@@ -30,7 +30,7 @@ export default function Footer({ colorScheme: _colorScheme = "light" }: { colorS
   const thanks = "text-black/50";
 
   return (
-    <footer className="relative isolate flex w-full shrink-0 flex-col overflow-x-hidden bg-white text-black transition-colors duration-300">
+    <footer className="relative isolate flex w-full min-w-0 shrink-0 flex-col overflow-x-clip bg-white text-black transition-colors duration-300">
       {/*
         Wide / panoramic images: fill + object-contain in a tall box only ever hits the
         width limit, so the bitmap looks like a thin strip. Use intrinsic layout (w-full
