@@ -1,8 +1,8 @@
 "use client";
 
-import Image, { type StaticImageData } from "next/image";
-import Link from "next/link";
+import { useRef, useState } from "react";
 
+import SkillsModal from "./SkillsModal";
 import type { ColorScheme } from "../lib/color-scheme";
 
 export type SkillRow = {
@@ -12,7 +12,7 @@ export type SkillRow = {
   tags: string;
 };
 
-/** Same taxonomy as before — exported for reuse. */
+/** Exported for reuse across the app. */
 export const SKILL_CATEGORIES: Record<string, readonly string[]> = {
   Frontend: [
     "React",
@@ -110,7 +110,6 @@ export type SkillTile = {
   category: string;
 };
 
-/** Flat list (e.g. exports, tests). UI groups by category instead. */
 export function buildAllSkillTiles(): SkillTile[] {
   const out: SkillTile[] = [];
   for (const [category, skills] of Object.entries(SKILL_CATEGORIES)) {
@@ -126,97 +125,65 @@ export function buildAllSkillTiles(): SkillTile[] {
 }
 
 type SkillSectionProps = {
-  /** Override category → skills map; defaults to `SKILL_CATEGORIES`. */
-  categories?: Record<string, readonly string[]>;
-  title?: string;
-  subtitle?: string;
-  centerImage?: { src: string | StaticImageData; alt: string; width: number; height: number };
+  line1?: string;
+  line2?: string;
   className?: string;
   id?: string;
   colorScheme?: ColorScheme;
-  rows?: SkillRow[];
-  labels?: { name: string; stack: string; index: string; tags: string };
+  showButton?: boolean;
 };
 
 export default function SkillSection({
-  categories = SKILL_CATEGORIES,
-  title = "Stack & tools",
-  subtitle = "Skills grouped by where they sit in the stack—pick a lane, then scan the tags.",
-  centerImage,
+  line1 = "Let Ashcode's full-stack craft",
+  line2 = "conquer your product shipping.",
   className = "",
   id = "skills",
   colorScheme = "light",
+  showButton = true,
 }: SkillSectionProps) {
   const light = colorScheme === "light";
+  const [skillsOpen, setSkillsOpen] = useState(false);
+  const skillsButtonRef = useRef<HTMLButtonElement>(null);
 
-  const shell = "mx-auto w-full max-w-[min(100%,90rem)] px-5 md:px-10 lg:px-14";
-
-  const heading = light ? "text-neutral-950" : "text-white";
-  const sub = light ? "text-neutral-600" : "text-white/65";
-  const catHeading = light
-    ? "font-safiro text-lg font-semibold tracking-[-0.02em] text-neutral-950 md:text-xl"
-    : "font-safiro text-lg font-semibold text-white md:text-xl";
-  const tagLight =
-    "inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1.5 font-safiro text-[12px] font-medium leading-none text-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition hover:border-black/18 hover:shadow-sm md:text-[13px]";
-  const tagDark =
-    "inline-flex items-center rounded-full border border-white/12 bg-white/[0.07] px-3 py-1.5 font-safiro text-[12px] font-medium text-white/95 transition hover:bg-white/[0.1] md:text-[13px]";
-  const arrowRing = light
-    ? "inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/12 bg-white text-lg text-neutral-900 shadow-sm transition hover:border-black/25 hover:bg-neutral-50 md:h-12 md:w-12"
-    : "inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/5 text-lg text-white transition hover:bg-white/10 md:h-12 md:w-12";
-
-  const groups = Object.entries(categories);
+  const pillBtn =
+    "mt-8 inline-flex items-center justify-center rounded-full border border-[#3d2e26]/15 bg-[#ebe8e1] px-7 py-2.5 font-safiro text-sm font-medium text-[#3d2e26] shadow-[0_6px_18px_rgba(61,46,38,0.09),inset_0_1px_0_rgba(255,255,255,0.9)] transition hover:shadow-[0_8px_22px_rgba(61,46,38,0.11)] md:mt-10 md:px-8 md:py-3 md:text-[15px]";
 
   return (
     <section
       id={id}
-      className={`relative isolate w-full py-16 transition-colors duration-300 md:py-20 lg:py-24 ${light ? "bg-white text-neutral-950" : "bg-zinc-950 text-white"} ${className}`}
-      aria-label="Skills and capabilities"
+      className={`relative isolate flex min-h-[min(85dvh,40rem)] w-full flex-col items-center justify-center px-6 py-20 transition-colors duration-300 md:min-h-[min(80dvh,44rem)] md:px-10 md:py-24 ${light ? "bg-white" : "bg-zinc-950"} ${className}`}
+      aria-label="Stack and tools"
     >
-      {centerImage ? (
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.06]">
-          <Image
-            src={centerImage.src}
-            alt={centerImage.alt}
-            width={centerImage.width}
-            height={centerImage.height}
-            className="h-auto max-h-[min(60vh,28rem)] w-auto max-w-[min(50vw,18rem)] object-contain"
-          />
-        </div>
-      ) : null}
-
-      <div className={`relative z-10 w-full ${shell}`}>
-        <h2 className={`font-safiro text-[clamp(2rem,5vw,3.25rem)] font-semibold leading-[1.08] tracking-[-0.02em] ${heading}`}>
-          {title}
-        </h2>
-        <p className={`mt-3 max-w-2xl font-safiro text-[15px] leading-relaxed md:text-base ${sub}`}>{subtitle}</p>
-
-        <div className="mt-6">
-          <Link href="/#project" className={arrowRing} aria-label="Scroll to projects">
-            →
-          </Link>
-        </div>
-
-        <div className="mt-12 space-y-12 md:mt-14 md:space-y-14">
-          {groups.map(([category, skills]) => (
-            <section key={category} aria-labelledby={`skill-cat-${slugId(category)}`}>
-              <h3 id={`skill-cat-${slugId(category)}`} className={catHeading}>
-                {category}
-              </h3>
-              <ul className="mt-3 flex list-none flex-wrap gap-2 md:mt-4 md:gap-2.5">
-                {skills.map((skill) => (
-                  <li key={`${category}-${skill}`}>
-                    <span className={light ? tagLight : tagDark}>{skill}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
+      <div className="flex flex-col items-center">
+        <p
+          className={`max-w-[min(100%,28rem)] text-center font-safiro text-[clamp(1.35rem,4.2vw,2.35rem)] font-light leading-[1.35] tracking-[-0.02em] md:max-w-2xl md:text-[clamp(1.5rem,3.5vw,2.5rem)] ${light ? "text-[#3d2e26]" : "text-white"}`}
+        >
+          {line1}
+          <br />
+          {line2}
+        </p>
+        {showButton ? (
+          <button
+            ref={skillsButtonRef}
+            type="button"
+            className={`${pillBtn} ${skillsOpen ? "invisible" : ""}`}
+            onClick={() => setSkillsOpen(true)}
+            aria-expanded={skillsOpen}
+            aria-haspopup="dialog"
+          >
+            what skills ??
+          </button>
+        ) : null}
       </div>
+
+      {showButton ? (
+        <SkillsModal
+          open={skillsOpen}
+          onClose={() => setSkillsOpen(false)}
+          anchorRef={skillsButtonRef}
+          categories={SKILL_CATEGORIES}
+        />
+      ) : null}
     </section>
   );
-}
-
-function slugId(s: string) {
-  return s.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "").toLowerCase() || "group";
 }

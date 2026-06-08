@@ -11,6 +11,7 @@
   --font-chaney: var(--font-chaney);
   --font-safiro: var(--font-safiro);
   --font-dancing: var(--font-dancing);
+  --font-cormorant: var(--font-cormorant);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -43,6 +44,10 @@ body {
 
 .font-dancing {
   font-family: var(--font-dancing), cursive;
+}
+
+.font-cormorant {
+  font-family: var(--font-cormorant), "Times New Roman", serif;
 }
 
 /* Large hero statement: white → transparent down the block (Evolve-style) */

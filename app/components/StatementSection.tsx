@@ -53,9 +53,17 @@ export default function StatementSection({
 
       <div className="relative z-10 mx-auto w-full max-w-[min(100%,88rem)] px-3 pt-4 md:px-4 md:pt-6 lg:px-6 lg:pt-8">
         <div className="flex w-full max-w-[min(100%,52rem)] flex-col items-start md:max-w-[min(100%,58rem)]">
-          <p className="w-full font-chaney text-[clamp(2.8rem,13vw,10rem)] font-bold uppercase leading-none tracking-[0.08em] text-white">
-            ASHCODE
-          </p>
+          <div className="relative w-full overflow-visible pt-7 md:pt-8">
+            <p className="w-full whitespace-nowrap font-chaney text-[clamp(2.8rem,13vw,10rem)] font-bold uppercase leading-none tracking-[0.08em] text-white">
+              ASH
+              <span className="relative inline-block">
+                <span className="pointer-events-none absolute bottom-full left-0 z-10 mb-6 whitespace-nowrap font-mono text-[clamp(0.55rem,1.6vw,0.95rem)] font-semibold tracking-[0.12em] text-purple-400">
+                  +1000 AURA ?
+                </span>
+                CODE
+              </span>
+            </p>
+          </div>
           <h2
             className="mt-5 w-full max-w-full bg-clip-text font-chaney text-[clamp(0.95rem,3.2vw,2.4rem)] font-bold uppercase leading-[0.98] tracking-[0.01em] text-transparent md:mt-6 md:leading-[0.96] md:tracking-[0.02em] lg:mt-7 lg:text-[clamp(1.05rem,2.75vw,2.65rem)] bg-gradient-to-b from-white from-[2%] via-white/85 via-[45%] to-white/12 to-[100%]"
             style={{ whiteSpace: "pre-line", WebkitBackgroundClip: "text", backgroundClip: "text" }}

@@ -1,74 +1,66 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
+
+const EMAIL = "ashercode4u@gmail.com";
+const GITHUB = "https://github.com/AshishBKallada";
+
+const BG = "#f9f7f2";
+const INK = "#3d2e26";
+const softPill =
+  "inline-flex items-center justify-center rounded-full font-safiro text-[#3d2e26] shadow-[0_6px_18px_rgba(61,46,38,0.09),inset_0_1px_0_rgba(255,255,255,0.9)] transition hover:shadow-[0_8px_22px_rgba(61,46,38,0.11)]";
+
+const storeBtn = `${softPill} min-h-10 bg-[#ebe8e1] px-7 text-[12px] font-medium md:min-h-11 md:px-8 md:text-[13px]`;
+
+const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=0&color=3d2e26&bgcolor=f9f7f2&data=${encodeURIComponent(`mailto:${EMAIL}`)}`;
 
 export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="flex min-h-[min(100dvh,56rem)] w-full shrink-0 flex-col overflow-hidden bg-transparent text-white"
+      className="relative isolate flex w-full shrink-0 justify-center overflow-hidden"
+      style={{ backgroundColor: BG }}
+      aria-label="Contact"
     >
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-1 flex-col overflow-hidden px-6 pb-6 pt-8 md:px-12 md:pb-8 md:pt-10 lg:px-16">
-        <header className="shrink-0">
-          <p className="ml-auto max-w-[min(100%,20rem)] text-right font-safiro text-[0.7rem] font-normal leading-snug text-white sm:max-w-md md:max-w-lg md:text-xs">
-            I&apos;m Ash / ashcode—full-stack MERN, detail-obsessed, allergic to vague handoffs. I build APIs,
-            interfaces, and the glue between them; I don&apos;t stay in one lane when the problem needs more.
-          </p>
-        </header>
+      <div className="flex min-h-[min(100dvh,52rem)] w-full max-w-[52rem] flex-col justify-center gap-20 px-8 py-24 md:max-w-[58rem] md:gap-28 md:px-16 md:py-32 lg:max-w-[62rem] lg:gap-32 lg:px-20 lg:py-40">
+  
 
-        <div className="flex min-h-0 flex-1 flex-col justify-end gap-5 pt-4 md:gap-6 md:pt-6">
-          <div className="grid shrink-0 grid-cols-1 gap-6 md:grid-cols-2 md:items-end md:gap-8 lg:gap-10">
-            <div className="flex w-full justify-center sm:justify-start md:max-w-none">
-              <div className="flex w-full max-w-md items-center justify-center sm:max-w-lg md:max-w-xl lg:max-w-2xl">
-                <Image
-                  src="/contact-section.png"
-                  alt="Ash / ashcode"
-                  width={1200}
-                  height={1200}
-                  className="h-auto max-h-[min(58vh,560px)] w-full object-contain md:max-h-[min(68vh,720px)]"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 42rem"
-                  priority
+        <div className="flex flex-col items-center justify-center py-8 md:py-14 lg:py-16">
+          <div className="flex w-full flex-col items-center justify-center gap-16 md:flex-row md:items-center md:gap-20 lg:gap-28">
+            <div className="flex max-w-[18rem] flex-col items-center text-center md:max-w-[17rem] md:items-start md:text-left lg:max-w-[20rem]">
+              <h2
+                className="font-safiro text-[clamp(1.5rem,4.5vw,2.35rem)] font-extralight leading-[1.2] tracking-[-0.03em]"
+                style={{ color: INK }}
+              >
+                Connect with AshCode now.
+              </h2>
+              <div className="mt-12 flex flex-wrap justify-center gap-4 md:mt-14 md:justify-start md:gap-5">
+                <a href={`mailto:${EMAIL}`} className={storeBtn}>
+                  Email
+                </a>
+                <a
+                  href={GITHUB}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={storeBtn}
+                >
+                  GitHub
+                </a>
+              </div>
+            </div>
+
+            <div className="flex shrink-0 justify-center pt-4 md:pt-0">
+              <div className="-rotate-6 rounded-2xl bg-white p-5 shadow-[0_20px_50px_rgba(61,46,38,0.14),0_8px_24px_rgba(61,46,38,0.07)] md:p-6">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={qrUrl}
+                  alt={`QR code to email ${EMAIL}`}
+                  width={180}
+                  height={180}
+                  className="block h-auto w-[7.5rem] md:w-[8.5rem]"
                 />
               </div>
             </div>
-
-            <div className="flex flex-col gap-3 md:items-end md:gap-4">
-              <a
-                href="mailto:ashercode4u@gmail.com"
-                className="inline-flex w-fit items-center gap-2 bg-black px-5 py-2.5 font-safiro text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-opacity hover:opacity-85"
-              >
-                Say hello
-                <span className="text-sm leading-none" aria-hidden>
-                  ↗
-                </span>
-              </a>
-              <div className="flex h-11 w-full max-w-xs items-center justify-center bg-[#e6362d] md:ml-auto md:h-12">
-                <span className="px-2 text-center font-safiro text-xs font-semibold text-white md:text-sm">
-                  Available for freelance and collaborations
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex shrink-0 flex-col gap-2 border-t border-black/10 pt-5 font-safiro text-xs font-semibold text-white md:flex-row md:flex-wrap md:items-center md:gap-x-8 md:gap-y-1 md:pt-6 md:text-sm">
-            <a
-              href="mailto:ashercode4u@gmail.com"
-              className="w-fit transition-opacity hover:opacity-60"
-            >
-              ashercode4u@gmail.com
-            </a>
-            <a
-              href="mailto:connect@ashcode.com"
-              className="w-fit transition-opacity hover:opacity-60"
-            >
-              connect@ashcode.com
-            </a>
-            <a
-              href="mailto:hello@ashcode.com"
-              className="w-fit transition-opacity hover:opacity-60"
-            >
-              hello@ashcode.com
-            </a>
           </div>
         </div>
       </div>

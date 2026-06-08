@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,19 +8,22 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 import HeroSection from "./components/HeroSection";
+import IntroCardSection from "./components/IntroCardSection";
 import Footer from "./components/Footer";
+import ContactSection from "./components/ContactSection";
 import ProjectShowcase from "./components/ProjectShowcase";
+import LinkedInGallerySection from "./components/LinkedInGallerySection";
 import SkillSection from "./components/SkillSection";
-import StatementSection from "./components/StatementSection";
 import CustomCursor from "./components/CustomCursor";
 import AppSidebar from "./components/AppSidebar";
 import { NAV_ITEMS, type SectionId } from "./lib/nav-items";
-import MainColumnMarquee from "./components/MainColumnMarquee";
+import { SCROLL_LOCK_EVENT, SCROLL_UNLOCK_EVENT } from "./lib/main-scroller";
 
 const SECTION_IDS = new Set<SectionId>(NAV_ITEMS.map((item) => item.id));
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState<SectionId>("home");
+  const lenisRef = useRef<Lenis | null>(null);
 
   const onNavigate = useCallback((id: SectionId) => {
     setActiveSection(id);
@@ -60,6 +63,7 @@ export default function Home() {
       syncTouch: true,
       touchMultiplier: 1.1,
     });
+    lenisRef.current = lenis;
 
     lenis.on("scroll", ScrollTrigger.update);
     const onResize = () => ScrollTrigger.refresh();
@@ -76,7 +80,19 @@ export default function Home() {
     return () => {
       window.removeEventListener("resize", onResize);
       window.cancelAnimationFrame(rafId);
+      lenisRef.current = null;
       lenis.destroy();
+    };
+  }, []);
+
+  useEffect(() => {
+    const onLock = () => lenisRef.current?.stop();
+    const onUnlock = () => lenisRef.current?.start();
+    window.addEventListener(SCROLL_LOCK_EVENT, onLock);
+    window.addEventListener(SCROLL_UNLOCK_EVENT, onUnlock);
+    return () => {
+      window.removeEventListener(SCROLL_LOCK_EVENT, onLock);
+      window.removeEventListener(SCROLL_UNLOCK_EVENT, onUnlock);
     };
   }, []);
 
@@ -127,7 +143,7 @@ export default function Home() {
       <main className={`flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden transition-colors duration-300 ${shellBg}`}>
         <div
           id="portfolio-main"
-          className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-[2.65rem] md:pb-[2.85rem]"
+          className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto"
         >
           <div id="portfolio-content" className="flex w-full flex-col">
             <section
@@ -139,23 +155,24 @@ export default function Home() {
                 <HeroSection colorScheme="light" />
               </div>
               <div className="relative z-10 flex w-full flex-col isolate bg-transparent">
-                <StatementSection colorScheme="light" className="-mt-[10vh] md:-mt-[18vh] lg:-mt-[28vh]" />
+                <IntroCardSection />
               </div>
               <div className="relative z-10 flex w-full flex-col bg-white text-neutral-950">
+                <SkillSection
+                  id="linkedin-intro"
+                  colorScheme="light"
+                  showButton={false}
+                  line1="I share what I ship,"
+                  line2="and what I learn along the way."
+                />
+                <LinkedInGallerySection />
                 <SkillSection colorScheme="light" />
-                <div className="relative min-h-[100dvh] bg-white pb-[max(3rem,8vh)] lg:min-h-[200dvh] lg:pb-[max(4rem,14vh)]">
-                  <ProjectShowcase
-                    colorScheme="light"
-                    className="relative min-h-[100dvh] bg-white lg:sticky lg:top-0 lg:z-0"
-                  />
-                </div>
+                <ProjectShowcase colorScheme="light" className="bg-white" />
+                <ContactSection />
               </div>
             </section>
 
-            <section
-              id="footer"
-              className="relative z-30 -mt-[5vh] w-full shrink-0 md:-mt-[8vh] lg:-mt-[14vh]"
-            >
+            <section id="footer" className="relative z-30 w-full shrink-0">
               <Footer colorScheme="light" />
             </section>
 
@@ -165,8 +182,6 @@ export default function Home() {
       </main>
 
       <AppSidebar onNavigate={onNavigate} />
-
-      <MainColumnMarquee />
     </div>
   );
 }

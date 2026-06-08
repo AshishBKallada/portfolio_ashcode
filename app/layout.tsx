@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Dancing_Script } from "next/font/google";
+import { Cormorant_Garamond, Dancing_Script } from "next/font/google";
 import "./globals.css";
 
 const chaneyUltraExtended = localFont({
@@ -18,6 +18,14 @@ const safiroMedium = localFont({
 const dancingScript = Dancing_Script({
   variable: "--font-dancing",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  style: ["italic", "normal"],
   display: "swap",
 });
 
@@ -40,7 +48,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${chaneyUltraExtended.variable} ${safiroMedium.variable} ${dancingScript.variable} bg-transparent text-white antialiased`}
+        className={`${chaneyUltraExtended.variable} ${safiroMedium.variable} ${dancingScript.variable} ${cormorantGaramond.variable} bg-transparent text-white antialiased`}
       >
         {children}
       </body>

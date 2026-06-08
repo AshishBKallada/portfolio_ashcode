@@ -24,6 +24,9 @@ const KEEP_ROOT = new Set(
     "arrowblack1.png",
     "contact-section.png",
     "hero-background.jpg",
+    "bali.webp",
+    "hero-image.png",
+    "coconut-photoroom.png",
     "skills-background.jpg",
     "cube-float.png",
     "vintage-camera-white-background.png",
@@ -35,7 +38,7 @@ const KEEP_ROOT = new Set(
   ].map((s) => s.toLowerCase()),
 );
 
-function keepFooterSync(name) {
+function keepDownloadsSync(name) {
   return /^footer-from-downloads\./i.test(name);
 }
 
@@ -55,11 +58,27 @@ function main() {
           removed += 1;
         }
       }
+      if (ent.name === "projects") {
+        for (const p of fs.readdirSync(full, { withFileTypes: true })) {
+          if (!p.isFile()) continue;
+          if (p.name === ".gitkeep" || /^latest\./i.test(p.name)) continue;
+          fs.unlinkSync(path.join(full, p.name));
+          removed += 1;
+        }
+      }
+      if (ent.name === "linkedin") {
+        for (const p of fs.readdirSync(full, { withFileTypes: true })) {
+          if (!p.isFile()) continue;
+          if (p.name === ".gitkeep" || /^post-\d+\./i.test(p.name)) continue;
+          fs.unlinkSync(path.join(full, p.name));
+          removed += 1;
+        }
+      }
       continue;
     }
     if (!ent.isFile()) continue;
     const low = ent.name.toLowerCase();
-    if (KEEP_ROOT.has(low) || keepFooterSync(ent.name)) continue;
+    if (KEEP_ROOT.has(low) || keepDownloadsSync(ent.name)) continue;
     fs.unlinkSync(full);
     removed += 1;
   }

@@ -5,6 +5,9 @@
   "scripts": {
     "prune:public": "node scripts/prune-public-assets.mjs",
     "sync:downloads-image": "node scripts/sync-downloads-image.mjs",
+    "copy:project-image": "node scripts/sync-downloads-project-image.mjs",
+    "sync:downloads": "npm run sync:downloads-image && npm run copy:project-image",
+    "predev": "node scripts/sync-downloads-project-image.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

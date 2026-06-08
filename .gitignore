@@ -42,3 +42,4 @@ next-env.d.ts
 
 # Copied from local Downloads by `npm run sync:downloads-image` (optional to commit)
 public/footer-from-downloads.*
+public/projects/latest.*

@@ -50,7 +50,7 @@ export default function MainColumnMarquee() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[50] overflow-hidden border-t border-white/12 bg-black px-6 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] transition-colors duration-300 md:px-12 lg:px-16"
+      className="fixed bottom-0 left-0 right-0 z-[50] overflow-hidden border-t border-white/12 bg-white px-6 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] transition-colors duration-300 md:px-12 lg:px-16"
       aria-hidden
     >
       <div className="w-full overflow-hidden">
@@ -58,7 +58,7 @@ export default function MainColumnMarquee() {
           {Array.from({ length: MARQUEE_REPEAT }).map((_, i) => (
             <span
               key={`marquee-${i}`}
-              className="inline-block flex-shrink-0 px-8 font-safiro text-xs font-medium text-white/75 md:text-sm"
+              className="inline-block flex-shrink-0 px-8 font-safiro text-xs font-medium text-black/75 md:text-sm"
             >
               {MARQUEE_TEXT}
             </span>
