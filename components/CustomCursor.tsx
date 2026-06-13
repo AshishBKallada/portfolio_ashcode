@@ -14,6 +14,8 @@ export default function CustomCursor() {
     let hover = false;
     let mx = -100;
     let my = -100;
+    let lastX = mx;
+    let lastY = my;
     let raf = 0;
 
     const onMove = (e: MouseEvent) => {
@@ -32,7 +34,11 @@ export default function CustomCursor() {
     };
 
     const tick = () => {
-      el.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+      if (mx !== lastX || my !== lastY) {
+        el.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+        lastX = mx;
+        lastY = my;
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);

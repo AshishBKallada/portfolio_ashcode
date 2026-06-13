@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
 
 type Project = {
   number: string;
@@ -82,231 +83,139 @@ const PROJECTS: Project[] = [
 ];
 
 export default function Projects() {
-  const railRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [previewIdx, setPreviewIdx] = useState<number | null>(null);
 
+  // Floating preview thumbnail — follows cursor smoothly
   useEffect(() => {
-    const rail = railRef.current;
-    if (!rail) return;
-    const items = rail.querySelectorAll<HTMLElement>("[data-project-index]");
-    if (!items.length) return;
+    const el = previewRef.current;
+    if (!el) return;
+    if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) {
+      return;
+    }
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        let bestIdx = -1;
-        let bestRatio = 0;
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
-            bestRatio = entry.intersectionRatio;
-            bestIdx = Number(entry.target.getAttribute("data-project-index"));
-          }
-        });
-        if (bestIdx >= 0) setActive(bestIdx);
-      },
-      { threshold: [0.3, 0.5, 0.7], rootMargin: "-20% 0px -20% 0px" }
-    );
+    const xTo = gsap.quickTo(el, "x", { duration: 0.65, ease: "power3.out" });
+    const yTo = gsap.quickTo(el, "y", { duration: 0.65, ease: "power3.out" });
 
-    items.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    const onMove = (e: MouseEvent) => {
+      xTo(e.clientX + 28);
+      yTo(e.clientY - 150);
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
   return (
     <section
       id="projects"
-      className="relative isolate z-10 w-full bg-white text-black"
+      className="relative isolate z-10 w-full bg-white text-black px-6 md:px-12 lg:px-20 py-24 md:py-32"
     >
-      <div className="relative grid grid-cols-1 md:grid-cols-12">
-        {/* LEFT — sticky index with editorial header + sliding indicator */}
-        <aside className="md:col-span-5 lg:col-span-5 border-r border-black/10">
-          <div className="md:sticky md:top-0 md:h-screen flex flex-col justify-between px-6 md:px-10 lg:px-14 py-16 md:py-20">
-            <div>
-              <div className="flex items-baseline justify-between">
-                <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/40">
-                  003 — Index
-                </p>
-                <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/40">
-                  {String(active + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
-                </p>
-              </div>
-
-              <h2 className="mt-6 font-headline italic leading-[0.95] tracking-[-0.02em] text-[clamp(2.25rem,4.5vw,3.75rem)]">
-                Selected
-                <br />
-                <span className="text-black/50">works.</span>
-              </h2>
-            </div>
-
-            {/* Sliding indicator + list */}
-            <div className="relative">
-              {/* Sliding accent bar — vertical, moves to active row */}
-              <div
-                className="absolute left-0 w-[2px] bg-black transition-all duration-500 ease-out"
-                style={{
-                  top: `calc(${active} * (100% / ${PROJECTS.length}))`,
-                  height: `calc(100% / ${PROJECTS.length})`,
-                }}
-                aria-hidden
-              />
-
-              <ul className="flex flex-col">
-                {PROJECTS.map((p, i) => {
-                  const isActive = i === active;
-                  return (
-                    <li key={p.number}>
-                      <a
-                        href={`#project-${p.number}`}
-                        className="group flex items-center gap-4 md:gap-6 pl-6 md:pl-8 py-4 md:py-5"
-                      >
-                        <span
-                          className={`font-body text-[10px] tracking-[0.3em] tabular-nums transition-colors ${
-                            isActive ? "text-black" : "text-black/30"
-                          }`}
-                        >
-                          {p.number}
-                        </span>
-                        <span className="flex-1 flex flex-col">
-                          <span
-                            className={`font-headline transition-all duration-500 ${
-                              isActive
-                                ? "not-italic text-black text-[clamp(1.25rem,2vw,1.6rem)] leading-[1.1]"
-                                : "italic text-black/45 text-[clamp(1.1rem,1.7vw,1.35rem)] leading-[1.1]"
-                            }`}
-                          >
-                            {p.name}
-                          </span>
-                          <span
-                            className={`mt-1 font-body text-[10px] uppercase tracking-[0.22em] transition-colors ${
-                              isActive ? "text-black/60" : "text-black/30"
-                            }`}
-                          >
-                            {p.tag} · {p.year}
-                          </span>
-                        </span>
-                        <span
-                          className={`font-body text-[10px] transition-all duration-300 ${
-                            isActive ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-1"
-                          }`}
-                          aria-hidden
-                        >
-                          →
-                        </span>
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-
-            <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/35">
-              Scroll right column ↓
-            </p>
+      {/* Floating hover preview — follows cursor over project list */}
+      <div
+        ref={previewRef}
+        aria-hidden
+        className={`pointer-events-none hidden md:block fixed top-0 left-0 z-50 w-[240px] h-[300px] overflow-hidden transition-opacity duration-300 ${
+          previewIdx === null ? "opacity-0" : "opacity-100"
+        }`}
+        style={{ transform: "translate3d(-9999px, 0, 0)" }}
+      >
+        {PROJECTS.map((p, i) => (
+          <div
+            key={p.number}
+            className={`absolute inset-0 ${p.bg} transition-[clip-path] duration-[520ms] ease-[cubic-bezier(0.65,0,0.35,1)]`}
+            style={{
+              clipPath:
+                previewIdx === i ? "inset(0% 0% 0% 0%)" : "inset(100% 0% 0% 0%)",
+            }}
+          >
+            <Image
+              src={p.image}
+              alt=""
+              fill
+              sizes="240px"
+              className="object-cover opacity-95"
+            />
           </div>
-        </aside>
+        ))}
+      </div>
 
-        {/* RIGHT — scrolling project cards */}
-        <div ref={railRef} className="md:col-span-7 lg:col-span-7 flex flex-col">
-          {PROJECTS.map((p, i) => (
-            <article
-              key={p.number}
-              id={`project-${p.number}`}
-              data-project-index={i}
-              className="min-h-screen flex flex-col justify-center px-6 md:px-8 lg:px-14 py-20"
-            >
-              {/* Top eyebrow */}
-              <div className="flex items-baseline justify-between mb-5 md:mb-6">
-                <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/40">
-                  Case · {p.number}
-                </p>
-                <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/40">
-                  {p.year}
-                </p>
-              </div>
+      <div className="relative w-full max-w-[1600px] mx-auto">
+        {/* Header */}
+        <div className="flex items-baseline justify-between">
+          <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/40">
+            003 — Index
+          </p>
+          <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/40 tabular-nums">
+            {String(PROJECTS.length).padStart(2, "0")} Projects
+          </p>
+        </div>
 
-              {/* Image card — portrait, thin border, blueprint corners */}
-              <div
-                className={`relative aspect-[5/4] w-full overflow-hidden rounded-[0.75rem] md:rounded-[1rem] border border-black/10 ${p.bg}`}
-              >
-                <Image
-                  src={p.image}
-                  alt={p.alt}
-                  fill
-                  sizes="(min-width: 768px) 58vw, 100vw"
-                  className="object-cover mix-blend-screen opacity-90"
-                />
+        <h2 className="mt-8 font-headline italic leading-[0.95] tracking-[-0.02em] text-[clamp(2.5rem,7vw,6rem)]">
+          Selected <span className="text-black/50">works.</span>
+        </h2>
 
-                {/* Blueprint corner marks */}
-                <Corner className="top-3 left-3" />
-                <Corner className="top-3 right-3 rotate-90" />
-                <Corner className="bottom-3 right-3 rotate-180" />
-                <Corner className="bottom-3 left-3 -rotate-90" />
+        <p className="mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-black/65">
+          A small collection of the things I&apos;ve shipped — full-stack web apps, brand surfaces
+          and motion systems. Each one taught me something the docs couldn&apos;t. Hover a title to
+          peek at the work.
+        </p>
 
-                {/* Editorial impact — bottom-left, thin lines, no box */}
-                <div className="absolute bottom-4 left-4 md:bottom-5 md:left-5 text-white">
-                  <p className="font-body text-[9px] uppercase tracking-[0.3em] text-white/70">
-                    {p.impactLabel}
-                  </p>
-                  <p className="mt-1 font-headline italic text-2xl md:text-3xl leading-none">
-                    {p.impactValue}
-                  </p>
-                </div>
-              </div>
-
-              {/* Title row */}
-              <div className="mt-6 md:mt-8 flex items-end justify-between gap-6">
-                <h3 className="font-headline italic text-[clamp(1.5rem,2.6vw,2.25rem)] leading-[1.05] tracking-[-0.01em]">
-                  {p.name}
-                </h3>
+        {/* Full-width list */}
+        <ul className="mt-16 md:mt-20 border-t border-black/15">
+          {PROJECTS.map((p, i) => {
+            const isHovered = previewIdx === i;
+            return (
+              <li key={p.number} className="border-b border-black/15">
                 <a
                   href={p.href}
-                  className="group/link shrink-0 inline-flex items-center gap-2 rounded-full bg-black px-4 py-2.5 font-body text-[11px] font-medium tracking-[0.04em] text-white transition hover:bg-black/85"
+                  onMouseEnter={() => setPreviewIdx(i)}
+                  onMouseLeave={() => setPreviewIdx(null)}
+                  className="group grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_auto_auto_auto] items-baseline gap-x-6 md:gap-x-10 py-6 md:py-8"
                 >
-                  Live
-                  <span className="transition-transform group-hover/link:translate-x-0.5">↗</span>
-                </a>
-              </div>
-
-              {/* Description */}
-              <p className="mt-4 max-w-xl font-body text-[14px] md:text-[15px] leading-[1.65] text-black/70">
-                {p.description}
-              </p>
-
-              {/* Tech chips */}
-              <div className="mt-5 flex flex-wrap gap-1.5">
-                {p.tech.map((t) => (
                   <span
-                    key={t}
-                    className="inline-flex items-center rounded-full border border-black/15 px-3 py-1 font-body text-[10px] uppercase tracking-[0.2em] text-black/60"
+                    className={`font-body text-[10px] tracking-[0.3em] tabular-nums transition-colors duration-300 ${
+                      isHovered ? "text-black" : "text-black/40"
+                    }`}
                   >
-                    {t}
+                    {p.number}
                   </span>
-                ))}
-              </div>
-
-              {/* Next hint — except last */}
-              {i < PROJECTS.length - 1 && (
-                <div className="mt-12 md:mt-16 flex items-center gap-3 border-t border-black/10 pt-5">
-                  <span className="font-body text-[10px] uppercase tracking-[0.3em] text-black/40">
-                    Next
+                  <span
+                    className={`font-headline italic leading-[1.05] tracking-[-0.01em] text-[clamp(1.75rem,4.5vw,3.5rem)] transition-all duration-500 ${
+                      isHovered ? "text-black translate-x-2 md:translate-x-4" : "text-black/85"
+                    }`}
+                  >
+                    {p.name}
                   </span>
-                  <span className="font-headline italic text-base text-black/55">
-                    {PROJECTS[i + 1].name}
+                  <span
+                    className={`hidden md:inline-block font-body text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${
+                      isHovered ? "text-black" : "text-black/50"
+                    }`}
+                  >
+                    {p.tag}
                   </span>
-                  <span className="ml-auto font-body text-[10px] text-black/35">↓</span>
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
+                  <span
+                    className={`hidden md:inline-block font-body text-[10px] uppercase tracking-[0.22em] tabular-nums transition-colors duration-300 ${
+                      isHovered ? "text-black" : "text-black/50"
+                    }`}
+                  >
+                    {p.year}
+                  </span>
+                  <span
+                    aria-hidden
+                    className={`font-body text-lg md:text-xl transition-all duration-300 ${
+                      isHovered
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-40 -translate-x-1"
+                    }`}
+                  >
+                    ↗
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </section>
-  );
-}
-
-function Corner({ className = "" }: { className?: string }) {
-  return (
-    <span
-      aria-hidden
-      className={`pointer-events-none absolute h-3 w-3 border-l border-t border-white/40 ${className}`}
-    />
   );
 }

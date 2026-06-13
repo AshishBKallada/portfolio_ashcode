@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { Download } from "lucide-react";
+import { useMagnetic } from "@/lib/useMagnetic";
 
 const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
 
@@ -13,11 +15,10 @@ const LIGHT_GRID = {
 };
 
 export default function Hero() {
-  const bgRef = useRef<HTMLDivElement>(null);
-  const figureRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
   const [inView, setInView] = useState(true);
+  const ctaRef = useMagnetic<HTMLAnchorElement>(0.22);
 
   // Pause heavy WebGL (SplashCursor) when Hero scrolls out of view
   useEffect(() => {
@@ -34,10 +35,6 @@ export default function Hero() {
   // Entrance + staggered text reveal
   useEffect(() => {
     const ctx = gsap.context(() => {
-      if (bgRef.current) {
-        gsap.set(bgRef.current, { scale: 1.12, y: 56, opacity: 0, transformOrigin: "50% 100%" });
-        gsap.to(bgRef.current, { scale: 1, y: 0, opacity: 1, duration: 1.35, ease: "power3.out" });
-      }
       const root = sectionRef.current;
       if (!root) return;
       gsap.from(root.querySelectorAll(".hero-tag"), { y: 18, opacity: 0, duration: 0.6, delay: 0.45, ease: "power2.out" });
@@ -47,57 +44,14 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
-  // Horizontal cursor parallax — bg drifts opposite, figure follows
-  useEffect(() => {
-    const section = sectionRef.current;
-    const bg = bgRef.current;
-    const figure = figureRef.current;
-    if (!section || !bg || !figure) return;
-
-    const bgX = gsap.quickTo(bg, "x", { duration: 1.2, ease: "power3.out" });
-    const figX = gsap.quickTo(figure, "x", { duration: 0.9, ease: "power3.out" });
-
-    const onMove = (e: MouseEvent) => {
-      const r = section.getBoundingClientRect();
-      const nx = (e.clientX - r.left) / r.width - 0.5;
-      bgX(nx * -28);
-      figX(nx * 42);
-    };
-    const onLeave = () => { bgX(0); figX(0); };
-
-    section.addEventListener("mousemove", onMove);
-    section.addEventListener("mouseleave", onLeave);
-    return () => {
-      section.removeEventListener("mousemove", onMove);
-      section.removeEventListener("mouseleave", onLeave);
-    };
-  }, []);
-
   return (
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-transparent text-white"
+      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-white text-black"
     >
-      {/* Blurred background image */}
-      <div ref={bgRef} className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute inset-0 scale-105">
-          <Image
-            src="/bali.webp"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center blur-[3px] brightness-[0.92] saturate-[1.15]"
-          />
-        </div>
-      </div>
-
       {/* Foreground hero figure — always visible */}
-      <div
-        ref={figureRef}
-        className="pointer-events-none absolute inset-0 z-[3] will-change-transform"
-      >
+      <div className="pointer-events-none absolute inset-0 z-[3]">
         <Image
           src="/hero-image.png"
           alt="Ashish B Kallada — hero"
@@ -113,19 +67,12 @@ export default function Hero() {
         <SplashCursor
           RAINBOW_MODE={false}
           COLOR="#3fd75e"
-          SIM_RESOLUTION={64}
-          DYE_RESOLUTION={512}
-          PRESSURE_ITERATIONS={8}
+          SIM_RESOLUTION={48}
+          DYE_RESOLUTION={256}
+          PRESSURE_ITERATIONS={3}
           SHADING={false}
         />
       )}
-
-      {/* Readability gradient */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[1]"
-        style={{ background: "linear-gradient(115deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 30%, rgba(0,0,0,0) 60%)" }}
-        aria-hidden
-      />
 
       {/* 12-column gridlines */}
       <div className="pointer-events-none absolute inset-0 z-[1]" style={LIGHT_GRID} aria-hidden />
@@ -135,10 +82,7 @@ export default function Hero() {
         <p className="hero-tag font-body text-xs uppercase tracking-[0.3em] mb-4 opacity-70">
           Full-stack engineer / Kerala, India
         </p>
-        <h1
-          className="font-headline text-[14vw] md:text-[9vw] lg:text-[7.5vw] leading-[0.85] tracking-[-0.02em]"
-          style={{ textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}
-        >
+        <h1 className="font-headline text-[14vw] md:text-[9vw] lg:text-[7.5vw] leading-[0.85] tracking-[-0.02em]">
           <span className="hw inline-block mr-[0.18em]">Obsession</span>
           <span className="hw inline-block mr-[0.18em]"><em>beats</em></span>
           <br />
@@ -146,14 +90,15 @@ export default function Hero() {
         </h1>
         <div className="hero-cta mt-8 flex flex-wrap gap-4 items-center">
           <a
+            ref={ctaRef}
             href="mailto:ashercode4u@gmail.com"
-            className="group pointer-events-auto inline-flex items-center gap-2 px-6 py-3 border transition-colors duration-300 font-headline text-lg backdrop-blur-sm"
-            style={{
-              borderColor: "currentColor",
-              backgroundColor: "rgba(0,0,0,0.2)",
-            }}
+            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black overflow-hidden font-headline text-lg will-change-transform"
           >
-            <span>Get in Touch</span>
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+            />
+            <span className="relative z-[1] transition-colors duration-300 group-hover:text-white">Get in Touch</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -164,7 +109,7 @@ export default function Hero() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="group-hover:rotate-45 transition-transform"
+              className="relative z-[1] group-hover:rotate-45 transition-transform group-hover:text-white"
             >
               <path d="M7 7h10v10" />
               <path d="M7 17 17 7" />
@@ -180,6 +125,47 @@ export default function Hero() {
       <div className="absolute bottom-6 left-6 md:bottom-10 md:left-12 z-[3] font-body text-[11px] tracking-[0.2em] opacity-70">
         0x2f·7a · 4b · ff · 01 · 3c · ae →
       </div>
+
+      {/* Resume thumbnail — bottom-right with jointed connector line */}
+      <a
+        href="/ashishbkalladaresume.pdf"
+        download="ashishbkalladaresume.pdf"
+        aria-label="Download resume"
+        className="group hidden md:flex absolute bottom-24 right-10 lg:bottom-28 lg:right-14 z-[5] pointer-events-auto items-start gap-2"
+      >
+        {/* Label */}
+        <div className="flex items-center gap-1.5 whitespace-nowrap pointer-events-none">
+          <span className="font-body text-[10px] uppercase tracking-[0.22em] text-black">
+            ashishbkalladaresume.pdf
+          </span>
+          <Download className="w-3.5 h-3.5 text-black" />
+        </div>
+
+        {/* Connector — horizontal from label right, then diagonal down-right to thumbnail top-left */}
+        <svg
+          aria-hidden
+          className="shrink-0 pointer-events-none text-black"
+          width="32"
+          height="44"
+          viewBox="0 0 32 44"
+          fill="none"
+        >
+          <path d="M 0 8 L 14 8 L 32 42" stroke="currentColor" strokeWidth="1" />
+          <circle cx="0" cy="8" r="1.6" fill="currentColor" />
+          <circle cx="32" cy="42" r="1.6" fill="currentColor" />
+        </svg>
+
+        {/* Thumbnail */}
+        <div className="relative w-24 lg:w-28 aspect-[3/4] mt-10 shrink-0 overflow-hidden border border-black/20 bg-white shadow-[0_18px_40px_-15px_rgba(0,0,0,0.3)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.04]">
+          <Image
+            src="/resume-preview.png"
+            alt="Resume preview"
+            fill
+            sizes="120px"
+            className="object-cover object-top"
+          />
+        </div>
+      </a>
 
       {/* "Scroll to explore" — bottom-center */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[3] flex items-center gap-2 pointer-events-none opacity-70">

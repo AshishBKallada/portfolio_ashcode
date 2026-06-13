@@ -1,8 +1,41 @@
 "use client";
 
+import { forwardRef } from "react";
 import { ArrowUp, ArrowUpRight, Mail } from "lucide-react";
+import { useMagnetic } from "@/lib/useMagnetic";
+import UnderlineLink from "./UnderlineLink";
+
+const MagneticEmailButton = forwardRef<
+  HTMLAnchorElement,
+  { href: string; label: string; value: string }
+>(({ href, label, value }, ref) => (
+  <a
+    ref={ref}
+    href={href}
+    className="group relative flex items-center gap-3 px-8 py-4 border border-black overflow-hidden transition-colors duration-300 font-headline text-xl will-change-transform"
+  >
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-0 origin-left scale-x-0 transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+      style={{ backgroundColor: "#3fd75e" }}
+    />
+    <Mail className="relative z-[1] w-5 h-5 transition-colors group-hover:text-black" />
+    <div className="relative z-[1] flex flex-col items-start leading-tight">
+      <span className="font-body text-[10px] uppercase tracking-[0.25em] opacity-60 transition-colors group-hover:text-black">
+        {label}
+      </span>
+      <span className="transition-colors group-hover:text-black">{value}</span>
+    </div>
+    <ArrowUpRight className="relative z-[1] w-4 h-4 transition-transform group-hover:rotate-45 group-hover:text-black" />
+  </a>
+));
+MagneticEmailButton.displayName = "MagneticEmailButton";
 
 export default function Contact() {
+  const workRef = useMagnetic<HTMLAnchorElement>(0.22);
+  const sayHiRef = useMagnetic<HTMLAnchorElement>(0.22);
+  const backTopRef = useMagnetic<HTMLButtonElement>(0.32);
+
   const scrollTop = () => {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -26,32 +59,18 @@ export default function Contact() {
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row gap-4">
-          <a
+          <MagneticEmailButton
+            ref={workRef}
             href="mailto:ashercode4u@gmail.com"
-            className="group flex items-center gap-3 px-8 py-4 border border-black hover:bg-black hover:text-white transition-colors duration-300 font-headline text-xl"
-          >
-            <Mail className="w-5 h-5" />
-            <div className="flex flex-col items-start leading-tight">
-              <span className="font-body text-[10px] uppercase tracking-[0.25em] opacity-60">
-                work
-              </span>
-              <span>ashercode4u@gmail.com</span>
-            </div>
-            <ArrowUpRight className="w-4 h-4 group-hover:rotate-45 transition-transform" />
-          </a>
-          <a
+            label="work"
+            value="ashercode4u@gmail.com"
+          />
+          <MagneticEmailButton
+            ref={sayHiRef}
             href="mailto:ashishbkallada@gmail.com"
-            className="group flex items-center gap-3 px-8 py-4 border border-black hover:bg-black hover:text-white transition-colors duration-300 font-headline text-xl"
-          >
-            <Mail className="w-5 h-5" />
-            <div className="flex flex-col items-start leading-tight">
-              <span className="font-body text-[10px] uppercase tracking-[0.25em] opacity-60">
-                say hi
-              </span>
-              <span>ashishbkallada@gmail.com</span>
-            </div>
-            <ArrowUpRight className="w-4 h-4 group-hover:rotate-45 transition-transform" />
-          </a>
+            label="say hi"
+            value="ashishbkallada@gmail.com"
+          />
         </div>
       </div>
 
@@ -61,30 +80,30 @@ export default function Contact() {
           2026 © Ashcode — Ashish B Kallada
         </p>
         <div className="flex gap-6 md:gap-8">
-          <a
+          <UnderlineLink
             href="https://github.com/AshishBKallada"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-body text-xs uppercase tracking-[0.25em] opacity-70 hover:opacity-100 transition-opacity"
+            className="font-body text-xs uppercase tracking-[0.25em] opacity-80 hover:opacity-100 transition-opacity"
           >
             GitHub
-          </a>
-          <a
+          </UnderlineLink>
+          <UnderlineLink
             href="https://www.linkedin.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-body text-xs uppercase tracking-[0.25em] opacity-70 hover:opacity-100 transition-opacity"
+            className="font-body text-xs uppercase tracking-[0.25em] opacity-80 hover:opacity-100 transition-opacity"
           >
             LinkedIn
-          </a>
-          <a
+          </UnderlineLink>
+          <UnderlineLink
             href="https://x.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-body text-xs uppercase tracking-[0.25em] opacity-70 hover:opacity-100 transition-opacity"
+            className="font-body text-xs uppercase tracking-[0.25em] opacity-80 hover:opacity-100 transition-opacity"
           >
             X / Twitter
-          </a>
+          </UnderlineLink>
         </div>
       </div>
 
@@ -107,10 +126,11 @@ export default function Contact() {
 
       {/* Back to top — bottom-right arrow button */}
       <button
+        ref={backTopRef}
         type="button"
         onClick={scrollTop}
         aria-label="Back to top"
-        className="group absolute bottom-6 right-6 md:bottom-10 md:right-12 z-20 w-14 h-14 md:w-16 md:h-16 rounded-full border border-black/30 flex items-center justify-center bg-white hover:bg-black hover:text-white hover:border-black transition-colors duration-300"
+        className="group absolute bottom-6 right-6 md:bottom-10 md:right-12 z-20 w-14 h-14 md:w-16 md:h-16 rounded-full border border-black/30 flex items-center justify-center bg-white hover:bg-black hover:text-white hover:border-black transition-colors duration-300 will-change-transform"
       >
         <ArrowUp className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
       </button>

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -100,89 +99,130 @@ function SkillsModal({ open, onClose }: { open: boolean; onClose: () => void }) 
 
 function SkillsBadge({ onClick }: { onClick: () => void }) {
   return (
-    <div className="relative inline-flex items-center justify-center p-6 md:p-10">
-      <button
-        onClick={onClick}
-        aria-label="Open skills"
-        className="group relative w-60 h-60 md:w-[22rem] md:h-[22rem] lg:w-[26rem] lg:h-[26rem] shrink-0 rounded-full bg-white text-black shadow-[0_20px_60px_rgba(0,0,0,0.18)] hover:scale-[1.03] transition-transform duration-500"
-      >
-        {/* Doodles scattered inside the button */}
-        <span aria-hidden className="pointer-events-none absolute inset-0">
-          <Doodle className="absolute left-[15%] top-[18%] text-black/55 w-3 md:w-4" kind="spark" />
-          <Doodle className="absolute right-[14%] top-[14%] text-black/45 w-4 md:w-5" kind="star" />
-          <Doodle className="absolute left-[22%] bottom-[36%] text-black/55 w-3 md:w-4" kind="plus" />
-          <Doodle className="absolute right-[18%] bottom-[40%] text-black/45 w-3 md:w-4" kind="arrow" />
-          <Doodle className="absolute left-[10%] top-[48%] text-black/40 w-2.5 md:w-3" kind="dot" />
-          <Doodle className="absolute right-[10%] top-[52%] text-black/40 w-2.5 md:w-3" kind="dot" />
-        </span>
+    <button
+      onClick={onClick}
+      aria-label="Open skills"
+      className="group relative block w-[260px] md:w-[320px] lg:w-[360px] h-[380px] md:h-[460px] lg:h-[520px] rounded-[1.25rem] md:rounded-[1.5rem] bg-white text-black shadow-[0_30px_80px_-15px_rgba(0,0,0,0.35)] overflow-hidden transition-transform duration-[700ms] ease-[cubic-bezier(0.65,0,0.35,1)] rotate-[-10deg] translate-x-[25%] hover:rotate-0 hover:-translate-x-[8%] hover:scale-[1.05] will-change-transform"
+    >
+      {/* clip detail at top */}
+      <span
+        aria-hidden
+        className="absolute top-2 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full bg-black/15"
+      />
 
-        <span className="absolute inset-0 flex flex-col items-center justify-center z-[1]">
-          <span className="font-headline italic text-5xl md:text-7xl lg:text-8xl leading-none text-black">
-            Skills
-          </span>
-          <span className="mt-2 md:mt-3 font-body text-[10px] md:text-xs uppercase tracking-[0.35em] text-black/60">
-            {SKILLS.length} categories
-          </span>
-          <span className="mt-5 md:mt-7 text-xl md:text-2xl text-black group-hover:translate-x-1 transition-transform">↗</span>
-        </span>
-      </button>
-    </div>
+      <div className="absolute inset-0 px-7 md:px-9 pt-10 md:pt-12 pb-7 md:pb-9 flex flex-col items-center text-center">
+        <p className="font-body text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-black/60">
+          June 2026
+        </p>
+        <h3 className="mt-4 md:mt-6 font-headline italic text-[2rem] md:text-4xl lg:text-5xl leading-[1.02] text-black">
+          Maker Of
+          <br />
+          The Stack
+        </h3>
+        <p className="mt-3 md:mt-4 font-body text-[10px] md:text-[11px] uppercase tracking-[0.3em] text-black/55">
+          Ashish B Kallada
+        </p>
+
+        {/* Visual — realistic green Mjolnir, upside-down at 45° */}
+        <div className="relative mt-auto w-full flex items-center justify-center pb-2 pt-2">
+          <svg
+            viewBox="0 0 120 210"
+            className="w-[150px] md:w-[190px] lg:w-[210px] rotate-[135deg] transition-transform duration-500 ease-out group-hover:rotate-[125deg]"
+            aria-hidden
+          >
+            <defs>
+              <linearGradient id="hammer-head" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#6fee8a" />
+                <stop offset="50%" stopColor="#3fd75e" />
+                <stop offset="100%" stopColor="#1f9a3d" />
+              </linearGradient>
+              <linearGradient id="hammer-handle" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#5fe87a" />
+                <stop offset="50%" stopColor="#3fd75e" />
+                <stop offset="100%" stopColor="#268a44" />
+              </linearGradient>
+              <linearGradient id="hammer-metal" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3fd75e" />
+                <stop offset="100%" stopColor="#1a7d36" />
+              </linearGradient>
+            </defs>
+
+            {/* Head — classic Mjolnir with slight concave sides */}
+            <path
+              d="M 18 18
+                 Q 14 22 14 30
+                 L 14 60
+                 Q 14 68 18 72
+                 L 102 72
+                 Q 106 68 106 60
+                 L 106 30
+                 Q 106 22 102 18
+                 Z"
+              fill="url(#hammer-head)"
+              stroke="#1a7d36"
+              strokeWidth="0.8"
+            />
+            {/* Top-edge highlight */}
+            <path
+              d="M 20 22 Q 18 24 18 30 L 18 38"
+              stroke="#ffffff"
+              strokeWidth="1.2"
+              opacity="0.55"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <line x1="22" y1="22" x2="100" y2="22" stroke="#ffffff" strokeWidth="1" opacity="0.35" />
+            {/* Side panel divisions (gives the head depth) */}
+            <line x1="32" y1="20" x2="32" y2="70" stroke="#1a7d36" strokeWidth="0.6" opacity="0.55" />
+            <line x1="88" y1="20" x2="88" y2="70" stroke="#1a7d36" strokeWidth="0.6" opacity="0.55" />
+            <line x1="20" y1="45" x2="100" y2="45" stroke="#1a7d36" strokeWidth="0.6" opacity="0.4" />
+            {/* Bottom-edge shadow */}
+            <line x1="22" y1="68" x2="100" y2="68" stroke="#0d4a1f" strokeWidth="1" opacity="0.35" />
+            {/* Rune detail (center of face) */}
+            <circle cx="60" cy="45" r="6" fill="none" stroke="#0d4a1f" strokeWidth="0.8" opacity="0.35" />
+            <circle cx="60" cy="45" r="2.5" fill="#0d4a1f" opacity="0.4" />
+
+            {/* Cuff/collar between head and handle */}
+            <rect x="44" y="72" width="32" height="9" fill="url(#hammer-metal)" />
+            <line x1="44" y1="76" x2="76" y2="76" stroke="#ffffff" strokeWidth="0.7" opacity="0.45" />
+            <line x1="44" y1="80" x2="76" y2="80" stroke="#0d4a1f" strokeWidth="0.7" opacity="0.5" />
+
+            {/* Handle */}
+            <rect x="52" y="81" width="16" height="98" fill="url(#hammer-handle)" />
+            {/* Handle highlight (left edge) */}
+            <rect x="52" y="81" width="2.5" height="98" fill="#ffffff" opacity="0.3" />
+            {/* Handle shadow (right edge) */}
+            <rect x="65.5" y="81" width="2.5" height="98" fill="#0d4a1f" opacity="0.35" />
+            {/* Leather grip wraps */}
+            {[94, 108, 122, 136, 150, 164].map((y) => (
+              <g key={y}>
+                <rect x="52" y={y} width="16" height="3" fill="#0d4a1f" opacity="0.35" />
+                <line x1="52" y1={y} x2="68" y2={y} stroke="#ffffff" strokeWidth="0.5" opacity="0.3" />
+              </g>
+            ))}
+
+            {/* Pommel */}
+            <path
+              d="M 42 179
+                 L 78 179
+                 Q 80 179 80 181
+                 L 80 192
+                 Q 80 194 78 194
+                 L 42 194
+                 Q 40 194 40 192
+                 L 40 181
+                 Q 40 179 42 179 Z"
+              fill="url(#hammer-metal)"
+              stroke="#0d4a1f"
+              strokeWidth="0.6"
+            />
+            <line x1="42" y1="183" x2="78" y2="183" stroke="#ffffff" strokeWidth="0.7" opacity="0.4" />
+            <line x1="42" y1="190" x2="78" y2="190" stroke="#0d4a1f" strokeWidth="0.7" opacity="0.5" />
+          </svg>
+        </div>
+      </div>
+    </button>
   );
-}
-
-function Doodle({
-  kind,
-  className = "",
-}: {
-  kind: "star" | "spark" | "plus" | "arrow" | "dot";
-  className?: string;
-}) {
-  switch (kind) {
-    case "star":
-      return (
-        <svg viewBox="0 0 24 24" className={className} aria-hidden>
-          <path d="M12 1 L14 10 L23 12 L14 14 L12 23 L10 14 L1 12 L10 10 Z" fill="currentColor" />
-        </svg>
-      );
-    case "spark":
-      return (
-        <svg viewBox="0 0 24 24" className={className} aria-hidden>
-          <path
-            d="M12 2 L13 11 L22 12 L13 13 L12 22 L11 13 L2 12 L11 11 Z"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    case "plus":
-      return (
-        <svg viewBox="0 0 24 24" className={className} aria-hidden>
-          <line x1="12" y1="3" x2="12" y2="21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      );
-    case "arrow":
-      return (
-        <svg viewBox="0 0 24 24" className={className} aria-hidden>
-          <path
-            d="M5 19 L19 5 M11 5 H19 V13"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    case "dot":
-      return (
-        <svg viewBox="0 0 24 24" className={className} aria-hidden>
-          <circle cx="12" cy="12" r="6" fill="currentColor" />
-        </svg>
-      );
-  }
 }
 
 export default function Statement() {
@@ -235,8 +275,23 @@ export default function Statement() {
         const bpX = gsap.quickTo(bp, "x", { duration: 1.0, ease: "power3.out" });
         const bpY = gsap.quickTo(bp, "y", { duration: 1.0, ease: "power3.out" });
 
-        // Idle slow rotation as ambient motion
-        gsap.to(circleARef.current, { rotation: "+=360", duration: 90, ease: "none", repeat: -1 });
+        // Idle slow rotation — paused when section is out of view
+        const idleTween = gsap.to(circleARef.current, {
+          rotation: "+=360",
+          duration: 90,
+          ease: "none",
+          repeat: -1,
+          paused: true,
+        });
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top bottom",
+          end: "bottom top",
+          onEnter: () => idleTween.play(),
+          onEnterBack: () => idleTween.play(),
+          onLeave: () => idleTween.pause(),
+          onLeaveBack: () => idleTween.pause(),
+        });
 
         const onMove = (e: MouseEvent) => {
           const r = section.getBoundingClientRect();
@@ -248,7 +303,7 @@ export default function Statement() {
           bpX(mx * 30);
           bpY(my * 30);
         };
-        section.addEventListener("mousemove", onMove);
+        section.addEventListener("mousemove", onMove, { passive: true });
       }
 
       // Skills badge — fully off-screen right, scrubbed in based on scroll
@@ -279,7 +334,7 @@ export default function Statement() {
     <section
       ref={sectionRef}
       id="statement"
-      className="relative z-10 flex w-full shrink-0 flex-col bg-white px-1 sm:px-1.5 md:px-2 overflow-hidden"
+      className="relative z-10 flex w-full shrink-0 flex-col bg-white text-black px-1 sm:px-1.5 md:px-2 overflow-hidden shadow-[0_-12px_40px_-10px_rgba(0,0,0,0.18)]"
       aria-label="Statement"
     >
       <div className="relative isolate w-full px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40">
@@ -371,23 +426,16 @@ export default function Statement() {
                 className="absolute inset-0 will-change-transform"
                 style={{ transformOrigin: "0% 0%" }}
               >
-                <div className="relative h-full w-full overflow-hidden rounded-[1.5rem] md:rounded-[2rem]">
-                  <div className="absolute inset-0 scale-105">
-                    <Image
-                      src="/hero-background.jpg"
-                      alt=""
-                      fill
-                      sizes="(min-width: 768px) 58vw, 100vw"
-                      className="object-cover object-center blur-md brightness-[0.62] saturate-[1.15]"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/20 to-black/55" aria-hidden />
+                <div className="relative h-full w-full overflow-hidden rounded-[1.25rem] md:rounded-[1.5rem] bg-white shadow-[0_30px_80px_-15px_rgba(0,0,0,0.35)] flex items-center justify-center">
+                  <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/30">
+                    video comes here
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="relative md:col-span-3 min-h-[460px] md:min-h-[600px]">
-              <div className="absolute top-1/2 -translate-y-1/2 -right-32 md:-right-48 lg:-right-64">
+              <div className="absolute top-1/2 -translate-y-1/2 right-0 md:right-2 lg:right-6">
                 <div ref={skillsRef} className="will-change-transform">
                   <SkillsBadge onClick={() => setModalOpen(true)} />
                 </div>

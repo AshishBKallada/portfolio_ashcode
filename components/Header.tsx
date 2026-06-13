@@ -2,6 +2,12 @@
 
 import { Menu } from "lucide-react";
 
+const NAV = [
+  { label: "Works", target: "projects" },
+  { label: "About", target: "statement" },
+  { label: "Contact", target: "contact" },
+];
+
 export default function Header() {
   return (
     <header
@@ -12,18 +18,22 @@ export default function Header() {
         <span className="font-headline text-xl italic">ashish</span>
         <span className="font-body text-xs uppercase tracking-[0.25em] opacity-50">/ kallada</span>
       </button>
-      <nav className="hidden md:flex items-center space-x-6 pointer-events-auto">
-        {["Works", "About", "Contact"].map((label) => (
+      <nav className="hidden md:flex items-center space-x-7 pointer-events-auto">
+        {NAV.map(({ label, target }) => (
           <button
             key={label}
             onClick={() =>
-              document
-                .getElementById(label.toLowerCase() === "works" ? "projects" : label.toLowerCase())
-                ?.scrollIntoView({ behavior: "smooth" })
+              document.getElementById(target)?.scrollIntoView({ behavior: "smooth" })
             }
-            className="text-xs hover:opacity-50 transition-opacity uppercase tracking-[0.2em] font-body"
+            className="group relative font-body text-xs uppercase tracking-[0.2em]"
           >
-            {label}
+            <span className="relative z-[1] transition-opacity group-hover:opacity-80">
+              {label}
+            </span>
+            <span
+              aria-hidden
+              className="pointer-events-none absolute left-0 right-0 -bottom-1 h-[1.5px] origin-left scale-x-0 transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100 bg-current"
+            />
           </button>
         ))}
       </nav>
