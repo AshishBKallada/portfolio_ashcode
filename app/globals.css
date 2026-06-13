@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 6%;
+  --muted: 0 0% 45%;
+  --line: 0 0% 88%;
+}
+
+html, body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+::selection {
+  background: black;
+  color: white;
+}
+
+/* hide default cursor when custom one is active */
+html.custom-cursor, html.custom-cursor * {
+  cursor: none !important;
+}
+
+/* Statement section — text that fades vertically using background-clip */
+.statement-fade-text-light {
+  background-image: linear-gradient(
+    180deg,
+    #0a0a0a 0%,
+    #171717 18%,
+    rgba(23, 23, 23, 0.65) 40%,
+    rgba(23, 23, 23, 0.22) 62%,
+    rgba(23, 23, 23, 0.08) 80%,
+    rgba(23, 23, 23, 0) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
