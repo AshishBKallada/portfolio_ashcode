@@ -1,4 +1,3 @@
-import AudioToggle from "@/components/AudioToggle";
 import Contact from "@/components/Contact";
 import CustomCursor from "@/components/CustomCursor";
 import Header from "@/components/Header";
@@ -13,9 +12,6 @@ export default function Page() {
       <LoadingScreen />
       <CustomCursor />
       <Header />
-      <AudioToggle />
-
-      <audio id="bg-audio" loop preload="none" src="/audio/canta-de-luna.mp3" />
 
       <main className="relative bg-white">
         <div className="relative">

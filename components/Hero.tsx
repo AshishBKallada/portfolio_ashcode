@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { useAudioPlaying } from "./useAudioPlaying";
 
 const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
 
@@ -18,7 +17,6 @@ export default function Hero() {
   const figureRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
-  const isPlaying = useAudioPlaying("bg-audio");
   const [inView, setInView] = useState(true);
 
   // Pause heavy WebGL (SplashCursor) when Hero scrolls out of view
@@ -80,7 +78,6 @@ export default function Hero() {
       ref={sectionRef}
       id="home"
       className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-transparent text-white"
-      style={{ color: isPlaying ? "#000" : "#fff" }}
     >
       {/* Blurred background image */}
       <div ref={bgRef} className="pointer-events-none absolute inset-0 z-0">
@@ -123,22 +120,10 @@ export default function Hero() {
         />
       )}
 
-      {/* Readability gradient — hidden during playback */}
-      {!isPlaying && (
-        <div
-          className="pointer-events-none absolute inset-0 z-[1]"
-          style={{ background: "linear-gradient(115deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 30%, rgba(0,0,0,0) 60%)" }}
-          aria-hidden
-        />
-      )}
-
-      {/* Circular white reveal — grows from the audio button */}
+      {/* Readability gradient */}
       <div
-        className="pointer-events-none absolute inset-0 z-[2] bg-white"
-        style={{
-          clipPath: `circle(${isPlaying ? "150%" : "0%"} at calc(100% - 4rem) calc(100% - 4rem))`,
-          transition: "clip-path 900ms cubic-bezier(0.65, 0, 0.35, 1)",
-        }}
+        className="pointer-events-none absolute inset-0 z-[1]"
+        style={{ background: "linear-gradient(115deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 30%, rgba(0,0,0,0) 60%)" }}
         aria-hidden
       />
 
@@ -152,7 +137,7 @@ export default function Hero() {
         </p>
         <h1
           className="font-headline text-[14vw] md:text-[9vw] lg:text-[7.5vw] leading-[0.85] tracking-[-0.02em]"
-          style={!isPlaying ? { textShadow: "0 2px 12px rgba(0,0,0,0.4)" } : undefined}
+          style={{ textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}
         >
           <span className="hw inline-block mr-[0.18em]">Obsession</span>
           <span className="hw inline-block mr-[0.18em]"><em>beats</em></span>
@@ -165,7 +150,7 @@ export default function Hero() {
             className="group pointer-events-auto inline-flex items-center gap-2 px-6 py-3 border transition-colors duration-300 font-headline text-lg backdrop-blur-sm"
             style={{
               borderColor: "currentColor",
-              backgroundColor: isPlaying ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)",
+              backgroundColor: "rgba(0,0,0,0.2)",
             }}
           >
             <span>Get in Touch</span>
