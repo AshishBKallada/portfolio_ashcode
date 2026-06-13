@@ -7,7 +7,6 @@ import { gsap } from "gsap";
 import { useAudioPlaying } from "./useAudioPlaying";
 
 const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
-const PlayingModel = dynamic(() => import("./PlayingModel"), { ssr: false });
 
 const LIGHT_GRID = {
   backgroundImage:
@@ -45,8 +44,7 @@ export default function Hero() {
       if (!root) return;
       gsap.from(root.querySelectorAll(".hero-tag"), { y: 18, opacity: 0, duration: 0.6, delay: 0.45, ease: "power2.out" });
       gsap.from(root.querySelectorAll(".hw"), { y: 90, opacity: 0, duration: 1.05, stagger: 0.07, delay: 0.6, ease: "power4.out" });
-      gsap.from(root.querySelectorAll(".hero-body"), { y: 22, opacity: 0, duration: 0.75, delay: 1.35, ease: "power3.out" });
-      gsap.from(root.querySelectorAll(".hero-cta"), { y: 22, opacity: 0, duration: 0.65, delay: 1.55, ease: "power3.out" });
+      gsap.from(root.querySelectorAll(".hero-cta"), { y: 22, opacity: 0, duration: 0.65, delay: 1.35, ease: "power3.out" });
     });
     return () => ctx.revert();
   }, []);
@@ -98,11 +96,10 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Foreground hero figure — hidden while song is playing */}
+      {/* Foreground hero figure — always visible */}
       <div
         ref={figureRef}
-        className="pointer-events-none absolute inset-0 z-[3] will-change-transform transition-opacity duration-500"
-        style={{ opacity: isPlaying ? 0 : 1 }}
+        className="pointer-events-none absolute inset-0 z-[3] will-change-transform"
       >
         <Image
           src="/hero-image.png"
@@ -114,15 +111,11 @@ export default function Hero() {
         />
       </div>
 
-      {/* 3D model — thrown from bottom to center, slow spin while playing */}
-      {inView && <PlayingModel visible={isPlaying} />}
-
-      {/* SplashCursor — only when Hero is in view. Remount on color change so the WebGL dye buffer resets. */}
+      {/* SplashCursor — only when Hero is in view. */}
       {inView && (
         <SplashCursor
-          key={isPlaying ? "red" : "green"}
           RAINBOW_MODE={false}
-          COLOR={isPlaying ? "#ff2d2d" : "#3fd75e"}
+          COLOR="#3fd75e"
           SIM_RESOLUTION={64}
           DYE_RESOLUTION={512}
           PRESSURE_ITERATIONS={8}
@@ -152,13 +145,13 @@ export default function Hero() {
       {/* 12-column gridlines */}
       <div className="pointer-events-none absolute inset-0 z-[1]" style={LIGHT_GRID} aria-hidden />
 
-      {/* Headline block — top-left. Colors inherit from section via currentColor */}
-      <div className="relative z-[3] px-6 md:px-12 pt-28 md:pt-32 max-w-2xl md:max-w-3xl pointer-events-none">
+      {/* Headline block — bottom-left. Colors inherit from section via currentColor */}
+      <div className="absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none">
         <p className="hero-tag font-body text-xs uppercase tracking-[0.3em] mb-4 opacity-70">
           Full-stack engineer / Kerala, India
         </p>
         <h1
-          className="font-headline text-[18vw] md:text-[12vw] lg:text-[10vw] leading-[0.85] tracking-[-0.02em]"
+          className="font-headline text-[14vw] md:text-[9vw] lg:text-[7.5vw] leading-[0.85] tracking-[-0.02em]"
           style={!isPlaying ? { textShadow: "0 2px 12px rgba(0,0,0,0.4)" } : undefined}
         >
           <span className="hw inline-block mr-[0.18em]">Obsession</span>
@@ -166,10 +159,6 @@ export default function Hero() {
           <br />
           <span className="hw inline-block">talent.</span>
         </h1>
-        <p className="hero-body font-body mt-6 max-w-md text-base md:text-lg leading-relaxed opacity-85">
-          I&apos;m Ashish — I don&apos;t believe in inspiration, I believe in reps. Show up. Ship.
-          Repeat. The stack rewards consistency, not vibes.
-        </p>
         <div className="hero-cta mt-8 flex flex-wrap gap-4 items-center">
           <a
             href="mailto:ashercode4u@gmail.com"
