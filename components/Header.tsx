@@ -1,12 +1,35 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { Menu, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 const NAV = [
   { label: "Works", target: "projects" },
   { label: "About", target: "statement" },
   { label: "Contact", target: "contact" },
 ];
+
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isDark = mounted && resolvedTheme === "dark";
+
+  return (
+    <button
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label="Toggle theme"
+      className="pointer-events-auto flex items-center justify-center w-7 h-7 rounded-full border border-current/40 hover:border-current transition-colors"
+    >
+      {mounted ? (
+        isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />
+      ) : (
+        <span className="w-3.5 h-3.5" />
+      )}
+    </button>
+  );
+}
 
 export default function Header() {
   return (
@@ -36,8 +59,10 @@ export default function Header() {
             />
           </button>
         ))}
+        <ThemeToggle />
       </nav>
-      <div className="md:hidden pointer-events-auto flex items-center gap-4">
+      <div className="md:hidden pointer-events-auto flex items-center gap-3">
+        <ThemeToggle />
         <button aria-label="Toggle menu">
           <Menu className="w-5 h-5" />
         </button>

@@ -101,7 +101,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-white text-black"
+      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-white text-black dark:bg-black dark:text-white"
     >
       {/* Foreground hero figure — always visible */}
       <div
@@ -150,13 +150,13 @@ export default function Hero() {
           <a
             ref={ctaRef}
             href="mailto:ashercode4u@gmail.com"
-            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black overflow-hidden font-headline text-lg will-change-transform"
+            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black dark:border-white overflow-hidden font-headline text-lg will-change-transform"
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black dark:bg-white transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
             />
-            <span className="relative z-[1] transition-colors duration-300 group-hover:text-white">Get in Touch</span>
+            <span className="relative z-[1] transition-colors duration-300 group-hover:text-white dark:group-hover:text-black">Get in Touch</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -167,7 +167,7 @@ export default function Hero() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="relative z-[1] group-hover:rotate-45 transition-transform group-hover:text-white"
+              className="relative z-[1] group-hover:rotate-45 transition-transform group-hover:text-white dark:group-hover:text-black"
             >
               <path d="M7 7h10v10" />
               <path d="M7 17 17 7" />
@@ -189,20 +189,24 @@ export default function Hero() {
         href="/ashishbkalladaresume.pdf"
         download="ashishbkalladaresume.pdf"
         aria-label="Download resume"
+        onClick={(e) => {
+          const ok = window.confirm("Download ashishbkalladaresume.pdf?");
+          if (!ok) e.preventDefault();
+        }}
         className="group hidden md:flex fixed bottom-24 right-10 lg:bottom-28 lg:right-14 z-[60] pointer-events-auto items-start gap-2"
       >
         {/* Label */}
         <div className="flex items-center gap-1.5 whitespace-nowrap pointer-events-none">
-          <span className="font-body text-[10px] uppercase tracking-[0.22em] text-black">
+          <span className="font-body text-[10px] uppercase tracking-[0.22em] text-black dark:text-white">
             ashishbkalladaresume.pdf
           </span>
-          <Download className="w-3.5 h-3.5 text-black" />
+          <Download className="w-3.5 h-3.5 text-black dark:text-white" />
         </div>
 
         {/* Connector — horizontal from label right, then diagonal down-right to thumbnail top-left */}
         <svg
           aria-hidden
-          className="shrink-0 pointer-events-none text-black"
+          className="shrink-0 pointer-events-none text-black dark:text-white"
           width="32"
           height="44"
           viewBox="0 0 32 44"
@@ -214,7 +218,7 @@ export default function Hero() {
         </svg>
 
         {/* Thumbnail */}
-        <div className="relative w-24 lg:w-28 aspect-[3/4] mt-10 shrink-0 overflow-hidden border border-black/20 bg-white shadow-[0_18px_40px_-15px_rgba(0,0,0,0.3)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.04]">
+        <div className="relative w-24 lg:w-28 aspect-[3/4] mt-10 shrink-0 overflow-hidden border border-black/20 dark:border-white/20 bg-white dark:bg-neutral-900 shadow-[0_18px_40px_-15px_rgba(0,0,0,0.3)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.04]">
           <Image
             src="/resume-preview.png"
             alt="Resume preview"

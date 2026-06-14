@@ -81,17 +81,17 @@ function SkillsModal({ open, onClose }: { open: boolean; onClose: () => void }) 
       <div
         ref={panelRef}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-5xl max-h-[88vh] overflow-y-auto rounded-[1.5rem] md:rounded-[2rem] bg-white text-black shadow-[0_30px_120px_rgba(0,0,0,0.45)]"
+        className="relative w-full max-w-5xl max-h-[88vh] overflow-y-auto rounded-[1.5rem] md:rounded-[2rem] bg-white text-black dark:bg-neutral-950 dark:text-white shadow-[0_30px_120px_rgba(0,0,0,0.45)]"
       >
-        <header className="sticky top-0 z-10 flex items-center justify-between bg-white/95 backdrop-blur-sm px-6 md:px-10 py-5 border-b border-black/10">
+        <header className="sticky top-0 z-10 flex items-center justify-between bg-white/95 dark:bg-neutral-950/95 backdrop-blur-sm px-6 md:px-10 py-5 border-b border-black/10 dark:border-white/10">
           <div>
-            <p className="font-body text-[10px] uppercase tracking-[0.35em] text-black/50">The whole stack</p>
+            <p className="font-body text-[10px] uppercase tracking-[0.35em] text-black/50 dark:text-white/50">The whole stack</p>
             <h3 className="font-headline italic text-3xl md:text-5xl leading-[1] mt-1">Skills.</h3>
           </div>
           <button
             onClick={onClose}
             aria-label="Close skills"
-            className="rounded-full border border-black/15 p-2 hover:bg-black hover:text-white transition-colors"
+            className="rounded-full border border-black/15 dark:border-white/15 p-2 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -99,16 +99,16 @@ function SkillsModal({ open, onClose }: { open: boolean; onClose: () => void }) 
 
         <div ref={rowsRef} className="px-6 md:px-10 py-8 md:py-10 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
           {SKILLS.map((row) => (
-            <div key={row.category} className="flex flex-col gap-1 border-b border-black/10 pb-4">
-              <span className="font-body text-[10px] uppercase tracking-[0.3em] text-black/45">{row.category}</span>
-              <span className="font-body text-sm md:text-base leading-relaxed text-black/85">{row.items}</span>
+            <div key={row.category} className="flex flex-col gap-1 border-b border-black/10 dark:border-white/10 pb-4">
+              <span className="font-body text-[10px] uppercase tracking-[0.3em] text-black/45 dark:text-white/45">{row.category}</span>
+              <span className="font-body text-sm md:text-base leading-relaxed text-black/85 dark:text-white/85">{row.items}</span>
             </div>
           ))}
         </div>
 
-        <footer className="px-6 md:px-10 py-5 border-t border-black/10 flex items-center justify-between">
-          <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/50">Esc to close</p>
-          <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/50">Built between 03:00 and 05:00</p>
+        <footer className="px-6 md:px-10 py-5 border-t border-black/10 dark:border-white/10 flex items-center justify-between">
+          <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/50 dark:text-white/50">Esc to close</p>
+          <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/50 dark:text-white/50">Built between 03:00 and 05:00</p>
         </footer>
       </div>
     </div>
@@ -120,24 +120,24 @@ function SkillsBadge({ onClick }: { onClick: () => void }) {
     <button
       onClick={onClick}
       aria-label="Open skills"
-      className="group relative block w-[260px] md:w-[320px] lg:w-[360px] h-[380px] md:h-[460px] lg:h-[520px] rounded-[1.25rem] md:rounded-[1.5rem] bg-white text-black shadow-[0_30px_80px_-15px_rgba(0,0,0,0.35)] overflow-hidden transition-transform duration-[700ms] ease-[cubic-bezier(0.65,0,0.35,1)] rotate-[-10deg] translate-x-[25%] hover:rotate-0 hover:-translate-x-[8%] hover:scale-[1.05] will-change-transform"
+      className="group relative block w-[260px] md:w-[320px] lg:w-[360px] h-[380px] md:h-[460px] lg:h-[520px] rounded-[1.25rem] md:rounded-[1.5rem] bg-white text-black dark:bg-neutral-950 dark:text-white shadow-[0_30px_80px_-15px_rgba(0,0,0,0.35)] overflow-hidden transition-transform duration-[700ms] ease-[cubic-bezier(0.65,0,0.35,1)] rotate-[-10deg] translate-x-[25%] hover:rotate-0 hover:-translate-x-[8%] hover:scale-[1.05] will-change-transform"
     >
       {/* clip detail at top */}
       <span
         aria-hidden
-        className="absolute top-2 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full bg-black/15"
+        className="absolute top-2 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full bg-black/15 dark:bg-white/15"
       />
 
       <div className="absolute inset-0 px-7 md:px-9 pt-10 md:pt-12 pb-7 md:pb-9 flex flex-col items-center text-center">
-        <p className="font-body text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-black/60">
+        <p className="font-body text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-black/60 dark:text-white/60">
           June 2026
         </p>
-        <h3 className="mt-4 md:mt-6 font-headline italic text-[2rem] md:text-4xl lg:text-5xl leading-[1.02] text-black">
+        <h3 className="mt-4 md:mt-6 font-headline italic text-[2rem] md:text-4xl lg:text-5xl leading-[1.02] text-black dark:text-white">
           Maker Of
           <br />
           The Stack
         </h3>
-        <p className="mt-3 md:mt-4 font-body text-[10px] md:text-[11px] uppercase tracking-[0.3em] text-black/55">
+        <p className="mt-3 md:mt-4 font-body text-[10px] md:text-[11px] uppercase tracking-[0.3em] text-black/55 dark:text-white/55">
           Ashish B Kallada
         </p>
 
@@ -352,7 +352,7 @@ export default function Statement() {
     <section
       ref={sectionRef}
       id="statement"
-      className="relative z-10 flex w-full shrink-0 flex-col bg-white text-black px-1 sm:px-1.5 md:px-2 overflow-hidden shadow-[0_-12px_40px_-10px_rgba(0,0,0,0.18)]"
+      className="relative z-10 flex w-full shrink-0 flex-col bg-white text-black dark:bg-black dark:text-white px-1 sm:px-1.5 md:px-2 overflow-hidden shadow-[0_-12px_40px_-10px_rgba(0,0,0,0.18)]"
       aria-label="Statement"
     >
       <div className="relative isolate w-full px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40">
@@ -394,17 +394,17 @@ export default function Statement() {
 
         <div className="relative z-10 mx-auto max-w-[88rem]">
           <div className="flex items-baseline justify-between mb-12 md:mb-16">
-            <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/50">
+            <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/50 dark:text-white/50">
               002 — End-to-end
             </p>
-            <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/50 hidden md:block">
+            <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/50 dark:text-white/50 hidden md:block">
               The Stack
             </p>
           </div>
 
           <h2
             ref={headlineRef}
-            className="font-headline italic leading-[0.92] tracking-[-0.02em] text-black text-[clamp(2.5rem,9vw,8rem)]"
+            className="font-headline italic leading-[0.92] tracking-[-0.02em] text-black dark:text-white text-[clamp(2.5rem,9vw,8rem)]"
           >
             {headlineWords.slice(0, 2).map((w, i) => (
               <span key={`a-${i}`} className="word inline-block mr-[0.18em]">{w}</span>
@@ -417,17 +417,17 @@ export default function Statement() {
 
           <div className="mt-10 md:mt-14 max-w-3xl flex items-start gap-4 md:gap-6">
             <span
-              className="hidden md:block h-px w-12 lg:w-20 bg-black/40 mt-[0.95rem] shrink-0"
+              className="hidden md:block h-px w-12 lg:w-20 bg-black/40 dark:bg-white/40 mt-[0.95rem] shrink-0"
               aria-hidden
             />
             <div className="flex-1">
-              <p className="font-body text-base md:text-lg leading-relaxed text-black/75">
-                I&apos;m <span className="font-headline italic text-black">Ashish B Kallada</span>,
+              <p className="font-body text-base md:text-lg leading-relaxed text-black/75 dark:text-white/75">
+                I&apos;m <span className="font-headline italic text-black dark:text-white">Ashish B Kallada</span>,
                 a full-stack developer from God&apos;s own country 🌴. I build for the internet from
                 the database up — React, Node, Mongo, Postgres, the parts that don&apos;t have a
                 name yet.
               </p>
-              <p className="mt-6 font-body text-xs uppercase tracking-[0.3em] text-black/40">
+              <p className="mt-6 font-body text-xs uppercase tracking-[0.3em] text-black/40 dark:text-white/40">
                 — bio, 2026
               </p>
             </div>
@@ -444,8 +444,8 @@ export default function Statement() {
                 className="absolute inset-0 will-change-transform"
                 style={{ transformOrigin: "0% 0%" }}
               >
-                <div className="relative h-full w-full overflow-hidden rounded-[1.25rem] md:rounded-[1.5rem] bg-white shadow-[0_30px_80px_-15px_rgba(0,0,0,0.35)] flex items-center justify-center">
-                  <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/30">
+                <div className="relative h-full w-full overflow-hidden rounded-[1.25rem] md:rounded-[1.5rem] bg-white dark:bg-neutral-900 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.35)] flex items-center justify-center">
+                  <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/30 dark:text-white/30">
                     video comes here
                   </p>
                 </div>

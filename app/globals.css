@@ -36,6 +36,10 @@ html.lenis body {
   background: black;
   color: white;
 }
+html.dark ::selection {
+  background: white;
+  color: black;
+}
 
 /* hide default cursor when custom one is active */
 html.custom-cursor, html.custom-cursor * {
