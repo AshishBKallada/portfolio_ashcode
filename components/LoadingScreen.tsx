@@ -17,7 +17,7 @@ function LoaderContent({ counterRef, progressRef }: RefPair) {
         className="pointer-events-none absolute inset-0 opacity-100"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(255,255,255,0.04) calc(8.333333% - 1px), rgba(255,255,255,0.04) 8.333333%)",
+            "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1.5px), rgba(255,255,255,0.022) calc(8.333333% - 0.75px), transparent 8.333333%)",
         }}
       />
 
@@ -87,6 +87,7 @@ export default function LoadingScreen() {
       onComplete: () => {
         document.documentElement.style.overflow = prevOverflow;
         setHidden(true);
+        window.dispatchEvent(new CustomEvent("loader:done"));
       },
     });
 

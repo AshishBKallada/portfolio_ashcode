@@ -42,8 +42,26 @@ function SkillsModal({ open, onClose }: { open: boolean; onClose: () => void }) 
         });
       }
     });
+    const scrollY = window.scrollY;
+    const lenis = (window as unknown as { __lenis?: { stop: () => void; start: () => void } }).__lenis;
+    lenis?.stop();
     document.documentElement.style.overflow = "hidden";
-    return () => { ctx.revert(); document.documentElement.style.overflow = ""; };
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    return () => {
+      ctx.revert();
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      window.scrollTo(0, scrollY);
+      lenis?.start();
+    };
   }, [open]);
 
   useEffect(() => {
@@ -83,7 +101,7 @@ function SkillsModal({ open, onClose }: { open: boolean; onClose: () => void }) 
           {SKILLS.map((row) => (
             <div key={row.category} className="flex flex-col gap-1 border-b border-black/10 pb-4">
               <span className="font-body text-[10px] uppercase tracking-[0.3em] text-black/45">{row.category}</span>
-              <span className="font-headline italic text-lg md:text-xl leading-snug text-black">{row.items}</span>
+              <span className="font-body text-sm md:text-base leading-relaxed text-black/85">{row.items}</span>
             </div>
           ))}
         </div>
@@ -342,7 +360,7 @@ export default function Statement() {
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             backgroundImage:
-              "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(0,0,0,0.05) calc(8.333333% - 1px), rgba(0,0,0,0.05) 8.333333%)",
+              "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1.5px), rgba(0,0,0,0.022) calc(8.333333% - 0.75px), transparent 8.333333%)",
           }}
           aria-hidden
         />

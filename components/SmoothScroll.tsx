@@ -17,6 +17,8 @@ export default function SmoothScroll() {
       smoothWheel: true,
     });
 
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
     lenis.on("scroll", ScrollTrigger.update);
 
     const onTick = (time: number) => lenis.raf(time * 1000);
@@ -26,6 +28,7 @@ export default function SmoothScroll() {
     return () => {
       gsap.ticker.remove(onTick);
       lenis.destroy();
+      delete (window as unknown as { __lenis?: Lenis }).__lenis;
     };
   }, []);
 

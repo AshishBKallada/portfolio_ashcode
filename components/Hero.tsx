@@ -4,18 +4,25 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Download } from "lucide-react";
 import { useMagnetic } from "@/lib/useMagnetic";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
 
 const LIGHT_GRID = {
   backgroundImage:
-    "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1px), rgba(0,0,0,0.034) calc(8.333333% - 1px), rgba(0,0,0,0.034) 8.333333%)",
+    "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1.5px), rgba(0,0,0,0.018) calc(8.333333% - 0.75px), transparent 8.333333%)",
 };
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const imageInnerRef = useRef<HTMLDivElement>(null);
 
   const [inView, setInView] = useState(true);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.22);
@@ -32,14 +39,60 @@ export default function Hero() {
     return () => io.disconnect();
   }, []);
 
-  // Entrance + staggered text reveal
+  // Entrance + staggered text reveal + scroll-driven image parallax
   useEffect(() => {
     const ctx = gsap.context(() => {
       const root = sectionRef.current;
       if (!root) return;
-      gsap.from(root.querySelectorAll(".hero-tag"), { y: 18, opacity: 0, duration: 0.6, delay: 0.45, ease: "power2.out" });
-      gsap.from(root.querySelectorAll(".hw"), { y: 90, opacity: 0, duration: 1.05, stagger: 0.07, delay: 0.6, ease: "power4.out" });
-      gsap.from(root.querySelectorAll(".hero-cta"), { y: 22, opacity: 0, duration: 0.65, delay: 1.35, ease: "power3.out" });
+
+      // Scroll-driven parallax — outer wrapper, independent transform
+      if (imageRef.current) {
+        gsap.to(imageRef.current, {
+          yPercent: 22,
+          ease: "none",
+          scrollTrigger: {
+            trigger: root,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.6,
+          },
+        });
+      }
+
+      const startedAtTop = window.scrollY < 50;
+      if (!startedAtTop) return;
+
+      // Lock entrance state — held until loader finishes
+      const tags = root.querySelectorAll(".hero-tag");
+      const words = root.querySelectorAll(".hw");
+      const ctas = root.querySelectorAll(".hero-cta");
+
+      if (imageInnerRef.current) gsap.set(imageInnerRef.current, { yPercent: 100, opacity: 0 });
+      gsap.set(tags, { y: 18, opacity: 0 });
+      gsap.set(words, { y: 90, opacity: 0 });
+      gsap.set(ctas, { y: 22, opacity: 0 });
+
+      const runEntrance = () => {
+        if (imageInnerRef.current) {
+          gsap.to(imageInnerRef.current, { yPercent: 0, opacity: 1, duration: 1.4, ease: "expo.out" });
+        }
+        gsap.to(tags, { y: 0, opacity: 1, duration: 0.6, delay: 0.2, ease: "power2.out" });
+        gsap.to(words, { y: 0, opacity: 1, duration: 1.05, stagger: 0.07, delay: 0.35, ease: "power4.out" });
+        gsap.to(ctas, { y: 0, opacity: 1, duration: 0.65, delay: 1.0, ease: "power3.out" });
+      };
+
+      const onLoaderDone = () => runEntrance();
+      window.addEventListener("loader:done", onLoaderDone, { once: true });
+      // Safety: if loader event is missed, still reveal after 4s
+      const safety = window.setTimeout(() => {
+        window.removeEventListener("loader:done", onLoaderDone);
+        runEntrance();
+      }, 4000);
+
+      return () => {
+        window.removeEventListener("loader:done", onLoaderDone);
+        window.clearTimeout(safety);
+      };
     });
     return () => ctx.revert();
   }, []);
@@ -51,15 +104,20 @@ export default function Hero() {
       className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-white text-black"
     >
       {/* Foreground hero figure — always visible */}
-      <div className="pointer-events-none absolute inset-0 z-[3]">
-        <Image
-          src="/hero-image.png"
-          alt="Ashish B Kallada — hero"
-          fill
-          priority
-          sizes="100vw"
-          className="object-contain object-bottom"
-        />
+      <div
+        ref={imageRef}
+        className="pointer-events-none absolute inset-0 z-[3] will-change-transform"
+      >
+        <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
+          <Image
+            src="/hero-image.png"
+            alt="Ashish B Kallada — hero"
+            fill
+            priority
+            sizes="100vw"
+            className="object-contain object-bottom"
+          />
+        </div>
       </div>
 
       {/* SplashCursor — only when Hero is in view. */}
@@ -131,7 +189,7 @@ export default function Hero() {
         href="/ashishbkalladaresume.pdf"
         download="ashishbkalladaresume.pdf"
         aria-label="Download resume"
-        className="group hidden md:flex absolute bottom-24 right-10 lg:bottom-28 lg:right-14 z-[5] pointer-events-auto items-start gap-2"
+        className="group hidden md:flex fixed bottom-24 right-10 lg:bottom-28 lg:right-14 z-[60] pointer-events-auto items-start gap-2"
       >
         {/* Label */}
         <div className="flex items-center gap-1.5 whitespace-nowrap pointer-events-none">

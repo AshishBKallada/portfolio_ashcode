@@ -3,6 +3,11 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 type Project = {
   number: string;
@@ -22,67 +27,68 @@ type Project = {
 const PROJECTS: Project[] = [
   {
     number: "01",
-    name: "P2P.org",
-    tag: "Brand · Motion",
-    year: "2024",
-    impactLabel: "TVL surpassed",
-    impactValue: "$10B+",
+    name: "KADA",
+    tag: "Gov · Full-stack",
+    year: "2025",
+    impactLabel: "Citizens served",
+    impactValue: "1M+",
     description:
-      "Contributed to brand efforts across social media, motion graphics and client offers during a period when the company crossed ten billion in total value locked.",
-    tech: ["After Effects", "Figma", "Lottie"],
+      "Digital platform for the Kuppam Area Development Authority — a Government of Andhra Pradesh initiative — unifying citizen services, land records and project tracking into a single surface.",
+    tech: ["Next.js", "Node", "PostgreSQL"],
     image: "/project1.avif",
-    alt: "P2P.org brand design",
+    alt: "KADA Andhra Pradesh government platform",
     bg: "bg-[#1f3bff]",
     href: "#",
   },
   {
     number: "02",
-    name: "Kelp DAO",
-    tag: "Brand · Motion",
-    year: "2024",
-    impactLabel: "Revenue lift",
-    impactValue: "$250K+",
+    name: "Curengo",
+    tag: "HealthTech · SaaS",
+    year: "2025",
+    impactLabel: "Patients managed",
+    impactValue: "50K+",
     description:
-      "Shaped the visual identity and motion language for Kelp's product surface — from launch teaser to docs — a system that scales without losing its voice.",
-    tech: ["Figma", "Rive", "Webflow"],
+      "Hospital management system handling OPD, IPD, billing, lab and pharmacy in one place — built so small clinics and mid-size hospitals get the same operating leverage as the big chains.",
+    tech: ["Next.js", "Node", "MongoDB"],
     image: "/project2.avif",
-    alt: "Kelp DAO brand",
+    alt: "Curengo hospital management system",
     bg: "bg-[#0f2a1e]",
     href: "#",
   },
   {
     number: "03",
-    name: "Blockwiz",
-    tag: "UI / UX",
+    name: "Verdura",
+    tag: "Sustainability · Web",
     year: "2025",
-    impactLabel: "Conversion",
-    impactValue: "+42%",
+    impactLabel: "Trees pledged",
+    impactValue: "120K+",
     description:
-      "Rebuilt the marketing and dashboard surfaces around a clear narrative — intentional motion and copy that earns trust before it asks for it.",
-    tech: ["Next.js", "Tailwind", "Framer"],
+      "Green culture platform connecting urban communities with reforestation drives, native plant guides and a transparent tracker for every sapling pledged and planted.",
+    tech: ["Next.js", "Tailwind", "Sanity"],
     image: "/bali.webp",
-    alt: "Blockwiz product surface",
-    bg: "bg-[#7a4a2a]",
+    alt: "Verdura green culture website",
+    bg: "bg-[#1a3a22]",
     href: "#",
   },
   {
     number: "04",
-    name: "Bitfinity Network",
-    tag: "Graphic System",
+    name: "Womarpools",
+    tag: "Brand · Web",
     year: "2025",
-    impactLabel: "Lighthouse",
-    impactValue: "98 / 100",
+    impactLabel: "Bookings lift",
+    impactValue: "+3.4×",
     description:
-      "Editorial graphic system — typography, grid and a small library of motifs that survive translation across web, social and print.",
-    tech: ["Figma", "Illustrator", "Web"],
+      "Marketing site and lead pipeline for a luxury pool design studio — cinematic galleries, quote flow and a CMS the team actually wants to use.",
+    tech: ["Next.js", "Tailwind", "Sanity"],
     image: "/hero-image.png",
-    alt: "Bitfinity Network graphic system",
-    bg: "bg-[#111]",
+    alt: "Womarpools luxury pool design website",
+    bg: "bg-[#0a2540]",
     href: "#",
   },
 ];
 
 export default function Projects() {
+  const sectionRef = useRef<HTMLElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const [previewIdx, setPreviewIdx] = useState<number | null>(null);
 
@@ -105,8 +111,41 @@ export default function Projects() {
     return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
+  // Scroll-triggered text reveals
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const root = sectionRef.current;
+      if (!root) return;
+
+      gsap.from(root.querySelectorAll(".pj-meta"), {
+        y: 14, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.08,
+        scrollTrigger: { trigger: root, start: "top 82%" },
+      });
+
+      gsap.from(root.querySelectorAll(".pj-word"), {
+        y: 60, opacity: 0, duration: 0.95, ease: "expo.out", stagger: 0.09,
+        scrollTrigger: { trigger: root, start: "top 75%" },
+      });
+
+      gsap.from(root.querySelector(".pj-lede"), {
+        y: 24, opacity: 0, duration: 0.85, ease: "power3.out", delay: 0.1,
+        scrollTrigger: { trigger: root, start: "top 75%" },
+      });
+
+      const list = root.querySelector("ul");
+      if (list) {
+        gsap.from(list.querySelectorAll("li"), {
+          y: 32, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.09,
+          scrollTrigger: { trigger: list, start: "top 85%" },
+        });
+      }
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="projects"
       className="relative isolate z-10 w-full bg-white text-black px-6 md:px-12 lg:px-20 py-24 md:py-32"
     >
@@ -142,22 +181,23 @@ export default function Projects() {
       <div className="relative w-full max-w-[1600px] mx-auto">
         {/* Header */}
         <div className="flex items-baseline justify-between">
-          <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/40">
+          <p className="pj-meta font-body text-[11px] uppercase tracking-[0.35em] text-black/40">
             003 — Index
           </p>
-          <p className="font-body text-[11px] uppercase tracking-[0.35em] text-black/40 tabular-nums">
+          <p className="pj-meta font-body text-[11px] uppercase tracking-[0.35em] text-black/40 tabular-nums">
             {String(PROJECTS.length).padStart(2, "0")} Projects
           </p>
         </div>
 
         <h2 className="mt-8 font-headline italic leading-[0.95] tracking-[-0.02em] text-[clamp(2.5rem,7vw,6rem)]">
-          Selected <span className="text-black/50">works.</span>
+          <span className="pj-word inline-block mr-[0.18em]">Selected</span>
+          <span className="pj-word inline-block text-black/50">works.</span>
         </h2>
 
-        <p className="mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-black/65">
-          A small collection of the things I&apos;ve shipped — full-stack web apps, brand surfaces
-          and motion systems. Each one taught me something the docs couldn&apos;t. Hover a title to
-          peek at the work.
+        <p className="pj-lede mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-black/65">
+          A few of the ones I&apos;m proud of. I didn&apos;t build these alone — but on each one I played a
+          crucial role and took the risky calls that kept the requirements landing on time. The kind
+          of bets you only make when the deadline is real.
         </p>
 
         {/* Full-width list */}
