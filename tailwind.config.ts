@@ -15,8 +15,13 @@ const config: Config = {
       animation: {
         "pulse-glow": "pulse-glow 2.4s ease-in-out infinite",
         "grain": "grain 8s steps(10) infinite",
+        "marquee": "marquee 28s linear infinite",
       },
       keyframes: {
+        "marquee": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
         "pulse-glow": {
           "0%, 100%": { opacity: "1", filter: "drop-shadow(0 0 0 currentColor)" },
           "50%": { opacity: "0.7", filter: "drop-shadow(0 0 8px currentColor)" },

@@ -2,7 +2,8 @@
 
 import { Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
 
 const NAV = [
   { label: "Works", target: "projects" },
@@ -32,16 +33,50 @@ function ThemeToggle() {
 }
 
 export default function Header() {
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = headerRef.current;
+    if (!root) return;
+    const ctx = gsap.context(() => {
+      const brand = root.querySelectorAll(".hd-brand");
+      const items = root.querySelectorAll(".hd-item");
+      gsap.set(root, { y: -28, opacity: 0 });
+      gsap.set(brand, { y: -12, opacity: 0 });
+      gsap.set(items, { y: -12, opacity: 0 });
+
+      const runEntrance = () => {
+        gsap.to(root, { y: 0, opacity: 1, duration: 0.75, ease: "power3.out" });
+        gsap.to(brand, { y: 0, opacity: 1, duration: 0.6, delay: 0.15, ease: "power3.out" });
+        gsap.to(items, { y: 0, opacity: 1, duration: 0.6, delay: 0.3, stagger: 0.07, ease: "power3.out" });
+      };
+
+      const onLoaderDone = () => runEntrance();
+      window.addEventListener("loader:done", onLoaderDone, { once: true });
+      const safety = window.setTimeout(() => {
+        window.removeEventListener("loader:done", onLoaderDone);
+        runEntrance();
+      }, 4000);
+
+      return () => {
+        window.removeEventListener("loader:done", onLoaderDone);
+        window.clearTimeout(safety);
+      };
+    }, headerRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
     <header
+      ref={headerRef}
       className="fixed top-0 left-0 w-full px-6 py-5 flex justify-between items-center z-50 text-white"
       style={{ mixBlendMode: "difference" }}
     >
-      <button className="pointer-events-auto flex items-baseline gap-1">
+      <button className="hd-brand pointer-events-auto flex items-baseline gap-1">
         <span className="font-headline text-xl italic">ashish</span>
         <span className="font-body text-xs uppercase tracking-[0.25em] opacity-50">/ kallada</span>
       </button>
-      <nav className="hidden md:flex items-center space-x-7 pointer-events-auto">
+      <nav className="hd-item hidden md:flex items-center space-x-7 pointer-events-auto">
         {NAV.map(({ label, target }) => (
           <button
             key={label}
@@ -61,7 +96,7 @@ export default function Header() {
         ))}
         <ThemeToggle />
       </nav>
-      <div className="md:hidden pointer-events-auto flex items-center gap-3">
+      <div className="hd-item md:hidden pointer-events-auto flex items-center gap-3">
         <ThemeToggle />
         <button aria-label="Toggle menu">
           <Menu className="w-5 h-5" />

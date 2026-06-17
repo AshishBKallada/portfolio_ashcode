@@ -36,21 +36,21 @@ const MagneticEmailButton = forwardRef<
   <a
     ref={ref}
     href={href}
-    className="group relative flex items-center gap-3 px-8 py-4 border border-black dark:border-white overflow-hidden transition-colors duration-300 font-headline text-xl will-change-transform"
+    className="group relative flex items-center gap-3 px-8 py-4 border border-black overflow-hidden transition-colors duration-300 font-headline text-xl will-change-transform"
   >
     <span
       aria-hidden
       className="pointer-events-none absolute inset-0 origin-left scale-x-0 transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
       style={{ backgroundColor: ACCENT }}
     />
-    <Mail className="relative z-[1] w-5 h-5 transition-colors group-hover:text-black" />
+    <Mail className="relative z-[1] w-5 h-5 transition-colors" />
     <div className="relative z-[1] flex flex-col items-start leading-tight">
-      <span className="font-body text-[10px] uppercase tracking-[0.25em] opacity-60 transition-colors group-hover:text-black">
+      <span className="font-body text-[10px] uppercase tracking-[0.25em] opacity-60 transition-colors">
         {label}
       </span>
-      <span className="transition-colors group-hover:text-black">{value}</span>
+      <span className="transition-colors">{value}</span>
     </div>
-    <ArrowUpRight className="relative z-[1] w-4 h-4 transition-transform group-hover:rotate-45 group-hover:text-black" />
+    <ArrowUpRight className="relative z-[1] w-4 h-4 transition-transform group-hover:rotate-45" />
   </a>
 ));
 MagneticEmailButton.displayName = "MagneticEmailButton";
@@ -101,9 +101,8 @@ export default function Contact() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative z-10 w-full flex flex-col bg-white text-black dark:bg-black dark:text-white border-t border-black/10 dark:border-white/10 overflow-hidden"
+      className="relative z-10 w-full flex flex-col bg-white text-black border-t border-black/10 overflow-hidden"
     >
-
       {/* Top row — status + live time */}
       <div className="relative z-10 flex items-start justify-between px-6 md:px-12 pt-20 md:pt-24">
         <div className="cnt-label flex items-center gap-2.5">
@@ -118,12 +117,12 @@ export default function Contact() {
               style={{ backgroundColor: ACCENT }}
             />
           </span>
-          <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/70 dark:text-white/70">
+          <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/70">
             Available for work
           </p>
         </div>
         <div className="cnt-label text-right">
-          <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/55 dark:text-white/55">
+          <p className="font-body text-[10px] uppercase tracking-[0.3em] text-black/55">
             Kerala · IND
           </p>
           <p
@@ -131,7 +130,7 @@ export default function Contact() {
             aria-label={`Local time ${keralaTime} IST`}
           >
             {keralaTime || "—"}{" "}
-            <span className="font-body text-[9px] uppercase tracking-[0.3em] text-black/50 dark:text-white/50 align-middle">
+            <span className="font-body text-[9px] uppercase tracking-[0.3em] text-black/50 align-middle">
               IST
             </span>
           </p>
@@ -147,7 +146,7 @@ export default function Contact() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
-              className="cnt-word inline-flex items-center align-middle mr-[0.25em] opacity-80 hover:opacity-100 hover:text-black dark:hover:text-white transition-opacity"
+              className="cnt-word inline-flex items-center align-middle mr-[0.25em] opacity-80 hover:opacity-100 transition-opacity"
             >
               <Github className="w-[0.85em] h-[0.85em]" strokeWidth={1.8} />
             </a>
@@ -157,10 +156,7 @@ export default function Contact() {
           <span className="cnt-word inline-block">idea</span>
           <br />
           <span className="cnt-word inline-block mr-[0.18em]">worth</span>
-          <span
-            className="cnt-word inline-block"
-            style={{ color: ACCENT }}
-          >
+          <span className="cnt-word inline-block">
             <em>shipping?</em>
           </span>
           <br />
@@ -172,7 +168,7 @@ export default function Contact() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
-              className="cnt-word inline-flex items-center align-middle ml-[0.25em] opacity-80 hover:opacity-100 hover:text-black dark:hover:text-white transition-opacity"
+              className="cnt-word inline-flex items-center align-middle ml-[0.25em] opacity-80 hover:opacity-100 transition-opacity"
             >
               <Linkedin className="w-[0.85em] h-[0.85em]" strokeWidth={1.8} />
             </a>
@@ -201,7 +197,7 @@ export default function Contact() {
 
       {/* Bottom row — copyright */}
       <div className="relative z-10 flex items-end justify-center px-6 md:px-12 pb-8 md:pb-10">
-        <p className="cnt-foot font-body text-[10px] uppercase tracking-[0.3em] text-black/65 dark:text-white/65">
+        <p className="cnt-foot font-body text-[10px] uppercase tracking-[0.3em] text-black/65">
           © 2026 Ashcode Web Studio
         </p>
       </div>
@@ -212,7 +208,7 @@ export default function Contact() {
         type="button"
         onClick={scrollTop}
         aria-label="Back to top"
-        className="group absolute bottom-6 right-6 md:bottom-10 md:right-12 z-20 w-12 h-12 md:w-14 md:h-14 rounded-full border border-black/25 dark:border-white/25 flex items-center justify-center bg-white/70 dark:bg-black/70 backdrop-blur-sm hover:bg-black hover:text-white hover:border-black dark:hover:bg-white dark:hover:text-black dark:hover:border-white transition-colors duration-300 will-change-transform"
+        className="group absolute bottom-6 right-6 md:bottom-10 md:right-12 z-20 w-12 h-12 md:w-14 md:h-14 rounded-full border border-black/25 flex items-center justify-center bg-white/70 backdrop-blur-sm hover:bg-black hover:text-white hover:border-black transition-colors duration-300 will-change-transform"
       >
         <ArrowUp className="w-4 h-4 transition-transform group-hover:-translate-y-0.5" />
       </button>

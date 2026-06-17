@@ -7,6 +7,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Download } from "lucide-react";
 import { useMagnetic } from "@/lib/useMagnetic";
+import { scrambleText } from "@/lib/scramble";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -16,7 +17,7 @@ const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
 
 const LIGHT_GRID = {
   backgroundImage:
-    "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1.5px), rgba(0,0,0,0.018) calc(8.333333% - 0.75px), transparent 8.333333%)",
+    "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1.5px), rgba(0,0,0,0.05) calc(8.333333% - 0.75px), transparent 8.333333%)",
 };
 
 export default function Hero() {
@@ -39,25 +40,11 @@ export default function Hero() {
     return () => io.disconnect();
   }, []);
 
-  // Entrance + staggered text reveal + scroll-driven image parallax
+  // Entrance + staggered text reveal
   useEffect(() => {
     const ctx = gsap.context(() => {
       const root = sectionRef.current;
       if (!root) return;
-
-      // Scroll-driven parallax — outer wrapper, independent transform
-      if (imageRef.current) {
-        gsap.to(imageRef.current, {
-          yPercent: 22,
-          ease: "none",
-          scrollTrigger: {
-            trigger: root,
-            start: "top top",
-            end: "bottom top",
-            scrub: 0.6,
-          },
-        });
-      }
 
       const startedAtTop = window.scrollY < 50;
       if (!startedAtTop) return;
@@ -66,11 +53,13 @@ export default function Hero() {
       const tags = root.querySelectorAll(".hero-tag");
       const words = root.querySelectorAll(".hw");
       const ctas = root.querySelectorAll(".hero-cta");
+      const resume = root.querySelectorAll(".hero-resume");
 
       if (imageInnerRef.current) gsap.set(imageInnerRef.current, { yPercent: 100, opacity: 0 });
       gsap.set(tags, { y: 18, opacity: 0 });
       gsap.set(words, { y: 90, opacity: 0 });
       gsap.set(ctas, { y: 22, opacity: 0 });
+      gsap.set(resume, { x: 60, opacity: 0 });
 
       const runEntrance = () => {
         if (imageInnerRef.current) {
@@ -79,6 +68,20 @@ export default function Hero() {
         gsap.to(tags, { y: 0, opacity: 1, duration: 0.6, delay: 0.2, ease: "power2.out" });
         gsap.to(words, { y: 0, opacity: 1, duration: 1.05, stagger: 0.07, delay: 0.35, ease: "power4.out" });
         gsap.to(ctas, { y: 0, opacity: 1, duration: 0.65, delay: 1.0, ease: "power3.out" });
+        gsap.to(resume, { x: 0, opacity: 1, duration: 0.9, delay: 1.2, ease: "power3.out" });
+
+        // Scramble headline words alongside the slide-up
+        const labels = ["Obsession", "beats", "talent."];
+        const hwEls = Array.from(words) as HTMLElement[];
+        hwEls.forEach((el, i) => {
+          window.setTimeout(
+            () => scrambleText(el, labels[i] ?? el.textContent ?? "", { duration: 900 }),
+            450 + i * 80
+          );
+          el.addEventListener("mouseenter", () => {
+            scrambleText(el, labels[i] ?? el.textContent ?? "", { duration: 480 });
+          });
+        });
       };
 
       const onLoaderDone = () => runEntrance();
@@ -101,7 +104,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-white text-black dark:bg-black dark:text-white"
+      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-white text-black"
     >
       {/* Foreground hero figure — always visible */}
       <div
@@ -141,22 +144,23 @@ export default function Hero() {
           Full-stack engineer / Kerala, India
         </p>
         <h1 className="font-headline text-[14vw] md:text-[9vw] lg:text-[7.5vw] leading-[0.85] tracking-[-0.02em]">
-          <span className="hw inline-block mr-[0.18em]">Obsession</span>
-          <span className="hw inline-block mr-[0.18em]"><em>beats</em></span>
+          <span className="hw inline-block mr-[0.18em] cursor-pointer">Obsession</span>
+          <span className="hw inline-block mr-[0.18em] italic cursor-pointer">beats</span>
           <br />
-          <span className="hw inline-block">talent.</span>
+          <span className="hw inline-block cursor-pointer">talent.</span>
         </h1>
         <div className="hero-cta mt-8 flex flex-wrap gap-4 items-center">
           <a
             ref={ctaRef}
             href="mailto:ashercode4u@gmail.com"
-            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black dark:border-white overflow-hidden font-headline text-lg will-change-transform"
+            data-cursor="cta"
+            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black overflow-hidden font-headline text-lg will-change-transform"
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black dark:bg-white transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
             />
-            <span className="relative z-[1] transition-colors duration-300 group-hover:text-white dark:group-hover:text-black">Get in Touch</span>
+            <span className="relative z-[1] transition-colors duration-300 group-hover:text-white">Get in Touch</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -167,7 +171,7 @@ export default function Hero() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="relative z-[1] group-hover:rotate-45 transition-transform group-hover:text-white dark:group-hover:text-black"
+              className="relative z-[1] group-hover:rotate-45 transition-transform group-hover:text-white"
             >
               <path d="M7 7h10v10" />
               <path d="M7 17 17 7" />
@@ -177,14 +181,10 @@ export default function Hero() {
             Available · Q3 2026
           </span>
         </div>
+
       </div>
 
-      {/* Hex tag — bottom-left */}
-      <div className="absolute bottom-6 left-6 md:bottom-10 md:left-12 z-[3] font-body text-[11px] tracking-[0.2em] opacity-70">
-        0x2f·7a · 4b · ff · 01 · 3c · ae →
-      </div>
-
-      {/* Resume thumbnail — bottom-right with jointed connector line */}
+      {/* Resume thumbnail — fixed bottom-right with jointed connector line */}
       <a
         href="/ashishbkalladaresume.pdf"
         download="ashishbkalladaresume.pdf"
@@ -193,20 +193,21 @@ export default function Hero() {
           const ok = window.confirm("Download ashishbkalladaresume.pdf?");
           if (!ok) e.preventDefault();
         }}
-        className="group hidden md:flex fixed bottom-24 right-10 lg:bottom-28 lg:right-14 z-[60] pointer-events-auto items-start gap-2"
+        data-cursor="view"
+        className="hero-resume group hidden md:flex fixed bottom-24 right-10 lg:bottom-28 lg:right-14 z-[90] pointer-events-auto items-start gap-2"
       >
         {/* Label */}
         <div className="flex items-center gap-1.5 whitespace-nowrap pointer-events-none">
-          <span className="font-body text-[10px] uppercase tracking-[0.22em] text-black dark:text-white">
+          <span className="font-body text-[10px] uppercase tracking-[0.22em] text-black">
             ashishbkalladaresume.pdf
           </span>
-          <Download className="w-3.5 h-3.5 text-black dark:text-white" />
+          <Download className="w-3.5 h-3.5 text-black" />
         </div>
 
         {/* Connector — horizontal from label right, then diagonal down-right to thumbnail top-left */}
         <svg
           aria-hidden
-          className="shrink-0 pointer-events-none text-black dark:text-white"
+          className="shrink-0 pointer-events-none text-black"
           width="32"
           height="44"
           viewBox="0 0 32 44"
@@ -218,7 +219,7 @@ export default function Hero() {
         </svg>
 
         {/* Thumbnail */}
-        <div className="relative w-24 lg:w-28 aspect-[3/4] mt-10 shrink-0 overflow-hidden border border-black/20 dark:border-white/20 bg-white dark:bg-neutral-900 shadow-[0_18px_40px_-15px_rgba(0,0,0,0.3)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.04]">
+        <div className="relative w-24 lg:w-28 aspect-[3/4] mt-10 shrink-0 overflow-hidden border border-black/20 bg-neutral-100 shadow-[0_18px_40px_-15px_rgba(0,0,0,0.15)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.04]">
           <Image
             src="/resume-preview.png"
             alt="Resume preview"
@@ -229,8 +230,13 @@ export default function Hero() {
         </div>
       </a>
 
-      {/* "Scroll to explore" — bottom-center */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[3] flex items-center gap-2 pointer-events-none opacity-70">
+      {/* Hex tag — sits above the marquee */}
+      <div className="absolute bottom-16 left-6 md:bottom-20 md:left-12 z-[4] font-body text-[11px] tracking-[0.2em] opacity-70">
+        0x2f·7a · 4b · ff · 01 · 3c · ae →
+      </div>
+
+      {/* "Scroll to explore" — sits above the marquee */}
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-70">
         <p className="font-body text-xs uppercase tracking-[0.25em]">Scroll to explore</p>
         <svg
           width="16"
@@ -246,6 +252,32 @@ export default function Hero() {
         >
           <path d="m6 9 6 6 6-6" />
         </svg>
+      </div>
+
+      {/* Marquee ticker — full width at the very bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 z-[4] border-y border-black/15 overflow-hidden py-2.5 bg-white/40 backdrop-blur-[1px]"
+        aria-hidden
+      >
+        <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
+          {Array.from({ length: 2 }).map((_, copy) => (
+            <div key={copy} className="flex shrink-0 items-center font-body text-[10px] uppercase tracking-[0.32em]">
+              {[
+                "Available · Q3 2026",
+                "Kerala · IST",
+                "Full-stack engineer",
+                "Obsession beats talent",
+                "Currently shipping",
+                "Open to collaborations",
+              ].map((s, i) => (
+                <span key={`${copy}-${i}`} className="flex items-center">
+                  <span className="px-8">{s}</span>
+                  <span className="opacity-50">✦</span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
