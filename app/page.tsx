@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import LoadingScreen from "@/components/LoadingScreen";
 import Projects from "@/components/Projects";
-import SectionCounter from "@/components/SectionCounter";
 import Statement from "@/components/Statement";
 
 export default function Page() {
@@ -13,7 +12,6 @@ export default function Page() {
       <LoadingScreen />
       <CustomCursor />
       <Header />
-      <SectionCounter />
 
       <main className="relative bg-white">
         <div className="relative">

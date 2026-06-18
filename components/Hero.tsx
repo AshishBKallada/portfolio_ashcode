@@ -27,8 +27,6 @@ export default function Hero() {
   const rockInnerRef = useRef<HTMLDivElement>(null);
   const charParallaxRef = useRef<HTMLDivElement>(null);
   const rockParallaxRef = useRef<HTMLDivElement>(null);
-  const charMouseRef = useRef<HTMLDivElement>(null);
-  const rockMouseRef = useRef<HTMLDivElement>(null);
 
   const [inView, setInView] = useState(true);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.22);
@@ -208,49 +206,6 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
-  // Mouse parallax — cursor position shifts each layer for depth
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    if (window.matchMedia("(hover: none)").matches) return;
-
-    const headline = section.querySelector(".hero-headline") as HTMLElement | null;
-    const cfg = { duration: 0.6, ease: "power3" } as const;
-
-    const setRockX = rockMouseRef.current ? gsap.quickTo(rockMouseRef.current, "x", cfg) : null;
-    const setRockY = rockMouseRef.current ? gsap.quickTo(rockMouseRef.current, "y", cfg) : null;
-    const setCharX = charMouseRef.current ? gsap.quickTo(charMouseRef.current, "x", { ...cfg, duration: 0.5 }) : null;
-    const setCharY = charMouseRef.current ? gsap.quickTo(charMouseRef.current, "y", { ...cfg, duration: 0.5 }) : null;
-    const setHeadX = headline ? gsap.quickTo(headline, "x", { ...cfg, duration: 0.7 }) : null;
-
-    const onMove = (e: MouseEvent) => {
-      const rect = section.getBoundingClientRect();
-      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1; // -1 .. 1
-      const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-
-      setRockX?.(nx * 12);
-      setRockY?.(ny * 8);
-      setCharX?.(nx * 28);
-      setCharY?.(ny * 16);
-      setHeadX?.(nx * -18);
-    };
-
-    const onLeave = () => {
-      setRockX?.(0);
-      setRockY?.(0);
-      setCharX?.(0);
-      setCharY?.(0);
-      setHeadX?.(0);
-    };
-
-    section.addEventListener("mousemove", onMove);
-    section.addEventListener("mouseleave", onLeave);
-    return () => {
-      section.removeEventListener("mousemove", onMove);
-      section.removeEventListener("mouseleave", onLeave);
-    };
-  }, []);
-
   return (
     <section
       ref={sectionRef}
@@ -262,38 +217,34 @@ export default function Hero() {
         ref={imageRef}
         className="pointer-events-none absolute inset-0 z-[3] will-change-transform"
       >
-        {/* Rock platform — scroll parallax / mouse parallax / entrance / content */}
+        {/* Rock platform — scroll parallax / entrance / content */}
         <div ref={rockParallaxRef} className="pointer-events-none absolute inset-0 will-change-transform">
-          <div ref={rockMouseRef} className="absolute inset-0 will-change-transform">
-            <div ref={rockInnerRef} className="absolute inset-0 will-change-transform">
-              <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[70vmin] max-w-[520px] aspect-[640/440]">
-                <Image
-                  src="/hero-rock.png"
-                  alt=""
-                  fill
-                  priority
-                  sizes="70vmin"
-                  className="object-contain object-bottom"
-                />
-              </div>
+          <div ref={rockInnerRef} className="absolute inset-0 will-change-transform">
+            <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[70vmin] max-w-[520px] aspect-[640/440]">
+              <Image
+                src="/hero-rock.png"
+                alt=""
+                fill
+                priority
+                sizes="70vmin"
+                className="object-contain object-bottom"
+              />
             </div>
           </div>
         </div>
 
-        {/* Samurai character — scroll parallax / mouse parallax / entrance / content */}
+        {/* Samurai character — scroll parallax / entrance / content */}
         <div ref={charParallaxRef} className="absolute inset-0 will-change-transform">
-          <div ref={charMouseRef} className="absolute inset-0 will-change-transform">
-            <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
-              <Image
-                src="/hero-bg.png"
-                alt="Ashish B Kallada — hero"
-                fill
-                priority
-                sizes="100vw"
-                quality={100}
-                className="object-contain object-bottom"
-              />
-            </div>
+          <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
+            <Image
+              src="/hero-bg.png"
+              alt="Ashish B Kallada — hero"
+              fill
+              priority
+              sizes="100vw"
+              quality={100}
+              className="object-contain object-bottom"
+            />
           </div>
         </div>
       </div>
@@ -411,7 +362,7 @@ export default function Hero() {
       </div>
 
       {/* "Scroll to explore" — sits above the marquee */}
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-70">
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none text-white opacity-90">
         <p className="font-body text-xs uppercase tracking-[0.25em]">Scroll to explore</p>
         <svg
           width="16"
@@ -431,7 +382,7 @@ export default function Hero() {
 
       {/* Marquee ticker — full width at the very bottom */}
       <div
-        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] border-y border-black/15 overflow-hidden py-2.5 bg-white/40 backdrop-blur-[1px] will-change-transform"
+        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 text-white bg-[#ff1a1a] will-change-transform shadow-[0_-12px_40px_-8px_rgba(255,26,26,0.65),0_0_24px_rgba(255,26,26,0.5)]"
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
@@ -447,7 +398,7 @@ export default function Hero() {
               ].map((s, i) => (
                 <span key={`${copy}-${i}`} className="flex items-center">
                   <span className="px-8">{s}</span>
-                  <span className="opacity-50">✦</span>
+                  <span className="opacity-70">✦</span>
                 </span>
               ))}
             </div>
