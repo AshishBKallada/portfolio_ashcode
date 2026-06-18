@@ -51,15 +51,16 @@ export default function Header() {
         gsap.to(items, { y: 0, opacity: 1, duration: 0.6, delay: 0.3, stagger: 0.07, ease: "power3.out" });
       };
 
-      const onLoaderDone = () => runEntrance();
-      window.addEventListener("loader:done", onLoaderDone, { once: true });
+      const onHeroTextDone = () => runEntrance();
+      window.addEventListener("hero:textDone", onHeroTextDone, { once: true });
+      // Safety: if Hero never fires the event, still reveal eventually
       const safety = window.setTimeout(() => {
-        window.removeEventListener("loader:done", onLoaderDone);
+        window.removeEventListener("hero:textDone", onHeroTextDone);
         runEntrance();
-      }, 4000);
+      }, 8000);
 
       return () => {
-        window.removeEventListener("loader:done", onLoaderDone);
+        window.removeEventListener("hero:textDone", onHeroTextDone);
         window.clearTimeout(safety);
       };
     }, headerRef);

@@ -24,6 +24,11 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const imageInnerRef = useRef<HTMLDivElement>(null);
+  const rockInnerRef = useRef<HTMLDivElement>(null);
+  const charParallaxRef = useRef<HTMLDivElement>(null);
+  const rockParallaxRef = useRef<HTMLDivElement>(null);
+  const charMouseRef = useRef<HTMLDivElement>(null);
+  const rockMouseRef = useRef<HTMLDivElement>(null);
 
   const [inView, setInView] = useState(true);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.22);
@@ -54,29 +59,82 @@ export default function Hero() {
       const words = root.querySelectorAll(".hw");
       const ctas = root.querySelectorAll(".hero-cta");
       const resume = root.querySelectorAll(".hero-resume");
+      const marquee = root.querySelectorAll(".hero-marquee");
 
-      if (imageInnerRef.current) gsap.set(imageInnerRef.current, { yPercent: 100, opacity: 0 });
+      if (imageInnerRef.current)
+        gsap.set(imageInnerRef.current, { yPercent: 100, opacity: 1 });
+      if (rockInnerRef.current)
+        gsap.set(rockInnerRef.current, { yPercent: 100, opacity: 1 });
       gsap.set(tags, { y: 18, opacity: 0 });
       gsap.set(words, { y: 90, opacity: 0 });
       gsap.set(ctas, { y: 22, opacity: 0 });
       gsap.set(resume, { x: 60, opacity: 0 });
+      gsap.set(marquee, { yPercent: 100, opacity: 0 });
 
       const runEntrance = () => {
-        if (imageInnerRef.current) {
-          gsap.to(imageInnerRef.current, { yPercent: 0, opacity: 1, duration: 1.4, ease: "expo.out" });
-        }
-        gsap.to(tags, { y: 0, opacity: 1, duration: 0.6, delay: 0.2, ease: "power2.out" });
-        gsap.to(words, { y: 0, opacity: 1, duration: 1.05, stagger: 0.07, delay: 0.35, ease: "power4.out" });
-        gsap.to(ctas, { y: 0, opacity: 1, duration: 0.65, delay: 1.0, ease: "power3.out" });
-        gsap.to(resume, { x: 0, opacity: 1, duration: 0.9, delay: 1.2, ease: "power3.out" });
+        const tl = gsap.timeline();
 
-        // Scramble headline words alongside the slide-up
+        // 1) Hero text cascades in first
+        tl.to(tags, { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" })
+          .to(
+            words,
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1.0,
+              stagger: 0.08,
+              ease: "power4.out",
+            },
+            "-=0.3"
+          )
+          .to(
+            ctas,
+            { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+            "-=0.35"
+          )
+          .to(
+            resume,
+            { x: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+            "-=0.5"
+          );
+
+        // 2) Signal the navbar to drop in
+        tl.add(() => {
+          window.dispatchEvent(new Event("hero:textDone"));
+        }, "+=0.1");
+
+        // 3) Rock platform rises first (after header lands)
+        if (rockInnerRef.current) {
+          tl.to(
+            rockInnerRef.current,
+            { yPercent: 0, duration: 1.1, ease: "power3.out" },
+            "+=0.85"
+          );
+        }
+
+        // 4) Character rises on top of the rock
+        if (imageInnerRef.current) {
+          tl.to(
+            imageInnerRef.current,
+            { yPercent: 0, duration: 1.3, ease: "power3.out" },
+            "-=0.4"
+          );
+        }
+
+        // 5) Marquee slides up into place
+        tl.to(
+          marquee,
+          { yPercent: 0, opacity: 1, duration: 0.7, ease: "power3.out" },
+          "-=0.25"
+        );
+
+        // Scramble headline words in sync with the words tween (early in the timeline)
         const labels = ["Obsession", "beats", "talent."];
         const hwEls = Array.from(words) as HTMLElement[];
         hwEls.forEach((el, i) => {
           window.setTimeout(
             () => scrambleText(el, labels[i] ?? el.textContent ?? "", { duration: 900 }),
-            450 + i * 80
+            700 + i * 80
           );
           el.addEventListener("mouseenter", () => {
             scrambleText(el, labels[i] ?? el.textContent ?? "", { duration: 480 });
@@ -100,6 +158,99 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
+  // Parallax on scroll — different layers move at different speeds for depth
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const root = sectionRef.current;
+      if (!root) return;
+
+      const trigger = {
+        trigger: root,
+        start: "top top",
+        end: "+=100%",
+        scrub: 0.6,
+      } as const;
+
+      if (rockParallaxRef.current) {
+        gsap.to(rockParallaxRef.current, {
+          y: -60,
+          ease: "none",
+          scrollTrigger: trigger,
+        });
+      }
+
+      if (charParallaxRef.current) {
+        gsap.to(charParallaxRef.current, {
+          y: -140,
+          ease: "none",
+          scrollTrigger: trigger,
+        });
+      }
+
+      const headline = root.querySelector(".hero-headline");
+      if (headline) {
+        gsap.to(headline, {
+          y: 90,
+          ease: "none",
+          scrollTrigger: trigger,
+        });
+      }
+
+      const resume = root.querySelector(".hero-resume");
+      if (resume) {
+        gsap.to(resume, {
+          y: 60,
+          ease: "none",
+          scrollTrigger: trigger,
+        });
+      }
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
+  // Mouse parallax — cursor position shifts each layer for depth
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    if (window.matchMedia("(hover: none)").matches) return;
+
+    const headline = section.querySelector(".hero-headline") as HTMLElement | null;
+    const cfg = { duration: 0.6, ease: "power3" } as const;
+
+    const setRockX = rockMouseRef.current ? gsap.quickTo(rockMouseRef.current, "x", cfg) : null;
+    const setRockY = rockMouseRef.current ? gsap.quickTo(rockMouseRef.current, "y", cfg) : null;
+    const setCharX = charMouseRef.current ? gsap.quickTo(charMouseRef.current, "x", { ...cfg, duration: 0.5 }) : null;
+    const setCharY = charMouseRef.current ? gsap.quickTo(charMouseRef.current, "y", { ...cfg, duration: 0.5 }) : null;
+    const setHeadX = headline ? gsap.quickTo(headline, "x", { ...cfg, duration: 0.7 }) : null;
+
+    const onMove = (e: MouseEvent) => {
+      const rect = section.getBoundingClientRect();
+      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1; // -1 .. 1
+      const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+
+      setRockX?.(nx * 12);
+      setRockY?.(ny * 8);
+      setCharX?.(nx * 28);
+      setCharY?.(ny * 16);
+      setHeadX?.(nx * -18);
+    };
+
+    const onLeave = () => {
+      setRockX?.(0);
+      setRockY?.(0);
+      setCharX?.(0);
+      setCharY?.(0);
+      setHeadX?.(0);
+    };
+
+    section.addEventListener("mousemove", onMove);
+    section.addEventListener("mouseleave", onLeave);
+    return () => {
+      section.removeEventListener("mousemove", onMove);
+      section.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
   return (
     <section
       ref={sectionRef}
@@ -111,15 +262,39 @@ export default function Hero() {
         ref={imageRef}
         className="pointer-events-none absolute inset-0 z-[3] will-change-transform"
       >
-        <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
-          <Image
-            src="/hero-image.png"
-            alt="Ashish B Kallada — hero"
-            fill
-            priority
-            sizes="100vw"
-            className="object-contain object-bottom"
-          />
+        {/* Rock platform — scroll parallax / mouse parallax / entrance / content */}
+        <div ref={rockParallaxRef} className="pointer-events-none absolute inset-0 will-change-transform">
+          <div ref={rockMouseRef} className="absolute inset-0 will-change-transform">
+            <div ref={rockInnerRef} className="absolute inset-0 will-change-transform">
+              <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[70vmin] max-w-[520px] aspect-[640/440]">
+                <Image
+                  src="/hero-rock.png"
+                  alt=""
+                  fill
+                  priority
+                  sizes="70vmin"
+                  className="object-contain object-bottom"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Samurai character — scroll parallax / mouse parallax / entrance / content */}
+        <div ref={charParallaxRef} className="absolute inset-0 will-change-transform">
+          <div ref={charMouseRef} className="absolute inset-0 will-change-transform">
+            <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
+              <Image
+                src="/hero-bg.png"
+                alt="Ashish B Kallada — hero"
+                fill
+                priority
+                sizes="100vw"
+                quality={100}
+                className="object-contain object-bottom"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -127,7 +302,7 @@ export default function Hero() {
       {inView && (
         <SplashCursor
           RAINBOW_MODE={false}
-          COLOR="#3fd75e"
+          COLOR="#ff1a1a"
           SIM_RESOLUTION={48}
           DYE_RESOLUTION={256}
           PRESSURE_ITERATIONS={3}
@@ -139,7 +314,7 @@ export default function Hero() {
       <div className="pointer-events-none absolute inset-0 z-[1]" style={LIGHT_GRID} aria-hidden />
 
       {/* Headline block — bottom-left. Colors inherit from section via currentColor */}
-      <div className="absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none">
+      <div className="hero-headline absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none will-change-transform">
         <p className="hero-tag font-body text-xs uppercase tracking-[0.3em] mb-4 opacity-70">
           Full-stack engineer / Kerala, India
         </p>
@@ -219,13 +394,13 @@ export default function Hero() {
         </svg>
 
         {/* Thumbnail */}
-        <div className="relative w-24 lg:w-28 aspect-[3/4] mt-10 shrink-0 overflow-hidden border border-black/20 bg-neutral-100 shadow-[0_18px_40px_-15px_rgba(0,0,0,0.15)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.04]">
+        <div className="relative w-24 lg:w-28 aspect-[3/4] mt-10 shrink-0 overflow-hidden shadow-[0_18px_40px_-15px_rgba(0,0,0,0.15)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.04]">
           <Image
-            src="/resume-preview.png"
+            src="/resume-thumb.png"
             alt="Resume preview"
             fill
             sizes="120px"
-            className="object-cover object-top"
+            className="object-cover object-top grayscale transition duration-300 group-hover:grayscale-0"
           />
         </div>
       </a>
@@ -256,7 +431,7 @@ export default function Hero() {
 
       {/* Marquee ticker — full width at the very bottom */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-[4] border-y border-black/15 overflow-hidden py-2.5 bg-white/40 backdrop-blur-[1px]"
+        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] border-y border-black/15 overflow-hidden py-2.5 bg-white/40 backdrop-blur-[1px] will-change-transform"
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
