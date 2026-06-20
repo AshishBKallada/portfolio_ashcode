@@ -44,7 +44,7 @@ export default function FloatingPlayer() {
       {/* Orbiting curved label */}
       <svg
         viewBox="0 0 140 140"
-        className="absolute inset-0 w-full h-full pointer-events-none animate-spin-slow"
+        className="absolute inset-0 w-full h-full pointer-events-none animate-spin-slow text-ink"
         aria-hidden
       >
         <defs>
@@ -55,7 +55,7 @@ export default function FloatingPlayer() {
           />
         </defs>
         <text
-          fill="#E1E0CC"
+          fill="currentColor"
           style={{
             fontSize: "10px",
             letterSpacing: "0.32em",
@@ -73,7 +73,7 @@ export default function FloatingPlayer() {
         onClick={toggle}
         aria-label={playing ? "Pause audio" : "Play audio"}
         aria-pressed={playing}
-        className="group relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-[#E1E0CC]/25 bg-black/60 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.55)] transition-transform duration-300 hover:scale-105 active:scale-95"
+        className="group relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-ink/25 bg-paper/60 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:scale-105 active:scale-95"
       >
         <Image
           src={IMAGE_SRC}

@@ -8,7 +8,7 @@ export default function ThemeProvider({
   ...props
 }: ComponentProps<typeof NextThemesProvider>) {
   return (
-    <NextThemesProvider attribute="class" defaultTheme="light" enableSystem={false} {...props}>
+    <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem={false} {...props}>
       {children}
     </NextThemesProvider>
   );

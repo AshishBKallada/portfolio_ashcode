@@ -31,13 +31,13 @@ const ContactRow = forwardRef<
   <a
     ref={ref}
     href={href}
-    className="group relative flex items-center gap-4 md:gap-6 py-3.5 border-b border-[#E1E0CC]/10 will-change-transform"
+    className="group relative flex items-center gap-4 md:gap-6 py-3.5 border-b border-ink/10 will-change-transform"
   >
-    <span className="font-body text-[10px] tracking-[0.3em] text-[#E1E0CC]/45 tabular-nums w-7 shrink-0">
+    <span className="font-body text-[10px] tracking-[0.3em] text-ink/45 tabular-nums w-7 shrink-0">
       {idx}
     </span>
 
-    <span className="font-body text-[10px] uppercase tracking-[0.28em] text-[#E1E0CC]/55 w-32 shrink-0 hidden sm:block">
+    <span className="font-body text-[10px] uppercase tracking-[0.28em] text-ink/55 w-32 shrink-0 hidden sm:block">
       {label}
       <span className="ml-1.5 opacity-60 tracking-[0.15em]">· {jp}</span>
     </span>
@@ -46,7 +46,7 @@ const ContactRow = forwardRef<
       {value}
     </span>
 
-    <span className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full border border-[#E1E0CC]/30 transition-all duration-300 group-hover:border-[#ff1a1a] group-hover:rotate-[40deg]">
+    <span className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full border border-ink/30 transition-all duration-300 group-hover:border-[#ff1a1a] group-hover:rotate-[40deg]">
       <ArrowUpRight className="w-3.5 h-3.5 transition-colors group-hover:text-[#ff1a1a]" />
     </span>
   </a>
@@ -78,7 +78,7 @@ export default function Contact() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative z-10 w-full min-h-screen flex flex-col bg-black text-[#E1E0CC] overflow-hidden"
+      className="relative z-10 w-full min-h-screen flex flex-col bg-paper text-ink overflow-hidden"
     >
       {/* Top hairline — single red brush stroke */}
       <div
@@ -94,7 +94,7 @@ export default function Contact() {
       <div className="relative z-10 px-6 md:px-12 pt-8 md:pt-10 flex items-center justify-end">
         <p
           data-reveal="fade"
-          className="font-body text-[10px] uppercase tracking-[0.32em] text-[#E1E0CC]/55 tabular-nums"
+          className="font-body text-[10px] uppercase tracking-[0.32em] text-ink/55 tabular-nums"
           aria-label={`Local time ${keralaTime} IST`}
         >
           {keralaTime || "—"} IST · Kerala
@@ -107,7 +107,7 @@ export default function Contact() {
           {[
             { word: "Let’s" },
             { word: "make" },
-            { word: "something", className: "italic text-[#E1E0CC]/70" },
+            { word: "something", className: "italic text-ink/70" },
             { word: "worth", br: true },
             { word: "shipping." },
           ].map(({ word, className, br }, i) => (
@@ -120,11 +120,11 @@ export default function Contact() {
           ))}
         </h2>
 
-        <p data-reveal="fade" className="mt-4 font-body text-xs md:text-sm tracking-[0.05em] text-[#E1E0CC]/55 max-w-md">
+        <p data-reveal="fade" className="mt-4 font-body text-xs md:text-sm tracking-[0.05em] text-ink/55 max-w-md">
           一緒に作ろう — open for collaborations from Q3 2026.
         </p>
 
-        <div className="mt-8 md:mt-10 border-t border-[#E1E0CC]/10">
+        <div className="mt-8 md:mt-10 border-t border-ink/10">
           <div data-reveal="line">
             <ContactRow
               ref={workRef}
@@ -150,7 +150,7 @@ export default function Contact() {
 
       {/* ─── Bottom bar — © + socials only ─── */}
       <div className="relative z-10 px-6 md:px-12 pb-4">
-        <div className="flex flex-col md:flex-row gap-3 md:gap-6 items-start md:items-center justify-between font-body text-[10px] uppercase tracking-[0.3em] text-[#E1E0CC]/55">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-6 items-start md:items-center justify-between font-body text-[10px] uppercase tracking-[0.3em] text-ink/55">
           <p data-reveal="fade">© 2026 Ashcode</p>
 
           <div data-reveal="fade" className="flex items-center gap-5">
@@ -158,7 +158,7 @@ export default function Contact() {
               href="https://github.com/AshishBKallada"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-1.5 hover:text-[#E1E0CC] transition-colors"
+              className="group inline-flex items-center gap-1.5 hover:text-ink transition-colors"
             >
               <Github className="w-3.5 h-3.5" strokeWidth={1.6} />
               <span className="relative">
@@ -174,7 +174,7 @@ export default function Contact() {
               href="https://www.linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-1.5 hover:text-[#E1E0CC] transition-colors"
+              className="group inline-flex items-center gap-1.5 hover:text-ink transition-colors"
             >
               <Linkedin className="w-3.5 h-3.5" strokeWidth={1.6} />
               <span className="relative">
@@ -213,7 +213,7 @@ export default function Contact() {
         type="button"
         onClick={scrollTop}
         aria-label="Back to top"
-        className="group absolute top-6 right-6 md:top-10 md:right-12 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full border border-[#E1E0CC]/25 flex items-center justify-center bg-black/40 backdrop-blur-sm hover:bg-[#E1E0CC] hover:text-black hover:border-[#E1E0CC] transition-colors duration-300 will-change-transform"
+        className="group absolute top-6 right-6 md:top-10 md:right-12 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full border border-ink/25 flex items-center justify-center bg-paper/40 backdrop-blur-sm hover:bg-ink hover:text-paper hover:border-ink transition-colors duration-300 will-change-transform"
       >
         <ArrowUp className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-0.5" />
       </button>

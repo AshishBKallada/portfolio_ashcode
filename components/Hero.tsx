@@ -208,7 +208,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-black text-[#E1E0CC]"
+      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-paper text-ink"
     >
       {/* Foreground hero figure — always visible */}
       <div className="pointer-events-none absolute inset-0 z-[3] will-change-transform">
@@ -273,13 +273,13 @@ export default function Hero() {
             ref={ctaRef}
             href="mailto:ashercode4u@gmail.com"
             data-cursor="cta"
-            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-[#E1E0CC] overflow-hidden font-headline text-lg will-change-transform"
+            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-ink overflow-hidden font-headline text-lg will-change-transform"
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-[#E1E0CC] transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-ink transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
             />
-            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-black">Get in Touch</span>
+            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-paper">Get in Touch</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -290,7 +290,7 @@ export default function Hero() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-black"
+              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-paper"
             >
               <path d="M7 7h10v10" />
               <path d="M7 17 17 7" />
@@ -329,7 +329,7 @@ export default function Hero() {
 
       {/* Marquee ticker — full width at the very bottom */}
       <div
-        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-black text-white opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)]"
+        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-ink text-paper opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)]"
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">

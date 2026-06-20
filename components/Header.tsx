@@ -156,7 +156,7 @@ export default function Header() {
     <>
     <header
       ref={headerRef}
-      className="fixed top-0 left-0 right-0 w-full px-4 md:px-6 py-3 flex justify-between items-center z-50 text-[#E1E0CC]"
+      className="fixed top-0 left-0 right-0 w-full px-4 md:px-6 py-3 flex justify-between items-center z-50 text-ink"
       style={{ mixBlendMode: "difference" }}
     >
       <button
@@ -238,12 +238,12 @@ export default function Header() {
     </header>
 
     {open && (
-      <div className="md:hidden fixed top-[52px] inset-x-3 z-[60] flex flex-col gap-1 p-3 rounded-md bg-black/85 backdrop-blur text-[#E1E0CC]">
+      <div className="md:hidden fixed top-[52px] inset-x-3 z-[60] flex flex-col gap-1 p-3 rounded-md bg-ink/90 backdrop-blur text-paper">
         {NAV.map(({ label, target }, i) => (
           <button
             key={label}
             onClick={() => goTo(target)}
-            className="flex items-baseline gap-2 px-2 py-2 font-body text-sm uppercase tracking-[0.22em] hover:bg-[#E1E0CC]/5 rounded"
+            className="flex items-baseline gap-2 px-2 py-2 font-body text-sm uppercase tracking-[0.22em] hover:bg-paper/10 rounded"
           >
             <span className="text-[10px] opacity-50">0{i + 1}</span>
             <span>{label}</span>

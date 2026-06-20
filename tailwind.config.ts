@@ -16,6 +16,9 @@ const config: Config = {
       },
       colors: {
         primary: "#DEDBC8",
+        paper: "rgb(var(--paper) / <alpha-value>)",
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        surface: "rgb(var(--surface) / <alpha-value>)",
       },
       animation: {
         "pulse-glow": "pulse-glow 2.4s ease-in-out infinite",

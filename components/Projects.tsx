@@ -114,7 +114,7 @@ export default function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className="relative isolate z-10 w-full bg-black text-[#E1E0CC] px-6 md:px-12 lg:px-20 py-24 md:py-32"
+      className="relative isolate z-10 w-full bg-paper text-ink px-6 md:px-12 lg:px-20 py-24 md:py-32"
     >
       {/* Floating hover preview — follows cursor over project list */}
       <div
@@ -148,10 +148,10 @@ export default function Projects() {
       <div className="relative w-full max-w-[1600px] mx-auto">
         {/* Header */}
         <div className="flex items-baseline justify-between">
-          <p data-reveal="fade" className="font-body text-[11px] uppercase tracking-[0.35em] text-[#E1E0CC]/40">
+          <p data-reveal="fade" className="font-body text-[11px] uppercase tracking-[0.35em] text-ink/40">
             003 — Index
           </p>
-          <p data-reveal="fade" className="font-body text-[11px] uppercase tracking-[0.35em] text-[#E1E0CC]/40 tabular-nums">
+          <p data-reveal="fade" className="font-body text-[11px] uppercase tracking-[0.35em] text-ink/40 tabular-nums">
             {String(PROJECTS.length).padStart(2, "0")} Projects
           </p>
         </div>
@@ -161,23 +161,23 @@ export default function Projects() {
             <span data-reveal="word" className="inline-block">Selected</span>
           </span>
           <span className="inline-block overflow-hidden">
-            <span data-reveal="word" className="inline-block text-[#E1E0CC]/50">works.</span>
+            <span data-reveal="word" className="inline-block text-ink/50">works.</span>
           </span>
         </h2>
 
         <p
           data-reveal="char"
-          className="mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-[#E1E0CC]"
+          className="mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-ink"
         >
           {LEDE_TEXT}
         </p>
 
         {/* Full-width list */}
-        <ul className="mt-16 md:mt-20 border-t border-[#E1E0CC]/15">
+        <ul className="mt-16 md:mt-20 border-t border-ink/15">
           {PROJECTS.map((p, i) => {
             const isHovered = previewIdx === i;
             return (
-              <li key={p.number} data-reveal="line" className="border-b border-[#E1E0CC]/15">
+              <li key={p.number} data-reveal="line" className="border-b border-ink/15">
                 <a
                   href={p.href}
                   onMouseEnter={() => setPreviewIdx(i)}
@@ -186,28 +186,28 @@ export default function Projects() {
                 >
                   <span
                     className={`font-body text-[10px] tracking-[0.3em] tabular-nums transition-colors duration-300 ${
-                      isHovered ? "text-[#E1E0CC]" : "text-[#E1E0CC]/40"
+                      isHovered ? "text-ink" : "text-ink/40"
                     }`}
                   >
                     {p.number}
                   </span>
                   <span
                     className={`font-headline italic leading-[1.05] tracking-[-0.01em] text-[clamp(1.75rem,4.5vw,3.5rem)] transition-all duration-500 ${
-                      isHovered ? "text-[#E1E0CC] translate-x-2 md:translate-x-4" : "text-[#E1E0CC]/85"
+                      isHovered ? "text-ink translate-x-2 md:translate-x-4" : "text-ink/85"
                     }`}
                   >
                     {p.name}
                   </span>
                   <span
                     className={`hidden md:inline-block font-body text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${
-                      isHovered ? "text-[#E1E0CC]" : "text-[#E1E0CC]/50"
+                      isHovered ? "text-ink" : "text-ink/50"
                     }`}
                   >
                     {p.tag}
                   </span>
                   <span
                     className={`hidden md:inline-block font-body text-[10px] uppercase tracking-[0.22em] tabular-nums transition-colors duration-300 ${
-                      isHovered ? "text-[#E1E0CC]" : "text-[#E1E0CC]/50"
+                      isHovered ? "text-ink" : "text-ink/50"
                     }`}
                   >
                     {p.year}

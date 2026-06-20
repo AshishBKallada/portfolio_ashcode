@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${instrumentSerif.variable} ${almarai.variable}`}>
-      <body className="font-body antialiased bg-white text-black dark:bg-black dark:text-white transition-colors">
+      <body className="font-body antialiased bg-paper text-ink transition-colors">
         <ThemeProvider>
           <SmoothScroll />
           {children}
