@@ -2,6 +2,8 @@
 
 import { useRef, useState } from "react";
 import { useScrollReveal } from "@/lib/useScrollReveal";
+import { PRIMARY_EMAIL, SECTION_INDEX } from "@/lib/constants";
+import { themeClasses } from "@/lib/theme";
 import CursorPreview from "./projects/CursorPreview";
 import ProjectRow from "./projects/ProjectRow";
 import { LEDE_TEXT, PROJECTS } from "./projects/data";
@@ -16,7 +18,7 @@ export default function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className="relative isolate z-10 w-full bg-transparent text-ink px-6 md:px-12 lg:px-20 py-24 md:py-36 overflow-hidden"
+      className={themeClasses.section.projects}
     >
       <CursorPreview projects={PROJECTS} activeIdx={previewIdx} />
 
@@ -24,7 +26,7 @@ export default function Projects() {
         {/* Meta row */}
         <div className="flex items-start justify-between gap-6 mb-12 md:mb-16 font-body text-[10px] uppercase tracking-[0.32em] text-ink/55">
           <p>
-            <span className="opacity-60">(03)</span>
+            <span className="opacity-60">({SECTION_INDEX.projects})</span>
             <span className="mx-2 opacity-30">/</span>
             Selected Works · 制作実績
           </p>
@@ -80,7 +82,7 @@ export default function Projects() {
             archive · drop a line for the rest
           </p>
           <a
-            href="mailto:ashercode4u@gmail.com"
+            href={`mailto:${PRIMARY_EMAIL}`}
             className="group inline-flex items-center gap-2 hover:text-ink transition-colors"
           >
             Request full archive

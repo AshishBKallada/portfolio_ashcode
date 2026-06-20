@@ -2,37 +2,18 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-
-const AUDIO_SRC = "/audio/canta-de-luna.mp3";
-const IMAGE_SRC = "/floating-mark.png";
-
-function useOverHero() {
-  const [overHero, setOverHero] = useState(true);
-
-  useEffect(() => {
-    const measure = () => {
-      const statement = document.getElementById("statement");
-      if (!statement) return;
-      setOverHero(statement.getBoundingClientRect().top > 72);
-    };
-
-    measure();
-    window.addEventListener("scroll", measure, { passive: true });
-    window.addEventListener("loader:done", measure, { once: true });
-
-    return () => window.removeEventListener("scroll", measure);
-  }, []);
-
-  return overHero;
-}
+import { FLOATING_PLAYER } from "@/lib/constants";
+import { overHeroTone, themeClasses } from "@/lib/theme";
+import { useOverHero } from "@/lib/useOverHero";
 
 export default function FloatingPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const overHero = useOverHero();
+  const tone = overHeroTone(overHero);
 
   useEffect(() => {
-    const audio = new Audio(AUDIO_SRC);
+    const audio = new Audio(FLOATING_PLAYER.audio);
     audio.loop = true;
     audio.preload = "none";
     audioRef.current = audio;
@@ -59,19 +40,13 @@ export default function FloatingPlayer() {
   };
 
   const label = playing ? "TAP TO PAUSE · " : "TAP TO PLAY · ";
-  const toneClass = overHero
-    ? "text-black"
-    : "text-ink";
-  const ringClass = overHero
-    ? "border border-black/25 bg-white/60"
-    : "border border-ink/25 bg-paper/60";
 
   return (
     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[90] w-28 h-28 md:w-36 md:h-36 flex items-center justify-center">
       {/* Orbiting curved label */}
       <svg
         viewBox="0 0 140 140"
-        className={`absolute inset-0 w-full h-full pointer-events-none animate-spin-slow transition-colors duration-500 ${toneClass}`}
+        className={`absolute inset-0 w-full h-full pointer-events-none animate-spin-slow transition-colors duration-500 ${tone.floatingTone}`}
         aria-hidden
       >
         <defs>
@@ -100,10 +75,10 @@ export default function FloatingPlayer() {
         onClick={toggle}
         aria-label={playing ? "Pause audio" : "Play audio"}
         aria-pressed={playing}
-        className={`group relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-[transform,color,border-color,background-color] duration-500 hover:scale-105 active:scale-95 ${ringClass}`}
+        className={`group relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-[transform,color,border-color,background-color] duration-500 hover:scale-105 active:scale-95 ${tone.floatingRing}`}
       >
         <Image
-          src={IMAGE_SRC}
+          src={FLOATING_PLAYER.image}
           alt=""
           fill
           sizes="80px"
@@ -112,9 +87,7 @@ export default function FloatingPlayer() {
         <span
           aria-hidden
           className={`absolute inset-0 rounded-full transition-shadow duration-500 ${
-            playing
-              ? "shadow-[0_0_30px_rgba(255,26,26,0.55)] ring-1 ring-[#ff1a1a]/60"
-              : ""
+            playing ? themeClasses.accent.playingGlow : ""
           }`}
         />
       </button>

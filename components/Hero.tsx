@@ -7,6 +7,15 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMagnetic } from "@/lib/useMagnetic";
 import { scrambleText } from "@/lib/scramble";
+import {
+  AVAILABILITY,
+  HERO_HEADLINE_WORDS,
+  HERO_MARQUEE_ITEMS,
+  HERO_ASSETS,
+  LOCATION,
+  PRIMARY_EMAIL,
+} from "@/lib/constants";
+import { colors, themeClasses } from "@/lib/theme";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -150,7 +159,7 @@ export default function Hero() {
         // Headline gets two layered animations:
         //   a) slide-up + fade-in (already running above)
         //   b) scramble pass that lands AFTER the slide settles, so it reads
-        const labels = ["Obsession", "beats", "talent."];
+        const labels = [...HERO_HEADLINE_WORDS];
         const hwEls = Array.from(words) as HTMLElement[];
         hwEls.forEach((el, i) => {
           window.setTimeout(
@@ -283,7 +292,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper dark:bg-transparent text-black"
+      className={themeClasses.hero.section}
     >
       <div ref={visualsRef} className="absolute inset-0 will-change-[opacity,filter]">
       {/* Torii gate — full-screen backdrop behind rock + character */}
@@ -293,7 +302,7 @@ export default function Hero() {
         aria-hidden
       >
         <Image
-          src="/hero-torii.jpg"
+          src={HERO_ASSETS.torii}
           alt=""
           fill
           priority
@@ -309,7 +318,7 @@ export default function Hero() {
           <div ref={rockInnerRef} className="absolute inset-0 will-change-transform">
             <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[70vmin] max-w-[520px] aspect-[640/440]">
               <Image
-                src="/hero-rock.png"
+                src={HERO_ASSETS.rock}
                 alt=""
                 fill
                 priority
@@ -324,7 +333,7 @@ export default function Hero() {
         <div ref={charParallaxRef} className="absolute inset-0 will-change-transform">
           <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
             <Image
-              src="/hero-bg.png"
+              src={HERO_ASSETS.character}
               alt=""
               fill
               priority
@@ -341,7 +350,7 @@ export default function Hero() {
       {inView && splashCfg?.enabled && (
         <SplashCursor
           RAINBOW_MODE={false}
-          COLOR="#ff1a1a"
+          COLOR={colors.accent}
           SIM_RESOLUTION={48}
           DYE_RESOLUTION={splashCfg.dye}
           PRESSURE_ITERATIONS={3}
@@ -360,7 +369,7 @@ export default function Hero() {
 {/* Headline block — bottom-left. Colors inherit from section via currentColor */}
       <div className="hero-headline absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none will-change-transform">
         <p className="hero-tag font-body text-xs uppercase tracking-[0.3em] mb-4 opacity-0">
-          Full-stack engineer / Kerala, India
+          Full-stack engineer / {LOCATION.label}, India
         </p>
         <h1 className="font-headline text-[14vw] md:text-[9vw] lg:text-[7.5vw] leading-[0.85] tracking-[-0.02em]">
           <span className="hw inline-block mr-[0.18em] cursor-pointer opacity-0">Obsession</span>
@@ -371,15 +380,12 @@ export default function Hero() {
         <div className="hero-cta mt-8 flex flex-wrap gap-4 items-center opacity-0">
           <a
             ref={ctaRef}
-            href="mailto:ashercode4u@gmail.com"
+            href={`mailto:${PRIMARY_EMAIL}`}
             data-cursor="cta"
-            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black overflow-hidden font-headline text-lg text-black will-change-transform"
+            className={themeClasses.hero.cta}
           >
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
-            />
-            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-white">Get in Touch</span>
+            <span aria-hidden className={themeClasses.hero.ctaFill} />
+            <span className={themeClasses.hero.ctaLabel}>Get in Touch</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -390,14 +396,14 @@ export default function Hero() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-white"
+              className={themeClasses.hero.ctaIcon}
             >
               <path d="M7 7h10v10" />
               <path d="M7 17 17 7" />
             </svg>
           </a>
           <span className="font-body text-xs uppercase tracking-[0.2em] opacity-70">
-            Available · Q3 2026
+            {AVAILABILITY.status}
           </span>
         </div>
 
@@ -429,26 +435,13 @@ export default function Hero() {
 
       {/* Marquee ticker — full width at the very bottom */}
       <div
-        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-white/75 text-black opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.2)] backdrop-blur-sm"
+        className={themeClasses.hero.marquee}
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
           {Array.from({ length: 2 }).map((_, copy) => (
             <div key={copy} className="flex shrink-0 items-center font-body text-[10px] uppercase tracking-[0.32em]">
-              {[
-                "Available · Q3 2026",
-                "一期一会",
-                "Kerala · IST",
-                "努力は才能を超える",
-                "Full-stack engineer",
-                "武士道",
-                "Obsession beats talent",
-                "開発中",
-                "Currently shipping",
-                "不撓不屈",
-                "Open to collaborations",
-                "全力",
-              ].map((s, i) => (
+              {[...HERO_MARQUEE_ITEMS].map((s, i) => (
                 <span key={`${copy}-${i}`} className="flex items-center">
                   <span className="px-8">{s}</span>
                   <span className="opacity-70">✦</span>

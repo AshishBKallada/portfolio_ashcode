@@ -4,8 +4,11 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import ThemeToggle from "@/components/ThemeToggle";
+import { BRAND, LOCATION, NAV_ITEMS } from "@/lib/constants";
+import { overHeroTone, themeClasses } from "@/lib/theme";
 import { useActiveSection } from "@/lib/useActiveSection";
 import { useClock } from "@/lib/useClock";
+import { useOverHero } from "@/lib/useOverHero";
 
 type LenisLike = { scrollTo: (target: number | string | HTMLElement, opts?: { offset?: number }) => void };
 
@@ -24,29 +27,7 @@ function smoothScrollTo(target: HTMLElement | number) {
   }
 }
 
-const NAV = [
-  { label: "Works", target: "projects" },
-  { label: "About", target: "statement" },
-  { label: "Contact", target: "contact" },
-];
-
-// Whether the viewport top is still over the hero section — header inverts
-// its color treatment based on this so the brand stays legible.
-function useOverHero() {
-  const [overHero, setOverHero] = useState(true);
-  useEffect(() => {
-    const measure = () => {
-      const statement = document.getElementById("statement");
-      if (!statement) return;
-      setOverHero(statement.getBoundingClientRect().top > 72);
-    };
-    measure();
-    window.addEventListener("scroll", measure, { passive: true });
-    window.addEventListener("loader:done", measure, { once: true });
-    return () => window.removeEventListener("scroll", measure);
-  }, []);
-  return overHero;
-}
+const NAV = NAV_ITEMS;
 
 export default function Header() {
   const innerRef = useRef<HTMLDivElement>(null);
@@ -54,6 +35,7 @@ export default function Header() {
   const active = useActiveSection(NAV.map((n) => n.target));
   const time = useClock();
   const overHero = useOverHero();
+  const tone = overHeroTone(overHero);
 
   useEffect(() => {
     const root = innerRef.current;
@@ -107,11 +89,7 @@ export default function Header() {
     >
       <div
         ref={innerRef}
-        className={`w-full px-4 md:px-6 py-3 flex justify-between items-center opacity-0 -translate-y-7 transition-colors duration-500 ${
-          overHero
-            ? "text-black [text-shadow:0_1px_12px_rgba(255,255,255,0.65)]"
-            : "text-ink"
-        }`}
+        className={`w-full px-4 md:px-6 py-3 flex justify-between items-center opacity-0 -translate-y-7 transition-colors duration-500 ${tone.header}`}
       >
       <button
         onClick={() => smoothScrollTo(0)}
@@ -124,9 +102,9 @@ export default function Header() {
           <span className="font-headline text-[9px] italic leading-none">A</span>
         </span>
         <span className="flex items-baseline gap-1">
-          <span className="font-headline text-base italic">Ashcode</span>
+          <span className="font-headline text-base italic">{BRAND.name}</span>
           <span className="font-body text-[9px] tracking-[0.15em] opacity-50">
-            / アッシュコード
+            / {BRAND.nameJp}
           </span>
         </span>
       </button>
@@ -172,7 +150,7 @@ export default function Header() {
             <span className="absolute inset-0 rounded-full bg-current opacity-60 animate-ping" />
             <span className="relative inline-block w-1.5 h-1.5 rounded-full bg-current" />
           </span>
-          {time || "Kerala"} · IST
+          {time || LOCATION.label} · {LOCATION.timezone}
         </span>
 
         <ThemeToggle />
@@ -194,9 +172,7 @@ export default function Header() {
     </header>
 
     {open && (
-      <div className={`md:hidden fixed top-[52px] inset-x-3 z-[9999] flex flex-col gap-1 p-3 rounded-md backdrop-blur ${
-        overHero ? "bg-black/75 text-white" : "bg-paper/95 text-ink border border-ink/10"
-      }`}>
+      <div className={`md:hidden fixed top-[52px] inset-x-3 z-[9999] flex flex-col gap-1 p-3 rounded-md backdrop-blur ${tone.mobileMenu}`}>
         {NAV.map(({ label, target }, i) => (
           <button
             key={label}

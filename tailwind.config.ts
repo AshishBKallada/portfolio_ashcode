@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { colors } from "./lib/theme/colors";
 
 const config: Config = {
   darkMode: "class",
@@ -19,6 +20,10 @@ const config: Config = {
         paper: "rgb(var(--paper) / <alpha-value>)",
         ink: "rgb(var(--ink) / <alpha-value>)",
         surface: "rgb(var(--surface) / <alpha-value>)",
+        accent: {
+          DEFAULT: colors.accent,
+          rgb: colors.accentRgb,
+        },
       },
       animation: {
         "pulse-glow": "pulse-glow 2.4s ease-in-out infinite",

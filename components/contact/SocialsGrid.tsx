@@ -1,17 +1,12 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
-
-const SOCIALS = [
-  { label: "Github", handle: "@AshishBKallada", href: "https://github.com/AshishBKallada" },
-  { label: "LinkedIn", handle: "in/ashishbkallada", href: "https://www.linkedin.com" },
-  { label: "Resume", handle: "PDF · 02 pages", href: "/ashishbkalladaresume.pdf" },
-] as const;
+import { SOCIAL_LINKS } from "@/lib/constants";
 
 export default function SocialsGrid() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 border-t border-b border-ink/15 sm:divide-x divide-y sm:divide-y-0 divide-ink/15">
-      {SOCIALS.map(({ label, handle, href }, i) => (
+      {SOCIAL_LINKS.map(({ label, handle, href }, i) => (
         <a
           key={label}
           href={href}

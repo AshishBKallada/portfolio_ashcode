@@ -3,21 +3,8 @@
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { gsap } from "gsap";
-
-const ACCENT = "#ff1a1a";
-
-const SKILLS: { category: string; jp: string; items: string }[] = [
-  { category: "Frontend",   jp: "前面",     items: "React · Next.js · React Native · Tamagui · Tailwind · ShadCN · ANTD · Bootstrap · MUI · Redux · GSAP" },
-  { category: "Languages",  jp: "言語",     items: "JavaScript · TypeScript · HTML · CSS · Java · PHP" },
-  { category: "Backend",    jp: "背面",     items: "Node.js · Express.js · REST API · MVC · Clean Architecture · JWT · Kafka · EJS" },
-  { category: "Database",   jp: "データ",   items: "MongoDB · PostgreSQL · MySQL" },
-  { category: "Services",   jp: "サービス", items: "Firebase · Socket.IO · Cloudinary · Razorpay · Zegocloud · Passport.js · Nodemailer · Chart.js" },
-  { category: "Deployment", jp: "配備",     items: "Vercel · Render · NGINX · Hostinger · Android" },
-  { category: "DevOps",     jp: "運用",     items: "Docker · Kubernetes · AWS · Git · GitHub" },
-  { category: "Testing",    jp: "試験",     items: "Mocha · ESLint · Postman" },
-  { category: "Concepts",   jp: "概念",     items: "DSA · OOPS · Microservices · JSON" },
-  { category: "Tools",      jp: "道具",     items: "Figma · Notion · Moon Modeler" },
-];
+import { SKILLS_CATEGORIES } from "@/lib/constants";
+import { colors } from "@/lib/theme";
 
 type LenisLike = { stop: () => void; start: () => void };
 
@@ -84,7 +71,7 @@ export default function SkillsModal({ open, onClose }: { open: boolean; onClose:
           aria-hidden
           className="absolute top-0 left-0 right-0 h-px"
           style={{
-            background: `linear-gradient(90deg, transparent 0%, ${ACCENT} 50%, transparent 100%)`,
+            background: `linear-gradient(90deg, transparent 0%, ${colors.accent} 50%, transparent 100%)`,
             opacity: 0.6,
           }}
         />
@@ -128,7 +115,7 @@ export default function SkillsModal({ open, onClose }: { open: boolean; onClose:
           ref={rowsRef}
           className="flex-1 overflow-y-auto px-6 md:px-12 pb-8 border-t border-ink/10"
         >
-          {SKILLS.map((row, i) => (
+          {SKILLS_CATEGORIES.map((row, i) => (
             <li
               key={row.category}
               className="group flex flex-col md:flex-row md:items-baseline gap-y-2 md:gap-x-10 py-5 border-b border-ink/10 transition-colors hover:bg-ink/[0.02]"
@@ -155,7 +142,7 @@ export default function SkillsModal({ open, onClose }: { open: boolean; onClose:
         <footer className="px-6 md:px-12 py-4 border-t border-ink/10 flex items-center justify-between font-body text-[10px] uppercase tracking-[0.3em] text-ink/40">
           <p>Esc to close</p>
           <p>
-            {SKILLS.length} categories · 全部で
+            {SKILLS_CATEGORIES.length} categories · 全部で
           </p>
         </footer>
       </div>
