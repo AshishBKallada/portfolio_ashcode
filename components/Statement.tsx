@@ -52,19 +52,22 @@ export default function Statement() {
             type="button"
             onClick={() => setSkillsOpen(true)}
             aria-label="Open all skills"
-            className="group ml-[0.1em] inline-block align-baseline bg-transparent border-0 p-0 font-[inherit] text-[inherit] cursor-pointer"
+            className="group ml-[0.12em] inline-flex items-baseline gap-[0.15em] align-baseline bg-transparent border-0 p-0 font-[inherit] text-[inherit] cursor-pointer animate-float-y"
           >
-            <span className="inline-block overflow-hidden align-baseline mr-[0.18em]">
-              <span data-reveal="word" className="inline-block italic text-ink/55 underline decoration-ink/20 underline-offset-[0.18em] decoration-[0.04em] group-hover:text-ink group-hover:decoration-ink transition-colors">
+            <span className="inline-block overflow-hidden align-baseline">
+              <span
+                data-reveal="tail"
+                className="inline-block italic text-ink/55 underline decoration-ink/20 underline-offset-[0.18em] decoration-[0.04em] group-hover:text-ink group-hover:decoration-ink transition-colors"
+              >
                 and more
               </span>
             </span>
             <span className="inline-block overflow-hidden align-middle">
-              <span data-reveal="word" className="inline-block">
+              <span data-reveal="tail" className="inline-block">
                 <Hand
                   aria-hidden
                   strokeWidth={1.4}
-                  className="inline-block w-[0.9em] h-[0.9em] -rotate-90 animate-point-left text-ink/70 group-hover:text-ink transition-colors"
+                  className="inline-block w-[0.95em] h-[0.95em] animate-point-left text-ink/70 group-hover:text-ink transition-colors"
                 />
               </span>
             </span>
