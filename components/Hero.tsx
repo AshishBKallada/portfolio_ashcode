@@ -24,6 +24,7 @@ export default function Hero() {
   const [inView, setInView] = useState(true);
   const [splashCfg, setSplashCfg] = useState<{ enabled: boolean; dye: number } | null>(null);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.22);
+  const entranceRanRef = useRef(false);
 
   // Probe device capabilities once — disable WebGL fluid on touch / reduced-motion,
   // and drop dye resolution on small screens to keep mobile smooth.
@@ -78,10 +79,13 @@ export default function Hero() {
       gsap.set(marquee, { yPercent: 100, opacity: 0 });
 
       const runEntrance = () => {
+        if (entranceRanRef.current) return;
+        entranceRanRef.current = true;
+
         const tl = gsap.timeline();
 
         // 1) Hero text cascades in first
-        tl.to(tags, { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" })
+        tl.to(tags, { y: 0, opacity: 0.7, duration: 0.7, ease: "power2.out" })
           .to(
             words,
             {
@@ -143,13 +147,13 @@ export default function Hero() {
         });
       };
 
-      const onLoaderDone = () => runEntrance();
-      window.addEventListener("loader:done", onLoaderDone, { once: true });
-      // Safety: if loader event is missed, still reveal after 4s
-      const safety = window.setTimeout(() => {
-        window.removeEventListener("loader:done", onLoaderDone);
+      const onLoaderDone = () => {
+        window.clearTimeout(safety);
         runEntrance();
-      }, 4000);
+      };
+      window.addEventListener("loader:done", onLoaderDone, { once: true });
+      // Safety: if loader event is missed, still reveal after loader finishes
+      const safety = window.setTimeout(onLoaderDone, 6000);
 
       return () => {
         window.removeEventListener("loader:done", onLoaderDone);
@@ -255,16 +259,16 @@ export default function Hero() {
 
 {/* Headline block — bottom-left. Colors inherit from section via currentColor */}
       <div className="hero-headline absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none will-change-transform">
-        <p className="hero-tag font-body text-xs uppercase tracking-[0.3em] mb-4 opacity-70">
+        <p className="hero-tag font-body text-xs uppercase tracking-[0.3em] mb-4 opacity-0">
           Full-stack engineer / Kerala, India
         </p>
         <h1 className="font-headline text-[14vw] md:text-[9vw] lg:text-[7.5vw] leading-[0.85] tracking-[-0.02em]">
-          <span className="hw inline-block mr-[0.18em] cursor-pointer">Obsession</span>
-          <span className="hw inline-block mr-[0.18em] italic cursor-pointer">beats</span>
+          <span className="hw inline-block mr-[0.18em] cursor-pointer opacity-0">Obsession</span>
+          <span className="hw inline-block mr-[0.18em] italic cursor-pointer opacity-0">beats</span>
           <br />
-          <span className="hw inline-block cursor-pointer">talent.</span>
+          <span className="hw inline-block cursor-pointer opacity-0">talent.</span>
         </h1>
-        <div className="hero-cta mt-8 flex flex-wrap gap-4 items-center">
+        <div className="hero-cta mt-8 flex flex-wrap gap-4 items-center opacity-0">
           <a
             ref={ctaRef}
             href="mailto:ashercode4u@gmail.com"
@@ -325,7 +329,7 @@ export default function Hero() {
 
       {/* Marquee ticker — full width at the very bottom */}
       <div
-        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-black text-white will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)]"
+        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-black text-white opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)]"
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
