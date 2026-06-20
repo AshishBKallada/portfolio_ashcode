@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Hand } from "lucide-react";
 import { useScrollReveal } from "@/lib/useScrollReveal";
+import SkillsModal from "@/components/SkillsModal";
 
 type Segment = { text: string; className?: string };
 
@@ -17,9 +18,12 @@ const BODY_TEXT =
 
 export default function Statement() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [skillsOpen, setSkillsOpen] = useState(false);
   useScrollReveal(sectionRef);
 
   return (
+    <>
+    <SkillsModal open={skillsOpen} onClose={() => setSkillsOpen(false)} />
     <section
       ref={sectionRef}
       id="statement"
@@ -44,18 +48,27 @@ export default function Statement() {
               </span>
             ))
           )}
-          <span className="inline-block overflow-hidden align-baseline mr-[0.18em]">
-            <span data-reveal="word" className="inline-block italic text-ink/55">and more</span>
-          </span>
-          <span className="inline-block overflow-hidden align-middle">
-            <span data-reveal="word" className="inline-block">
-              <Hand
-                aria-hidden
-                strokeWidth={1.4}
-                className="inline-block w-[0.9em] h-[0.9em] -rotate-90 animate-point-left text-ink/70"
-              />
+          <button
+            type="button"
+            onClick={() => setSkillsOpen(true)}
+            aria-label="Open all skills"
+            className="group ml-[0.1em] inline-block align-baseline bg-transparent border-0 p-0 font-[inherit] text-[inherit] cursor-pointer"
+          >
+            <span className="inline-block overflow-hidden align-baseline mr-[0.18em]">
+              <span data-reveal="word" className="inline-block italic text-ink/55 underline decoration-ink/20 underline-offset-[0.18em] decoration-[0.04em] group-hover:text-ink group-hover:decoration-ink transition-colors">
+                and more
+              </span>
             </span>
-          </span>
+            <span className="inline-block overflow-hidden align-middle">
+              <span data-reveal="word" className="inline-block">
+                <Hand
+                  aria-hidden
+                  strokeWidth={1.4}
+                  className="inline-block w-[0.9em] h-[0.9em] -rotate-90 animate-point-left text-ink/70 group-hover:text-ink transition-colors"
+                />
+              </span>
+            </span>
+          </button>
         </h2>
 
         <p
@@ -66,5 +79,6 @@ export default function Statement() {
         </p>
       </div>
     </section>
+    </>
   );
 }
