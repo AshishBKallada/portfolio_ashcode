@@ -11,6 +11,11 @@ const config: Config = {
       fontFamily: {
         body: ["var(--font-inter)", "system-ui", "sans-serif"],
         headline: ["var(--font-instrument-serif)", "Georgia", "serif"],
+        almarai: ["var(--font-almarai)", "system-ui", "sans-serif"],
+        serif: ['"Instrument Serif"', "var(--font-instrument-serif)", "serif"],
+      },
+      colors: {
+        primary: "#DEDBC8",
       },
       animation: {
         "pulse-glow": "pulse-glow 2.4s ease-in-out infinite",

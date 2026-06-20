@@ -88,7 +88,6 @@ export default function CustomCursor() {
       <span
         ref={labelRef}
         className="font-body text-[10px] uppercase tracking-[0.18em] text-black"
-        style={{ mixBlendMode: "difference" }}
       />
     </div>
   );

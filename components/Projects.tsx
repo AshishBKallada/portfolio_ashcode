@@ -4,9 +4,30 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
+}
+
+function AnimatedLetter({
+  char,
+  index,
+  total,
+  progress,
+}: {
+  char: string;
+  index: number;
+  total: number;
+  progress: MotionValue<number>;
+}) {
+  const charProgress = index / total;
+  const opacity = useTransform(
+    progress,
+    [charProgress - 0.1, charProgress + 0.05],
+    [0.2, 1]
+  );
+  return <motion.span style={{ opacity }}>{char}</motion.span>;
 }
 
 type Project = {
@@ -90,7 +111,17 @@ const PROJECTS: Project[] = [
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const ledeRef = useRef<HTMLParagraphElement>(null);
   const [previewIdx, setPreviewIdx] = useState<number | null>(null);
+
+  const { scrollYProgress: ledeProgress } = useScroll({
+    target: ledeRef,
+    offset: ["start 0.8", "end 0.2"],
+  });
+
+  const LEDE_TEXT =
+    "A few of the ones I'm proud of. I didn't build these alone — but on each one I played a crucial role and took the risky calls that kept the requirements landing on time. The kind of bets you only make when the deadline is real.";
+  const ledeChars = Array.from(LEDE_TEXT);
 
   // Floating preview thumbnail — follows cursor smoothly
   useEffect(() => {
@@ -127,11 +158,6 @@ export default function Projects() {
         scrollTrigger: { trigger: root, start: "top 75%" },
       });
 
-      gsap.from(root.querySelector(".pj-lede"), {
-        y: 24, opacity: 0, duration: 0.85, ease: "power3.out", delay: 0.1,
-        scrollTrigger: { trigger: root, start: "top 75%" },
-      });
-
       const list = root.querySelector("ul");
       if (list) {
         gsap.from(list.querySelectorAll("li"), {
@@ -147,7 +173,7 @@ export default function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className="relative isolate z-10 w-full bg-white text-black dark:bg-black dark:text-white px-6 md:px-12 lg:px-20 py-24 md:py-32"
+      className="relative isolate z-10 w-full bg-black text-[#E1E0CC] px-6 md:px-12 lg:px-20 py-24 md:py-32"
     >
       {/* Floating hover preview — follows cursor over project list */}
       <div
@@ -181,31 +207,40 @@ export default function Projects() {
       <div className="relative w-full max-w-[1600px] mx-auto">
         {/* Header */}
         <div className="flex items-baseline justify-between">
-          <p className="pj-meta font-body text-[11px] uppercase tracking-[0.35em] text-black/40 dark:text-white/40">
+          <p className="pj-meta font-body text-[11px] uppercase tracking-[0.35em] text-[#E1E0CC]/40">
             003 — Index
           </p>
-          <p className="pj-meta font-body text-[11px] uppercase tracking-[0.35em] text-black/40 dark:text-white/40 tabular-nums">
+          <p className="pj-meta font-body text-[11px] uppercase tracking-[0.35em] text-[#E1E0CC]/40 tabular-nums">
             {String(PROJECTS.length).padStart(2, "0")} Projects
           </p>
         </div>
 
         <h2 className="mt-8 font-headline italic leading-[0.95] tracking-[-0.02em] text-[clamp(2.5rem,7vw,6rem)]">
           <span className="pj-word inline-block mr-[0.18em]">Selected</span>
-          <span className="pj-word inline-block text-black/50 dark:text-white/50">works.</span>
+          <span className="pj-word inline-block text-[#E1E0CC]/50">works.</span>
         </h2>
 
-        <p className="pj-lede mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-black/65 dark:text-white/65">
-          A few of the ones I&apos;m proud of. I didn&apos;t build these alone — but on each one I played a
-          crucial role and took the risky calls that kept the requirements landing on time. The kind
-          of bets you only make when the deadline is real.
+        <p
+          ref={ledeRef}
+          className="pj-lede mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-[#E1E0CC]"
+        >
+          {ledeChars.map((c, i) => (
+            <AnimatedLetter
+              key={i}
+              char={c}
+              index={i}
+              total={ledeChars.length}
+              progress={ledeProgress}
+            />
+          ))}
         </p>
 
         {/* Full-width list */}
-        <ul className="mt-16 md:mt-20 border-t border-black/15 dark:border-white/15">
+        <ul className="mt-16 md:mt-20 border-t border-[#E1E0CC]/15">
           {PROJECTS.map((p, i) => {
             const isHovered = previewIdx === i;
             return (
-              <li key={p.number} className="border-b border-black/15 dark:border-white/15">
+              <li key={p.number} className="border-b border-[#E1E0CC]/15">
                 <a
                   href={p.href}
                   onMouseEnter={() => setPreviewIdx(i)}
@@ -214,28 +249,28 @@ export default function Projects() {
                 >
                   <span
                     className={`font-body text-[10px] tracking-[0.3em] tabular-nums transition-colors duration-300 ${
-                      isHovered ? "text-black dark:text-white" : "text-black/40 dark:text-white/40"
+                      isHovered ? "text-[#E1E0CC]" : "text-[#E1E0CC]/40"
                     }`}
                   >
                     {p.number}
                   </span>
                   <span
                     className={`font-headline italic leading-[1.05] tracking-[-0.01em] text-[clamp(1.75rem,4.5vw,3.5rem)] transition-all duration-500 ${
-                      isHovered ? "text-black dark:text-white translate-x-2 md:translate-x-4" : "text-black/85 dark:text-white/85"
+                      isHovered ? "text-[#E1E0CC] translate-x-2 md:translate-x-4" : "text-[#E1E0CC]/85"
                     }`}
                   >
                     {p.name}
                   </span>
                   <span
                     className={`hidden md:inline-block font-body text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${
-                      isHovered ? "text-black dark:text-white" : "text-black/50 dark:text-white/50"
+                      isHovered ? "text-[#E1E0CC]" : "text-[#E1E0CC]/50"
                     }`}
                   >
                     {p.tag}
                   </span>
                   <span
                     className={`hidden md:inline-block font-body text-[10px] uppercase tracking-[0.22em] tabular-nums transition-colors duration-300 ${
-                      isHovered ? "text-black dark:text-white" : "text-black/50 dark:text-white/50"
+                      isHovered ? "text-[#E1E0CC]" : "text-[#E1E0CC]/50"
                     }`}
                   >
                     {p.year}

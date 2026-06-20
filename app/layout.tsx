@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Instrument_Serif } from "next/font/google";
+import { Inter, Instrument_Serif, Almarai } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import ThemeProvider from "@/components/ThemeProvider";
@@ -19,6 +19,13 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
+const almarai = Almarai({
+  subsets: ["arabic"],
+  weight: ["300", "400", "700", "800"],
+  variable: "--font-almarai",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Ashish B Kallada — Full-stack engineer",
   description: "End-to-end web. Shipped from React to the database.",
@@ -26,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${instrumentSerif.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${instrumentSerif.variable} ${almarai.variable}`}>
       <body className="font-body antialiased bg-white text-black dark:bg-black dark:text-white transition-colors">
         <ThemeProvider>
           <SmoothScroll />

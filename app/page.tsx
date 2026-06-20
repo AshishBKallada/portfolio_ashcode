@@ -13,7 +13,7 @@ export default function Page() {
       <CustomCursor />
       <Header />
 
-      <main className="relative bg-white">
+      <main className="relative">
         <div className="relative">
           <Hero />
           <Statement />

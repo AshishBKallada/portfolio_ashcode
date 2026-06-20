@@ -16,7 +16,6 @@ const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
   const imageInnerRef = useRef<HTMLDivElement>(null);
   const rockInnerRef = useRef<HTMLDivElement>(null);
   const charParallaxRef = useRef<HTMLDivElement>(null);
@@ -44,7 +43,11 @@ export default function Hero() {
       if (!root) return;
 
       const startedAtTop = window.scrollY < 50;
-      if (!startedAtTop) return;
+      if (!startedAtTop) {
+        // Mid-scroll refresh: skip entrance, signal header immediately
+        window.dispatchEvent(new Event("hero:textDone"));
+        return;
+      }
 
       // Lock entrance state — held until loader finishes
       const tags = root.querySelectorAll(".hero-tag");
@@ -188,13 +191,10 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-white text-black"
+      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-black text-[#E1E0CC]"
     >
       {/* Foreground hero figure — always visible */}
-      <div
-        ref={imageRef}
-        className="pointer-events-none absolute inset-0 z-[3] will-change-transform"
-      >
+      <div className="pointer-events-none absolute inset-0 z-[3] will-change-transform">
         {/* Rock platform — scroll parallax / entrance / content */}
         <div ref={rockParallaxRef} className="pointer-events-none absolute inset-0 will-change-transform">
           <div ref={rockInnerRef} className="absolute inset-0 will-change-transform">
@@ -216,7 +216,7 @@ export default function Hero() {
           <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
             <Image
               src="/hero-bg.png"
-              alt="Ashish B Kallada — hero"
+              alt=""
               fill
               priority
               sizes="100vw"
@@ -255,13 +255,13 @@ export default function Hero() {
             ref={ctaRef}
             href="mailto:ashercode4u@gmail.com"
             data-cursor="cta"
-            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black overflow-hidden font-headline text-lg will-change-transform"
+            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-[#E1E0CC] overflow-hidden font-headline text-lg will-change-transform"
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-[#E1E0CC] transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
             />
-            <span className="relative z-[1] transition-colors duration-300 group-hover:text-white">Get in Touch</span>
+            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-black">Get in Touch</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -272,7 +272,7 @@ export default function Hero() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="relative z-[1] group-hover:rotate-45 transition-transform group-hover:text-white"
+              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-black"
             >
               <path d="M7 7h10v10" />
               <path d="M7 17 17 7" />
@@ -291,7 +291,7 @@ export default function Hero() {
       </div>
 
       {/* "Scroll to explore" — sits above the marquee */}
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none text-white opacity-90">
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-90">
         <p className="font-body text-xs uppercase tracking-[0.25em]">Scroll to explore</p>
         <svg
           width="16"
@@ -311,7 +311,7 @@ export default function Hero() {
 
       {/* Marquee ticker — full width at the very bottom */}
       <div
-        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-black text-[#ff1a1a] [text-shadow:0_0_8px_rgba(255,26,26,0.7),0_0_18px_rgba(255,26,26,0.45)] will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)]"
+        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-black text-white will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)]"
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
