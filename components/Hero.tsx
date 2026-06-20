@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Download } from "lucide-react";
 import { useMagnetic } from "@/lib/useMagnetic";
 import { scrambleText } from "@/lib/scramble";
 
@@ -14,11 +13,6 @@ if (typeof window !== "undefined") {
 }
 
 const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
-
-const LIGHT_GRID = {
-  backgroundImage:
-    "repeating-linear-gradient(90deg, transparent 0, transparent calc(8.333333% - 1.5px), rgba(0,0,0,0.05) calc(8.333333% - 0.75px), transparent 8.333333%)",
-};
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -56,7 +50,6 @@ export default function Hero() {
       const tags = root.querySelectorAll(".hero-tag");
       const words = root.querySelectorAll(".hw");
       const ctas = root.querySelectorAll(".hero-cta");
-      const resume = root.querySelectorAll(".hero-resume");
       const marquee = root.querySelectorAll(".hero-marquee");
 
       if (imageInnerRef.current)
@@ -66,7 +59,6 @@ export default function Hero() {
       gsap.set(tags, { y: 18, opacity: 0 });
       gsap.set(words, { y: 90, opacity: 0 });
       gsap.set(ctas, { y: 22, opacity: 0 });
-      gsap.set(resume, { x: 60, opacity: 0 });
       gsap.set(marquee, { yPercent: 100, opacity: 0 });
 
       const runEntrance = () => {
@@ -89,11 +81,6 @@ export default function Hero() {
             ctas,
             { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
             "-=0.35"
-          )
-          .to(
-            resume,
-            { x: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-            "-=0.5"
           );
 
         // 2) Signal the navbar to drop in
@@ -193,15 +180,6 @@ export default function Hero() {
           scrollTrigger: trigger,
         });
       }
-
-      const resume = root.querySelector(".hero-resume");
-      if (resume) {
-        gsap.to(resume, {
-          y: 60,
-          ease: "none",
-          scrollTrigger: trigger,
-        });
-      }
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -261,10 +239,7 @@ export default function Hero() {
         />
       )}
 
-      {/* 12-column gridlines */}
-      <div className="pointer-events-none absolute inset-0 z-[1]" style={LIGHT_GRID} aria-hidden />
-
-      {/* Headline block — bottom-left. Colors inherit from section via currentColor */}
+{/* Headline block — bottom-left. Colors inherit from section via currentColor */}
       <div className="hero-headline absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none will-change-transform">
         <p className="hero-tag font-body text-xs uppercase tracking-[0.3em] mb-4 opacity-70">
           Full-stack engineer / Kerala, India
@@ -310,52 +285,6 @@ export default function Hero() {
 
       </div>
 
-      {/* Resume thumbnail — fixed bottom-right with jointed connector line */}
-      <a
-        href="/ashishbkalladaresume.pdf"
-        download="ashishbkalladaresume.pdf"
-        aria-label="Download resume"
-        onClick={(e) => {
-          const ok = window.confirm("Download ashishbkalladaresume.pdf?");
-          if (!ok) e.preventDefault();
-        }}
-        data-cursor="view"
-        className="hero-resume group hidden md:flex fixed bottom-24 right-10 lg:bottom-28 lg:right-14 z-[90] pointer-events-auto items-start gap-2"
-      >
-        {/* Label */}
-        <div className="flex items-center gap-1.5 whitespace-nowrap pointer-events-none">
-          <span className="font-body text-[10px] uppercase tracking-[0.22em] text-black">
-            ashishbkalladaresume.pdf
-          </span>
-          <Download className="w-3.5 h-3.5 text-black" />
-        </div>
-
-        {/* Connector — horizontal from label right, then diagonal down-right to thumbnail top-left */}
-        <svg
-          aria-hidden
-          className="shrink-0 pointer-events-none text-black"
-          width="32"
-          height="44"
-          viewBox="0 0 32 44"
-          fill="none"
-        >
-          <path d="M 0 8 L 14 8 L 32 42" stroke="currentColor" strokeWidth="1" />
-          <circle cx="0" cy="8" r="1.6" fill="currentColor" />
-          <circle cx="32" cy="42" r="1.6" fill="currentColor" />
-        </svg>
-
-        {/* Thumbnail */}
-        <div className="relative w-24 lg:w-28 aspect-[3/4] mt-10 shrink-0 overflow-hidden shadow-[0_18px_40px_-15px_rgba(0,0,0,0.15)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.04]">
-          <Image
-            src="/resume-thumb.png"
-            alt="Resume preview"
-            fill
-            sizes="120px"
-            className="object-cover object-top grayscale transition duration-300 group-hover:grayscale-0"
-          />
-        </div>
-      </a>
-
       {/* Hex tag — sits above the marquee */}
       <div className="absolute bottom-16 left-6 md:bottom-20 md:left-12 z-[4] font-body text-[11px] tracking-[0.2em] opacity-70">
         0x2f·7a · 4b · ff · 01 · 3c · ae →
@@ -382,7 +311,7 @@ export default function Hero() {
 
       {/* Marquee ticker — full width at the very bottom */}
       <div
-        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 text-white bg-[#ff1a1a] will-change-transform shadow-[0_-12px_40px_-8px_rgba(255,26,26,0.65),0_0_24px_rgba(255,26,26,0.5)]"
+        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-black text-[#ff1a1a] [text-shadow:0_0_8px_rgba(255,26,26,0.7),0_0_18px_rgba(255,26,26,0.45)] will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)]"
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
@@ -390,11 +319,17 @@ export default function Hero() {
             <div key={copy} className="flex shrink-0 items-center font-body text-[10px] uppercase tracking-[0.32em]">
               {[
                 "Available · Q3 2026",
+                "一期一会",
                 "Kerala · IST",
+                "努力は才能を超える",
                 "Full-stack engineer",
+                "武士道",
                 "Obsession beats talent",
+                "開発中",
                 "Currently shipping",
+                "不撓不屈",
                 "Open to collaborations",
+                "全力",
               ].map((s, i) => (
                 <span key={`${copy}-${i}`} className="flex items-center">
                   <span className="px-8">{s}</span>
