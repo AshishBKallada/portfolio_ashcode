@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUp, ArrowUpRight, Github, Linkedin } from "lucide-react";
+import { ArrowUp, ArrowUpRight } from "lucide-react";
 import { useMagnetic } from "@/lib/useMagnetic";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 
@@ -9,11 +9,11 @@ const ACCENT = "#ff1a1a";
 const PRIMARY_EMAIL = "ashercode4u@gmail.com";
 const SECONDARY_EMAIL = "ashishbkallada@gmail.com";
 
-const META = [
-  { k: "Based in",     v: "Kerala, IN"  },
-  { k: "Available",    v: "Q3 2026"     },
-  { k: "Stack",        v: "React · Node" },
-  { k: "Version",      v: "v.26"        },
+const SOCIALS: { k: string; v: string; href: string; external?: boolean }[] = [
+  { k: "Github",   v: "@AshishBKallada",     href: "https://github.com/AshishBKallada", external: true },
+  { k: "LinkedIn", v: "@ashishkallada",       href: "https://www.linkedin.com",          external: true },
+  { k: "Email",    v: "ashercode4u",          href: "mailto:ashercode4u@gmail.com" },
+  { k: "Resume",   v: "2026 ↗",               href: "/ashishbkalladaresume.pdf",          external: true },
 ];
 
 function useKeralaTime() {
@@ -144,59 +144,35 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* ─── Meta grid — Awwwards-style stat row ─── */}
+      {/* ─── Socials grid — replaces the awwwards-style stat row ─── */}
       <div className="relative z-10 px-6 md:px-12 max-w-[1500px] mx-auto w-full pb-8 grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-8 border-t border-ink/10 pt-8">
-        {META.map((m) => (
-          <div key={m.k} data-reveal="fade" className="flex flex-col gap-2">
-            <span className="font-body text-[9px] uppercase tracking-[0.35em] text-ink/40">
-              {m.k}
+        {SOCIALS.map((s) => (
+          <a
+            key={s.k}
+            href={s.href}
+            target={s.external ? "_blank" : undefined}
+            rel={s.external ? "noopener noreferrer" : undefined}
+            data-reveal="fade"
+            className="group flex flex-col gap-2 transition-colors"
+          >
+            <span className="font-body text-[9px] uppercase tracking-[0.35em] text-ink/40 group-hover:text-ink/70 transition-colors">
+              {s.k}
             </span>
-            <span className="font-headline italic text-lg md:text-2xl tracking-[-0.01em] leading-none">
-              {m.v}
+            <span className="font-headline italic text-lg md:text-2xl tracking-[-0.01em] leading-none inline-flex items-center gap-2 group-hover:text-[#ff1a1a] transition-colors">
+              {s.v}
+              <ArrowUpRight
+                strokeWidth={1.4}
+                className="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-300 group-hover:rotate-[40deg]"
+              />
             </span>
-          </div>
+          </a>
         ))}
       </div>
 
-      {/* ─── Bottom strip — © + socials ─── */}
+      {/* ─── Bottom strip — © only ─── */}
       <div className="relative z-10 px-6 md:px-12 pb-4">
-        <div className="flex flex-col md:flex-row gap-3 md:gap-6 items-start md:items-center justify-between border-t border-ink/10 pt-4 font-body text-[10px] uppercase tracking-[0.3em] text-ink/55">
+        <div className="border-t border-ink/10 pt-4 font-body text-[10px] uppercase tracking-[0.3em] text-ink/55">
           <p data-reveal="fade">© 2026 Ashcode · All rights served</p>
-
-          <div data-reveal="fade" className="flex items-center gap-6">
-            <a
-              href="https://github.com/AshishBKallada"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-1.5 hover:text-ink transition-colors"
-            >
-              <Github className="w-3 h-3" strokeWidth={1.6} />
-              <span className="relative">
-                Github
-                <span
-                  aria-hidden
-                  className="absolute left-0 right-0 -bottom-0.5 h-px scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"
-                  style={{ backgroundColor: ACCENT }}
-                />
-              </span>
-            </a>
-            <a
-              href="https://www.linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-1.5 hover:text-ink transition-colors"
-            >
-              <Linkedin className="w-3 h-3" strokeWidth={1.6} />
-              <span className="relative">
-                LinkedIn
-                <span
-                  aria-hidden
-                  className="absolute left-0 right-0 -bottom-0.5 h-px scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"
-                  style={{ backgroundColor: ACCENT }}
-                />
-              </span>
-            </a>
-          </div>
         </div>
       </div>
 

@@ -30,7 +30,21 @@ export default function Statement() {
       className="relative z-10 bg-paper text-ink px-4 md:px-6 py-16 md:py-24"
       aria-label="Statement"
     >
-      <div className="relative bg-surface rounded-2xl md:rounded-[2rem] mx-auto max-w-6xl px-6 md:px-12 py-16 md:py-24 text-center overflow-hidden">
+      <div className="relative bg-surface rounded-xl md:rounded-2xl mx-auto max-w-6xl overflow-hidden border border-ink/10 shadow-[0_30px_80px_-25px_rgba(0,0,0,0.55)]">
+        {/* Mac terminal title bar */}
+        <div className="flex items-center justify-between gap-4 px-4 md:px-5 py-3 border-b border-ink/10 bg-ink/[0.04]">
+          <div className="flex items-center gap-2">
+            <span aria-hidden className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+            <span aria-hidden className="w-3 h-3 rounded-full bg-[#febc2e]" />
+            <span aria-hidden className="w-3 h-3 rounded-full bg-[#28c840]" />
+          </div>
+          <p className="font-body text-[10px] md:text-[11px] uppercase tracking-[0.3em] text-ink/45 tabular-nums truncate">
+            ashcode — about · 自己紹介 — zsh
+          </p>
+          <span aria-hidden className="w-[54px] shrink-0" />
+        </div>
+
+        <div className="relative px-6 md:px-12 py-16 md:py-24 text-center">
         <p
           data-reveal="fade"
           className="relative z-[1] font-body text-[10px] sm:text-xs uppercase tracking-[0.3em] mb-6 text-ink/70"
@@ -80,6 +94,7 @@ export default function Statement() {
         >
           {BODY_TEXT}
         </p>
+        </div>
       </div>
     </section>
     </>
