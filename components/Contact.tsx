@@ -221,7 +221,7 @@ export default function Contact() {
       <div className="relative z-[1] overflow-hidden leading-none">
         <p
           aria-hidden
-          className="cnt-mark font-body font-light text-center select-none whitespace-nowrap animate-text-glow"
+          className="cnt-mark font-headline text-center select-none whitespace-nowrap animate-text-glow"
           style={{
             fontSize: "clamp(3.5rem, 19vw, 16rem)",
             letterSpacing: "-0.04em",

@@ -92,25 +92,22 @@ export default function Statement() {
   return (
     <section
       id="statement"
-      className="font-almarai relative z-10 bg-black text-[#E1E0CC] px-4 md:px-6 py-16 md:py-24"
+      className="relative z-10 bg-black text-[#E1E0CC] px-4 md:px-6 py-16 md:py-24"
       aria-label="Statement"
     >
       <div className="relative bg-[#101010] rounded-2xl md:rounded-[2rem] mx-auto max-w-6xl px-6 md:px-12 py-16 md:py-24 text-center overflow-hidden">
-        <p className="relative z-[1] text-[10px] sm:text-xs uppercase tracking-[0.2em] mb-6 text-[#E1E0CC]">
+        <p className="relative z-[1] font-body text-[10px] sm:text-xs uppercase tracking-[0.3em] mb-6 text-[#E1E0CC]/70">
           Full-stack engineering
         </p>
 
-        <h2 className="relative z-[1] text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-3xl mx-auto leading-[0.95] sm:leading-[0.9] text-[#E1E0CC]">
+        <h2 className="relative z-[1] font-headline tracking-[-0.02em] text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-3xl mx-auto leading-[0.95] sm:leading-[0.9] text-[#E1E0CC]">
           <WordsPullUpMultiStyle
             segments={[
-              { text: "I am Ashish Kallada,", className: "font-normal" },
-              {
-                text: "a self-taught engineer.",
-                className: "italic font-serif",
-              },
+              { text: "I am Ashish Kallada,", className: "" },
+              { text: "a self-taught engineer.", className: "italic" },
               {
                 text: "I build with React, Node, and TypeScript — from the database up.",
-                className: "font-normal",
+                className: "",
               },
             ]}
           />
@@ -118,7 +115,7 @@ export default function Statement() {
 
         <p
           ref={bodyRef}
-          className="relative z-[1] text-xs sm:text-sm md:text-base mt-10 md:mt-12 max-w-2xl mx-auto text-[#DEDBC8]"
+          className="relative z-[1] font-body text-sm md:text-base leading-relaxed mt-10 md:mt-12 max-w-2xl mx-auto text-[#DEDBC8]"
         >
           {chars.map((c, i) => (
             <AnimatedLetter
