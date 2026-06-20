@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -103,9 +102,9 @@ export default function Contact() {
         scrollTrigger: { trigger: root, start: "top 70%" },
       });
 
-      // Subtle endless drift on the hinomaru dot
-      gsap.to(root.querySelectorAll(".cnt-dot"), {
-        y: -4, repeat: -1, yoyo: true, duration: 2.4, ease: "sine.inOut",
+      gsap.from(root.querySelectorAll(".cnt-mark"), {
+        y: 80, opacity: 0, duration: 1.2, ease: "expo.out",
+        scrollTrigger: { trigger: root, start: "top 65%" },
       });
     }, sectionRef);
     return () => ctx.revert();
@@ -115,7 +114,7 @@ export default function Contact() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative z-10 w-full h-screen min-h-[640px] flex flex-col bg-black text-[#E1E0CC] overflow-hidden"
+      className="relative z-10 w-full min-h-screen flex flex-col bg-black text-[#E1E0CC] overflow-hidden"
     >
       {/* Top hairline — single red brush stroke */}
       <div
@@ -127,58 +126,8 @@ export default function Contact() {
         }}
       />
 
-      {/* Vertical kanji column — right edge */}
-      <div
-        aria-hidden
-        className="hidden md:flex absolute top-1/2 right-4 -translate-y-1/2 flex-col items-center gap-3 font-headline text-[#E1E0CC]/25 text-lg pointer-events-none leading-none z-[5]"
-      >
-        <span>縁</span>
-        <span className="w-px h-2.5 bg-[#E1E0CC]/15" />
-        <span>道</span>
-        <span className="w-px h-2.5 bg-[#E1E0CC]/15" />
-        <span>繋</span>
-      </div>
-
-      {/* Decorative figure — latest image from Downloads */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 left-0 z-[1] hidden md:block w-[min(46vw,480px)] h-[min(62vh,520px)]"
-      >
-        <Image
-          src="/contact-samurai.png"
-          alt=""
-          fill
-          sizes="480px"
-          className="object-contain object-bottom object-left opacity-85"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(270deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.35) 45%, transparent 100%)",
-          }}
-        />
-      </div>
-
-      {/* ─── Top meta row ─── */}
-      <div className="relative z-10 px-6 md:px-12 pt-8 md:pt-10 flex items-center justify-between">
-        <div className="cnt-label flex items-center gap-2.5">
-          <span className="relative flex w-1.5 h-1.5">
-            <span
-              aria-hidden
-              className="absolute inset-0 rounded-full animate-ping"
-              style={{ backgroundColor: ACCENT, opacity: 0.55 }}
-            />
-            <span
-              className="relative inline-flex w-1.5 h-1.5 rounded-full"
-              style={{ backgroundColor: ACCENT }}
-            />
-          </span>
-          <p className="font-body text-[10px] uppercase tracking-[0.32em] text-[#E1E0CC]/60">
-            便り · Correspondence
-          </p>
-        </div>
-
+      {/* ─── Top meta row — time only ─── */}
+      <div className="relative z-10 px-6 md:px-12 pt-8 md:pt-10 flex items-center justify-end">
         <p
           className="cnt-label font-body text-[10px] uppercase tracking-[0.32em] text-[#E1E0CC]/55 tabular-nums"
           aria-label={`Local time ${keralaTime} IST`}
@@ -188,13 +137,7 @@ export default function Contact() {
       </div>
 
       {/* ─── Center — headline + indexed emails ─── */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center px-6 md:px-12 max-w-5xl mx-auto w-full">
-        <span
-          aria-hidden
-          className="cnt-dot inline-block w-2 h-2 rounded-full mb-5"
-          style={{ backgroundColor: ACCENT }}
-        />
-
+      <div className="relative z-10 flex-1 flex flex-col justify-center px-6 md:px-12 max-w-5xl mx-auto w-full py-16">
         <h2 className="font-headline tracking-[-0.025em] leading-[0.95] text-[clamp(2.25rem,6.5vw,5rem)]">
           <span className="cnt-word inline-block mr-[0.18em]">Let&apos;s</span>
           <span className="cnt-word inline-block mr-[0.18em]">make</span>
@@ -232,13 +175,10 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* ─── Bottom bar — copyright + socials + version ─── */}
-      <div className="relative z-10 px-6 md:px-12 pb-6 md:pb-8">
-        <div className="border-t border-[#E1E0CC]/10 pt-4 flex flex-col md:flex-row gap-3 md:gap-6 items-start md:items-center justify-between font-body text-[10px] uppercase tracking-[0.3em] text-[#E1E0CC]/55">
-          <p className="cnt-foot flex items-center gap-2">
-            © 2026 Ashcode
-            <span className="opacity-50 tracking-[0.2em]">· 令和八年</span>
-          </p>
+      {/* ─── Bottom bar — © + socials only ─── */}
+      <div className="relative z-10 px-6 md:px-12 pb-4">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-6 items-start md:items-center justify-between font-body text-[10px] uppercase tracking-[0.3em] text-[#E1E0CC]/55">
+          <p className="cnt-foot">© 2026 Ashcode</p>
 
           <div className="cnt-foot flex items-center gap-5">
             <a
@@ -274,15 +214,22 @@ export default function Contact() {
               </span>
             </a>
           </div>
-
-          <p className="cnt-foot flex items-center gap-2 text-[#E1E0CC]/45">
-            <span
-              className="inline-block w-1 h-1 rounded-full"
-              style={{ backgroundColor: ACCENT }}
-            />
-            v.26 · Available Q3
-          </p>
         </div>
+      </div>
+
+      {/* ─── Big katakana brand mark — full-bleed at bottom ─── */}
+      <div className="relative z-[1] overflow-hidden leading-none">
+        <p
+          aria-hidden
+          className="cnt-mark font-body font-light text-center text-[#E1E0CC] select-none whitespace-nowrap"
+          style={{
+            fontSize: "clamp(3.5rem, 19vw, 16rem)",
+            letterSpacing: "-0.04em",
+            lineHeight: 0.82,
+          }}
+        >
+          アッシュコード
+        </p>
       </div>
 
       {/* Back to top */}
