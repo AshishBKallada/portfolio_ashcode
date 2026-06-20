@@ -75,7 +75,7 @@ export default function Hero() {
       if (rockInnerRef.current)
         gsap.set(rockInnerRef.current, { yPercent: 100, opacity: 1 });
       if (toriiParallaxRef.current)
-        gsap.set(toriiParallaxRef.current, { opacity: 0, scale: 1.08, yPercent: 6 });
+        gsap.set(toriiParallaxRef.current, { opacity: 0, scale: 1.06 });
       gsap.set(tags, { y: 18, opacity: 0 });
       gsap.set(words, { y: 90, opacity: 0 });
       gsap.set(ctas, { y: 22, opacity: 0 });
@@ -91,7 +91,7 @@ export default function Hero() {
         if (toriiParallaxRef.current) {
           tl.to(
             toriiParallaxRef.current,
-            { opacity: 1, scale: 1, yPercent: 0, duration: 1.6, ease: "expo.out" },
+            { opacity: 1, scale: 1, duration: 1.6, ease: "expo.out" },
             0
           );
         }
@@ -115,43 +115,48 @@ export default function Hero() {
             "-=0.35"
           );
 
-        // 2) Signal the navbar to drop in
+        // 2) Signal the navbar to drop in once the main text has settled
         tl.add(() => {
           window.dispatchEvent(new Event("hero:textDone"));
-        }, "+=0.1");
+        }, 1.9);
 
-        // 3) Rock platform rises through the gate (after header lands)
+        // 3) Rock platform rises only AFTER the headline's first animation
         if (rockInnerRef.current) {
           tl.to(
             rockInnerRef.current,
-            { yPercent: 0, duration: 1.1, ease: "power3.out" },
-            "+=0.85"
+            { yPercent: 0, duration: 1.25, ease: "power3.out" },
+            2.0
           );
         }
 
-        // 4) Character rises on top of the rock, framed by the torii
+        // 4) Character rises after the rock has mostly landed (slight overlap for flow)
         if (imageInnerRef.current) {
           tl.to(
             imageInnerRef.current,
-            { yPercent: 0, duration: 1.3, ease: "power3.out" },
-            "-=0.4"
+            { yPercent: 0, duration: 1.35, ease: "power3.out" },
+            2.75
           );
         }
 
-        // 5) Marquee slides up into place
+        // 5) Marquee slides up into place after the figures are settled
         tl.to(
           marquee,
           { yPercent: 0, opacity: 1, duration: 0.7, ease: "power3.out" },
-          "-=0.25"
+          3.6
         );
 
-        // Scramble headline words in sync with the words tween (early in the timeline)
+        // Headline gets two layered animations:
+        //   a) slide-up + fade-in (already running above)
+        //   b) scramble pass that lands AFTER the slide settles, so it reads
         const labels = ["Obsession", "beats", "talent."];
         const hwEls = Array.from(words) as HTMLElement[];
         hwEls.forEach((el, i) => {
           window.setTimeout(
-            () => scrambleText(el, labels[i] ?? el.textContent ?? "", { duration: 900 }),
-            700 + i * 80
+            () =>
+              scrambleText(el, labels[i] ?? el.textContent ?? "", {
+                duration: 850,
+              }),
+            1900 + i * 130
           );
           el.addEventListener("mouseenter", () => {
             scrambleText(el, labels[i] ?? el.textContent ?? "", { duration: 480 });
@@ -228,24 +233,22 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-paper text-ink"
+      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper dark:bg-transparent text-ink"
     >
-      {/* Torii gate — frames the samurai, sits behind the rock + character */}
+      {/* Torii gate — full-screen backdrop behind rock + character */}
       <div
         ref={toriiParallaxRef}
         className="pointer-events-none absolute inset-0 z-[1] will-change-transform"
         aria-hidden
       >
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-[14vh] md:bottom-[10vh] w-[95vmin] max-w-[880px] aspect-square">
-          <Image
-            src="/hero-torii.png"
-            alt=""
-            fill
-            priority
-            sizes="95vmin"
-            className="object-contain object-bottom drop-shadow-[0_20px_40px_rgba(255,26,26,0.18)]"
-          />
-        </div>
+        <Image
+          src="/hero-torii.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
       </div>
 
       {/* Foreground hero figure — always visible */}

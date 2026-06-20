@@ -13,12 +13,9 @@ export default function Page() {
       <LoadingScreen />
       <CustomCursor />
       <Header />
-
-      <main className="relative">
-        <div className="relative">
-          <Hero />
-          <Statement />
-        </div>
+      <main className="relative z-0 m-0 p-0">
+        <Hero />
+        <Statement />
         <Projects />
         <Contact />
       </main>

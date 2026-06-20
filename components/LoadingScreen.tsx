@@ -114,7 +114,7 @@ export default function LoadingScreen() {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black text-[#E1E0CC] pointer-events-auto"
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black text-[#E1E0CC] pointer-events-auto"
       aria-live="polite"
       aria-busy="true"
       aria-label="Loading"

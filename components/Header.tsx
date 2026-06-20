@@ -102,14 +102,37 @@ function useClock() {
   return time;
 }
 
+function useOverHero() {
+  const [overHero, setOverHero] = useState(true);
+
+  useEffect(() => {
+    const measure = () => {
+      const statement = document.getElementById("statement");
+      if (!statement) return;
+      setOverHero(statement.getBoundingClientRect().top > 72);
+    };
+
+    measure();
+    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("loader:done", measure, { once: true });
+
+    return () => {
+      window.removeEventListener("scroll", measure);
+    };
+  }, []);
+
+  return overHero;
+}
+
 export default function Header() {
-  const headerRef = useRef<HTMLElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const active = useActiveSection(NAV.map((n) => n.target));
   const time = useClock();
+  const overHero = useOverHero();
 
   useEffect(() => {
-    const root = headerRef.current;
+    const root = innerRef.current;
     if (!root) return;
     const ctx = gsap.context(() => {
       const brand = root.querySelectorAll(".hd-brand");
@@ -142,7 +165,7 @@ export default function Header() {
         window.removeEventListener("hero:textDone", onHeroTextDone);
         window.clearTimeout(safety);
       };
-    }, headerRef);
+    }, innerRef);
     return () => ctx.revert();
   }, []);
 
@@ -155,13 +178,20 @@ export default function Header() {
   return (
     <>
     <header
-      ref={headerRef}
-      className="fixed top-0 left-0 right-0 w-full px-4 md:px-6 py-3 flex justify-between items-center z-50 text-white"
-      style={{ mixBlendMode: "difference" }}
+      className="fixed inset-x-0 top-0 z-[9999] pointer-events-none"
+      style={{ position: "fixed" }}
     >
+      <div
+        ref={innerRef}
+        className={`w-full px-4 md:px-6 py-3 flex justify-between items-center opacity-0 -translate-y-7 transition-colors duration-500 ${
+          overHero
+            ? "text-white [text-shadow:0_1px_14px_rgba(0,0,0,0.45)]"
+            : "text-ink"
+        }`}
+      >
       <button
         onClick={() => smoothScrollTo(0)}
-        className="hd-brand pointer-events-auto group flex items-center gap-2.5"
+        className="hd-brand pointer-events-auto group flex items-center gap-2.5 opacity-0 -translate-y-3"
       >
         <span
           aria-hidden
@@ -177,7 +207,7 @@ export default function Header() {
         </span>
       </button>
 
-      <nav className="hd-item hidden md:flex items-center gap-7 pointer-events-auto">
+      <nav className="hd-item hidden md:flex items-center gap-7 pointer-events-auto opacity-0 -translate-y-3">
         {NAV.map(({ label, target }, i) => {
           const isActive = active === target;
           return (
@@ -224,7 +254,7 @@ export default function Header() {
         <ThemeToggle />
       </nav>
 
-      <div className="hd-item md:hidden pointer-events-auto flex items-center gap-3">
+      <div className="hd-item md:hidden pointer-events-auto flex items-center gap-3 opacity-0 -translate-y-3">
         <ThemeToggle />
         <button
           aria-label="Toggle menu"
@@ -235,10 +265,14 @@ export default function Header() {
         </button>
       </div>
 
+      </div>
+
     </header>
 
     {open && (
-      <div className="md:hidden fixed top-[52px] inset-x-3 z-[60] flex flex-col gap-1 p-3 rounded-md bg-ink/90 backdrop-blur text-paper">
+      <div className={`md:hidden fixed top-[52px] inset-x-3 z-[9999] flex flex-col gap-1 p-3 rounded-md backdrop-blur ${
+        overHero ? "bg-black/75 text-white" : "bg-paper/95 text-ink border border-ink/10"
+      }`}>
         {NAV.map(({ label, target }, i) => (
           <button
             key={label}
