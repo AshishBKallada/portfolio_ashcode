@@ -3,32 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
-function AnimatedLetter({
-  char,
-  index,
-  total,
-  progress,
-}: {
-  char: string;
-  index: number;
-  total: number;
-  progress: MotionValue<number>;
-}) {
-  const charProgress = index / total;
-  const opacity = useTransform(
-    progress,
-    [charProgress - 0.1, charProgress + 0.05],
-    [0.2, 1]
-  );
-  return <motion.span style={{ opacity }}>{char}</motion.span>;
-}
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 type Project = {
   number: string;
@@ -108,28 +83,21 @@ const PROJECTS: Project[] = [
   },
 ];
 
+const LEDE_TEXT =
+  "A few of the ones I'm proud of. I didn't build these alone — but on each one I played a crucial role and took the risky calls that kept the requirements landing on time. The kind of bets you only make when the deadline is real.";
+
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
-  const ledeRef = useRef<HTMLParagraphElement>(null);
   const [previewIdx, setPreviewIdx] = useState<number | null>(null);
 
-  const { scrollYProgress: ledeProgress } = useScroll({
-    target: ledeRef,
-    offset: ["start 0.8", "end 0.2"],
-  });
-
-  const LEDE_TEXT =
-    "A few of the ones I'm proud of. I didn't build these alone — but on each one I played a crucial role and took the risky calls that kept the requirements landing on time. The kind of bets you only make when the deadline is real.";
-  const ledeChars = Array.from(LEDE_TEXT);
+  useScrollReveal(sectionRef);
 
   // Floating preview thumbnail — follows cursor smoothly
   useEffect(() => {
     const el = previewRef.current;
     if (!el) return;
-    if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) {
-      return;
-    }
+    if (window.matchMedia("(hover: none)").matches) return;
 
     const xTo = gsap.quickTo(el, "x", { duration: 0.65, ease: "power3.out" });
     const yTo = gsap.quickTo(el, "y", { duration: 0.65, ease: "power3.out" });
@@ -140,33 +108,6 @@ export default function Projects() {
     };
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-
-  // Scroll-triggered text reveals
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const root = sectionRef.current;
-      if (!root) return;
-
-      gsap.from(root.querySelectorAll(".pj-meta"), {
-        y: 14, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.08,
-        scrollTrigger: { trigger: root, start: "top 82%" },
-      });
-
-      gsap.from(root.querySelectorAll(".pj-word"), {
-        y: 60, opacity: 0, duration: 0.95, ease: "expo.out", stagger: 0.09,
-        scrollTrigger: { trigger: root, start: "top 75%" },
-      });
-
-      const list = root.querySelector("ul");
-      if (list) {
-        gsap.from(list.querySelectorAll("li"), {
-          y: 32, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.09,
-          scrollTrigger: { trigger: list, start: "top 85%" },
-        });
-      }
-    }, sectionRef);
-    return () => ctx.revert();
   }, []);
 
   return (
@@ -207,32 +148,28 @@ export default function Projects() {
       <div className="relative w-full max-w-[1600px] mx-auto">
         {/* Header */}
         <div className="flex items-baseline justify-between">
-          <p className="pj-meta font-body text-[11px] uppercase tracking-[0.35em] text-[#E1E0CC]/40">
+          <p data-reveal="fade" className="font-body text-[11px] uppercase tracking-[0.35em] text-[#E1E0CC]/40">
             003 — Index
           </p>
-          <p className="pj-meta font-body text-[11px] uppercase tracking-[0.35em] text-[#E1E0CC]/40 tabular-nums">
+          <p data-reveal="fade" className="font-body text-[11px] uppercase tracking-[0.35em] text-[#E1E0CC]/40 tabular-nums">
             {String(PROJECTS.length).padStart(2, "0")} Projects
           </p>
         </div>
 
         <h2 className="mt-8 font-headline italic leading-[0.95] tracking-[-0.02em] text-[clamp(2.5rem,7vw,6rem)]">
-          <span className="pj-word inline-block mr-[0.18em]">Selected</span>
-          <span className="pj-word inline-block text-[#E1E0CC]/50">works.</span>
+          <span className="inline-block overflow-hidden mr-[0.18em]">
+            <span data-reveal="word" className="inline-block">Selected</span>
+          </span>
+          <span className="inline-block overflow-hidden">
+            <span data-reveal="word" className="inline-block text-[#E1E0CC]/50">works.</span>
+          </span>
         </h2>
 
         <p
-          ref={ledeRef}
-          className="pj-lede mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-[#E1E0CC]"
+          data-reveal="char"
+          className="mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-[#E1E0CC]"
         >
-          {ledeChars.map((c, i) => (
-            <AnimatedLetter
-              key={i}
-              char={c}
-              index={i}
-              total={ledeChars.length}
-              progress={ledeProgress}
-            />
-          ))}
+          {LEDE_TEXT}
         </p>
 
         {/* Full-width list */}
@@ -240,7 +177,7 @@ export default function Projects() {
           {PROJECTS.map((p, i) => {
             const isHovered = previewIdx === i;
             return (
-              <li key={p.number} className="border-b border-[#E1E0CC]/15">
+              <li key={p.number} data-reveal="line" className="border-b border-[#E1E0CC]/15">
                 <a
                   href={p.href}
                   onMouseEnter={() => setPreviewIdx(i)}

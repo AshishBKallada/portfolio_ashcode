@@ -1,14 +1,9 @@
 "use client";
 
 import { forwardRef, useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUp, ArrowUpRight, Github, Linkedin } from "lucide-react";
 import { useMagnetic } from "@/lib/useMagnetic";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 const ACCENT = "#ff1a1a";
 
@@ -65,6 +60,8 @@ export default function Contact() {
   const backTopRef = useMagnetic<HTMLButtonElement>(0.3);
   const keralaTime = useKeralaTime();
 
+  useScrollReveal(sectionRef);
+
   const scrollTop = () => {
     if (typeof window === "undefined") return;
     const lenis = (window as unknown as {
@@ -76,39 +73,6 @@ export default function Contact() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const root = sectionRef.current;
-      if (!root) return;
-
-      gsap.from(root.querySelectorAll(".cnt-label"), {
-        y: 12, opacity: 0, duration: 0.6, ease: "power3.out", stagger: 0.06,
-        scrollTrigger: { trigger: root, start: "top 85%" },
-      });
-
-      gsap.from(root.querySelectorAll(".cnt-word"), {
-        y: 40, opacity: 0, duration: 0.9, ease: "expo.out", stagger: 0.07,
-        scrollTrigger: { trigger: root, start: "top 80%" },
-      });
-
-      gsap.from(root.querySelectorAll(".cnt-row"), {
-        y: 18, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.1,
-        scrollTrigger: { trigger: root, start: "top 75%" },
-      });
-
-      gsap.from(root.querySelectorAll(".cnt-foot"), {
-        y: 10, opacity: 0, duration: 0.6, ease: "power3.out", stagger: 0.05,
-        scrollTrigger: { trigger: root, start: "top 70%" },
-      });
-
-      gsap.from(root.querySelectorAll(".cnt-mark"), {
-        y: 80, opacity: 0, duration: 1.2, ease: "expo.out",
-        scrollTrigger: { trigger: root, start: "top 65%" },
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section
@@ -129,7 +93,8 @@ export default function Contact() {
       {/* ─── Top meta row — time only ─── */}
       <div className="relative z-10 px-6 md:px-12 pt-8 md:pt-10 flex items-center justify-end">
         <p
-          className="cnt-label font-body text-[10px] uppercase tracking-[0.32em] text-[#E1E0CC]/55 tabular-nums"
+          data-reveal="fade"
+          className="font-body text-[10px] uppercase tracking-[0.32em] text-[#E1E0CC]/55 tabular-nums"
           aria-label={`Local time ${keralaTime} IST`}
         >
           {keralaTime || "—"} IST · Kerala
@@ -139,20 +104,28 @@ export default function Contact() {
       {/* ─── Center — headline + indexed emails ─── */}
       <div className="relative z-10 flex-1 flex flex-col justify-center px-6 md:px-12 max-w-5xl mx-auto w-full py-16">
         <h2 className="font-headline tracking-[-0.025em] leading-[0.95] text-[clamp(2.25rem,6.5vw,5rem)]">
-          <span className="cnt-word inline-block mr-[0.18em]">Let&apos;s</span>
-          <span className="cnt-word inline-block mr-[0.18em]">make</span>
-          <span className="cnt-word inline-block italic text-[#E1E0CC]/70">something</span>
-          <br />
-          <span className="cnt-word inline-block mr-[0.18em]">worth</span>
-          <span className="cnt-word inline-block">shipping.</span>
+          {[
+            { word: "Let’s" },
+            { word: "make" },
+            { word: "something", className: "italic text-[#E1E0CC]/70" },
+            { word: "worth", br: true },
+            { word: "shipping." },
+          ].map(({ word, className, br }, i) => (
+            <span key={i}>
+              {br && <br />}
+              <span className="inline-block overflow-hidden mr-[0.18em] align-baseline">
+                <span data-reveal="word" className={`inline-block ${className ?? ""}`}>{word}</span>
+              </span>
+            </span>
+          ))}
         </h2>
 
-        <p className="cnt-label mt-4 font-body text-xs md:text-sm tracking-[0.05em] text-[#E1E0CC]/55 max-w-md">
+        <p data-reveal="fade" className="mt-4 font-body text-xs md:text-sm tracking-[0.05em] text-[#E1E0CC]/55 max-w-md">
           一緒に作ろう — open for collaborations from Q3 2026.
         </p>
 
         <div className="mt-8 md:mt-10 border-t border-[#E1E0CC]/10">
-          <div className="cnt-row">
+          <div data-reveal="line">
             <ContactRow
               ref={workRef}
               idx="01"
@@ -162,7 +135,7 @@ export default function Contact() {
               value="ashercode4u@gmail.com"
             />
           </div>
-          <div className="cnt-row">
+          <div data-reveal="line">
             <ContactRow
               ref={sayHiRef}
               idx="02"
@@ -178,9 +151,9 @@ export default function Contact() {
       {/* ─── Bottom bar — © + socials only ─── */}
       <div className="relative z-10 px-6 md:px-12 pb-4">
         <div className="flex flex-col md:flex-row gap-3 md:gap-6 items-start md:items-center justify-between font-body text-[10px] uppercase tracking-[0.3em] text-[#E1E0CC]/55">
-          <p className="cnt-foot">© 2026 Ashcode</p>
+          <p data-reveal="fade">© 2026 Ashcode</p>
 
-          <div className="cnt-foot flex items-center gap-5">
+          <div data-reveal="fade" className="flex items-center gap-5">
             <a
               href="https://github.com/AshishBKallada"
               target="_blank"
@@ -221,7 +194,8 @@ export default function Contact() {
       <div className="relative z-[1] overflow-hidden leading-none">
         <p
           aria-hidden
-          className="cnt-mark font-headline text-center select-none whitespace-nowrap animate-text-glow"
+          data-reveal="mark"
+          className="font-headline text-center select-none whitespace-nowrap animate-text-glow"
           style={{
             fontSize: "clamp(3.5rem, 19vw, 16rem)",
             letterSpacing: "-0.04em",
