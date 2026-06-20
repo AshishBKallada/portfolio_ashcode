@@ -37,46 +37,60 @@ export default function FloatingPlayer() {
     }
   };
 
+  const label = playing ? "TAP TO PAUSE · " : "TAP TO PLAY · ";
+
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={playing ? "Pause audio" : "Play audio"}
-      aria-pressed={playing}
-      className="group fixed bottom-5 right-5 md:bottom-8 md:right-8 z-[90] w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-[#E1E0CC]/25 bg-black/60 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.55)] transition-transform duration-300 hover:scale-105 active:scale-95"
-    >
-      <Image
-        src={IMAGE_SRC}
-        alt=""
-        fill
-        sizes="80px"
-        className={`object-cover transition-transform duration-[6000ms] ease-linear ${
-          playing ? "animate-spin-slow" : ""
-        }`}
-      />
-      <span
+    <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[90] w-28 h-28 md:w-36 md:h-36 flex items-center justify-center">
+      {/* Orbiting curved label */}
+      <svg
+        viewBox="0 0 140 140"
+        className="absolute inset-0 w-full h-full pointer-events-none animate-spin-slow"
         aria-hidden
-        className={`absolute inset-0 rounded-full ring-1 ring-[#ff1a1a]/0 transition-[box-shadow,ring] duration-500 ${
-          playing
-            ? "ring-[#ff1a1a]/60 shadow-[0_0_30px_rgba(255,26,26,0.45)]"
-            : ""
-        }`}
-      />
-      <span
-        aria-hidden
-        className="absolute bottom-1.5 right-1.5 flex items-center justify-center w-5 h-5 rounded-full bg-black/80 text-[#E1E0CC]"
       >
-        {playing ? (
-          <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor">
-            <rect x="6" y="5" width="4" height="14" rx="1" />
-            <rect x="14" y="5" width="4" height="14" rx="1" />
-          </svg>
-        ) : (
-          <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        )}
-      </span>
-    </button>
+        <defs>
+          <path
+            id="floating-player-curve"
+            d="M 70 70 m -58 0 a 58 58 0 1 1 116 0 a 58 58 0 1 1 -116 0"
+            fill="none"
+          />
+        </defs>
+        <text
+          fill="#E1E0CC"
+          style={{
+            fontSize: "10px",
+            letterSpacing: "0.32em",
+            fontFamily: "var(--font-inter), system-ui, sans-serif",
+          }}
+        >
+          <textPath href="#floating-player-curve" startOffset="0">
+            {label.repeat(4)}
+          </textPath>
+        </text>
+      </svg>
+
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={playing ? "Pause audio" : "Play audio"}
+        aria-pressed={playing}
+        className="group relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-[#E1E0CC]/25 bg-black/60 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.55)] transition-transform duration-300 hover:scale-105 active:scale-95"
+      >
+        <Image
+          src={IMAGE_SRC}
+          alt=""
+          fill
+          sizes="80px"
+          className="object-cover"
+        />
+        <span
+          aria-hidden
+          className={`absolute inset-0 rounded-full transition-shadow duration-500 ${
+            playing
+              ? "shadow-[0_0_30px_rgba(255,26,26,0.55)] ring-1 ring-[#ff1a1a]/60"
+              : ""
+          }`}
+        />
+      </button>
+    </div>
   );
 }
