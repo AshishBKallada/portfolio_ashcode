@@ -11,10 +11,10 @@ if (typeof window !== "undefined") {
 type Variant = "word" | "line" | "fade" | "mark";
 
 const ENTRY: Record<Variant, gsap.TweenVars> = {
-  word: { yPercent: 110, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.07 },
-  line: { y: 36, opacity: 0, duration: 0.9, ease: "power4.out", stagger: 0.1 },
-  fade: { y: 14, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.06 },
-  mark: { yPercent: 100, opacity: 0, duration: 1.4, ease: "expo.out" },
+  word: { yPercent: 110, opacity: 0, stagger: 0.25 },
+  line: { y: 40, opacity: 0, stagger: 0.35 },
+  fade: { y: 18, opacity: 0, stagger: 0.2 },
+  mark: { yPercent: 100, opacity: 0 },
 };
 
 export function useScrollReveal<T extends HTMLElement>(ref: RefObject<T>) {
@@ -28,7 +28,14 @@ export function useScrollReveal<T extends HTMLElement>(ref: RefObject<T>) {
         if (els.length === 0) return;
         gsap.from(els, {
           ...ENTRY[variant],
-          scrollTrigger: { trigger: root, start: "top 88%" },
+          ease: "none",
+          scrollTrigger: {
+            trigger: root,
+            start: "top 88%",
+            end: "top 30%",
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
         });
       });
 
@@ -54,13 +61,14 @@ export function useScrollReveal<T extends HTMLElement>(ref: RefObject<T>) {
               start: "top 85%",
               end: "bottom 40%",
               scrub: true,
+              invalidateOnRefresh: true,
             },
           }
         );
       });
     }, root);
 
-    // After loader releases its overflow lock, layout may have shifted — refresh
+    // After loader releases its overflow lock, layout shifts — refresh measurements
     const refresh = () => ScrollTrigger.refresh();
     window.addEventListener("loader:done", refresh, { once: true });
     const safety = window.setTimeout(refresh, 4500);
