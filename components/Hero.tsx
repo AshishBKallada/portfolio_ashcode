@@ -22,7 +22,20 @@ export default function Hero() {
   const rockParallaxRef = useRef<HTMLDivElement>(null);
 
   const [inView, setInView] = useState(true);
+  const [splashCfg, setSplashCfg] = useState<{ enabled: boolean; dye: number } | null>(null);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.22);
+
+  // Probe device capabilities once — disable WebGL fluid on touch / reduced-motion,
+  // and drop dye resolution on small screens to keep mobile smooth.
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const narrow = window.matchMedia("(max-width: 767px)").matches;
+    setSplashCfg({
+      enabled: !reduced && !coarse,
+      dye: narrow ? 128 : 256,
+    });
+  }, []);
 
   // Pause heavy WebGL (SplashCursor) when Hero scrolls out of view
   useEffect(() => {
@@ -227,13 +240,14 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* SplashCursor — only when Hero is in view. */}
-      {inView && (
+      {/* SplashCursor — only mount when Hero is in view, hardware supports it,
+          and the user hasn't asked for reduced motion. */}
+      {inView && splashCfg?.enabled && (
         <SplashCursor
           RAINBOW_MODE={false}
           COLOR="#ff1a1a"
           SIM_RESOLUTION={48}
-          DYE_RESOLUTION={256}
+          DYE_RESOLUTION={splashCfg.dye}
           PRESSURE_ITERATIONS={3}
           SHADING={false}
         />

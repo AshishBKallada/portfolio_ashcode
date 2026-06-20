@@ -11,10 +11,10 @@ if (typeof window !== "undefined") {
 type Variant = "word" | "line" | "fade" | "mark";
 
 const ENTRY: Record<Variant, gsap.TweenVars> = {
-  word: { y: 60, opacity: 0, duration: 0.95, ease: "expo.out", stagger: 0.08 },
-  line: { y: 24, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.08 },
-  fade: { y: 12, opacity: 0, duration: 0.6, ease: "power3.out", stagger: 0.06 },
-  mark: { y: 80, opacity: 0, duration: 1.2, ease: "expo.out" },
+  word: { yPercent: 110, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.07 },
+  line: { y: 36, opacity: 0, duration: 0.9, ease: "power4.out", stagger: 0.1 },
+  fade: { y: 14, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.06 },
+  mark: { yPercent: 100, opacity: 0, duration: 1.4, ease: "expo.out" },
 };
 
 export function useScrollReveal<T extends HTMLElement>(ref: RefObject<T>) {
@@ -28,7 +28,7 @@ export function useScrollReveal<T extends HTMLElement>(ref: RefObject<T>) {
         if (els.length === 0) return;
         gsap.from(els, {
           ...ENTRY[variant],
-          scrollTrigger: { trigger: root, start: "top 80%" },
+          scrollTrigger: { trigger: root, start: "top 88%" },
         });
       });
 
@@ -44,15 +44,15 @@ export function useScrollReveal<T extends HTMLElement>(ref: RefObject<T>) {
         });
         gsap.fromTo(
           spans,
-          { opacity: 0.2 },
+          { opacity: 0.18 },
           {
             opacity: 1,
             ease: "none",
-            stagger: 0.6,
+            stagger: 0.5,
             scrollTrigger: {
               trigger: el,
-              start: "top 80%",
-              end: "bottom 30%",
+              start: "top 85%",
+              end: "bottom 40%",
               scrub: true,
             },
           }
@@ -60,6 +60,15 @@ export function useScrollReveal<T extends HTMLElement>(ref: RefObject<T>) {
       });
     }, root);
 
-    return () => ctx.revert();
+    // After loader releases its overflow lock, layout may have shifted — refresh
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("loader:done", refresh, { once: true });
+    const safety = window.setTimeout(refresh, 4500);
+
+    return () => {
+      window.removeEventListener("loader:done", refresh);
+      window.clearTimeout(safety);
+      ctx.revert();
+    };
   }, [ref]);
 }

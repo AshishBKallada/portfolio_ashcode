@@ -170,9 +170,9 @@ export default function Header() {
           <span className="font-headline text-[9px] italic leading-none">A</span>
         </span>
         <span className="flex items-baseline gap-1">
-          <span className="font-headline text-base italic">ashish</span>
-          <span className="font-body text-[9px] uppercase tracking-[0.3em] opacity-50">
-            / kallada
+          <span className="font-headline text-base italic">Ashcode</span>
+          <span className="font-body text-[9px] tracking-[0.15em] opacity-50">
+            / アッシュコード
           </span>
         </span>
       </button>
