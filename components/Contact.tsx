@@ -1,11 +1,20 @@
 "use client";
 
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUp, ArrowUpRight, Github, Linkedin } from "lucide-react";
 import { useMagnetic } from "@/lib/useMagnetic";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 
 const ACCENT = "#ff1a1a";
+const PRIMARY_EMAIL = "ashercode4u@gmail.com";
+const SECONDARY_EMAIL = "ashishbkallada@gmail.com";
+
+const META = [
+  { k: "Based in",     v: "Kerala, IN"  },
+  { k: "Available",    v: "Q3 2026"     },
+  { k: "Stack",        v: "React · Node" },
+  { k: "Version",      v: "v.26"        },
+];
 
 function useKeralaTime() {
   const [time, setTime] = useState("");
@@ -24,42 +33,11 @@ function useKeralaTime() {
   return time;
 }
 
-const ContactRow = forwardRef<
-  HTMLAnchorElement,
-  { idx: string; label: string; jp: string; href: string; value: string }
->(({ idx, label, jp, href, value }, ref) => (
-  <a
-    ref={ref}
-    href={href}
-    className="group relative flex items-center gap-4 md:gap-6 py-3.5 border-b border-ink/10 will-change-transform"
-  >
-    <span className="font-body text-[10px] tracking-[0.3em] text-ink/45 tabular-nums w-7 shrink-0">
-      {idx}
-    </span>
-
-    <span className="font-body text-[10px] uppercase tracking-[0.28em] text-ink/55 w-32 shrink-0 hidden sm:block">
-      {label}
-      <span className="ml-1.5 opacity-60 tracking-[0.15em]">· {jp}</span>
-    </span>
-
-    <span className="flex-1 min-w-0 font-headline text-base md:text-xl tracking-tight truncate transition-colors duration-300 group-hover:text-[#ff1a1a]">
-      {value}
-    </span>
-
-    <span className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full border border-ink/30 transition-all duration-300 group-hover:border-[#ff1a1a] group-hover:rotate-[40deg]">
-      <ArrowUpRight className="w-3.5 h-3.5 transition-colors group-hover:text-[#ff1a1a]" />
-    </span>
-  </a>
-));
-ContactRow.displayName = "ContactRow";
-
 export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null);
-  const workRef = useMagnetic<HTMLAnchorElement>(0.18);
-  const sayHiRef = useMagnetic<HTMLAnchorElement>(0.18);
+  const emailRef = useMagnetic<HTMLAnchorElement>(0.15);
   const backTopRef = useMagnetic<HTMLButtonElement>(0.3);
   const keralaTime = useKeralaTime();
-
   useScrollReveal(sectionRef);
 
   const scrollTop = () => {
@@ -67,11 +45,8 @@ export default function Contact() {
     const lenis = (window as unknown as {
       __lenis?: { scrollTo: (target: number) => void };
     }).__lenis;
-    if (lenis) {
-      lenis.scrollTo(0);
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    if (lenis) lenis.scrollTo(0);
+    else window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -80,7 +55,7 @@ export default function Contact() {
       id="contact"
       className="relative z-10 w-full min-h-screen flex flex-col bg-paper text-ink overflow-hidden"
     >
-      {/* Top hairline — single red brush stroke */}
+      {/* Top hairline — red brush */}
       <div
         aria-hidden
         className="absolute top-0 left-0 right-0 h-px"
@@ -90,77 +65,112 @@ export default function Contact() {
         }}
       />
 
-      {/* ─── Top meta row — time only ─── */}
-      <div className="relative z-10 px-6 md:px-12 pt-8 md:pt-10 flex items-center justify-end">
-        <p
-          data-reveal="fade"
-          className="font-body text-[10px] uppercase tracking-[0.32em] text-ink/55 tabular-nums"
-          aria-label={`Local time ${keralaTime} IST`}
-        >
+      {/* ─── Top meta strip ─── */}
+      <div className="relative z-10 px-6 md:px-12 pt-8 md:pt-10 flex items-center justify-between font-body text-[10px] uppercase tracking-[0.32em] text-ink/55">
+        <p data-reveal="fade">便り · Contact</p>
+        <p data-reveal="fade" className="tabular-nums">
           {keralaTime || "—"} IST · Kerala
         </p>
       </div>
 
-      {/* ─── Center — headline + indexed emails ─── */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center px-6 md:px-12 max-w-5xl mx-auto w-full py-16">
-        <h2 className="font-headline tracking-[-0.025em] leading-[0.95] text-[clamp(2.25rem,6.5vw,5rem)]">
+      {/* ─── Hero block — eyebrow + headline + email ─── */}
+      <div className="relative z-10 flex-1 flex flex-col justify-center px-6 md:px-12 max-w-[1500px] mx-auto w-full py-16 md:py-24">
+        <p
+          data-reveal="fade"
+          className="font-body text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-ink/45 mb-8 md:mb-12 flex items-center gap-3"
+        >
+          <span
+            aria-hidden
+            className="inline-block w-6 h-px"
+            style={{ backgroundColor: ACCENT }}
+          />
+          (01) Get in touch
+        </p>
+
+        <h2 className="font-headline italic tracking-[-0.03em] leading-[0.88] text-[clamp(3.5rem,11vw,11rem)]">
           {[
-            { word: "Let’s" },
-            { word: "make" },
-            { word: "something", className: "italic text-ink/70" },
-            { word: "worth", br: true },
-            { word: "shipping." },
-          ].map(({ word, className, br }, i) => (
-            <span key={i}>
-              {br && <br />}
-              <span className="inline-block overflow-hidden mr-[0.18em] align-baseline">
-                <span data-reveal="word" className={`inline-block ${className ?? ""}`}>{word}</span>
+            { word: "Let’s", className: "" },
+            { word: "talk.", className: "text-ink/55" },
+          ].map(({ word, className }, i) => (
+            <span key={i} className="inline-block overflow-hidden mr-[0.14em] align-baseline">
+              <span data-reveal="word" className={`inline-block ${className}`}>
+                {word}
               </span>
             </span>
           ))}
         </h2>
 
-        <p data-reveal="fade" className="mt-4 font-body text-xs md:text-sm tracking-[0.05em] text-ink/55 max-w-md">
-          一緒に作ろう — open for collaborations from Q3 2026.
-        </p>
+        {/* Primary email — focal CTA */}
+        <div className="mt-10 md:mt-14">
+          <p
+            data-reveal="fade"
+            className="font-body text-[10px] uppercase tracking-[0.32em] text-ink/40 mb-3"
+          >
+            Drop a line — 仕事
+          </p>
+          <a
+            ref={emailRef}
+            href={`mailto:${PRIMARY_EMAIL}`}
+            data-cursor="cta"
+            className="group inline-flex items-baseline gap-3 md:gap-5 will-change-transform"
+          >
+            <span className="inline-block overflow-hidden align-baseline">
+              <span
+                data-reveal="word"
+                className="inline-block font-headline tracking-[-0.025em] text-[clamp(1.6rem,5vw,4.5rem)] leading-[1.05] underline decoration-ink/20 underline-offset-[0.22em] decoration-[0.04em] group-hover:decoration-[#ff1a1a] group-hover:text-[#ff1a1a] transition-colors duration-300"
+              >
+                {PRIMARY_EMAIL}
+              </span>
+            </span>
+            <ArrowUpRight
+              className="shrink-0 w-6 h-6 md:w-9 md:h-9 transition-[transform,color] duration-300 group-hover:rotate-[40deg] group-hover:text-[#ff1a1a]"
+              strokeWidth={1.4}
+            />
+          </a>
 
-        <div className="mt-8 md:mt-10 border-t border-ink/10">
-          <div data-reveal="line">
-            <ContactRow
-              ref={workRef}
-              idx="01"
-              label="work"
-              jp="仕事"
-              href="mailto:ashercode4u@gmail.com"
-              value="ashercode4u@gmail.com"
-            />
-          </div>
-          <div data-reveal="line">
-            <ContactRow
-              ref={sayHiRef}
-              idx="02"
-              label="say hi"
-              jp="挨拶"
-              href="mailto:ashishbkallada@gmail.com"
-              value="ashishbkallada@gmail.com"
-            />
-          </div>
+          <p
+            data-reveal="fade"
+            className="mt-6 font-body text-xs md:text-sm text-ink/55"
+          >
+            Or say hi at{" "}
+            <a
+              href={`mailto:${SECONDARY_EMAIL}`}
+              className="text-ink/80 underline decoration-ink/25 underline-offset-2 hover:text-ink hover:decoration-ink transition-colors"
+            >
+              {SECONDARY_EMAIL}
+            </a>
+            . Open for collaborations from Q3 2026.
+          </p>
         </div>
       </div>
 
-      {/* ─── Bottom bar — © + socials only ─── */}
-      <div className="relative z-10 px-6 md:px-12 pb-4">
-        <div className="flex flex-col md:flex-row gap-3 md:gap-6 items-start md:items-center justify-between font-body text-[10px] uppercase tracking-[0.3em] text-ink/55">
-          <p data-reveal="fade">© 2026 Ashcode</p>
+      {/* ─── Meta grid — Awwwards-style stat row ─── */}
+      <div className="relative z-10 px-6 md:px-12 max-w-[1500px] mx-auto w-full pb-8 grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-8 border-t border-ink/10 pt-8">
+        {META.map((m) => (
+          <div key={m.k} data-reveal="fade" className="flex flex-col gap-2">
+            <span className="font-body text-[9px] uppercase tracking-[0.35em] text-ink/40">
+              {m.k}
+            </span>
+            <span className="font-headline italic text-lg md:text-2xl tracking-[-0.01em] leading-none">
+              {m.v}
+            </span>
+          </div>
+        ))}
+      </div>
 
-          <div data-reveal="fade" className="flex items-center gap-5">
+      {/* ─── Bottom strip — © + socials ─── */}
+      <div className="relative z-10 px-6 md:px-12 pb-4">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-6 items-start md:items-center justify-between border-t border-ink/10 pt-4 font-body text-[10px] uppercase tracking-[0.3em] text-ink/55">
+          <p data-reveal="fade">© 2026 Ashcode · All rights served</p>
+
+          <div data-reveal="fade" className="flex items-center gap-6">
             <a
               href="https://github.com/AshishBKallada"
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-1.5 hover:text-ink transition-colors"
             >
-              <Github className="w-3.5 h-3.5" strokeWidth={1.6} />
+              <Github className="w-3 h-3" strokeWidth={1.6} />
               <span className="relative">
                 Github
                 <span
@@ -176,7 +186,7 @@ export default function Contact() {
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-1.5 hover:text-ink transition-colors"
             >
-              <Linkedin className="w-3.5 h-3.5" strokeWidth={1.6} />
+              <Linkedin className="w-3 h-3" strokeWidth={1.6} />
               <span className="relative">
                 LinkedIn
                 <span
@@ -190,7 +200,7 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* ─── Big katakana brand mark — full-bleed at bottom ─── */}
+      {/* ─── Big katakana wordmark — full-bleed at bottom ─── */}
       <div className="relative z-[1] overflow-hidden leading-none">
         <p
           aria-hidden
