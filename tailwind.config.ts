@@ -21,6 +21,7 @@ const config: Config = {
         "pulse-glow": "pulse-glow 2.4s ease-in-out infinite",
         "grain": "grain 8s steps(10) infinite",
         "marquee": "marquee 28s linear infinite",
+        "text-glow": "text-glow 5.5s ease-in-out infinite",
       },
       keyframes: {
         "marquee": {
@@ -30,6 +31,18 @@ const config: Config = {
         "pulse-glow": {
           "0%, 100%": { opacity: "1", filter: "drop-shadow(0 0 0 currentColor)" },
           "50%": { opacity: "0.7", filter: "drop-shadow(0 0 8px currentColor)" },
+        },
+        "text-glow": {
+          "0%, 100%": {
+            opacity: "0.9",
+            textShadow:
+              "0 0 12px rgba(255,26,26,0.4), 0 0 40px rgba(255,26,26,0.22), 0 0 90px rgba(255,26,26,0.14)",
+          },
+          "50%": {
+            opacity: "1",
+            textShadow:
+              "0 0 26px rgba(255,26,26,0.8), 0 0 80px rgba(255,26,26,0.55), 0 0 160px rgba(255,26,26,0.38)",
+          },
         },
         "grain": {
           "0%, 100%": { transform: "translate(0,0)" },

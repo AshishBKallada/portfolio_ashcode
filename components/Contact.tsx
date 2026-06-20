@@ -221,14 +221,12 @@ export default function Contact() {
       <div className="relative z-[1] overflow-hidden leading-none">
         <p
           aria-hidden
-          className="cnt-mark font-body font-light text-center select-none whitespace-nowrap"
+          className="cnt-mark font-body font-light text-center select-none whitespace-nowrap animate-text-glow"
           style={{
             fontSize: "clamp(3.5rem, 19vw, 16rem)",
             letterSpacing: "-0.04em",
             lineHeight: 0.82,
             color: ACCENT,
-            textShadow:
-              "0 0 18px rgba(255,26,26,0.55), 0 0 60px rgba(255,26,26,0.35), 0 0 120px rgba(255,26,26,0.25)",
           }}
         >
           アッシュコード
