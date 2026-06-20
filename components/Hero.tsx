@@ -20,6 +20,7 @@ export default function Hero() {
   const rockInnerRef = useRef<HTMLDivElement>(null);
   const charParallaxRef = useRef<HTMLDivElement>(null);
   const rockParallaxRef = useRef<HTMLDivElement>(null);
+  const toriiParallaxRef = useRef<HTMLDivElement>(null);
 
   const [inView, setInView] = useState(true);
   const [splashCfg, setSplashCfg] = useState<{ enabled: boolean; dye: number } | null>(null);
@@ -176,6 +177,14 @@ export default function Hero() {
         scrub: 0.6,
       } as const;
 
+      if (toriiParallaxRef.current) {
+        gsap.to(toriiParallaxRef.current, {
+          y: -25,
+          ease: "none",
+          scrollTrigger: trigger,
+        });
+      }
+
       if (rockParallaxRef.current) {
         gsap.to(rockParallaxRef.current, {
           y: -60,
@@ -210,6 +219,24 @@ export default function Hero() {
       id="home"
       className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-paper text-ink"
     >
+      {/* Torii gate — atmospheric background layer, sits behind the rock + samurai */}
+      <div
+        ref={toriiParallaxRef}
+        className="pointer-events-none absolute inset-0 z-[1] will-change-transform"
+        aria-hidden
+      >
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-[18vh] md:bottom-[12vh] w-[90vmin] max-w-[820px] aspect-square opacity-[0.18] dark:opacity-[0.22] mix-blend-luminosity">
+          <Image
+            src="/hero-torii.png"
+            alt=""
+            fill
+            priority
+            sizes="90vmin"
+            className="object-contain object-bottom"
+          />
+        </div>
+      </div>
+
       {/* Foreground hero figure — always visible */}
       <div className="pointer-events-none absolute inset-0 z-[3] will-change-transform">
         {/* Rock platform — scroll parallax / entrance / content */}
