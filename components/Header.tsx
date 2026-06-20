@@ -156,7 +156,7 @@ export default function Header() {
     <>
     <header
       ref={headerRef}
-      className="fixed top-0 left-0 right-0 w-full px-4 md:px-6 py-3 flex justify-between items-center z-50 text-ink"
+      className="fixed top-0 left-0 right-0 w-full px-4 md:px-6 py-3 flex justify-between items-center z-50 text-white"
       style={{ mixBlendMode: "difference" }}
     >
       <button

@@ -37,16 +37,8 @@ const config: Config = {
           "50%": { opacity: "0.7", filter: "drop-shadow(0 0 8px currentColor)" },
         },
         "text-glow": {
-          "0%, 100%": {
-            opacity: "0.9",
-            textShadow:
-              "0 0 12px rgba(255,26,26,0.4), 0 0 40px rgba(255,26,26,0.22), 0 0 90px rgba(255,26,26,0.14)",
-          },
-          "50%": {
-            opacity: "1",
-            textShadow:
-              "0 0 26px rgba(255,26,26,0.8), 0 0 80px rgba(255,26,26,0.55), 0 0 160px rgba(255,26,26,0.38)",
-          },
+          "0%, 100%": { opacity: "0.85" },
+          "50%": { opacity: "1" },
         },
         "grain": {
           "0%, 100%": { transform: "translate(0,0)" },

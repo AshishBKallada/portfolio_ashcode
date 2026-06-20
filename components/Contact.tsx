@@ -195,12 +195,13 @@ export default function Contact() {
         <p
           aria-hidden
           data-reveal="mark"
-          className="font-headline text-center select-none whitespace-nowrap animate-text-glow"
+          className="font-headline text-center select-none whitespace-nowrap animate-text-glow will-change-[opacity]"
           style={{
             fontSize: "clamp(3.5rem, 19vw, 16rem)",
             letterSpacing: "-0.04em",
             lineHeight: 0.82,
             color: ACCENT,
+            textShadow: "0 0 22px rgba(255,26,26,0.45)",
           }}
         >
           アッシュコード
