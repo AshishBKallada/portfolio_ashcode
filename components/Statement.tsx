@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { Hand } from "lucide-react";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 
 type Segment = { text: string; className?: string };
@@ -46,9 +47,13 @@ export default function Statement() {
           <span className="inline-block overflow-hidden align-baseline mr-[0.18em]">
             <span data-reveal="word" className="inline-block italic text-ink/55">and more</span>
           </span>
-          <span className="inline-block overflow-hidden align-baseline">
+          <span className="inline-block overflow-hidden align-middle">
             <span data-reveal="word" className="inline-block">
-              <span aria-hidden className="inline-block animate-point-left">👈</span>
+              <Hand
+                aria-hidden
+                strokeWidth={1.4}
+                className="inline-block w-[0.9em] h-[0.9em] -rotate-90 animate-point-left text-ink/70"
+              />
             </span>
           </span>
         </h2>
