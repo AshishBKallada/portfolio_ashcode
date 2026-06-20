@@ -22,6 +22,7 @@ const config: Config = {
         "grain": "grain 8s steps(10) infinite",
         "marquee": "marquee 28s linear infinite",
         "text-glow": "text-glow 5.5s ease-in-out infinite",
+        "spin-slow": "spin 18s linear infinite",
       },
       keyframes: {
         "marquee": {

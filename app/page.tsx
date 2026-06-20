@@ -1,5 +1,6 @@
 import Contact from "@/components/Contact";
 import CustomCursor from "@/components/CustomCursor";
+import FloatingPlayer from "@/components/FloatingPlayer";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -21,6 +22,8 @@ export default function Page() {
         <Projects />
         <Contact />
       </main>
+
+      <FloatingPlayer />
     </>
   );
 }
