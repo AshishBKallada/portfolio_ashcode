@@ -26,6 +26,7 @@ const config: Config = {
         "marquee": "marquee 28s linear infinite",
         "text-glow": "text-glow 5.5s ease-in-out infinite",
         "spin-slow": "spin 18s linear infinite",
+        "point-left": "point-left 1.2s ease-in-out infinite",
       },
       keyframes: {
         "marquee": {
@@ -39,6 +40,10 @@ const config: Config = {
         "text-glow": {
           "0%, 100%": { opacity: "0.85" },
           "50%": { opacity: "1" },
+        },
+        "point-left": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "50%": { transform: "translateX(-10px)" },
         },
         "grain": {
           "0%, 100%": { transform: "translate(0,0)" },

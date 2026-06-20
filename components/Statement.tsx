@@ -43,6 +43,14 @@ export default function Statement() {
               </span>
             ))
           )}
+          <span className="inline-block overflow-hidden align-baseline mr-[0.18em]">
+            <span data-reveal="word" className="inline-block italic text-ink/55">and more</span>
+          </span>
+          <span className="inline-block overflow-hidden align-baseline">
+            <span data-reveal="word" className="inline-block">
+              <span aria-hidden className="inline-block animate-point-left">👈</span>
+            </span>
+          </span>
         </h2>
 
         <p
