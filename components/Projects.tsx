@@ -1,232 +1,109 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
+import { useRef, useState } from "react";
 import { useScrollReveal } from "@/lib/useScrollReveal";
-
-type Project = {
-  number: string;
-  name: string;
-  tag: string;
-  year: string;
-  impactLabel: string;
-  impactValue: string;
-  description: string;
-  tech: string[];
-  image: string;
-  alt: string;
-  bg: string;
-  href: string;
-};
-
-const PROJECTS: Project[] = [
-  {
-    number: "01",
-    name: "KADA",
-    tag: "Gov · Full-stack",
-    year: "2025",
-    impactLabel: "Citizens served",
-    impactValue: "1M+",
-    description:
-      "Digital platform for the Kuppam Area Development Authority — a Government of Andhra Pradesh initiative — unifying citizen services, land records and project tracking into a single surface.",
-    tech: ["Next.js", "Node", "PostgreSQL"],
-    image: "/project1.avif",
-    alt: "KADA Andhra Pradesh government platform",
-    bg: "bg-[#1f3bff]",
-    href: "#",
-  },
-  {
-    number: "02",
-    name: "Curengo",
-    tag: "HealthTech · SaaS",
-    year: "2025",
-    impactLabel: "Patients managed",
-    impactValue: "50K+",
-    description:
-      "Hospital management system handling OPD, IPD, billing, lab and pharmacy in one place — built so small clinics and mid-size hospitals get the same operating leverage as the big chains.",
-    tech: ["Next.js", "Node", "MongoDB"],
-    image: "/project2.avif",
-    alt: "Curengo hospital management system",
-    bg: "bg-[#0f2a1e]",
-    href: "#",
-  },
-  {
-    number: "03",
-    name: "Verdura",
-    tag: "Sustainability · Web",
-    year: "2025",
-    impactLabel: "Trees pledged",
-    impactValue: "120K+",
-    description:
-      "Green culture platform connecting urban communities with reforestation drives, native plant guides and a transparent tracker for every sapling pledged and planted.",
-    tech: ["Next.js", "Tailwind", "Sanity"],
-    image: "/bali.webp",
-    alt: "Verdura green culture website",
-    bg: "bg-[#1a3a22]",
-    href: "#",
-  },
-  {
-    number: "04",
-    name: "Womarpools",
-    tag: "Brand · Web",
-    year: "2025",
-    impactLabel: "Bookings lift",
-    impactValue: "+3.4×",
-    description:
-      "Marketing site and lead pipeline for a luxury pool design studio — cinematic galleries, quote flow and a CMS the team actually wants to use.",
-    tech: ["Next.js", "Tailwind", "Sanity"],
-    image: "/hero-image.png",
-    alt: "Womarpools luxury pool design website",
-    bg: "bg-[#0a2540]",
-    href: "#",
-  },
-];
-
-const LEDE_TEXT =
-  "A few of the ones I'm proud of. I didn't build these alone — but on each one I played a crucial role and took the risky calls that kept the requirements landing on time. The kind of bets you only make when the deadline is real.";
+import CursorPreview from "./projects/CursorPreview";
+import ProjectRow from "./projects/ProjectRow";
+import { LEDE_TEXT, PROJECTS } from "./projects/data";
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
   const [previewIdx, setPreviewIdx] = useState<number | null>(null);
 
   useScrollReveal(sectionRef);
-
-  // Floating preview thumbnail — follows cursor smoothly
-  useEffect(() => {
-    const el = previewRef.current;
-    if (!el) return;
-    if (window.matchMedia("(hover: none)").matches) return;
-
-    const xTo = gsap.quickTo(el, "x", { duration: 0.65, ease: "power3.out" });
-    const yTo = gsap.quickTo(el, "y", { duration: 0.65, ease: "power3.out" });
-
-    const onMove = (e: MouseEvent) => {
-      xTo(e.clientX + 28);
-      yTo(e.clientY - 150);
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
 
   return (
     <section
       ref={sectionRef}
       id="projects"
-      className="relative isolate z-10 w-full bg-paper text-ink px-6 md:px-12 lg:px-20 py-24 md:py-32"
+      className="relative isolate z-10 w-full bg-transparent text-ink px-6 md:px-12 lg:px-20 py-24 md:py-36 overflow-hidden"
     >
-      {/* Floating hover preview — follows cursor over project list */}
-      <div
-        ref={previewRef}
-        aria-hidden
-        className={`pointer-events-none hidden md:block fixed top-0 left-0 z-50 w-[240px] h-[300px] overflow-hidden transition-opacity duration-300 ${
-          previewIdx === null ? "opacity-0" : "opacity-100"
-        }`}
-        style={{ transform: "translate3d(-9999px, 0, 0)" }}
-      >
-        {PROJECTS.map((p, i) => (
-          <div
-            key={p.number}
-            className={`absolute inset-0 ${p.bg} transition-[clip-path] duration-[520ms] ease-[cubic-bezier(0.65,0,0.35,1)]`}
-            style={{
-              clipPath:
-                previewIdx === i ? "inset(0% 0% 0% 0%)" : "inset(100% 0% 0% 0%)",
-            }}
-          >
-            <Image
-              src={p.image}
-              alt=""
-              fill
-              sizes="240px"
-              className="object-cover opacity-95"
-            />
-          </div>
-        ))}
-      </div>
+      <CursorPreview projects={PROJECTS} activeIdx={previewIdx} />
 
       <div className="relative w-full max-w-[1600px] mx-auto">
-        {/* Header */}
-        <div className="flex items-baseline justify-between">
-          <p data-reveal="fade" className="font-body text-[11px] uppercase tracking-[0.35em] text-ink/40">
-            003 — Index
+        {/* Meta row */}
+        <div className="flex items-start justify-between gap-6 mb-12 md:mb-16 font-body text-[10px] uppercase tracking-[0.32em] text-ink/55">
+          <p>
+            <span className="opacity-60">(03)</span>
+            <span className="mx-2 opacity-30">/</span>
+            Selected Works · 制作実績
           </p>
-          <p data-reveal="fade" className="font-body text-[11px] uppercase tracking-[0.35em] text-ink/40 tabular-nums">
-            {String(PROJECTS.length).padStart(2, "0")} Projects
+          <p className="tabular-nums text-right">
+            {String(PROJECTS.length).padStart(2, "0")} Projects · 2024–25
           </p>
         </div>
 
-        <h2 className="mt-8 font-headline italic leading-[0.95] tracking-[-0.02em] text-[clamp(2.5rem,7vw,6rem)]">
-          <span className="inline-block overflow-hidden mr-[0.18em]">
+        {/* Focal headline */}
+        <h2 className="font-headline italic leading-[0.82] tracking-[-0.04em] text-[clamp(3rem,12vw,10rem)] -ml-[0.04em]">
+          <span className="inline-block overflow-hidden align-baseline mr-[0.12em]">
             <span data-reveal="word" className="inline-block">Selected</span>
           </span>
-          <span className="inline-block overflow-hidden">
-            <span data-reveal="word" className="inline-block text-ink/50">works.</span>
+          <span className="inline-block overflow-hidden align-baseline">
+            <span data-reveal="word" className="inline-block text-ink/45">works.</span>
           </span>
         </h2>
 
-        <p
-          data-reveal="char"
-          className="mt-6 max-w-2xl font-body text-base md:text-lg leading-relaxed text-ink"
-        >
-          {LEDE_TEXT}
-        </p>
+        {/* Lede + sidekick */}
+        <div className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10">
+          <p
+            data-reveal="char"
+            className="md:col-span-7 lg:col-span-6 font-body text-base md:text-lg leading-relaxed text-ink/85"
+          >
+            {LEDE_TEXT}
+          </p>
+          <div
+            data-reveal="fade"
+            className="md:col-span-4 md:col-start-9 flex flex-col gap-2 self-end font-body text-[10px] uppercase tracking-[0.32em] text-ink/55 md:text-right"
+          >
+            <p>Hover · cursor reveals preview</p>
+            <p>↗ Open for the case study</p>
+          </div>
+        </div>
 
-        {/* Full-width list */}
-        <ul className="mt-16 md:mt-20 border-t border-ink/15">
-          {PROJECTS.map((p, i) => {
-            const isHovered = previewIdx === i;
-            return (
-              <li key={p.number} data-reveal="line" className="border-b border-ink/15">
-                <a
-                  href={p.href}
-                  onMouseEnter={() => setPreviewIdx(i)}
-                  onMouseLeave={() => setPreviewIdx(null)}
-                  className="group grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_auto_auto_auto] items-baseline gap-x-6 md:gap-x-10 py-6 md:py-8"
-                >
-                  <span
-                    className={`font-body text-[10px] tracking-[0.3em] tabular-nums transition-colors duration-300 ${
-                      isHovered ? "text-ink" : "text-ink/40"
-                    }`}
-                  >
-                    {p.number}
-                  </span>
-                  <span
-                    className={`font-headline italic leading-[1.05] tracking-[-0.01em] text-[clamp(1.75rem,4.5vw,3.5rem)] transition-all duration-500 ${
-                      isHovered ? "text-ink translate-x-2 md:translate-x-4" : "text-ink/85"
-                    }`}
-                  >
-                    {p.name}
-                  </span>
-                  <span
-                    className={`hidden md:inline-block font-body text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${
-                      isHovered ? "text-ink" : "text-ink/50"
-                    }`}
-                  >
-                    {p.tag}
-                  </span>
-                  <span
-                    className={`hidden md:inline-block font-body text-[10px] uppercase tracking-[0.22em] tabular-nums transition-colors duration-300 ${
-                      isHovered ? "text-ink" : "text-ink/50"
-                    }`}
-                  >
-                    {p.year}
-                  </span>
-                  <span
-                    aria-hidden
-                    className={`font-body text-lg md:text-xl transition-all duration-300 ${
-                      isHovered
-                        ? "opacity-100 translate-x-0"
-                        : "opacity-40 -translate-x-1"
-                    }`}
-                  >
-                    ↗
-                  </span>
-                </a>
-              </li>
-            );
-          })}
+        {/* Project rows */}
+        <ul className="mt-20 md:mt-28 border-t border-ink/15">
+          {PROJECTS.map((p, i) => (
+            <ProjectRow
+              key={p.number}
+              project={p}
+              isHovered={previewIdx === i}
+              onEnter={() => setPreviewIdx(i)}
+              onLeave={() => setPreviewIdx(null)}
+            />
+          ))}
         </ul>
+
+        {/* Coda */}
+        <div className="mt-10 md:mt-14 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 font-body text-[10px] uppercase tracking-[0.32em] text-ink/55">
+          <p>
+            <span className="opacity-60">/&nbsp;</span> More in the case-study
+            archive · drop a line for the rest
+          </p>
+          <a
+            href="mailto:ashercode4u@gmail.com"
+            className="group inline-flex items-center gap-2 hover:text-ink transition-colors"
+          >
+            Request full archive
+            <span
+              aria-hidden
+              className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-current/40 transition-transform duration-300 group-hover:rotate-45"
+            >
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M7 7h10v10" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </span>
+          </a>
+        </div>
       </div>
     </section>
   );

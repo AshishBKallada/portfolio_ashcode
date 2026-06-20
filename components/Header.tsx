@@ -1,19 +1,18 @@
 "use client";
 
-import { Menu, Moon, Sun, X } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import ThemeToggle from "@/components/ThemeToggle";
+import { useActiveSection } from "@/lib/useActiveSection";
+import { useClock } from "@/lib/useClock";
 
 type LenisLike = { scrollTo: (target: number | string | HTMLElement, opts?: { offset?: number }) => void };
 
-function getLenis(): LenisLike | undefined {
-  if (typeof window === "undefined") return undefined;
-  return (window as unknown as { __lenis?: LenisLike }).__lenis;
-}
-
 function smoothScrollTo(target: HTMLElement | number) {
-  const lenis = getLenis();
+  const lenis = (typeof window !== "undefined"
+    ? (window as unknown as { __lenis?: LenisLike }).__lenis
+    : undefined);
   if (lenis) {
     lenis.scrollTo(target);
     return;
@@ -31,96 +30,21 @@ const NAV = [
   { label: "Contact", target: "contact" },
 ];
 
-function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const isDark = mounted && resolvedTheme === "dark";
-
-  return (
-    <button
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label="Toggle theme"
-      className="pointer-events-auto group relative flex items-center justify-center w-6 h-6"
-    >
-      <span
-        aria-hidden
-        className="absolute inset-0 rounded-full border border-current/40 transition-all duration-300 group-hover:border-current group-hover:scale-110"
-      />
-      {mounted ? (
-        isDark ? (
-          <Sun className="w-3 h-3 relative" />
-        ) : (
-          <Moon className="w-3 h-3 relative" />
-        )
-      ) : (
-        <span className="w-3 h-3" />
-      )}
-    </button>
-  );
-}
-
-function useActiveSection(ids: string[]) {
-  const [active, setActive] = useState<string | null>(null);
-  const key = ids.join(",");
-  useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
-    const observers: IntersectionObserver[] = [];
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const io = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActive(id);
-        },
-        { threshold: 0.35 }
-      );
-      io.observe(el);
-      observers.push(io);
-    });
-    return () => observers.forEach((io) => io.disconnect());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
-  return active;
-}
-
-function useClock() {
-  const [time, setTime] = useState<string>("");
-  useEffect(() => {
-    const tick = () => {
-      const now = new Date().toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: "Asia/Kolkata",
-      });
-      setTime(now);
-    };
-    tick();
-    const id = window.setInterval(tick, 30_000);
-    return () => window.clearInterval(id);
-  }, []);
-  return time;
-}
-
+// Whether the viewport top is still over the hero section — header inverts
+// its color treatment based on this so the brand stays legible.
 function useOverHero() {
   const [overHero, setOverHero] = useState(true);
-
   useEffect(() => {
     const measure = () => {
       const statement = document.getElementById("statement");
       if (!statement) return;
       setOverHero(statement.getBoundingClientRect().top > 72);
     };
-
     measure();
     window.addEventListener("scroll", measure, { passive: true });
     window.addEventListener("loader:done", measure, { once: true });
-
-    return () => {
-      window.removeEventListener("scroll", measure);
-    };
+    return () => window.removeEventListener("scroll", measure);
   }, []);
-
   return overHero;
 }
 
@@ -185,7 +109,7 @@ export default function Header() {
         ref={innerRef}
         className={`w-full px-4 md:px-6 py-3 flex justify-between items-center opacity-0 -translate-y-7 transition-colors duration-500 ${
           overHero
-            ? "text-white [text-shadow:0_1px_14px_rgba(0,0,0,0.45)]"
+            ? "text-black [text-shadow:0_1px_12px_rgba(255,255,255,0.65)]"
             : "text-ink"
         }`}
       >

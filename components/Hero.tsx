@@ -21,6 +21,8 @@ export default function Hero() {
   const charParallaxRef = useRef<HTMLDivElement>(null);
   const rockParallaxRef = useRef<HTMLDivElement>(null);
   const toriiParallaxRef = useRef<HTMLDivElement>(null);
+  const visualsRef = useRef<HTMLDivElement>(null);
+  const scrimRef = useRef<HTMLDivElement>(null);
 
   const [inView, setInView] = useState(true);
   const [splashCfg, setSplashCfg] = useState<{ enabled: boolean; dye: number } | null>(null);
@@ -225,6 +227,54 @@ export default function Hero() {
           scrollTrigger: trigger,
         });
       }
+
+      const fadeTrigger = {
+        trigger: root,
+        start: "top top",
+        end: "+=85%",
+        scrub: 0.45,
+      } as const;
+
+      if (visualsRef.current) {
+        gsap.to(visualsRef.current, {
+          opacity: 0.28,
+          filter: "blur(14px)",
+          ease: "none",
+          scrollTrigger: fadeTrigger,
+        });
+      }
+
+      if (scrimRef.current) {
+        gsap.to(scrimRef.current, {
+          opacity: 0.82,
+          ease: "none",
+          scrollTrigger: fadeTrigger,
+        });
+      }
+
+      const marquee = root.querySelector(".hero-marquee");
+      if (headline) {
+        gsap.to(headline, {
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: fadeTrigger,
+        });
+      }
+      if (marquee) {
+        gsap.to(marquee, {
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: fadeTrigger,
+        });
+      }
+
+      root.querySelectorAll(".hero-scroll-ui").forEach((el) => {
+        gsap.to(el, {
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: fadeTrigger,
+        });
+      });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -233,8 +283,9 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper dark:bg-transparent text-ink"
+      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper dark:bg-transparent text-black"
     >
+      <div ref={visualsRef} className="absolute inset-0 will-change-[opacity,filter]">
       {/* Torii gate — full-screen backdrop behind rock + character */}
       <div
         ref={toriiParallaxRef}
@@ -297,6 +348,14 @@ export default function Hero() {
           SHADING={false}
         />
       )}
+      </div>
+
+      {/* Scrim — lifts as you scroll so content above stays readable */}
+      <div
+        ref={scrimRef}
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[2] bg-paper opacity-0"
+      />
 
 {/* Headline block — bottom-left. Colors inherit from section via currentColor */}
       <div className="hero-headline absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none will-change-transform">
@@ -314,13 +373,13 @@ export default function Hero() {
             ref={ctaRef}
             href="mailto:ashercode4u@gmail.com"
             data-cursor="cta"
-            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-ink overflow-hidden font-headline text-lg will-change-transform"
+            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black overflow-hidden font-headline text-lg text-black will-change-transform"
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-ink transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
             />
-            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-paper">Get in Touch</span>
+            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-white">Get in Touch</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -331,7 +390,7 @@ export default function Hero() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-paper"
+              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-white"
             >
               <path d="M7 7h10v10" />
               <path d="M7 17 17 7" />
@@ -345,12 +404,12 @@ export default function Hero() {
       </div>
 
       {/* Hex tag — sits above the marquee */}
-      <div className="absolute bottom-16 left-6 md:bottom-20 md:left-12 z-[4] font-body text-[11px] tracking-[0.2em] opacity-70">
+      <div className="hero-scroll-ui absolute bottom-16 left-6 md:bottom-20 md:left-12 z-[4] font-body text-[11px] tracking-[0.2em] opacity-70">
         0x2f·7a · 4b · ff · 01 · 3c · ae →
       </div>
 
       {/* "Scroll to explore" — sits above the marquee */}
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-90">
+      <div className="hero-scroll-ui absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-90">
         <p className="font-body text-xs uppercase tracking-[0.25em]">Scroll to explore</p>
         <svg
           width="16"
@@ -370,7 +429,7 @@ export default function Hero() {
 
       {/* Marquee ticker — full width at the very bottom */}
       <div
-        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-ink text-paper opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)]"
+        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-white/75 text-black opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.2)] backdrop-blur-sm"
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
