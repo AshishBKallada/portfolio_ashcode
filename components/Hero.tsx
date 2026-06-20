@@ -74,6 +74,8 @@ export default function Hero() {
         gsap.set(imageInnerRef.current, { yPercent: 100, opacity: 1 });
       if (rockInnerRef.current)
         gsap.set(rockInnerRef.current, { yPercent: 100, opacity: 1 });
+      if (toriiParallaxRef.current)
+        gsap.set(toriiParallaxRef.current, { opacity: 0, scale: 1.08, yPercent: 6 });
       gsap.set(tags, { y: 18, opacity: 0 });
       gsap.set(words, { y: 90, opacity: 0 });
       gsap.set(ctas, { y: 22, opacity: 0 });
@@ -85,8 +87,17 @@ export default function Hero() {
 
         const tl = gsap.timeline();
 
-        // 1) Hero text cascades in first
-        tl.to(tags, { y: 0, opacity: 0.7, duration: 0.7, ease: "power2.out" })
+        // 0) Torii materializes first — sets the stage, breathes for a beat
+        if (toriiParallaxRef.current) {
+          tl.to(
+            toriiParallaxRef.current,
+            { opacity: 1, scale: 1, yPercent: 0, duration: 1.6, ease: "expo.out" },
+            0
+          );
+        }
+
+        // 1) Hero text cascades in while the gate is still settling
+        tl.to(tags, { y: 0, opacity: 0.7, duration: 0.7, ease: "power2.out" }, 0.45)
           .to(
             words,
             {
@@ -109,7 +120,7 @@ export default function Hero() {
           window.dispatchEvent(new Event("hero:textDone"));
         }, "+=0.1");
 
-        // 3) Rock platform rises first (after header lands)
+        // 3) Rock platform rises through the gate (after header lands)
         if (rockInnerRef.current) {
           tl.to(
             rockInnerRef.current,
@@ -118,7 +129,7 @@ export default function Hero() {
           );
         }
 
-        // 4) Character rises on top of the rock
+        // 4) Character rises on top of the rock, framed by the torii
         if (imageInnerRef.current) {
           tl.to(
             imageInnerRef.current,
@@ -219,20 +230,20 @@ export default function Hero() {
       id="home"
       className="sticky top-0 z-0 w-full min-h-screen overflow-hidden bg-paper text-ink"
     >
-      {/* Torii gate — atmospheric background layer, sits behind the rock + samurai */}
+      {/* Torii gate — frames the samurai, sits behind the rock + character */}
       <div
         ref={toriiParallaxRef}
         className="pointer-events-none absolute inset-0 z-[1] will-change-transform"
         aria-hidden
       >
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-[18vh] md:bottom-[12vh] w-[90vmin] max-w-[820px] aspect-square opacity-[0.18] dark:opacity-[0.22] mix-blend-luminosity">
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-[14vh] md:bottom-[10vh] w-[95vmin] max-w-[880px] aspect-square">
           <Image
             src="/hero-torii.png"
             alt=""
             fill
             priority
-            sizes="90vmin"
-            className="object-contain object-bottom"
+            sizes="95vmin"
+            className="object-contain object-bottom drop-shadow-[0_20px_40px_rgba(255,26,26,0.18)]"
           />
         </div>
       </div>
