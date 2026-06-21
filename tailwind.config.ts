@@ -28,6 +28,7 @@ const config: Config = {
         "spin-slow": "spin 18s linear infinite",
         "point-left": "point-left 1.2s ease-in-out infinite",
         "float-y": "float-y 2.6s ease-in-out infinite",
+        "attention-ring": "attention-ring 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite",
       },
       keyframes: {
         "marquee": {
@@ -49,6 +50,11 @@ const config: Config = {
         "float-y": {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-5px)" },
+        },
+        "attention-ring": {
+          "0%": { transform: "scale(1)", opacity: "0.7" },
+          "70%": { opacity: "0" },
+          "100%": { transform: "scale(2.2)", opacity: "0" },
         },
         "grain": {
           "0%, 100%": { transform: "translate(0,0)" },

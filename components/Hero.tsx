@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -19,18 +18,9 @@ const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const imageInnerRef = useRef<HTMLDivElement>(null);
-  const rockInnerRef = useRef<HTMLDivElement>(null);
-  const charParallaxRef = useRef<HTMLDivElement>(null);
-  const rockParallaxRef = useRef<HTMLDivElement>(null);
-  const toriiParallaxRef = useRef<HTMLDivElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const visualsRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
-  // Mouse-parallax wrappers — nested between the scroll-parallax (outer) and
-  // entrance (inner) divs so each transform owns its own element.
-  const toriiMouseRef = useRef<HTMLDivElement>(null);
-  const rockMouseRef = useRef<HTMLDivElement>(null);
-  const charMouseRef = useRef<HTMLDivElement>(null);
   const headlineMouseRef = useRef<HTMLDivElement>(null);
 
   const [inView, setInView] = useState(true);
@@ -81,12 +71,6 @@ export default function Hero() {
       const ctas = root.querySelectorAll(".hero-cta");
       const marquee = root.querySelectorAll(".hero-marquee");
 
-      if (imageInnerRef.current)
-        gsap.set(imageInnerRef.current, { yPercent: 100, opacity: 1 });
-      if (rockInnerRef.current)
-        gsap.set(rockInnerRef.current, { yPercent: 100, opacity: 1 });
-      if (toriiParallaxRef.current)
-        gsap.set(toriiParallaxRef.current, { opacity: 0, scale: 1.06 });
       gsap.set(tags, { y: 18, opacity: 0 });
       gsap.set(words, { y: 90, opacity: 0 });
       gsap.set(ctas, { y: 22, opacity: 0 });
@@ -98,17 +82,8 @@ export default function Hero() {
 
         const tl = gsap.timeline();
 
-        // 0) Torii materializes first — sets the stage, breathes for a beat
-        if (toriiParallaxRef.current) {
-          tl.to(
-            toriiParallaxRef.current,
-            { opacity: 1, scale: 1, duration: 1.6, ease: "expo.out" },
-            0
-          );
-        }
-
-        // 1) Hero text cascades in while the gate is still settling
-        tl.to(tags, { y: 0, opacity: 0.7, duration: 0.7, ease: "power2.out" }, 0.45)
+        // Hero text cascades in over the video
+        tl.to(tags, { y: 0, opacity: 0.7, duration: 0.7, ease: "power2.out" }, 0)
           .to(
             words,
             {
@@ -126,34 +101,16 @@ export default function Hero() {
             "-=0.35"
           );
 
-        // 2) Signal the navbar to drop in once the main text has settled
+        // Signal the navbar to drop in once the main text has settled
         tl.add(() => {
           window.dispatchEvent(new Event("hero:textDone"));
-        }, 1.9);
+        }, 1.4);
 
-        // 3) Rock platform rises only AFTER the headline's first animation
-        if (rockInnerRef.current) {
-          tl.to(
-            rockInnerRef.current,
-            { yPercent: 0, duration: 1.25, ease: "power3.out" },
-            2.0
-          );
-        }
-
-        // 4) Character rises after the rock has mostly landed (slight overlap for flow)
-        if (imageInnerRef.current) {
-          tl.to(
-            imageInnerRef.current,
-            { yPercent: 0, duration: 1.35, ease: "power3.out" },
-            2.75
-          );
-        }
-
-        // 5) Marquee slides up into place after the figures are settled
+        // Marquee slides up into place to close the entrance
         tl.to(
           marquee,
           { yPercent: 0, opacity: 1, duration: 0.7, ease: "power3.out" },
-          3.6
+          1.6
         );
 
         // Headline gets two layered animations:
@@ -203,9 +160,6 @@ export default function Hero() {
 
     // Larger magnitude = appears closer to the viewer.
     const layers: { ref: React.RefObject<HTMLDivElement>; mx: number; my: number }[] = [
-      { ref: toriiMouseRef, mx: 10, my: 6 },
-      { ref: rockMouseRef, mx: 22, my: 12 },
-      { ref: charMouseRef, mx: 36, my: 18 },
       { ref: headlineMouseRef, mx: 14, my: 8 },
     ];
 
@@ -250,6 +204,48 @@ export default function Hero() {
     };
   }, []);
 
+  // Scroll-scrubbed video — currentTime tracks scroll progress through the hero.
+  // Respects reduced-motion by falling back to a static first frame.
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    const root = sectionRef.current;
+    if (!video || !root) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+
+    let trigger: ScrollTrigger | null = null;
+
+    const setup = () => {
+      const duration = video.duration;
+      if (!duration || !Number.isFinite(duration)) return;
+
+      trigger = ScrollTrigger.create({
+        trigger: root,
+        start: "top top",
+        end: "+=100%",
+        scrub: 0.4,
+        onUpdate: (self) => {
+          const t = self.progress * duration;
+          if (Math.abs(video.currentTime - t) > 0.03) {
+            video.currentTime = t;
+          }
+        },
+      });
+    };
+
+    if (video.readyState >= 1) {
+      setup();
+    } else {
+      video.addEventListener("loadedmetadata", setup, { once: true });
+    }
+
+    return () => {
+      trigger?.kill();
+      video.removeEventListener("loadedmetadata", setup);
+    };
+  }, []);
+
   // Parallax on scroll — different layers move at different speeds for depth
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -263,30 +259,6 @@ export default function Hero() {
         scrub: 0.6,
       } as const;
 
-      if (toriiParallaxRef.current) {
-        gsap.to(toriiParallaxRef.current, {
-          y: -25,
-          ease: "none",
-          scrollTrigger: trigger,
-        });
-      }
-
-      if (rockParallaxRef.current) {
-        gsap.to(rockParallaxRef.current, {
-          y: -60,
-          ease: "none",
-          scrollTrigger: trigger,
-        });
-      }
-
-      if (charParallaxRef.current) {
-        gsap.to(charParallaxRef.current, {
-          y: -140,
-          ease: "none",
-          scrollTrigger: trigger,
-        });
-      }
-
       const headline = root.querySelector(".hero-headline");
       if (headline) {
         gsap.to(headline, {
@@ -296,10 +268,14 @@ export default function Hero() {
         });
       }
 
+      // Don't touch opacity/blur/scrim until the video has finished playing.
+      // "bottom top" fires once the hero's bottom passes the viewport top —
+      // i.e. the moment the scrub has reached the final frame — and runs
+      // through the spacer scroll until Statement reaches the viewport top.
       const fadeTrigger = {
         trigger: root,
-        start: "top top",
-        end: "+=85%",
+        start: "bottom top",
+        end: "+=100%",
         scrub: 0.45,
       } as const;
 
@@ -354,75 +330,29 @@ export default function Hero() {
       className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper dark:bg-transparent text-black"
     >
       <div ref={visualsRef} className="absolute inset-0 will-change-[opacity,filter]">
-      {/* Torii gate — full-screen looping video backdrop behind rock + character */}
-      <div
-        ref={toriiParallaxRef}
-        className="pointer-events-none absolute inset-0 z-[1] will-change-transform"
-        aria-hidden
-      >
-        <div ref={toriiMouseRef} className="absolute inset-0 will-change-transform">
-          <video
-            src="/hero-torii.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-          />
-        </div>
-      </div>
-
-      {/* Foreground hero figure — always visible */}
-      <div className="pointer-events-none absolute inset-0 z-[3] will-change-transform">
-        {/* Rock platform — scroll parallax / mouse parallax / entrance / content */}
-        <div ref={rockParallaxRef} className="pointer-events-none absolute inset-0 will-change-transform">
-          <div ref={rockMouseRef} className="absolute inset-0 will-change-transform">
-            <div ref={rockInnerRef} className="absolute inset-0 will-change-transform">
-              <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[70vmin] max-w-[520px] aspect-[640/440]">
-                <Image
-                  src="/hero-rock.png"
-                  alt=""
-                  fill
-                  priority
-                  sizes="70vmin"
-                  className="object-contain object-bottom"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Samurai character — scroll parallax / mouse parallax / entrance / content */}
-        <div ref={charParallaxRef} className="absolute inset-0 will-change-transform">
-          <div ref={charMouseRef} className="absolute inset-0 will-change-transform">
-            <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
-              <Image
-                src="/hero-bg.png"
-                alt=""
-                fill
-                priority
-                sizes="100vw"
-                quality={100}
-                className="object-contain object-bottom"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SplashCursor — only mount when Hero is in view, hardware supports it,
-          and the user hasn't asked for reduced motion. */}
-      {inView && splashCfg?.enabled && (
-        <SplashCursor
-          RAINBOW_MODE={false}
-          COLOR={colors.accent}
-          SIM_RESOLUTION={48}
-          DYE_RESOLUTION={splashCfg.dye}
-          PRESSURE_ITERATIONS={3}
-          SHADING={false}
+        {/* Firefly video — sole hero visual, scrubbed by scroll */}
+        <video
+          ref={heroVideoRef}
+          src="/hero-firefly.mp4"
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover object-center z-[1]"
         />
-      )}
+
+        {/* SplashCursor — only mount when Hero is in view, hardware supports it,
+            and the user hasn't asked for reduced motion. */}
+        {inView && splashCfg?.enabled && (
+          <SplashCursor
+            RAINBOW_MODE={false}
+            COLOR={colors.accent}
+            SIM_RESOLUTION={48}
+            DYE_RESOLUTION={splashCfg.dye}
+            PRESSURE_ITERATIONS={3}
+            SHADING={false}
+          />
+        )}
       </div>
 
       {/* Scrim — lifts as you scroll so content above stays readable */}

@@ -31,6 +31,10 @@ function useOverHero() {
 export default function FloatingPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
+  // Pulse rings around the button for the first few seconds after the loader
+  // releases, so users notice the button is interactive. Suppressed forever
+  // once the user has actually clicked play.
+  const [attention, setAttention] = useState(false);
   const overHero = useOverHero();
 
   useEffect(() => {
@@ -49,9 +53,27 @@ export default function FloatingPlayer() {
     };
   }, []);
 
+  useEffect(() => {
+    let stopTimer: number | undefined;
+    const start = () => {
+      setAttention(true);
+      stopTimer = window.setTimeout(() => setAttention(false), 3000);
+    };
+    // Wait for the loader to finish so the rings aren't covered by the splash.
+    // Fall back to a short delay if the event was missed.
+    window.addEventListener("loader:done", start, { once: true });
+    const fallback = window.setTimeout(start, 6000);
+    return () => {
+      window.removeEventListener("loader:done", start);
+      window.clearTimeout(fallback);
+      if (stopTimer !== undefined) window.clearTimeout(stopTimer);
+    };
+  }, []);
+
   const toggle = () => {
     const audio = audioRef.current;
     if (!audio) return;
+    setAttention(false);
     if (audio.paused) {
       audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
     } else {
@@ -95,6 +117,25 @@ export default function FloatingPlayer() {
           </textPath>
         </text>
       </svg>
+
+      {/* Attention pulse — three staggered rings ripple out from the button
+          for ~3s after the loader finishes so the user clocks its presence. */}
+      {attention && (
+        <span aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          {[0, 0.6, 1.2].map((delay) => (
+            <span
+              key={delay}
+              className="absolute w-16 h-16 md:w-20 md:h-20 rounded-full animate-attention-ring"
+              style={{
+                borderColor: colors.accent,
+                borderWidth: 2,
+                borderStyle: "solid",
+                animationDelay: `${delay}s`,
+              }}
+            />
+          ))}
+        </span>
+      )}
 
       <button
         type="button"
