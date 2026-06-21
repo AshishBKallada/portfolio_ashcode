@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { gsap } from "gsap";
-import { SKILLS_CATEGORIES } from "@/lib/constants";
-import { colors } from "@/lib/theme";
+import { colors } from "@/lib/theme/colors";
+import { SKILLS, SKILLS_COPY } from "@/lib/constants/skills";
 
 type LenisLike = { stop: () => void; start: () => void };
 
@@ -92,12 +92,12 @@ export default function SkillsModal({ open, onClose }: { open: boolean; onClose:
         <header className="flex items-start justify-between gap-6 px-6 md:px-12 pt-10 md:pt-14 pb-6 md:pb-8">
           <div>
             <p className="font-body text-[10px] uppercase tracking-[0.32em] text-ink/50">
-              技能 · The whole kit
+              {SKILLS_COPY.eyebrow}
             </p>
             <h3 className="font-headline italic tracking-[-0.025em] leading-[0.92] text-[clamp(2.5rem,7vw,5.5rem)] mt-3">
-              Every <span className="text-ink/60">tool</span>
+              {SKILLS_COPY.title[0]} <span className="text-ink/60">{SKILLS_COPY.title[1]}</span>
               <br />
-              in the rack.
+              {SKILLS_COPY.title[2]}
             </h3>
           </div>
           <button
@@ -115,7 +115,7 @@ export default function SkillsModal({ open, onClose }: { open: boolean; onClose:
           ref={rowsRef}
           className="flex-1 overflow-y-auto px-6 md:px-12 pb-8 border-t border-ink/10"
         >
-          {SKILLS_CATEGORIES.map((row, i) => (
+          {SKILLS.map((row, i) => (
             <li
               key={row.category}
               className="group flex flex-col md:flex-row md:items-baseline gap-y-2 md:gap-x-10 py-5 border-b border-ink/10 transition-colors hover:bg-ink/[0.02]"
@@ -140,9 +140,9 @@ export default function SkillsModal({ open, onClose }: { open: boolean; onClose:
 
         {/* Footer */}
         <footer className="px-6 md:px-12 py-4 border-t border-ink/10 flex items-center justify-between font-body text-[10px] uppercase tracking-[0.3em] text-ink/40">
-          <p>Esc to close</p>
+          <p>{SKILLS_COPY.closeHint}</p>
           <p>
-            {SKILLS_CATEGORIES.length} categories · 全部で
+            {SKILLS.length} {SKILLS_COPY.footerSuffix}
           </p>
         </footer>
       </div>

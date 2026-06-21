@@ -1,4 +1,4 @@
-import { colors } from "@/lib/theme";
+import { colors } from "@/lib/theme/colors";
 
 export type Project = {
   number: string;
@@ -11,7 +11,7 @@ export type Project = {
   tech: string[];
   image: string;
   alt: string;
-  bg: string;
+  bgColor: string;
   href: string;
 };
 
@@ -28,7 +28,7 @@ export const PROJECTS: Project[] = [
     tech: ["Next.js", "Node", "PostgreSQL"],
     image: "/project1.avif",
     alt: "KADA Andhra Pradesh government platform",
-    bg: `bg-[${colors.projectPreview.kada}]`,
+    bgColor: colors.projectBg.kada,
     href: "#",
   },
   {
@@ -43,7 +43,7 @@ export const PROJECTS: Project[] = [
     tech: ["Next.js", "Node", "MongoDB"],
     image: "/project2.avif",
     alt: "Curengo hospital management system",
-    bg: `bg-[${colors.projectPreview.curengo}]`,
+    bgColor: colors.projectBg.curengo,
     href: "#",
   },
   {
@@ -58,7 +58,7 @@ export const PROJECTS: Project[] = [
     tech: ["Next.js", "Tailwind", "Sanity"],
     image: "/bali.webp",
     alt: "Verdura green culture website",
-    bg: `bg-[${colors.projectPreview.verdura}]`,
+    bgColor: colors.projectBg.verdura,
     href: "#",
   },
   {
@@ -73,7 +73,21 @@ export const PROJECTS: Project[] = [
     tech: ["Next.js", "Tailwind", "Sanity"],
     image: "/hero-image.png",
     alt: "Womarpools luxury pool design website",
-    bg: `bg-[${colors.projectPreview.womarpools}]`,
+    bgColor: colors.projectBg.womarpools,
     href: "#",
   },
 ];
+
+export const PROJECTS_COPY = {
+  metaSection: "(03)",
+  metaLabel: "Selected Works · 制作実績",
+  metaSuffix: "Projects · 2024–25",
+  headlineLeft: "Selected",
+  headlineRight: "works.",
+  lede:
+    "A few of the ones I'm proud of. I didn't build these alone — but on each one I played a crucial role and took the risky calls that kept the requirements landing on time. The kind of bets you only make when the deadline is real.",
+  hoverHint: "Hover · cursor reveals preview",
+  openHint: "↗ Open for the case study",
+  archiveAside: "More in the case-study archive · drop a line for the rest",
+  archiveCta: "Request full archive",
+} as const;

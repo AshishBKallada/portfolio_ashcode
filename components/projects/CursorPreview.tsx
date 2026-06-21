@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import type { Project } from "./data";
+import type { Project } from "@/lib/constants/projects";
 
 type Props = {
   projects: readonly Project[];
@@ -44,8 +44,9 @@ export default function CursorPreview({ projects, activeIdx }: Props) {
       {projects.map((p, i) => (
         <div
           key={p.number}
-          className={`absolute inset-0 ${p.bg} transition-[clip-path] duration-[620ms] ease-[cubic-bezier(0.76,0,0.24,1)]`}
+          className="absolute inset-0 transition-[clip-path] duration-[620ms] ease-[cubic-bezier(0.76,0,0.24,1)]"
           style={{
+            backgroundColor: p.bgColor,
             clipPath:
               activeIdx === i ? "inset(0% 0% 0% 0%)" : "inset(100% 0% 0% 0%)",
           }}

@@ -2,8 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Theme tokens — semantic colors used via Tailwind (paper, ink, surface, accent).
-   Raw hex values live in lib/theme/colors.ts for inline styles & one-off use. */
+/* Light theme — default-but-overridden-by .dark below */
 :root {
   --paper: 255 255 255;
   --ink: 10 10 10;

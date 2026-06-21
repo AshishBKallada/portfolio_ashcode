@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { BRAND, LOADER_CYCLES, LOADER_LABELS, LOADER_STEP_DURATION } from "@/lib/constants";
-import { colors, themeClasses } from "@/lib/theme";
+import { colors } from "@/lib/theme/colors";
+import { LOADER } from "@/lib/constants/loader";
+
+const { labels: LABELS, cycles: CYCLES, stepDuration: STEP_DURATION } = LOADER;
 
 export default function LoadingScreen() {
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -33,7 +35,7 @@ export default function LoadingScreen() {
     const prevOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
 
-    text.textContent = LOADER_LABELS[0];
+    text.textContent = LABELS[0];
     if (percent) percent.textContent = "0%";
 
     const counter = { value: 0 };
@@ -50,7 +52,7 @@ export default function LoadingScreen() {
         counter,
         {
           value: endPercent,
-          duration: LOADER_STEP_DURATION,
+          duration: STEP_DURATION,
           ease: "power2.inOut",
           onUpdate: () => {
             if (percent) {
@@ -66,7 +68,7 @@ export default function LoadingScreen() {
         {
           y: -10,
           opacity: 0,
-          duration: LOADER_STEP_DURATION * 0.4,
+          duration: STEP_DURATION * 0.4,
           ease: "power2.in",
           onComplete: () => {
             text.textContent = nextLabel;
@@ -80,16 +82,16 @@ export default function LoadingScreen() {
         {
           y: 0,
           opacity: 1,
-          duration: LOADER_STEP_DURATION * 0.6,
+          duration: STEP_DURATION * 0.6,
           ease: "power2.out",
         },
-        `${position}+=${LOADER_STEP_DURATION * 0.4}`
+        `${position}+=${STEP_DURATION * 0.4}`
       );
     };
 
-    for (let i = 0; i < LOADER_CYCLES; i++) {
-      const nextLabel = LOADER_LABELS[(i + 1) % LOADER_LABELS.length];
-      const endPercent = Math.round(((i + 1) / LOADER_CYCLES) * 100);
+    for (let i = 0; i < CYCLES; i++) {
+      const nextLabel = LABELS[(i + 1) % LABELS.length];
+      const endPercent = Math.round(((i + 1) / CYCLES) * 100);
       addSyncedStep(nextLabel, endPercent, i === 0 ? 0 : ">");
     }
 
@@ -112,8 +114,8 @@ export default function LoadingScreen() {
   return (
     <div
       ref={overlayRef}
-      className={themeClasses.loader.overlay}
-      style={{ backgroundColor: colors.loader.bg, color: colors.loader.text }}
+      className="fixed inset-0 z-[10000] flex items-center justify-center pointer-events-auto"
+      style={{ backgroundColor: colors.loader.bg, color: colors.loader.fg }}
       aria-live="polite"
       aria-busy="true"
       aria-label="Loading"
@@ -122,13 +124,13 @@ export default function LoadingScreen() {
         ref={textRef}
         className="font-headline text-2xl md:text-3xl italic tracking-[-0.02em] will-change-transform"
       >
-        {BRAND.name}
+        {LABELS[0]}
       </span>
 
       <span
         ref={percentRef}
-        className={themeClasses.loader.percent}
-        style={{ fontSize: "clamp(4rem, 18vw, 12rem)", color: `${colors.loader.text}cc` }}
+        className="absolute bottom-4 right-4 md:bottom-8 md:right-10 font-headline italic tabular-nums tracking-[-0.04em] leading-none"
+        style={{ fontSize: "clamp(4rem, 18vw, 12rem)", color: colors.loader.fg, opacity: 0.8 }}
         aria-hidden
       >
         0%

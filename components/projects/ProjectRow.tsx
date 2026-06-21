@@ -1,6 +1,6 @@
 "use client";
 
-import type { Project } from "./data";
+import type { Project } from "@/lib/constants/projects";
 
 type Props = {
   project: Project;

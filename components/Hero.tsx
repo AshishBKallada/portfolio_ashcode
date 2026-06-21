@@ -7,15 +7,9 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMagnetic } from "@/lib/useMagnetic";
 import { scrambleText } from "@/lib/scramble";
-import {
-  AVAILABILITY,
-  HERO_HEADLINE_WORDS,
-  HERO_MARQUEE_ITEMS,
-  HERO_ASSETS,
-  LOCATION,
-  PRIMARY_EMAIL,
-} from "@/lib/constants";
-import { colors, themeClasses } from "@/lib/theme";
+import { colors } from "@/lib/theme/colors";
+import { HERO_COPY, HERO_MARQUEE } from "@/lib/constants/hero";
+import { SITE } from "@/lib/constants/site";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -32,6 +26,12 @@ export default function Hero() {
   const toriiParallaxRef = useRef<HTMLDivElement>(null);
   const visualsRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
+  // Mouse-parallax wrappers — nested between the scroll-parallax (outer) and
+  // entrance (inner) divs so each transform owns its own element.
+  const toriiMouseRef = useRef<HTMLDivElement>(null);
+  const rockMouseRef = useRef<HTMLDivElement>(null);
+  const charMouseRef = useRef<HTMLDivElement>(null);
+  const headlineMouseRef = useRef<HTMLDivElement>(null);
 
   const [inView, setInView] = useState(true);
   const [splashCfg, setSplashCfg] = useState<{ enabled: boolean; dye: number } | null>(null);
@@ -159,7 +159,7 @@ export default function Hero() {
         // Headline gets two layered animations:
         //   a) slide-up + fade-in (already running above)
         //   b) scramble pass that lands AFTER the slide settles, so it reads
-        const labels = [...HERO_HEADLINE_WORDS];
+        const labels = HERO_COPY.headline;
         const hwEls = Array.from(words) as HTMLElement[];
         hwEls.forEach((el, i) => {
           window.setTimeout(
@@ -189,6 +189,65 @@ export default function Hero() {
       };
     });
     return () => ctx.revert();
+  }, []);
+
+  // Cursor parallax — layers shift toward the cursor at different magnitudes
+  // to give the scene depth. Disabled on touch + reduced-motion.
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || typeof window === "undefined") return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    if (reduced || coarse) return;
+
+    // Larger magnitude = appears closer to the viewer.
+    const layers: { ref: React.RefObject<HTMLDivElement>; mx: number; my: number }[] = [
+      { ref: toriiMouseRef, mx: 10, my: 6 },
+      { ref: rockMouseRef, mx: 22, my: 12 },
+      { ref: charMouseRef, mx: 36, my: 18 },
+      { ref: headlineMouseRef, mx: 14, my: 8 },
+    ];
+
+    const setters = layers
+      .map((l) =>
+        l.ref.current
+          ? {
+              x: gsap.quickTo(l.ref.current, "x", { duration: 0.8, ease: "power3.out" }),
+              y: gsap.quickTo(l.ref.current, "y", { duration: 0.8, ease: "power3.out" }),
+              mx: l.mx,
+              my: l.my,
+            }
+          : null
+      )
+      .filter((s): s is NonNullable<typeof s> => s !== null);
+
+    if (setters.length === 0) return;
+
+    const onMove = (e: MouseEvent) => {
+      const rect = section.getBoundingClientRect();
+      // Normalize cursor to [-1, 1] relative to section center.
+      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+      setters.forEach((s) => {
+        s.x(nx * s.mx);
+        s.y(ny * s.my);
+      });
+    };
+
+    const onLeave = () => {
+      setters.forEach((s) => {
+        s.x(0);
+        s.y(0);
+      });
+    };
+
+    section.addEventListener("mousemove", onMove);
+    section.addEventListener("mouseleave", onLeave);
+    return () => {
+      section.removeEventListener("mousemove", onMove);
+      section.removeEventListener("mouseleave", onLeave);
+    };
   }, []);
 
   // Parallax on scroll — different layers move at different speeds for depth
@@ -292,55 +351,62 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className={themeClasses.hero.section}
+      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper dark:bg-transparent text-black"
     >
       <div ref={visualsRef} className="absolute inset-0 will-change-[opacity,filter]">
-      {/* Torii gate — full-screen backdrop behind rock + character */}
+      {/* Torii gate — full-screen looping video backdrop behind rock + character */}
       <div
         ref={toriiParallaxRef}
         className="pointer-events-none absolute inset-0 z-[1] will-change-transform"
         aria-hidden
       >
-        <Image
-          src={HERO_ASSETS.torii}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        <div ref={toriiMouseRef} className="absolute inset-0 will-change-transform">
+          <video
+            src="/hero-torii.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+        </div>
       </div>
 
       {/* Foreground hero figure — always visible */}
       <div className="pointer-events-none absolute inset-0 z-[3] will-change-transform">
-        {/* Rock platform — scroll parallax / entrance / content */}
+        {/* Rock platform — scroll parallax / mouse parallax / entrance / content */}
         <div ref={rockParallaxRef} className="pointer-events-none absolute inset-0 will-change-transform">
-          <div ref={rockInnerRef} className="absolute inset-0 will-change-transform">
-            <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[70vmin] max-w-[520px] aspect-[640/440]">
-              <Image
-                src={HERO_ASSETS.rock}
-                alt=""
-                fill
-                priority
-                sizes="70vmin"
-                className="object-contain object-bottom"
-              />
+          <div ref={rockMouseRef} className="absolute inset-0 will-change-transform">
+            <div ref={rockInnerRef} className="absolute inset-0 will-change-transform">
+              <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[70vmin] max-w-[520px] aspect-[640/440]">
+                <Image
+                  src="/hero-rock.png"
+                  alt=""
+                  fill
+                  priority
+                  sizes="70vmin"
+                  className="object-contain object-bottom"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Samurai character — scroll parallax / entrance / content */}
+        {/* Samurai character — scroll parallax / mouse parallax / entrance / content */}
         <div ref={charParallaxRef} className="absolute inset-0 will-change-transform">
-          <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
-            <Image
-              src={HERO_ASSETS.character}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              quality={100}
-              className="object-contain object-bottom"
-            />
+          <div ref={charMouseRef} className="absolute inset-0 will-change-transform">
+            <div ref={imageInnerRef} className="absolute inset-0 will-change-transform">
+              <Image
+                src="/hero-bg.png"
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                quality={100}
+                className="object-contain object-bottom"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -367,25 +433,31 @@ export default function Hero() {
       />
 
 {/* Headline block — bottom-left. Colors inherit from section via currentColor */}
-      <div className="hero-headline absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none will-change-transform">
+      <div
+        ref={headlineMouseRef}
+        className="hero-headline absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none will-change-transform"
+      >
         <p className="hero-tag font-body text-xs uppercase tracking-[0.3em] mb-4 opacity-0">
-          Full-stack engineer / {LOCATION.label}, India
+          {HERO_COPY.tag}
         </p>
         <h1 className="font-headline text-[14vw] md:text-[9vw] lg:text-[7.5vw] leading-[0.85] tracking-[-0.02em]">
-          <span className="hw inline-block mr-[0.18em] cursor-pointer opacity-0">Obsession</span>
-          <span className="hw inline-block mr-[0.18em] italic cursor-pointer opacity-0">beats</span>
+          <span className="hw inline-block mr-[0.18em] cursor-pointer opacity-0">{HERO_COPY.headline[0]}</span>
+          <span className="hw inline-block mr-[0.18em] italic cursor-pointer opacity-0">{HERO_COPY.headline[1]}</span>
           <br />
-          <span className="hw inline-block cursor-pointer opacity-0">talent.</span>
+          <span className="hw inline-block cursor-pointer opacity-0">{HERO_COPY.headline[2]}</span>
         </h1>
         <div className="hero-cta mt-8 flex flex-wrap gap-4 items-center opacity-0">
           <a
             ref={ctaRef}
-            href={`mailto:${PRIMARY_EMAIL}`}
+            href={`mailto:${SITE.email}`}
             data-cursor="cta"
-            className={themeClasses.hero.cta}
+            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black overflow-hidden font-headline text-lg text-black will-change-transform"
           >
-            <span aria-hidden className={themeClasses.hero.ctaFill} />
-            <span className={themeClasses.hero.ctaLabel}>Get in Touch</span>
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+            />
+            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-white">{HERO_COPY.ctaLabel}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -396,14 +468,14 @@ export default function Hero() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className={themeClasses.hero.ctaIcon}
+              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-white"
             >
               <path d="M7 7h10v10" />
               <path d="M7 17 17 7" />
             </svg>
           </a>
           <span className="font-body text-xs uppercase tracking-[0.2em] opacity-70">
-            {AVAILABILITY.status}
+            {HERO_COPY.availability}
           </span>
         </div>
 
@@ -411,12 +483,12 @@ export default function Hero() {
 
       {/* Hex tag — sits above the marquee */}
       <div className="hero-scroll-ui absolute bottom-16 left-6 md:bottom-20 md:left-12 z-[4] font-body text-[11px] tracking-[0.2em] opacity-70">
-        0x2f·7a · 4b · ff · 01 · 3c · ae →
+        {HERO_COPY.hexTag}
       </div>
 
       {/* "Scroll to explore" — sits above the marquee */}
-      <div className="hero-scroll-ui absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-90">
-        <p className="font-body text-xs uppercase tracking-[0.25em]">Scroll to explore</p>
+      <div className="hero-scroll-ui absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-90 text-white">
+        <p className="font-body text-xs uppercase tracking-[0.25em]">{HERO_COPY.scroll}</p>
         <svg
           width="16"
           height="16"
@@ -435,13 +507,13 @@ export default function Hero() {
 
       {/* Marquee ticker — full width at the very bottom */}
       <div
-        className={themeClasses.hero.marquee}
+        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-white/75 text-black opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.2)] backdrop-blur-sm"
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
           {Array.from({ length: 2 }).map((_, copy) => (
             <div key={copy} className="flex shrink-0 items-center font-body text-[10px] uppercase tracking-[0.32em]">
-              {[...HERO_MARQUEE_ITEMS].map((s, i) => (
+              {HERO_MARQUEE.map((s, i) => (
                 <span key={`${copy}-${i}`} className="flex items-center">
                   <span className="px-8">{s}</span>
                   <span className="opacity-70">✦</span>

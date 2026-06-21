@@ -2,11 +2,10 @@
 
 import { useRef, useState } from "react";
 import { useScrollReveal } from "@/lib/useScrollReveal";
-import { PRIMARY_EMAIL, SECTION_INDEX } from "@/lib/constants";
-import { themeClasses } from "@/lib/theme";
 import CursorPreview from "./projects/CursorPreview";
 import ProjectRow from "./projects/ProjectRow";
-import { LEDE_TEXT, PROJECTS } from "./projects/data";
+import { PROJECTS, PROJECTS_COPY } from "@/lib/constants/projects";
+import { SITE } from "@/lib/constants/site";
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -18,7 +17,7 @@ export default function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className={themeClasses.section.projects}
+      className="relative isolate z-10 w-full bg-transparent text-ink px-6 md:px-12 lg:px-20 py-24 md:py-36 overflow-hidden"
     >
       <CursorPreview projects={PROJECTS} activeIdx={previewIdx} />
 
@@ -26,22 +25,22 @@ export default function Projects() {
         {/* Meta row */}
         <div className="flex items-start justify-between gap-6 mb-12 md:mb-16 font-body text-[10px] uppercase tracking-[0.32em] text-ink/55">
           <p>
-            <span className="opacity-60">({SECTION_INDEX.projects})</span>
+            <span className="opacity-60">{PROJECTS_COPY.metaSection}</span>
             <span className="mx-2 opacity-30">/</span>
-            Selected Works · 制作実績
+            {PROJECTS_COPY.metaLabel}
           </p>
           <p className="tabular-nums text-right">
-            {String(PROJECTS.length).padStart(2, "0")} Projects · 2024–25
+            {String(PROJECTS.length).padStart(2, "0")} {PROJECTS_COPY.metaSuffix}
           </p>
         </div>
 
         {/* Focal headline */}
         <h2 className="font-headline italic leading-[0.82] tracking-[-0.04em] text-[clamp(3rem,12vw,10rem)] -ml-[0.04em]">
           <span className="inline-block overflow-hidden align-baseline mr-[0.12em]">
-            <span data-reveal="word" className="inline-block">Selected</span>
+            <span data-reveal="word" className="inline-block">{PROJECTS_COPY.headlineLeft}</span>
           </span>
           <span className="inline-block overflow-hidden align-baseline">
-            <span data-reveal="word" className="inline-block text-ink/45">works.</span>
+            <span data-reveal="word" className="inline-block text-ink/45">{PROJECTS_COPY.headlineRight}</span>
           </span>
         </h2>
 
@@ -51,14 +50,14 @@ export default function Projects() {
             data-reveal="char"
             className="md:col-span-7 lg:col-span-6 font-body text-base md:text-lg leading-relaxed text-ink/85"
           >
-            {LEDE_TEXT}
+            {PROJECTS_COPY.lede}
           </p>
           <div
             data-reveal="fade"
             className="md:col-span-4 md:col-start-9 flex flex-col gap-2 self-end font-body text-[10px] uppercase tracking-[0.32em] text-ink/55 md:text-right"
           >
-            <p>Hover · cursor reveals preview</p>
-            <p>↗ Open for the case study</p>
+            <p>{PROJECTS_COPY.hoverHint}</p>
+            <p>{PROJECTS_COPY.openHint}</p>
           </div>
         </div>
 
@@ -78,14 +77,13 @@ export default function Projects() {
         {/* Coda */}
         <div className="mt-10 md:mt-14 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 font-body text-[10px] uppercase tracking-[0.32em] text-ink/55">
           <p>
-            <span className="opacity-60">/&nbsp;</span> More in the case-study
-            archive · drop a line for the rest
+            <span className="opacity-60">/&nbsp;</span> {PROJECTS_COPY.archiveAside}
           </p>
           <a
-            href={`mailto:${PRIMARY_EMAIL}`}
+            href={`mailto:${SITE.email}`}
             className="group inline-flex items-center gap-2 hover:text-ink transition-colors"
           >
-            Request full archive
+            {PROJECTS_COPY.archiveCta}
             <span
               aria-hidden
               className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-current/40 transition-transform duration-300 group-hover:rotate-45"

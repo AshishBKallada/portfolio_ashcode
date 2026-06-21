@@ -1,5 +1,7 @@
-import { BRAND } from "./site";
+import { SITE } from "./site";
 
-export const LOADER_LABELS = [BRAND.name, BRAND.nameJp] as const;
-export const LOADER_CYCLES = 3;
-export const LOADER_STEP_DURATION = 0.9;
+export const LOADER = {
+  labels: [SITE.brand, SITE.brandJp] as const,
+  cycles: 3,
+  stepDuration: 0.9,
+} as const;

@@ -4,12 +4,12 @@ import { useRef, useState } from "react";
 import { Hand } from "lucide-react";
 import { useScrollReveal } from "@/lib/useScrollReveal";
 import SkillsModal from "@/components/SkillsModal";
+import { colors } from "@/lib/theme/colors";
 import {
-  STATEMENT_BODY,
   STATEMENT_SEGMENTS,
-  STATEMENT_TERMINAL_TITLE,
-} from "@/lib/constants";
-import { colors, themeClasses } from "@/lib/theme";
+  STATEMENT_BODY,
+  STATEMENT_LABELS,
+} from "@/lib/constants/statement";
 
 export default function Statement() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -22,42 +22,35 @@ export default function Statement() {
     <section
       ref={sectionRef}
       id="statement"
-      className={themeClasses.section.statement}
+      className="relative z-10 bg-transparent text-ink px-4 md:px-6 py-16 md:py-24"
       aria-label="Statement"
     >
-      <div className={themeClasses.terminal.card}>
+      <div
+        className="relative mx-auto max-w-6xl overflow-hidden rounded-[5px] md:rounded-[8px] border border-ink/15 bg-surface text-ink shadow-[0_24px_60px_-24px_rgba(0,0,0,0.12)] dark:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.72)]"
+      >
 
         {/* Mac terminal title bar */}
-        <div className={themeClasses.terminal.titleBar}>
+        <div className="relative flex items-center justify-between gap-4 px-4 md:px-5 py-3 border-b border-ink/10 bg-ink/[0.04] dark:bg-ink/[0.06]">
           <div className="flex items-center gap-2">
-            <span
-              aria-hidden
-              className="w-3 h-3 rounded-full opacity-85"
-              style={{ backgroundColor: colors.terminal.close }}
-            />
-            <span
-              aria-hidden
-              className="w-3 h-3 rounded-full opacity-85"
-              style={{ backgroundColor: colors.terminal.minimize }}
-            />
-            <span
-              aria-hidden
-              className="w-3 h-3 rounded-full opacity-85"
-              style={{ backgroundColor: colors.terminal.maximize }}
-            />
+            <span aria-hidden className="w-3 h-3 rounded-full opacity-85" style={{ backgroundColor: colors.macTraffic.close }} />
+            <span aria-hidden className="w-3 h-3 rounded-full opacity-85" style={{ backgroundColor: colors.macTraffic.minimize }} />
+            <span aria-hidden className="w-3 h-3 rounded-full opacity-85" style={{ backgroundColor: colors.macTraffic.maximize }} />
           </div>
           <p className="font-body text-[10px] md:text-[11px] uppercase tracking-[0.3em] text-ink/45 tabular-nums truncate">
-            {STATEMENT_TERMINAL_TITLE}
+            {STATEMENT_LABELS.terminalTitle}
           </p>
           <span aria-hidden className="w-[54px] shrink-0" />
         </div>
 
-        <div className={themeClasses.terminal.body}>
-        <p data-reveal="fade" className={themeClasses.terminal.label}>
-          Full-stack engineering
+        <div className="relative px-6 md:px-12 py-16 md:py-24 text-center">
+        <p
+          data-reveal="fade"
+          className="relative z-[1] font-body text-[10px] sm:text-xs uppercase tracking-[0.3em] mb-6 text-ink/55"
+        >
+          {STATEMENT_LABELS.eyebrow}
         </p>
 
-        <h2 className={themeClasses.terminal.headline}>
+        <h2 className="relative z-[1] font-headline tracking-[-0.02em] text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-3xl mx-auto leading-[0.95] sm:leading-[0.9] text-ink">
           {STATEMENT_SEGMENTS.flatMap((seg, sIdx) =>
             seg.text.split(" ").map((word, wIdx) => (
               <span key={`${sIdx}-${wIdx}`} className="inline-block overflow-hidden align-baseline mr-[0.18em]">
@@ -74,8 +67,11 @@ export default function Statement() {
             className="group ml-[0.12em] inline-flex items-baseline gap-[0.15em] align-baseline bg-transparent border-0 p-0 font-[inherit] text-[inherit] cursor-pointer animate-float-y"
           >
             <span className="inline-block overflow-hidden align-baseline">
-              <span data-reveal="tail" className={themeClasses.terminal.link}>
-                and more
+              <span
+                data-reveal="tail"
+                className="inline-block italic text-ink/55 underline decoration-ink/20 underline-offset-[0.18em] decoration-[0.04em] group-hover:text-ink group-hover:decoration-ink/60 transition-colors"
+              >
+                {STATEMENT_LABELS.more}
               </span>
             </span>
             <span className="inline-block overflow-hidden align-middle">
@@ -90,7 +86,10 @@ export default function Statement() {
           </button>
         </h2>
 
-        <p data-reveal="char" className={themeClasses.terminal.bodyText}>
+        <p
+          data-reveal="char"
+          className="relative z-[1] font-body text-sm md:text-base leading-relaxed mt-10 md:mt-12 max-w-2xl mx-auto text-ink/75"
+        >
           {STATEMENT_BODY}
         </p>
         </div>

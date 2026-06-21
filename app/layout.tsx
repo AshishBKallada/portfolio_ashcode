@@ -3,7 +3,7 @@ import { Inter, Instrument_Serif, Almarai } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import ThemeProvider from "@/components/ThemeProvider";
-import { themeClasses } from "@/lib/theme";
+import { SITE } from "@/lib/constants/site";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,14 +28,14 @@ const almarai = Almarai({
 });
 
 export const metadata: Metadata = {
-  title: "Ashish B Kallada — Full-stack engineer",
+  title: `${SITE.fullName} — ${SITE.role}`,
   description: "End-to-end web. Shipped from React to the database.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`dark ${inter.variable} ${instrumentSerif.variable} ${almarai.variable}`}>
-      <body className={themeClasses.body}>
+      <body className="m-0 p-0 font-body antialiased bg-paper text-ink transition-colors">
         <ThemeProvider>
           <SmoothScroll />
           {children}
