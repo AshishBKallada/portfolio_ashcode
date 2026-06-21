@@ -16,7 +16,7 @@ export default function ProjectRow({ project, isHovered, onEnter, onLeave }: Pro
         href={project.href}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
-        className="group relative flex items-baseline justify-between gap-4 md:gap-12 py-7 md:py-10 overflow-hidden"
+        className="group relative flex items-baseline justify-between gap-4 md:gap-12 pl-0 pr-4 md:pr-10 lg:pr-16 py-7 md:py-10 overflow-hidden"
       >
         <span
           aria-hidden
