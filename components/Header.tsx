@@ -120,7 +120,7 @@ export default function Header() {
         </span>
         <span className="flex items-baseline gap-1">
           <span className="font-headline text-base italic">{SITE.brand}</span>
-          <span className="font-body text-[9px] tracking-[0.15em] opacity-50">
+          <span className="hidden sm:inline font-body text-[9px] tracking-[0.15em] opacity-50">
             / {SITE.brandJp}
           </span>
         </span>

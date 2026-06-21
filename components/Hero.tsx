@@ -407,8 +407,9 @@ export default function Hero() {
 
       </div>
 
-      {/* Hex tag — sits above the marquee */}
-      <div className="hero-scroll-ui absolute bottom-16 left-6 md:bottom-20 md:left-12 z-[4] font-body text-[11px] tracking-[0.2em] opacity-70">
+      {/* Hex tag — hidden below sm so it doesn't collide with the centered
+          "scroll to explore" indicator on narrow phones. */}
+      <div className="hero-scroll-ui hidden sm:block absolute bottom-16 left-6 md:bottom-20 md:left-12 z-[4] font-body text-[11px] tracking-[0.2em] opacity-70">
         {HERO_COPY.hexTag}
       </div>
 

@@ -29,17 +29,18 @@ export default function Statement() {
         className="relative mx-auto max-w-6xl overflow-hidden rounded-[5px] md:rounded-[8px] border border-ink/15 bg-surface text-ink shadow-[0_24px_60px_-24px_rgba(0,0,0,0.12)] dark:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.72)]"
       >
 
-        {/* Mac terminal title bar */}
+        {/* Mac terminal title bar — title + spacer hide on mobile where they
+            collapse to an unreadable truncation. */}
         <div className="relative flex items-center justify-between gap-4 px-4 md:px-5 py-3 border-b border-ink/10 bg-ink/[0.04] dark:bg-ink/[0.06]">
           <div className="flex items-center gap-2">
             <span aria-hidden className="w-3 h-3 rounded-full opacity-85" style={{ backgroundColor: colors.macTraffic.close }} />
             <span aria-hidden className="w-3 h-3 rounded-full opacity-85" style={{ backgroundColor: colors.macTraffic.minimize }} />
             <span aria-hidden className="w-3 h-3 rounded-full opacity-85" style={{ backgroundColor: colors.macTraffic.maximize }} />
           </div>
-          <p className="font-body text-[10px] md:text-[11px] uppercase tracking-[0.3em] text-ink/45 tabular-nums truncate">
+          <p className="hidden sm:block font-body text-[10px] md:text-[11px] uppercase tracking-[0.3em] text-ink/45 tabular-nums truncate">
             {STATEMENT_LABELS.terminalTitle}
           </p>
-          <span aria-hidden className="w-[54px] shrink-0" />
+          <span aria-hidden className="hidden sm:block w-[54px] shrink-0" />
         </div>
 
         <div className="relative px-6 md:px-12 py-16 md:py-24 text-center">
