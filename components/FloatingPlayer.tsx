@@ -12,17 +12,18 @@ function useOverHero() {
   const [overHero, setOverHero] = useState(true);
 
   useEffect(() => {
-    const measure = () => {
-      const statement = document.getElementById("statement");
-      if (!statement) return;
-      setOverHero(statement.getBoundingClientRect().top > 72);
-    };
-
-    measure();
-    window.addEventListener("scroll", measure, { passive: true });
-    window.addEventListener("loader:done", measure, { once: true });
-
-    return () => window.removeEventListener("scroll", measure);
+    const statement = document.getElementById("statement");
+    if (!statement || typeof IntersectionObserver === "undefined") return;
+    // We're "over hero" while the statement section hasn't yet crossed the top
+    // 72px of the viewport. rootMargin shifts the IO trigger line up by that
+    // much, so the toggle fires at the same boundary the old scroll handler
+    // used — but only when it actually crosses, not on every scroll tick.
+    const io = new IntersectionObserver(
+      ([entry]) => setOverHero(!entry.isIntersecting),
+      { rootMargin: "-72px 0px 0px 0px", threshold: 0 }
+    );
+    io.observe(statement);
+    return () => io.disconnect();
   }, []);
 
   return overHero;
@@ -31,9 +32,6 @@ function useOverHero() {
 export default function FloatingPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
-  // Pulse rings around the button for the first few seconds after the loader
-  // releases, so users notice the button is interactive. Suppressed forever
-  // once the user has actually clicked play.
   const [attention, setAttention] = useState(false);
   const overHero = useOverHero();
 
@@ -59,8 +57,7 @@ export default function FloatingPlayer() {
       setAttention(true);
       stopTimer = window.setTimeout(() => setAttention(false), 3000);
     };
-    // Wait for the loader to finish so the rings aren't covered by the splash.
-    // Fall back to a short delay if the event was missed.
+    // Wait for the loader; fall back if the event is missed.
     window.addEventListener("loader:done", start, { once: true });
     const fallback = window.setTimeout(start, 6000);
     return () => {
@@ -73,7 +70,7 @@ export default function FloatingPlayer() {
   const toggle = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    setAttention(false);
+    if (attention) setAttention(false);
     if (audio.paused) {
       audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
     } else {
@@ -83,11 +80,7 @@ export default function FloatingPlayer() {
   };
 
   const label = playing ? PLAYER.pauseLabel : PLAYER.playLabel;
-  const toneClass = overHero
-    ? "text-black"
-    : "text-ink";
-  // Circle stays in brand accent (red) in both states — the white glyph reads against it.
-  const ringClass = "border border-white/25";
+  const toneClass = overHero ? "text-black" : "text-ink";
 
   return (
     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[90] w-28 h-28 md:w-36 md:h-36 flex items-center justify-center">
@@ -118,31 +111,22 @@ export default function FloatingPlayer() {
         </text>
       </svg>
 
-      {/* Attention pulse — three staggered rings ripple out from the button
-          for ~3s after the loader finishes so the user clocks its presence. */}
-      {attention && (
-        <span aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          {[0, 0.6, 1.2].map((delay) => (
-            <span
-              key={delay}
-              className="absolute w-16 h-16 md:w-20 md:h-20 rounded-full animate-attention-ring"
-              style={{
-                borderColor: colors.accent,
-                borderWidth: 2,
-                borderStyle: "solid",
-                animationDelay: `${delay}s`,
-              }}
-            />
-          ))}
-        </span>
-      )}
+      {attention &&
+        [0, 0.6, 1.2].map((delay) => (
+          <span
+            key={delay}
+            aria-hidden
+            className="pointer-events-none absolute w-16 h-16 md:w-20 md:h-20 rounded-full border-2 animate-attention-ring"
+            style={{ borderColor: colors.accent, animationDelay: `${delay}s` }}
+          />
+        ))}
 
       <button
         type="button"
         onClick={toggle}
-        aria-label={playing ? "Pause audio" : "Play audio"}
+        aria-label={playing ? PLAYER.pauseAria : PLAYER.playAria}
         aria-pressed={playing}
-        className={`group relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.35)] flex items-center justify-center transition-[transform,color,border-color,background-color] duration-500 hover:scale-105 active:scale-95 ${ringClass}`}
+        className="group relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-white/25 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.35)] flex items-center justify-center transition-[transform,color,border-color,background-color] duration-500 hover:scale-105 active:scale-95"
         style={{ backgroundColor: colors.accent }}
       >
         <span

@@ -3,4 +3,6 @@ export const PLAYER = {
   imageSrc: "/floating-mark.png",
   playLabel: "TAP TO PLAY · ",
   pauseLabel: "TAP TO PAUSE · ",
+  playAria: "Play audio",
+  pauseAria: "Pause audio",
 } as const;

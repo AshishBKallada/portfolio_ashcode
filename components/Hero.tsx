@@ -82,7 +82,6 @@ export default function Hero() {
 
         const tl = gsap.timeline();
 
-        // Hero text cascades in over the video
         tl.to(tags, { y: 0, opacity: 0.7, duration: 0.7, ease: "power2.out" }, 0)
           .to(
             words,
@@ -101,21 +100,17 @@ export default function Hero() {
             "-=0.35"
           );
 
-        // Signal the navbar to drop in once the main text has settled
+        // Hero->Header handshake — Header listens for this to drop in.
         tl.add(() => {
           window.dispatchEvent(new Event("hero:textDone"));
         }, 1.4);
 
-        // Marquee slides up into place to close the entrance
         tl.to(
           marquee,
           { yPercent: 0, opacity: 1, duration: 0.7, ease: "power3.out" },
           1.6
         );
 
-        // Headline gets two layered animations:
-        //   a) slide-up + fade-in (already running above)
-        //   b) scramble pass that lands AFTER the slide settles, so it reads
         const labels = HERO_COPY.headline;
         const hwEls = Array.from(words) as HTMLElement[];
         hwEls.forEach((el, i) => {
@@ -205,7 +200,6 @@ export default function Hero() {
   }, []);
 
   // Scroll-scrubbed video — currentTime tracks scroll progress through the hero.
-  // Respects reduced-motion by falling back to a static first frame.
   useEffect(() => {
     const video = heroVideoRef.current;
     const root = sectionRef.current;
@@ -227,7 +221,10 @@ export default function Hero() {
         scrub: 0.4,
         onUpdate: (self) => {
           const t = self.progress * duration;
-          if (Math.abs(video.currentTime - t) > 0.03) {
+          // Skip sub-half-frame seeks (24fps ⇒ frame = ~42ms) — the
+          // displayed frame wouldn't change anyway and the decoder still
+          // pays for each currentTime write.
+          if (Math.abs(video.currentTime - t) > 1 / 48) {
             video.currentTime = t;
           }
         },
@@ -330,7 +327,6 @@ export default function Hero() {
       className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper dark:bg-transparent text-black"
     >
       <div ref={visualsRef} className="absolute inset-0 will-change-[opacity,filter]">
-        {/* Firefly video — sole hero visual, scrubbed by scroll */}
         <video
           ref={heroVideoRef}
           src="/hero-firefly.mp4"
