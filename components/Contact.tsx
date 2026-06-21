@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { ArrowUp, ArrowUpRight, FileText, Github, Linkedin, Mail } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useMagnetic } from "@/lib/useMagnetic";
@@ -59,9 +59,23 @@ const MagneticEmailButton = forwardRef<HTMLAnchorElement, EmailButtonProps>(
 MagneticEmailButton.displayName = "MagneticEmailButton";
 
 export default function Contact() {
+  const sectionRef = useRef<HTMLElement>(null);
   const workRef = useMagnetic<HTMLAnchorElement>(0.22);
   const sayHiRef = useMagnetic<HTMLAnchorElement>(0.22);
   const backTopRef = useMagnetic<HTMLButtonElement>(0.3);
+  const [showBackTop, setShowBackTop] = useState(false);
+
+  // Show the floating back-to-top only when the footer enters the viewport.
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      ([entry]) => setShowBackTop(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    io.observe(section);
+    return () => io.disconnect();
+  }, []);
 
   const scrollTop = () => {
     if (typeof window === "undefined") return;
@@ -76,6 +90,7 @@ export default function Contact() {
 
   return (
     <section
+      ref={sectionRef}
       id="contact"
       className="relative z-10 w-full bg-paper text-ink border-t border-ink/10 overflow-hidden"
     >
@@ -130,27 +145,28 @@ export default function Contact() {
           })}
         </ul>
 
-        {/* Bottom strip — copyright + back to top */}
-        <div className="w-full mt-14 md:mt-20 pt-5 border-t border-ink/10 flex items-center justify-between font-body text-[10px] uppercase tracking-[0.28em] text-ink/55">
+        {/* Bottom strip — copyright only; back-to-top floats above the audio circle */}
+        <div className="w-full mt-14 md:mt-20 pt-5 border-t border-ink/10 flex items-center justify-center font-body text-[10px] uppercase tracking-[0.28em] text-ink/55">
           <span className="tabular-nums">
             © {SITE.copyrightYear} {SITE.brand}
           </span>
-          <button
-            ref={backTopRef}
-            type="button"
-            onClick={scrollTop}
-            className="group inline-flex items-center gap-2 hover:text-ink transition-colors will-change-transform"
-          >
-            {CONTACT_COPY.backToTop}
-            <span
-              aria-hidden
-              className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-current/40 transition-transform duration-300 group-hover:-translate-y-0.5"
-            >
-              <ArrowUp className="w-3 h-3" strokeWidth={1.4} />
-            </span>
-          </button>
         </div>
       </div>
+
+      {/* Floating back-to-top — icon-only, sits above the audio player.
+          Audio container: bottom-4 + h-28 (112px) mobile / bottom-6 + h-36 (144px) md.
+          Aligning right edges (both right-4 / right-6); offset bottom so it clears the circle. */}
+      <button
+        ref={backTopRef}
+        type="button"
+        onClick={scrollTop}
+        aria-label={CONTACT_COPY.backToTop}
+        className={`fixed z-[95] bottom-[8.5rem] right-4 md:bottom-[10.5rem] md:right-6 w-10 h-10 md:w-11 md:h-11 rounded-full border border-black/15 bg-white/85 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.25)] flex items-center justify-center text-black transition-[opacity,transform,background-color,color] duration-500 will-change-transform hover:bg-black hover:text-white hover:scale-105 active:scale-95 ${
+          showBackTop ? "opacity-100" : "opacity-0 pointer-events-none translate-y-2"
+        }`}
+      >
+        <ArrowUp className="w-4 h-4" strokeWidth={1.6} />
+      </button>
     </section>
   );
 }
