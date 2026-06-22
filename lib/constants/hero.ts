@@ -1,5 +1,7 @@
 import { SITE } from "./site";
 
+export const HERO_IMAGE = "/hero-gemini.png";
+
 export const HERO_COPY = {
   tag: `${SITE.role} / ${SITE.location}`,
   headline: ["Obsession", "beats", "talent."] as const,

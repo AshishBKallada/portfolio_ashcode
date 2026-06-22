@@ -1,13 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMagnetic } from "@/lib/useMagnetic";
 import { scrambleText } from "@/lib/scramble";
 import { colors } from "@/lib/theme/colors";
-import { HERO_COPY, HERO_MARQUEE } from "@/lib/constants/hero";
+import { HERO_COPY, HERO_IMAGE, HERO_MARQUEE } from "@/lib/constants/hero";
 import { SITE } from "@/lib/constants/site";
 
 if (typeof window !== "undefined") {
@@ -18,7 +19,7 @@ const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const heroImageRef = useRef<HTMLDivElement>(null);
   const visualsRef = useRef<HTMLDivElement>(null);
   const headlineMouseRef = useRef<HTMLDivElement>(null);
 
@@ -27,8 +28,6 @@ export default function Hero() {
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.22);
   const entranceRanRef = useRef(false);
 
-  // Probe device capabilities once — disable WebGL fluid on touch / reduced-motion,
-  // and drop dye resolution on small screens to keep mobile smooth.
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const coarse = window.matchMedia("(pointer: coarse)").matches;
@@ -39,7 +38,6 @@ export default function Hero() {
     });
   }, []);
 
-  // Pause heavy WebGL (SplashCursor) when Hero scrolls out of view
   useEffect(() => {
     const section = sectionRef.current;
     if (!section || typeof IntersectionObserver === "undefined") return;
@@ -51,7 +49,7 @@ export default function Hero() {
     return () => io.disconnect();
   }, []);
 
-  // Entrance + staggered text reveal
+  // Entrance + staggered text reveal (hero image leads the timeline)
   useEffect(() => {
     const ctx = gsap.context(() => {
       const root = sectionRef.current;
@@ -59,17 +57,17 @@ export default function Hero() {
 
       const startedAtTop = window.scrollY < 50;
       if (!startedAtTop) {
-        // Mid-scroll refresh: skip entrance, signal header immediately
         window.dispatchEvent(new Event("hero:textDone"));
         return;
       }
 
-      // Lock entrance state — held until loader finishes
+      const heroImage = root.querySelector(".hero-image-inner");
       const tags = root.querySelectorAll(".hero-tag");
       const words = root.querySelectorAll(".hw");
       const ctas = root.querySelectorAll(".hero-cta");
       const marquee = root.querySelectorAll(".hero-marquee");
 
+      if (heroImage) gsap.set(heroImage, { opacity: 0, scale: 1.08 });
       gsap.set(tags, { y: 18, opacity: 0 });
       gsap.set(words, { y: 90, opacity: 0 });
       gsap.set(ctas, { y: 22, opacity: 0 });
@@ -81,7 +79,15 @@ export default function Hero() {
 
         const tl = gsap.timeline();
 
-        tl.to(tags, { y: 0, opacity: 0.7, duration: 0.7, ease: "power2.out" }, 0)
+        if (heroImage) {
+          tl.to(
+            heroImage,
+            { opacity: 1, scale: 1, duration: 1.6, ease: "expo.out" },
+            0
+          );
+        }
+
+        tl.to(tags, { y: 0, opacity: 0.7, duration: 0.7, ease: "power2.out" }, 0.45)
           .to(
             words,
             {
@@ -99,7 +105,6 @@ export default function Hero() {
             "-=0.35"
           );
 
-        // Hero->Header handshake — Header listens for this to drop in.
         tl.add(() => {
           window.dispatchEvent(new Event("hero:textDone"));
         }, 1.4);
@@ -131,7 +136,6 @@ export default function Hero() {
         runEntrance();
       };
       window.addEventListener("loader:done", onLoaderDone, { once: true });
-      // Safety: if loader event is missed, still reveal after loader finishes
       const safety = window.setTimeout(onLoaderDone, 6000);
 
       return () => {
@@ -142,8 +146,6 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
-  // Cursor parallax — layers shift toward the cursor at different magnitudes
-  // to give the scene depth. Disabled on touch + reduced-motion.
   useEffect(() => {
     const section = sectionRef.current;
     if (!section || typeof window === "undefined") return;
@@ -152,7 +154,6 @@ export default function Hero() {
     const coarse = window.matchMedia("(pointer: coarse)").matches;
     if (reduced || coarse) return;
 
-    // Larger magnitude = appears closer to the viewer.
     const layers: { ref: React.RefObject<HTMLDivElement>; mx: number; my: number }[] = [
       { ref: headlineMouseRef, mx: 14, my: 8 },
     ];
@@ -174,7 +175,6 @@ export default function Hero() {
 
     const onMove = (e: MouseEvent) => {
       const rect = section.getBoundingClientRect();
-      // Normalize cursor to [-1, 1] relative to section center.
       const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
       setters.forEach((s) => {
@@ -198,51 +198,7 @@ export default function Hero() {
     };
   }, []);
 
-  // Scroll-scrubbed video — currentTime tracks scroll progress through the hero.
-  useEffect(() => {
-    const video = heroVideoRef.current;
-    const root = sectionRef.current;
-    if (!video || !root) return;
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-
-    let trigger: ScrollTrigger | null = null;
-
-    const setup = () => {
-      const duration = video.duration;
-      if (!duration || !Number.isFinite(duration)) return;
-
-      trigger = ScrollTrigger.create({
-        trigger: root,
-        start: "top top",
-        end: "+=100%",
-        scrub: 0.4,
-        onUpdate: (self) => {
-          const t = self.progress * duration;
-          // Skip sub-half-frame seeks (24fps ⇒ frame = ~42ms) — the
-          // displayed frame wouldn't change anyway and the decoder still
-          // pays for each currentTime write.
-          if (Math.abs(video.currentTime - t) > 1 / 48) {
-            video.currentTime = t;
-          }
-        },
-      });
-    };
-
-    if (video.readyState >= 1) {
-      setup();
-    } else {
-      video.addEventListener("loadedmetadata", setup, { once: true });
-    }
-
-    return () => {
-      trigger?.kill();
-      video.removeEventListener("loadedmetadata", setup);
-    };
-  }, []);
-
-  // Parallax on scroll — different layers move at different speeds for depth
+  // Parallax + fade on scroll
   useEffect(() => {
     const ctx = gsap.context(() => {
       const root = sectionRef.current;
@@ -255,6 +211,14 @@ export default function Hero() {
         scrub: 0.6,
       } as const;
 
+      if (heroImageRef.current) {
+        gsap.to(heroImageRef.current, {
+          y: -50,
+          ease: "none",
+          scrollTrigger: trigger,
+        });
+      }
+
       const headline = root.querySelector(".hero-headline");
       if (headline) {
         gsap.to(headline, {
@@ -264,10 +228,6 @@ export default function Hero() {
         });
       }
 
-      // Don't touch opacity/blur/scrim until the video has finished playing.
-      // "bottom top" fires once the hero's bottom passes the viewport top —
-      // i.e. the moment the scrub has reached the final frame — and runs
-      // through the spacer scroll until Statement reaches the viewport top.
       const fadeTrigger = {
         trigger: root,
         start: "bottom top",
@@ -315,21 +275,23 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper dark:bg-transparent text-black"
+      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper text-ink"
     >
       <div ref={visualsRef} className="absolute inset-0 will-change-[opacity,filter]">
-        <video
-          ref={heroVideoRef}
-          src="/hero-firefly.mp4"
-          muted
-          playsInline
-          preload="auto"
-          aria-hidden
-          className="absolute inset-0 w-full h-full object-cover object-center z-[1]"
-        />
+        <div
+          ref={heroImageRef}
+          className="hero-image-inner absolute inset-0 z-[1] will-change-transform"
+        >
+          <Image
+            src={HERO_IMAGE}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
 
-        {/* SplashCursor — only mount when Hero is in view, hardware supports it,
-            and the user hasn't asked for reduced motion. */}
         {inView && splashCfg?.enabled && (
           <SplashCursor
             RAINBOW_MODE={false}
@@ -342,7 +304,6 @@ export default function Hero() {
         )}
       </div>
 
-{/* Headline block — bottom-left. Colors inherit from section via currentColor */}
       <div
         ref={headlineMouseRef}
         className="hero-headline absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none will-change-transform"
@@ -361,13 +322,15 @@ export default function Hero() {
             ref={ctaRef}
             href={`mailto:${SITE.email}`}
             data-cursor="cta"
-            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-black overflow-hidden font-headline text-lg text-black will-change-transform"
+            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-ink overflow-hidden font-headline text-lg text-ink will-change-transform"
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-ink transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
             />
-            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-white">{HERO_COPY.ctaLabel}</span>
+            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-paper">
+              {HERO_COPY.ctaLabel}
+            </span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -378,7 +341,7 @@ export default function Hero() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-white"
+              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-paper"
             >
               <path d="M7 7h10v10" />
               <path d="M7 17 17 7" />
@@ -388,17 +351,13 @@ export default function Hero() {
             {HERO_COPY.availability}
           </span>
         </div>
-
       </div>
 
-      {/* Hex tag — hidden below sm so it doesn't collide with the centered
-          "scroll to explore" indicator on narrow phones. */}
       <div className="hero-scroll-ui hidden sm:block absolute bottom-16 left-6 md:bottom-20 md:left-12 z-[4] font-body text-[11px] tracking-[0.2em] opacity-70">
         {HERO_COPY.hexTag}
       </div>
 
-      {/* "Scroll to explore" — sits above the marquee */}
-      <div className="hero-scroll-ui absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-90 text-white">
+      <div className="hero-scroll-ui absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-90">
         <p className="font-body text-xs uppercase tracking-[0.25em]">{HERO_COPY.scroll}</p>
         <svg
           width="16"
@@ -416,9 +375,8 @@ export default function Hero() {
         </svg>
       </div>
 
-      {/* Marquee ticker — full width at the very bottom */}
       <div
-        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-white/75 text-black opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.2)] backdrop-blur-sm"
+        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-paper/75 text-ink opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.2)] backdrop-blur-sm"
         aria-hidden
       >
         <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
