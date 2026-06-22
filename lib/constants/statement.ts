@@ -1,16 +1,23 @@
-export type StatementSegment = { text: string; className?: string };
+import { SITE } from "./site";
 
-export const STATEMENT_SEGMENTS: StatementSegment[] = [
-  { text: "I am Ashish Kallada," },
-  { text: "a self-taught engineer.", className: "italic" },
-  { text: "I build with React, Node, and TypeScript — from the database up." },
-];
+export const INTRO_BADGES = [
+  { label: "FS", title: "Full-stack", className: "bg-teal-600 text-white" },
+  { label: "UI", title: "Interface design", className: "bg-surface text-ink border border-ink/15" },
+  { label: "TS", title: "TypeScript", className: "bg-surface text-ink border border-ink/15" },
+  { label: "IN", title: SITE.baseCity, className: "bg-amber-700/90 text-white" },
+] as const;
 
-export const STATEMENT_BODY =
-  "Over the last few years, I have shipped production apps with small teams and solo founders — building React frontends, Node and Express APIs, and the databases behind them. The work has spanned consumer products, internal dashboards, and real-time tools used every day.";
-
-export const STATEMENT_LABELS = {
-  eyebrow: "Full-stack engineering",
-  terminalTitle: "ashcode — about · 自己紹介 — zsh",
-  more: "and more",
+export const INTRO_COPY = {
+  metaSection: "(02)",
+  metaLabel: "About · 自己紹介",
+  lead:
+    `Hi! I'm ${SITE.fullName.split(" ")[0]}, a ${SITE.role.toLowerCase()}. I build production web apps — React and Next.js on the front, Node and Express behind the API, and the databases that hold it all together. From government platforms to health-tech and founder-led products.`,
+  body:
+    "I take projects from rough idea to shipped software — scoping with stakeholders, designing interfaces that stay out of the way, and writing code that teams can maintain after launch. Small teams, tight deadlines, real users.",
+  experience:
+    "Previously, I've shipped for the Kuppam Area Development Authority (Andhra Pradesh), built hospital ops at Curengo, and delivered brand and product sites for Verdura and Womarpools — experience across government scale, regulated health-tech, and fast-moving founder work.",
+  cta: "Let's talk",
+  skillsCta: "View stack",
+  image: "/intro-portrait.png",
+  imageAlt: "Ashish Kallada — portrait",
 } as const;

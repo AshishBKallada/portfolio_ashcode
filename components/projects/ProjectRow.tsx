@@ -25,14 +25,14 @@ export default function ProjectRow({ project, isHovered, onEnter, onLeave }: Pro
 
         <span className="relative z-[1] flex items-baseline gap-3 sm:gap-5 md:gap-9 min-w-0 flex-1">
           <span
-            className={`shrink-0 font-body text-[10px] tracking-[0.32em] tabular-nums italic transition-colors duration-500 ${
+            className={`shrink-0 font-body text-[10px] tracking-[0.32em] tabular-nums transition-colors duration-500 ${
               isHovered ? "text-paper/55" : "text-ink/40"
             }`}
           >
             {project.number}
           </span>
           <span
-            className={`min-w-0 truncate font-headline italic leading-[1.0] tracking-[-0.02em] text-[clamp(1.75rem,7vw,5rem)] md:whitespace-nowrap transition-[color,transform] duration-[600ms] ease-[cubic-bezier(0.65,0,0.35,1)] will-change-transform ${
+            className={`min-w-0 truncate font-main font-normal not-italic leading-[1.0] tracking-[0.02em] text-[clamp(1.15rem,4.25vw,2.5rem)] md:whitespace-nowrap transition-[color,transform] duration-[600ms] ease-[cubic-bezier(0.65,0,0.35,1)] will-change-transform ${
               isHovered
                 ? "text-paper translate-x-3 md:translate-x-6"
                 : "text-ink"

@@ -23,7 +23,7 @@ export default function Projects() {
 
       <div className="relative w-full max-w-[1600px] mx-auto">
         {/* Meta row */}
-        <div className="flex items-start justify-between gap-6 mb-12 md:mb-16 font-body text-[10px] uppercase tracking-[0.32em] text-ink/55">
+        <div className="flex items-start justify-between gap-6 mb-12 md:mb-16 meta-label">
           <p>
             <span className="opacity-60">{PROJECTS_COPY.metaSection}</span>
             <span className="mx-2 opacity-30">/</span>
@@ -35,7 +35,7 @@ export default function Projects() {
         </div>
 
         {/* Focal headline */}
-        <h2 className="font-headline italic leading-[0.82] tracking-[-0.04em] text-[clamp(3rem,12vw,10rem)] -ml-[0.04em]">
+        <h2 className="section-title -ml-[0.04em]">
           <span className="inline-block overflow-hidden align-baseline mr-[0.12em]">
             <span data-reveal="word" className="inline-block">{PROJECTS_COPY.headlineLeft}</span>
           </span>
@@ -54,7 +54,7 @@ export default function Projects() {
           </p>
           <div
             data-reveal="fade"
-            className="md:col-span-4 md:col-start-9 flex flex-col gap-2 self-end font-body text-[10px] uppercase tracking-[0.32em] text-ink/55 md:text-right"
+            className="md:col-span-4 md:col-start-9 flex flex-col gap-2 self-end meta-label md:text-right"
           >
             <p>{PROJECTS_COPY.hoverHint}</p>
             <p>{PROJECTS_COPY.openHint}</p>
@@ -75,7 +75,7 @@ export default function Projects() {
         </ul>
 
         {/* Coda */}
-        <div className="mt-10 md:mt-14 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 font-body text-[10px] uppercase tracking-[0.32em] text-ink/55">
+        <div className="mt-10 md:mt-14 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 meta-label">
           <p>
             <span className="opacity-60">/&nbsp;</span> {PROJECTS_COPY.archiveAside}
           </p>

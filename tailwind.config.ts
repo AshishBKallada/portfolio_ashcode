@@ -10,6 +10,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         body: ["var(--font-inter)", "system-ui", "sans-serif"],
+        main: ["var(--font-mitshuka)", "cursive", "system-ui", "sans-serif"],
         headline: ["var(--font-instrument-serif)", "Georgia", "serif"],
         almarai: ["var(--font-almarai)", "system-ui", "sans-serif"],
         serif: ['"Instrument Serif"', "var(--font-instrument-serif)", "serif"],

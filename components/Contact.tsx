@@ -33,24 +33,24 @@ const MagneticEmailButton = forwardRef<HTMLAnchorElement, EmailButtonProps>(
       ref={ref}
       href={href}
       data-cursor="cta"
-      className="group relative inline-flex items-center gap-3 md:gap-4 px-6 md:px-8 py-4 md:py-5 border border-ink overflow-hidden font-headline text-base md:text-xl will-change-transform"
+      className="group relative inline-flex items-center gap-3 md:gap-4 px-6 md:px-8 py-4 md:py-5 border border-ink overflow-hidden font-body will-change-transform"
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-white transition-transform duration-[500ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+        className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-ink transition-transform duration-[500ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
       />
       <Mail
-        className="relative z-[1] w-5 h-5 text-ink transition-colors duration-[450ms] group-hover:text-black"
+        className="relative z-[1] w-5 h-5 text-ink transition-colors duration-[450ms] group-hover:text-paper"
         strokeWidth={1.4}
       />
-      <span className="relative z-[1] flex flex-col items-start leading-tight text-ink transition-colors duration-[450ms] group-hover:text-black">
-        <span className="font-body not-italic text-[10px] uppercase tracking-[0.28em] opacity-70">
+      <span className="relative z-[1] flex flex-col items-start leading-tight text-ink transition-colors duration-[450ms] group-hover:text-paper">
+        <span className="text-[10px] uppercase tracking-[0.28em] opacity-70">
           {label} <span className="ml-1 opacity-70 tracking-[0.18em]">· {jp}</span>
         </span>
-        <span className="italic tracking-[-0.01em]">{value}</span>
+        <span className="text-sm md:text-base tracking-normal">{value}</span>
       </span>
       <ArrowUpRight
-        className="relative z-[1] shrink-0 w-4 h-4 md:w-5 md:h-5 text-ink transition-[transform,color] duration-[450ms] group-hover:rotate-45 group-hover:text-black"
+        className="relative z-[1] shrink-0 w-4 h-4 md:w-5 md:h-5 text-ink transition-[transform,color] duration-[450ms] group-hover:rotate-45 group-hover:text-paper"
         strokeWidth={1.4}
       />
     </a>
@@ -95,10 +95,22 @@ export default function Contact() {
       className="relative z-10 w-full bg-paper text-ink border-t border-ink/10 overflow-hidden"
     >
       <div className="relative mx-auto max-w-6xl px-6 md:px-12 pt-24 md:pt-32 pb-8 md:pb-10 flex flex-col items-center text-center">
+        <div className="meta-label mb-10 md:mb-12 w-full flex items-start justify-between gap-6">
+          <p>
+            <span className="opacity-60">{CONTACT_COPY.metaSection}</span>
+            <span className="mx-2 opacity-30">/</span>
+            {CONTACT_COPY.metaLabel}
+          </p>
+          <p className="text-right">{CONTACT_COPY.availability}</p>
+        </div>
+
         {/* Focal headline */}
-        <h2 className="font-headline italic tracking-[-0.04em] leading-[0.82] text-[clamp(3.25rem,13vw,11rem)]">
+        <h2 className="section-title">
           {CONTACT_COPY.headline}
         </h2>
+        <p className="mt-3 font-body text-[11px] md:text-xs tracking-[0.28em] text-ink/50">
+          {CONTACT_COPY.subtitle}
+        </p>
 
         {/* Two email buttons — magnetic + sweep-fill on hover */}
         <div className="mt-10 md:mt-14 flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
@@ -115,7 +127,7 @@ export default function Contact() {
         </div>
 
         {/* Socials — small icon + label row, hover reveals accent underline */}
-        <ul className="mt-12 md:mt-16 flex items-center gap-6 md:gap-10 font-body text-[11px] uppercase tracking-[0.28em] text-ink/60">
+        <ul className="mt-12 md:mt-16 flex items-center gap-6 md:gap-10 meta-label text-ink/60">
           {SOCIAL_LINKS.map((link, i) => {
             const { label, href } = link;
             const Icon = SOCIAL_ICON[label];
@@ -147,7 +159,7 @@ export default function Contact() {
         </ul>
 
         {/* Bottom strip — copyright only; back-to-top floats above the audio circle */}
-        <div className="w-full mt-14 md:mt-20 pt-5 border-t border-ink/10 flex items-center justify-center font-body text-[10px] uppercase tracking-[0.28em] text-ink/55">
+        <div className="w-full mt-14 md:mt-20 pt-5 border-t border-ink/10 flex items-center justify-center meta-label">
           <span className="tabular-nums">
             © {SITE.copyrightYear} {SITE.brand}
           </span>
@@ -162,7 +174,7 @@ export default function Contact() {
         type="button"
         onClick={scrollTop}
         aria-label={CONTACT_COPY.backToTop}
-        className={`fixed z-[95] bottom-[8.5rem] right-4 md:bottom-[10.5rem] md:right-6 w-10 h-10 md:w-11 md:h-11 rounded-full border border-black/15 bg-white/85 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.25)] flex items-center justify-center text-black transition-[opacity,transform,background-color,color] duration-500 will-change-transform hover:bg-black hover:text-white hover:scale-105 active:scale-95 ${
+        className={`fixed z-[95] bottom-[8.5rem] right-4 md:bottom-[10.5rem] md:right-6 w-10 h-10 md:w-11 md:h-11 rounded-full border border-ink/15 bg-paper/85 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.25)] flex items-center justify-center text-ink transition-[opacity,transform,background-color,color] duration-500 will-change-transform hover:bg-ink hover:text-paper hover:scale-105 active:scale-95 ${
           showBackTop ? "opacity-100" : "opacity-0 pointer-events-none translate-y-2"
         }`}
       >

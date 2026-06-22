@@ -91,10 +91,10 @@ export default function SkillsModal({ open, onClose }: { open: boolean; onClose:
         {/* Header */}
         <header className="flex items-start justify-between gap-6 px-6 md:px-12 pt-10 md:pt-14 pb-6 md:pb-8">
           <div>
-            <p className="font-body text-[10px] uppercase tracking-[0.32em] text-ink/50">
+            <p className="meta-label text-ink/50">
               {SKILLS_COPY.eyebrow}
             </p>
-            <h3 className="font-headline italic tracking-[-0.025em] leading-[0.92] text-[clamp(2.5rem,7vw,5.5rem)] mt-3">
+            <h3 className="section-title-sm mt-3">
               {SKILLS_COPY.title[0]} <span className="text-ink/60">{SKILLS_COPY.title[1]}</span>
               <br />
               {SKILLS_COPY.title[2]}
@@ -124,7 +124,7 @@ export default function SkillsModal({ open, onClose }: { open: boolean; onClose:
                 <span className="font-body text-[10px] tracking-[0.3em] text-ink/40 tabular-nums w-6">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span className="font-headline italic text-2xl md:text-3xl tracking-[-0.01em] leading-none">
+                <span className="font-body text-sm md:text-base font-medium tracking-[0.04em] leading-none">
                   {row.category}
                 </span>
                 <span className="font-body text-[10px] tracking-[0.2em] text-ink/35 hidden md:inline">
@@ -139,7 +139,7 @@ export default function SkillsModal({ open, onClose }: { open: boolean; onClose:
         </ul>
 
         {/* Footer */}
-        <footer className="px-6 md:px-12 py-4 border-t border-ink/10 flex items-center justify-between font-body text-[10px] uppercase tracking-[0.3em] text-ink/40">
+        <footer className="px-6 md:px-12 py-4 border-t border-ink/10 flex items-center justify-between meta-label text-ink/40">
           <p>{SKILLS_COPY.closeHint}</p>
           <p>
             {SKILLS.length} {SKILLS_COPY.footerSuffix}

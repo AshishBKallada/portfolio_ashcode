@@ -53,3 +53,24 @@ html.dark ::selection {
 html.custom-cursor, html.custom-cursor * {
   cursor: none !important;
 }
+
+/* Mitshuka — brush script; keep browser from faking bold/italic */
+.font-main {
+  font-synthesis: none;
+  font-feature-settings: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@layer components {
+  .section-title {
+    @apply font-main font-normal not-italic tracking-[0.02em] leading-[0.92] text-[clamp(1.85rem,7vw,5.5rem)];
+  }
+
+  .section-title-sm {
+    @apply font-main font-normal not-italic tracking-[0.02em] leading-[0.92] text-[clamp(1.65rem,5.5vw,4rem)];
+  }
+
+  .meta-label {
+    @apply font-body text-[10px] uppercase tracking-[0.32em] text-ink/55;
+  }
+}
