@@ -17,7 +17,7 @@ export default function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className="relative isolate z-10 w-full bg-transparent text-ink px-6 md:px-12 lg:px-20 py-24 md:py-36 overflow-hidden"
+      className="relative isolate z-10 w-full bg-paper text-ink px-6 md:px-12 lg:px-20 py-24 md:py-36 overflow-hidden"
     >
       <CursorPreview projects={PROJECTS} activeIdx={previewIdx} />
 

@@ -20,7 +20,6 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const visualsRef = useRef<HTMLDivElement>(null);
-  const scrimRef = useRef<HTMLDivElement>(null);
   const headlineMouseRef = useRef<HTMLDivElement>(null);
 
   const [inView, setInView] = useState(true);
@@ -278,16 +277,8 @@ export default function Hero() {
 
       if (visualsRef.current) {
         gsap.to(visualsRef.current, {
-          opacity: 0.28,
-          filter: "blur(14px)",
-          ease: "none",
-          scrollTrigger: fadeTrigger,
-        });
-      }
-
-      if (scrimRef.current) {
-        gsap.to(scrimRef.current, {
-          opacity: 0.82,
+          opacity: 0.18,
+          filter: "blur(18px)",
           ease: "none",
           scrollTrigger: fadeTrigger,
         });
@@ -350,13 +341,6 @@ export default function Hero() {
           />
         )}
       </div>
-
-      {/* Scrim — lifts as you scroll so content above stays readable */}
-      <div
-        ref={scrimRef}
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-[2] bg-paper opacity-0"
-      />
 
 {/* Headline block — bottom-left. Colors inherit from section via currentColor */}
       <div

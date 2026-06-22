@@ -15,11 +15,13 @@ export default function Page() {
       <Header />
       <main className="relative z-0 m-0 p-0">
         <Hero />
-        {/* One viewport of scroll for the hero video to scrub before Statement enters. */}
+        {/* Spacer stays transparent so the sticky hero blur/fade shows through on scroll */}
         <div aria-hidden className="h-screen w-full pointer-events-none" />
         <Statement />
-        <Projects />
-        <Contact />
+        <div className="bg-paper">
+          <Projects />
+          <Contact />
+        </div>
       </main>
 
       <FloatingPlayer />
