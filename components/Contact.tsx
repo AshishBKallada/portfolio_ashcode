@@ -116,15 +116,16 @@ export default function Contact() {
 
         {/* Socials — small icon + label row, hover reveals accent underline */}
         <ul className="mt-12 md:mt-16 flex items-center gap-6 md:gap-10 font-body text-[11px] uppercase tracking-[0.28em] text-ink/60">
-          {SOCIAL_LINKS.map(({ label, href }, i) => {
+          {SOCIAL_LINKS.map((link, i) => {
+            const { label, href } = link;
             const Icon = SOCIAL_ICON[label];
-            const external = href.startsWith("http");
+            const openInNewTab = ("newTab" in link && link.newTab) || href.startsWith("http");
             return (
               <li key={label} className="flex items-center gap-6 md:gap-10">
                 <a
                   href={href}
-                  target={external ? "_blank" : undefined}
-                  rel={external ? "noopener noreferrer" : undefined}
+                  target={openInNewTab ? "_blank" : undefined}
+                  rel={openInNewTab ? "noopener noreferrer" : undefined}
                   className="group inline-flex items-center gap-2 hover:text-ink transition-colors duration-300"
                 >
                   {Icon && <Icon className="w-4 h-4" strokeWidth={1.6} />}

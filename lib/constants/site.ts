@@ -34,6 +34,7 @@ export const SOCIAL_LINKS = [
     label: "Resume",
     handle: "PDF · 02 pages",
     href: SITE.resume,
+    newTab: true,
   },
 ] as const;
 
