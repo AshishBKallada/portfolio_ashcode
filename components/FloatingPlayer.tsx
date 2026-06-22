@@ -8,32 +8,10 @@ const AUDIO_SRC = PLAYER.audioSrc;
 // "歌" — uta, song. Sits in the white circle in place of the artwork.
 const GLYPH = "歌";
 
-function useOverHero() {
-  const [overHero, setOverHero] = useState(true);
-
-  useEffect(() => {
-    const statement = document.getElementById("statement");
-    if (!statement || typeof IntersectionObserver === "undefined") return;
-    // We're "over hero" while the statement section hasn't yet crossed the top
-    // 72px of the viewport. rootMargin shifts the IO trigger line up by that
-    // much, so the toggle fires at the same boundary the old scroll handler
-    // used — but only when it actually crosses, not on every scroll tick.
-    const io = new IntersectionObserver(
-      ([entry]) => setOverHero(!entry.isIntersecting),
-      { rootMargin: "-72px 0px 0px 0px", threshold: 0 }
-    );
-    io.observe(statement);
-    return () => io.disconnect();
-  }, []);
-
-  return overHero;
-}
-
 export default function FloatingPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [attention, setAttention] = useState(false);
-  const overHero = useOverHero();
 
   useEffect(() => {
     const audio = new Audio(AUDIO_SRC);
@@ -80,7 +58,7 @@ export default function FloatingPlayer() {
   };
 
   const label = playing ? PLAYER.pauseLabel : PLAYER.playLabel;
-  const toneClass = overHero ? "text-black" : "text-ink";
+  const toneClass = "text-ink transition-colors duration-500";
 
   return (
     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[90] w-28 h-28 md:w-36 md:h-36 flex items-center justify-center">

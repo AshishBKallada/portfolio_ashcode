@@ -24,6 +24,7 @@ interface SplashCursorProps {
   TRANSPARENT?: boolean;
   RAINBOW_MODE?: boolean;
   COLOR?: string;
+  COLOR_STRENGTH?: number;
 }
 
 interface Pointer {
@@ -70,7 +71,8 @@ export default function SplashCursor({
   BACK_COLOR = { r: 0.5, g: 0, b: 0 },
   TRANSPARENT = true,
   RAINBOW_MODE = true,
-  COLOR = '#ff0000'
+  COLOR = '#ff0000',
+  COLOR_STRENGTH = 0.15
 }: SplashCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -97,7 +99,8 @@ export default function SplashCursor({
       BACK_COLOR,
       TRANSPARENT,
       RAINBOW_MODE,
-      COLOR
+      COLOR,
+      COLOR_STRENGTH
     };
 
     const { gl, ext } = getWebGLContext(canvas);
@@ -1141,7 +1144,14 @@ export default function SplashCursor({
       const r = parseInt(val.slice(0, 2), 16) / 255;
       const g = parseInt(val.slice(2, 4), 16) / 255;
       const b = parseInt(val.slice(4, 6), 16) / 255;
-      return { r: r * 0.15, g: g * 0.15, b: b * 0.15 };
+      const strength = config.COLOR_STRENGTH ?? 0.15;
+
+      // Pure black hex → 0 dye (invisible). Use dark ink for light backgrounds.
+      const luminance = r * 0.299 + g * 0.587 + b * 0.114;
+      if (luminance < 0.08) {
+        return { r: strength, g: strength, b: strength };
+      }
+      return { r: r * strength, g: g * strength, b: b * strength };
     }
 
     function generateColor(): ColorRGB {
@@ -1297,7 +1307,8 @@ export default function SplashCursor({
     BACK_COLOR,
     TRANSPARENT,
     RAINBOW_MODE,
-    COLOR
+    COLOR,
+    COLOR_STRENGTH
   ]);
 
   return (

@@ -88,6 +88,4 @@ export const PROJECTS_COPY = {
     "A few of the ones I'm proud of. I didn't build these alone — but on each one I played a crucial role and took the risky calls that kept the requirements landing on time. The kind of bets you only make when the deadline is real.",
   hoverHint: "Hover · cursor reveals preview",
   openHint: "↗ Open for the case study",
-  archiveAside: "More in the case-study archive · drop a line for the rest",
-  archiveCta: "Request full archive",
 } as const;

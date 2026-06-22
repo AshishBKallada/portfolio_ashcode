@@ -5,7 +5,6 @@ import { useScrollReveal } from "@/lib/useScrollReveal";
 import CursorPreview from "./projects/CursorPreview";
 import ProjectRow from "./projects/ProjectRow";
 import { PROJECTS, PROJECTS_COPY } from "@/lib/constants/projects";
-import { SITE } from "@/lib/constants/site";
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -73,37 +72,6 @@ export default function Projects() {
             />
           ))}
         </ul>
-
-        {/* Coda */}
-        <div className="mt-10 md:mt-14 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 meta-label">
-          <p>
-            <span className="opacity-60">/&nbsp;</span> {PROJECTS_COPY.archiveAside}
-          </p>
-          <a
-            href={`mailto:${SITE.email}`}
-            className="group inline-flex items-center gap-2 hover:text-ink transition-colors"
-          >
-            {PROJECTS_COPY.archiveCta}
-            <span
-              aria-hidden
-              className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-current/40 transition-transform duration-300 group-hover:rotate-45"
-            >
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M7 7h10v10" />
-                <path d="M7 17 17 7" />
-              </svg>
-            </span>
-          </a>
-        </div>
       </div>
     </section>
   );

@@ -2,14 +2,14 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMagnetic } from "@/lib/useMagnetic";
 import { scrambleText } from "@/lib/scramble";
 import { colors } from "@/lib/theme/colors";
-import { HERO_COPY, HERO_IMAGE, HERO_MARQUEE } from "@/lib/constants/hero";
-import { SITE } from "@/lib/constants/site";
+import { HERO_COPY, HERO_IMAGE } from "@/lib/constants/hero";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -17,16 +17,36 @@ if (typeof window !== "undefined") {
 
 const SplashCursor = dynamic(() => import("./SplashCursor"), { ssr: false });
 
+type LenisLike = { scrollTo: (target: number | string | HTMLElement) => void };
+
+function smoothScrollTo(target: string) {
+  const el = document.getElementById(target);
+  if (!el) return;
+  const lenis = (typeof window !== "undefined"
+    ? (window as unknown as { __lenis?: LenisLike }).__lenis
+    : undefined);
+  if (lenis) lenis.scrollTo(el);
+  else el.scrollIntoView({ behavior: "smooth" });
+}
+
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const heroImageRef = useRef<HTMLDivElement>(null);
+  const heroImageScrollRef = useRef<HTMLDivElement>(null);
+  const heroImageMouseRef = useRef<HTMLDivElement>(null);
   const visualsRef = useRef<HTMLDivElement>(null);
-  const headlineMouseRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useMagnetic<HTMLAnchorElement>(0.18);
+  const entranceRanRef = useRef(false);
 
   const [inView, setInView] = useState(true);
   const [splashCfg, setSplashCfg] = useState<{ enabled: boolean; dye: number } | null>(null);
-  const ctaRef = useMagnetic<HTMLAnchorElement>(0.22);
-  const entranceRanRef = useRef(false);
+  const { resolvedTheme } = useTheme();
+  const [themeMounted, setThemeMounted] = useState(false);
+
+  useEffect(() => setThemeMounted(true), []);
+
+  const isDarkTheme = themeMounted && resolvedTheme === "dark";
+  const splashColor = isDarkTheme ? colors.accent : "#000000";
+  const splashStrength = isDarkTheme ? 0.15 : 0.42;
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -49,7 +69,6 @@ export default function Hero() {
     return () => io.disconnect();
   }, []);
 
-  // Entrance + staggered text reveal (hero image leads the timeline)
   useEffect(() => {
     const ctx = gsap.context(() => {
       const root = sectionRef.current;
@@ -62,16 +81,12 @@ export default function Hero() {
       }
 
       const heroImage = root.querySelector(".hero-image-inner");
-      const tags = root.querySelectorAll(".hero-tag");
-      const words = root.querySelectorAll(".hw");
-      const ctas = root.querySelectorAll(".hero-cta");
-      const marquee = root.querySelectorAll(".hero-marquee");
+      const lines = root.querySelectorAll(".hero-line");
+      const ui = root.querySelectorAll(".hero-ui");
 
-      if (heroImage) gsap.set(heroImage, { opacity: 0, scale: 1.08 });
-      gsap.set(tags, { y: 18, opacity: 0 });
-      gsap.set(words, { y: 90, opacity: 0 });
-      gsap.set(ctas, { y: 22, opacity: 0 });
-      gsap.set(marquee, { yPercent: 100, opacity: 0 });
+      if (heroImage) gsap.set(heroImage, { opacity: 0, scale: 1.06 });
+      gsap.set(lines, { y: 80, opacity: 0 });
+      gsap.set(ui, { y: 24, opacity: 0 });
 
       const runEntrance = () => {
         if (entranceRanRef.current) return;
@@ -80,53 +95,34 @@ export default function Hero() {
         const tl = gsap.timeline();
 
         if (heroImage) {
-          tl.to(
-            heroImage,
-            { opacity: 1, scale: 1, duration: 1.6, ease: "expo.out" },
-            0
-          );
+          tl.to(heroImage, { opacity: 1, scale: 1, duration: 1.5, ease: "expo.out" }, 0);
         }
 
-        tl.to(tags, { y: 0, opacity: 0.7, duration: 0.7, ease: "power2.out" }, 0.45)
-          .to(
-            words,
-            {
-              y: 0,
-              opacity: 1,
-              duration: 1.0,
-              stagger: 0.08,
-              ease: "power4.out",
-            },
-            "-=0.3"
-          )
-          .to(
-            ctas,
-            { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
-            "-=0.35"
-          );
+        tl.to(lines, {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          stagger: 0.1,
+          ease: "power4.out",
+        }, 0.35)
+          .to(ui, { y: 0, opacity: 1, duration: 0.65, stagger: 0.08, ease: "power3.out" }, "-=0.45");
 
         tl.add(() => {
           window.dispatchEvent(new Event("hero:textDone"));
-        }, 1.4);
-
-        tl.to(
-          marquee,
-          { yPercent: 0, opacity: 1, duration: 0.7, ease: "power3.out" },
-          1.6
-        );
+        }, 1.1);
 
         const labels = HERO_COPY.headline;
-        const hwEls = Array.from(words) as HTMLElement[];
-        hwEls.forEach((el, i) => {
+        const lineEls = Array.from(lines) as HTMLElement[];
+        lineEls.forEach((el, i) => {
           window.setTimeout(
             () =>
               scrambleText(el, labels[i] ?? el.textContent ?? "", {
-                duration: 850,
+                duration: 800,
               }),
-            1900 + i * 130
+            1500 + i * 140
           );
           el.addEventListener("mouseenter", () => {
-            scrambleText(el, labels[i] ?? el.textContent ?? "", { duration: 480 });
+            scrambleText(el, labels[i] ?? el.textContent ?? "", { duration: 420 });
           });
         });
       };
@@ -154,8 +150,8 @@ export default function Hero() {
     const coarse = window.matchMedia("(pointer: coarse)").matches;
     if (reduced || coarse) return;
 
-    const layers: { ref: React.RefObject<HTMLDivElement>; mx: number; my: number }[] = [
-      { ref: headlineMouseRef, mx: 14, my: 8 },
+    const layers = [
+      { ref: heroImageMouseRef, mx: 28, my: 18 },
     ];
 
     const setters = layers
@@ -198,33 +194,23 @@ export default function Hero() {
     };
   }, []);
 
-  // Parallax + fade on scroll
   useEffect(() => {
     const ctx = gsap.context(() => {
       const root = sectionRef.current;
       if (!root) return;
 
-      const trigger = {
+      const scrollTrigger = {
         trigger: root,
         start: "top top",
         end: "+=100%",
         scrub: 0.6,
       } as const;
 
-      if (heroImageRef.current) {
-        gsap.to(heroImageRef.current, {
-          y: -50,
+      if (heroImageScrollRef.current) {
+        gsap.to(heroImageScrollRef.current, {
+          y: -40,
           ease: "none",
-          scrollTrigger: trigger,
-        });
-      }
-
-      const headline = root.querySelector(".hero-headline");
-      if (headline) {
-        gsap.to(headline, {
-          y: 90,
-          ease: "none",
-          scrollTrigger: trigger,
+          scrollTrigger,
         });
       }
 
@@ -236,36 +222,34 @@ export default function Hero() {
       } as const;
 
       if (visualsRef.current) {
-        gsap.to(visualsRef.current, {
-          opacity: 0.18,
-          filter: "blur(18px)",
-          ease: "none",
-          scrollTrigger: fadeTrigger,
-        });
+        gsap.fromTo(
+          visualsRef.current,
+          { opacity: 1, filter: "blur(0px)" },
+          {
+            opacity: 0.15,
+            filter: "blur(16px)",
+            ease: "none",
+            scrollTrigger: fadeTrigger,
+          }
+        );
       }
 
-      const marquee = root.querySelector(".hero-marquee");
-      if (headline) {
-        gsap.to(headline, {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: fadeTrigger,
+      const resetHeroContent = () => {
+        gsap.set(root.querySelectorAll(".hero-headline, .hero-ui, .hero-line"), {
+          opacity: 1,
+          y: 0,
         });
-      }
-      if (marquee) {
-        gsap.to(marquee, {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: fadeTrigger,
-        });
-      }
+        if (visualsRef.current) {
+          gsap.set(visualsRef.current, { opacity: 1, filter: "blur(0px)" });
+        }
+      };
 
-      root.querySelectorAll(".hero-scroll-ui").forEach((el) => {
-        gsap.to(el, {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: fadeTrigger,
-        });
+      ScrollTrigger.create({
+        trigger: root,
+        start: "top top",
+        end: "bottom top",
+        onEnterBack: resetHeroContent,
+        onLeaveBack: resetHeroContent,
       });
     }, sectionRef);
     return () => ctx.revert();
@@ -275,27 +259,49 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper text-ink"
+      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper text-ink transition-colors duration-500"
     >
-      <div ref={visualsRef} className="absolute inset-0 will-change-[opacity,filter]">
+      {/* Block display title — behind figure */}
+      <div className="hero-headline pointer-events-none absolute inset-0 z-[1] flex items-center px-5 md:px-10 lg:px-12">
+        <h1 className="font-main font-normal not-italic leading-[0.92] tracking-[0.03em] text-[clamp(2.75rem,11vw,8.5rem)] select-none">
+          {HERO_COPY.headline.map((line) => (
+            <span
+              key={line}
+              className="hero-line block cursor-pointer will-change-transform"
+            >
+              {line}
+            </span>
+          ))}
+        </h1>
+      </div>
+
+      {/* Center figure */}
+      <div ref={visualsRef} className="absolute inset-0 z-[2] will-change-[opacity,filter]">
         <div
-          ref={heroImageRef}
-          className="hero-image-inner absolute inset-0 z-[1] will-change-transform"
+          ref={heroImageScrollRef}
+          className="absolute left-1/2 top-[46%] z-[1] h-[min(72vh,720px)] w-[min(78vw,520px)] -translate-x-1/2 -translate-y-1/2 will-change-transform"
         >
-          <Image
-            src={HERO_IMAGE}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
+          <div
+            ref={heroImageMouseRef}
+            className="hero-image-inner relative h-full w-full will-change-transform"
+          >
+            <Image
+              src={HERO_IMAGE}
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 1024px) 78vw, 520px"
+              className="object-contain object-bottom"
+            />
+          </div>
         </div>
 
-        {inView && splashCfg?.enabled && (
+        {inView && splashCfg?.enabled && themeMounted && (
           <SplashCursor
+            key={`${splashColor}-${splashStrength}`}
             RAINBOW_MODE={false}
-            COLOR={colors.accent}
+            COLOR={splashColor}
+            COLOR_STRENGTH={splashStrength}
             SIM_RESOLUTION={48}
             DYE_RESOLUTION={splashCfg.dye}
             PRESSURE_ITERATIONS={3}
@@ -304,93 +310,39 @@ export default function Hero() {
         )}
       </div>
 
-      <div
-        ref={headlineMouseRef}
-        className="hero-headline absolute left-0 right-0 bottom-24 md:bottom-28 z-[3] px-6 md:px-12 max-w-2xl md:max-w-3xl pointer-events-none will-change-transform"
-      >
-        <p className="hero-tag font-body text-xs uppercase tracking-[0.3em] mb-4 opacity-0">
-          {HERO_COPY.tag}
+      {/* Bottom-left note */}
+      <div className="hero-ui absolute bottom-6 md:bottom-8 left-4 md:left-6 lg:left-10 z-[4] max-w-[220px] md:max-w-xs">
+        <p className="font-headline text-[11px] md:text-xs leading-[1.75] text-ink/55">
+          {HERO_COPY.note}
         </p>
-        <h1 className="font-headline text-[14vw] md:text-[9vw] lg:text-[7.5vw] leading-[0.85] tracking-[-0.02em]">
-          <span className="hw inline-block mr-[0.18em] cursor-pointer opacity-0">{HERO_COPY.headline[0]}</span>
-          <span className="hw inline-block mr-[0.18em] italic cursor-pointer opacity-0">{HERO_COPY.headline[1]}</span>
-          <br />
-          <span className="hw inline-block cursor-pointer opacity-0">{HERO_COPY.headline[2]}</span>
-        </h1>
-        <div className="hero-cta mt-8 flex flex-wrap gap-4 items-center opacity-0">
-          <a
-            ref={ctaRef}
-            href={`mailto:${SITE.email}`}
-            data-cursor="cta"
-            className="group pointer-events-auto relative inline-flex items-center gap-2 px-6 py-3 border border-ink overflow-hidden font-headline text-lg text-ink will-change-transform"
-          >
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-ink transition-transform duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
-            />
-            <span className="relative z-[1] transition-colors duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:text-paper">
-              {HERO_COPY.ctaLabel}
-            </span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="relative z-[1] transition-[transform,color] duration-[450ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 group-hover:text-paper"
-            >
-              <path d="M7 7h10v10" />
-              <path d="M7 17 17 7" />
-            </svg>
-          </a>
-          <span className="font-body text-xs uppercase tracking-[0.2em] opacity-70">
-            {HERO_COPY.availability}
-          </span>
-        </div>
+        <span aria-hidden className="mt-5 block h-px w-14 bg-ink/30" />
       </div>
 
-      <div className="hero-scroll-ui hidden sm:block absolute bottom-16 left-6 md:bottom-20 md:left-12 z-[4] font-body text-[11px] tracking-[0.2em] opacity-70">
-        {HERO_COPY.hexTag}
-      </div>
-
-      <div className="hero-scroll-ui absolute bottom-16 left-1/2 -translate-x-1/2 z-[4] flex items-center gap-2 pointer-events-none opacity-90">
-        <p className="font-body text-xs uppercase tracking-[0.25em]">{HERO_COPY.scroll}</p>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="shrink-0 animate-bounce"
-          aria-hidden
+      {/* Center CTA */}
+      <div className="hero-ui absolute bottom-12 md:bottom-14 left-1/2 z-[5] -translate-x-1/2">
+        <a
+          ref={ctaRef}
+          href="#contact"
+          data-cursor="cta"
+          onClick={(e) => {
+            e.preventDefault();
+            smoothScrollTo("contact");
+          }}
+          className="group pointer-events-auto inline-flex items-center gap-3 bg-ink px-7 md:px-9 py-3.5 md:py-4 font-body text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-paper will-change-transform transition-[transform,background-color,color] duration-300 hover:scale-[1.02] hover:bg-ink/90 active:scale-[0.98]"
         >
-          <path d="m6 9 6 6 6-6" />
-        </svg>
+          {HERO_COPY.ctaLabel}
+          <span aria-hidden className="text-base leading-none transition-transform duration-300 group-hover:translate-x-0.5">
+            →
+          </span>
+        </a>
       </div>
 
-      <div
-        className="hero-marquee absolute bottom-0 left-0 right-0 z-[4] overflow-hidden py-2.5 bg-paper/75 text-ink opacity-0 will-change-transform shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.2)] backdrop-blur-sm"
-        aria-hidden
-      >
-        <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
-          {Array.from({ length: 2 }).map((_, copy) => (
-            <div key={copy} className="flex shrink-0 items-center font-body text-[10px] uppercase tracking-[0.32em]">
-              {HERO_MARQUEE.map((s, i) => (
-                <span key={`${copy}-${i}`} className="flex items-center">
-                  <span className="px-8">{s}</span>
-                  <span className="opacity-70">✦</span>
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
+      {/* Scroll indicator */}
+      <div className="hero-ui absolute bottom-8 md:bottom-10 left-1/2 z-[4] flex -translate-x-1/2 flex-col items-center gap-3 pointer-events-none text-ink/60">
+        <p className="font-headline text-[10px] md:text-[11px] uppercase tracking-[0.38em] leading-none">
+          {HERO_COPY.scroll}
+        </p>
+        <span aria-hidden className="block h-10 md:h-14 w-px bg-current opacity-60" />
       </div>
     </section>
   );

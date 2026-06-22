@@ -1,7 +1,6 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useActiveSection } from "@/lib/useActiveSection";
@@ -30,37 +29,12 @@ function smoothScrollTo(target: HTMLElement | number) {
   }
 }
 
-function useOverHero() {
-  const [overHero, setOverHero] = useState(true);
-  useEffect(() => {
-    const measure = () => {
-      const statement = document.getElementById("statement");
-      if (!statement) return;
-      setOverHero(statement.getBoundingClientRect().top > 72);
-    };
-    measure();
-    window.addEventListener("scroll", measure, { passive: true });
-    window.addEventListener("loader:done", measure, { once: true });
-    return () => window.removeEventListener("scroll", measure);
-  }, []);
-  return overHero;
-}
-
 export default function Header() {
   const innerRef = useRef<HTMLDivElement>(null);
   const active = useActiveSection(NAV_ITEMS.map((n) => n.target));
   const scrollVisible = useScrollVisibility();
-  const overHero = useOverHero();
-  const { resolvedTheme } = useTheme();
-  const [themeMounted, setThemeMounted] = useState(false);
-  useEffect(() => setThemeMounted(true), []);
-  const isDark = themeMounted && resolvedTheme === "dark";
 
-  const headerTone = isDark
-    ? "text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.4)]"
-    : overHero
-      ? "text-black [text-shadow:0_1px_12px_rgba(255,255,255,0.65)]"
-      : "text-ink";
+  const headerTone = "text-ink transition-colors duration-500";
 
   useEffect(() => {
     const root = innerRef.current;
