@@ -10,12 +10,3 @@ export const HERO_COPY = {
   availability: SITE.availability,
   scroll: "Scroll down",
 } as const;
-
-export const HERO_MARQUEE = [
-  SITE.availability,
-  "一期一会",
-  SITE.locationShort,
-  SITE.role,
-  "Currently shipping",
-  "Open to collaborations",
-] as const;

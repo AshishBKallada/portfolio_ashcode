@@ -12,11 +12,9 @@ const config: Config = {
         body: ["var(--font-inter)", "system-ui", "sans-serif"],
         main: ["var(--font-mitshuka)", "cursive", "system-ui", "sans-serif"],
         headline: ["var(--font-instrument-serif)", "Georgia", "serif"],
-        almarai: ["var(--font-almarai)", "system-ui", "sans-serif"],
         serif: ['"Instrument Serif"', "var(--font-instrument-serif)", "serif"],
       },
       colors: {
-        primary: "#DEDBC8",
         paper: "rgb(var(--paper) / <alpha-value>)",
         ink: "rgb(var(--ink) / <alpha-value>)",
         surface: "rgb(var(--surface) / <alpha-value>)",

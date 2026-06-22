@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Instrument_Serif, Almarai } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -21,13 +21,6 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
-const almarai = Almarai({
-  subsets: ["arabic"],
-  weight: ["300", "400", "700", "800"],
-  variable: "--font-almarai",
-  display: "swap",
-});
-
 const mitshuka = localFont({
   src: "./fonts/Mitshuka.otf",
   variable: "--font-mitshuka",
@@ -44,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`dark ${inter.variable} ${instrumentSerif.variable} ${almarai.variable} ${mitshuka.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`dark ${inter.variable} ${instrumentSerif.variable} ${mitshuka.variable}`}>
       <body className="m-0 p-0 font-body antialiased bg-paper text-ink transition-colors">
         <ThemeProvider>
           <SmoothScroll />

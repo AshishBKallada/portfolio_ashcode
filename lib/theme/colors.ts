@@ -16,16 +16,6 @@ export const colors = {
     fg: "#E1E0CC",
   },
 
-  // Cream tone shown briefly as a brand swatch. Mirrors --ink in dark mode.
-  primary: "#DEDBC8",
-
-  // macOS-style window controls in the Statement terminal frame.
-  macTraffic: {
-    close: "#ff5f57",
-    minimize: "#febc2e",
-    maximize: "#28c840",
-  },
-
   // Per-project preview backdrops — shown behind the cursor thumbnail.
   projectBg: {
     kada: "#1f3bff",
