@@ -1,4 +1,4 @@
-export const HERO_IMAGE = "/hero-gemini.png";
+export const HERO_IMAGE = "/hero-noisy-boy.png";
 
 export const HERO_COPY = {
   headline: ["Obsession beats", "talent."] as const,
