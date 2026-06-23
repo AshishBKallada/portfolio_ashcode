@@ -4,8 +4,7 @@
 // CSS variables: SVG fills, canvas/WebGL inputs, inline gradients, etc.
 
 export const colors = {
-  // Brand accent — used for the splash cursor, status pings, hairlines, and
-  // the play-ring glow on the floating audio button.
+  // Brand accent — used for the splash cursor, status pings, and hairlines.
   accent: "#ff1a1a",
   accentRgb: "255, 26, 26",
 

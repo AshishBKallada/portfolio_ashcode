@@ -21,44 +21,23 @@ export default function Projects() {
       <CursorPreview projects={PROJECTS} activeIdx={previewIdx} />
 
       <div className="relative w-full max-w-[1600px] mx-auto">
-        {/* Meta row */}
-        <div className="flex items-start justify-between gap-6 mb-12 md:mb-16 meta-label">
-          <p>
-            <span className="opacity-60">{PROJECTS_COPY.metaSection}</span>
-            <span className="mx-2 opacity-30">/</span>
-            {PROJECTS_COPY.metaLabel}
-          </p>
-          <p className="tabular-nums text-right">
-            {String(PROJECTS.length).padStart(2, "0")} {PROJECTS_COPY.metaSuffix}
-          </p>
-        </div>
-
         {/* Focal headline */}
         <h2 className="section-title -ml-[0.04em]">
-          <span className="inline-block overflow-hidden align-baseline mr-[0.12em]">
-            <span data-reveal="word" className="inline-block">{PROJECTS_COPY.headlineLeft}</span>
+          <span data-reveal="fade" className="inline-block align-baseline mr-[0.12em]">
+            {PROJECTS_COPY.headlineLeft}
           </span>
-          <span className="inline-block overflow-hidden align-baseline">
-            <span data-reveal="word" className="inline-block text-ink/45">{PROJECTS_COPY.headlineRight}</span>
+          <span data-reveal="fade" className="inline-block align-baseline text-ink/45">
+            {PROJECTS_COPY.headlineRight}
           </span>
         </h2>
 
-        {/* Lede + sidekick */}
-        <div className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10">
-          <p
-            data-reveal="char"
-            className="md:col-span-7 lg:col-span-6 font-body text-base md:text-lg leading-relaxed text-ink/85"
-          >
-            {PROJECTS_COPY.lede}
-          </p>
-          <div
-            data-reveal="fade"
-            className="md:col-span-4 md:col-start-9 flex flex-col gap-2 self-end meta-label md:text-right"
-          >
-            <p>{PROJECTS_COPY.hoverHint}</p>
-            <p>{PROJECTS_COPY.openHint}</p>
-          </div>
-        </div>
+        {/* Lede */}
+        <p
+          data-reveal="char"
+          className="mt-10 md:mt-14 max-w-2xl font-body text-base md:text-lg leading-relaxed text-ink/85"
+        >
+          {PROJECTS_COPY.lede}
+        </p>
 
         {/* Project rows */}
         <ul className="mt-20 md:mt-28 border-t border-ink/15">

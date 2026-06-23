@@ -8,7 +8,6 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMagnetic } from "@/lib/useMagnetic";
 import { scrambleText } from "@/lib/scramble";
-import { colors } from "@/lib/theme/colors";
 import { HERO_COPY, HERO_IMAGE } from "@/lib/constants/hero";
 
 if (typeof window !== "undefined") {
@@ -31,11 +30,11 @@ function smoothScrollTo(target: string) {
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const heroImageScrollRef = useRef<HTMLDivElement>(null);
+  const heroImageDriftRef = useRef<HTMLDivElement>(null);
   const heroImageMouseRef = useRef<HTMLDivElement>(null);
-  const visualsRef = useRef<HTMLDivElement>(null);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.18);
   const entranceRanRef = useRef(false);
+  const variantIdxRef = useRef(0);
 
   const [inView, setInView] = useState(true);
   const [splashCfg, setSplashCfg] = useState<{ enabled: boolean; dye: number } | null>(null);
@@ -45,8 +44,8 @@ export default function Hero() {
   useEffect(() => setThemeMounted(true), []);
 
   const isDarkTheme = themeMounted && resolvedTheme === "dark";
-  const splashColor = isDarkTheme ? colors.accent : "#000000";
-  const splashStrength = isDarkTheme ? 0.15 : 0.42;
+  const splashColor = "#ffffff";
+  const splashStrength = isDarkTheme ? 0.32 : 0.18;
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -121,9 +120,6 @@ export default function Hero() {
               }),
             1500 + i * 140
           );
-          el.addEventListener("mouseenter", () => {
-            scrambleText(el, labels[i] ?? el.textContent ?? "", { duration: 420 });
-          });
         });
       };
 
@@ -140,6 +136,63 @@ export default function Hero() {
       };
     });
     return () => ctx.revert();
+  }, []);
+
+  // Cycle the hero headline between English and Japanese on a smooth interval.
+  // Reads variantIdxRef so the hover handler always scrambles to the current variant.
+  useEffect(() => {
+    const root = sectionRef.current;
+    if (!root) return;
+
+    const variants = [HERO_COPY.headline, HERO_COPY.headlineJp] as const;
+    const lineEls = Array.from(
+      root.querySelectorAll<HTMLElement>(".hero-line")
+    );
+    if (lineEls.length === 0) return;
+
+    const applyVariantClass = () => {
+      const isJp = variantIdxRef.current === 1;
+      lineEls.forEach((el) => el.classList.toggle("is-jp", isJp));
+    };
+
+    const scrambleAll = (duration: number) => {
+      applyVariantClass();
+      const labels = variants[variantIdxRef.current];
+      lineEls.forEach((el, i) => {
+        scrambleText(el, labels[i] ?? "", { duration });
+      });
+    };
+
+    const hoverHandlers = lineEls.map((el, i) => {
+      const onEnter = () => {
+        applyVariantClass();
+        const labels = variants[variantIdxRef.current];
+        scrambleText(el, labels[i] ?? "", { duration: 420 });
+      };
+      el.addEventListener("mouseenter", onEnter);
+      return { el, onEnter };
+    });
+
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let intervalId: number | undefined;
+    const startDelay = window.setTimeout(() => {
+      if (reduced) return;
+      intervalId = window.setInterval(() => {
+        variantIdxRef.current = (variantIdxRef.current + 1) % variants.length;
+        scrambleAll(1100);
+      }, 12000);
+    }, 8000);
+
+    return () => {
+      window.clearTimeout(startDelay);
+      if (intervalId !== undefined) window.clearInterval(intervalId);
+      hoverHandlers.forEach(({ el, onEnter }) =>
+        el.removeEventListener("mouseenter", onEnter)
+      );
+    };
   }, []);
 
   useEffect(() => {
@@ -194,62 +247,23 @@ export default function Hero() {
     };
   }, []);
 
+  // Drift the figure down past the hero so it lands over the "Ashish" headline
+  // in the intro section. Eases back when the user scrolls back up.
   useEffect(() => {
+    const root = sectionRef.current;
+    const target = heroImageDriftRef.current;
+    if (!root || !target) return;
+
     const ctx = gsap.context(() => {
-      const root = sectionRef.current;
-      if (!root) return;
-
-      const scrollTrigger = {
-        trigger: root,
-        start: "top top",
-        end: "+=100%",
-        scrub: 0.6,
-      } as const;
-
-      if (heroImageScrollRef.current) {
-        gsap.to(heroImageScrollRef.current, {
-          y: -40,
-          ease: "none",
-          scrollTrigger,
-        });
-      }
-
-      const fadeTrigger = {
-        trigger: root,
-        start: "bottom top",
-        end: "+=100%",
-        scrub: 0.45,
-      } as const;
-
-      if (visualsRef.current) {
-        gsap.fromTo(
-          visualsRef.current,
-          { opacity: 1, filter: "blur(0px)" },
-          {
-            opacity: 0.15,
-            filter: "blur(16px)",
-            ease: "none",
-            scrollTrigger: fadeTrigger,
-          }
-        );
-      }
-
-      const resetHeroContent = () => {
-        gsap.set(root.querySelectorAll(".hero-headline, .hero-ui, .hero-line"), {
-          opacity: 1,
-          y: 0,
-        });
-        if (visualsRef.current) {
-          gsap.set(visualsRef.current, { opacity: 1, filter: "blur(0px)" });
-        }
-      };
-
-      ScrollTrigger.create({
-        trigger: root,
-        start: "top top",
-        end: "bottom top",
-        onEnterBack: resetHeroContent,
-        onLeaveBack: resetHeroContent,
+      gsap.to(target, {
+        yPercent: 90,
+        ease: "none",
+        scrollTrigger: {
+          trigger: root,
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.5,
+        },
       });
     }, sectionRef);
     return () => ctx.revert();
@@ -259,11 +273,11 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="sticky top-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper text-ink transition-colors duration-500"
+      className="relative w-full h-screen min-h-screen [overflow-x:clip] [overflow-y:visible] bg-paper text-ink transition-colors duration-500"
     >
-      {/* Block display title — behind figure */}
-      <div className="hero-headline pointer-events-none absolute inset-0 z-[1] flex items-center px-5 md:px-10 lg:px-12">
-        <h1 className="font-main font-normal not-italic leading-[0.92] tracking-[0.03em] text-[clamp(2.75rem,11vw,8.5rem)] select-none">
+      {/* Block display title — behind figure, hugging the left edge */}
+      <div className="hero-headline pointer-events-none absolute inset-y-0 left-0 z-[1] flex w-full items-center px-5 md:px-10 lg:px-12">
+        <h1 className="font-main font-normal not-italic leading-[0.92] tracking-[0.02em] text-[clamp(2.5rem,9vw,7.5rem)] select-none">
           {HERO_COPY.headline.map((line) => (
             <span
               key={line}
@@ -275,11 +289,11 @@ export default function Hero() {
         </h1>
       </div>
 
-      {/* Center figure */}
-      <div ref={visualsRef} className="absolute inset-0 z-[2] will-change-[opacity,filter]">
+      {/* Center figure — overlaps headline, drifts into next section on scroll */}
+      <div className="absolute inset-0 z-[20] [overflow:visible]">
         <div
-          ref={heroImageScrollRef}
-          className="absolute left-1/2 top-[46%] z-[1] h-[min(72vh,720px)] w-[min(78vw,520px)] -translate-x-1/2 -translate-y-1/2 will-change-transform"
+          ref={heroImageDriftRef}
+          className="absolute left-1/2 top-[38%] z-[1] h-[min(92vh,900px)] w-[min(88vw,620px)] -translate-x-1/2 -translate-y-1/2 will-change-transform pointer-events-none"
         >
           <div
             ref={heroImageMouseRef}
@@ -290,7 +304,7 @@ export default function Hero() {
               alt=""
               fill
               priority
-              sizes="(max-width: 1024px) 78vw, 520px"
+              sizes="(max-width: 1024px) 88vw, 620px"
               className="object-contain object-bottom"
             />
           </div>
@@ -311,15 +325,21 @@ export default function Hero() {
       </div>
 
       {/* Bottom-left note */}
-      <div className="hero-ui absolute bottom-6 md:bottom-8 left-4 md:left-6 lg:left-10 z-[4] max-w-[220px] md:max-w-xs">
-        <p className="font-headline text-[11px] md:text-xs leading-[1.75] text-ink/55">
-          {HERO_COPY.note}
+      <div className="hero-ui absolute bottom-6 md:bottom-10 left-4 md:left-8 lg:left-12 z-[4] max-w-[240px] md:max-w-[260px]">
+        <p className="font-headline text-sm md:text-base italic leading-snug text-ink">
+          {HERO_COPY.bottomTitle}
         </p>
-        <span aria-hidden className="mt-5 block h-px w-14 bg-ink/30" />
+        <p className="mt-3 font-body text-[11px] md:text-xs leading-[1.7] text-ink/55">
+          {HERO_COPY.bottomNote}
+        </p>
+        <span aria-hidden className="mt-5 flex items-center gap-2 text-ink/40">
+          <span className="block h-px w-20 bg-current" />
+          <span className="text-xs leading-none">→</span>
+        </span>
       </div>
 
-      {/* Center CTA */}
-      <div className="hero-ui absolute bottom-12 md:bottom-14 left-1/2 z-[5] -translate-x-1/2">
+      {/* Center CTA — plain text stacked above a down arrow, both centered */}
+      <div className="hero-ui absolute bottom-10 md:bottom-12 left-1/2 z-[5] -translate-x-1/2">
         <a
           ref={ctaRef}
           href="#contact"
@@ -328,21 +348,27 @@ export default function Hero() {
             e.preventDefault();
             smoothScrollTo("contact");
           }}
-          className="group pointer-events-auto inline-flex items-center gap-3 bg-ink px-7 md:px-9 py-3.5 md:py-4 font-body text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-paper will-change-transform transition-[transform,background-color,color] duration-300 hover:scale-[1.02] hover:bg-ink/90 active:scale-[0.98]"
+          className="group pointer-events-auto inline-flex flex-col items-center gap-2 font-body text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-ink/80 will-change-transform transition-colors duration-300 hover:text-ink"
         >
-          {HERO_COPY.ctaLabel}
-          <span aria-hidden className="text-base leading-none transition-transform duration-300 group-hover:translate-x-0.5">
-            →
+          <span>{HERO_COPY.ctaLabel}</span>
+          <span
+            aria-hidden
+            className="text-base leading-none transition-transform duration-300 group-hover:translate-y-0.5"
+          >
+            ↓
           </span>
         </a>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="hero-ui absolute bottom-8 md:bottom-10 left-1/2 z-[4] flex -translate-x-1/2 flex-col items-center gap-3 pointer-events-none text-ink/60">
-        <p className="font-headline text-[10px] md:text-[11px] uppercase tracking-[0.38em] leading-none">
-          {HERO_COPY.scroll}
+      {/* Bottom-right aside */}
+      <div className="hero-ui absolute bottom-10 md:bottom-12 right-5 md:right-10 z-[4] hidden md:block max-w-[200px] text-right">
+        <p className="meta-label text-ink/40 tracking-[0.22em]">
+          {HERO_COPY.aside.jp}
         </p>
-        <span aria-hidden className="block h-10 md:h-14 w-px bg-current opacity-60" />
+        <p className="mt-2 font-headline text-base italic leading-snug text-ink/75">
+          {HERO_COPY.aside.line}
+        </p>
+        <span aria-hidden className="mt-4 ml-auto block h-px w-12 bg-ink/25" />
       </div>
     </section>
   );

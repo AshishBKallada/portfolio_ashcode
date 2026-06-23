@@ -8,14 +8,11 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-type Variant = "word" | "line" | "fade" | "mark" | "tail";
+type Variant = "line" | "fade";
 
 const ENTRY: Record<Variant, gsap.TweenVars> = {
-  word: { yPercent: 110, opacity: 0, stagger: 0.25 },
   line: { y: 40, opacity: 0, stagger: 0.35 },
   fade: { y: 18, opacity: 0, stagger: 0.2 },
-  mark: { yPercent: 100, opacity: 0 },
-  tail: { y: 20, opacity: 0, stagger: 0.12 },
 };
 
 export function useScrollReveal<T extends HTMLElement>(ref: RefObject<T>) {
@@ -32,8 +29,8 @@ export function useScrollReveal<T extends HTMLElement>(ref: RefObject<T>) {
           ease: "none",
           scrollTrigger: {
             trigger: root,
-            start: variant === "tail" ? "top 62%" : "top 88%",
-            end: variant === "tail" ? "top 38%" : "top 30%",
+            start: "top 88%",
+            end: "top 30%",
             scrub: 0.8,
             invalidateOnRefresh: true,
           },

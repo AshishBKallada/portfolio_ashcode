@@ -1,9 +1,6 @@
 import { SITE } from "./site";
 
 export const CONTACT_COPY = {
-  metaSection: "(04)",
-  metaLabel: "Contact · コンタクト",
-  availability: SITE.availabilityShort,
   headline: "Let's talk.",
   subtitle: "お話ししましょう",
   backToTop: "Back to top",

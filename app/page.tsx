@@ -1,6 +1,5 @@
 import Contact from "@/components/Contact";
 import CustomCursor from "@/components/CustomCursor";
-import FloatingPlayer from "@/components/FloatingPlayer";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -15,16 +14,10 @@ export default function Page() {
       <Header />
       <main className="relative z-0 m-0 p-0">
         <Hero />
-        {/* Spacer stays transparent so the sticky hero blur/fade shows through on scroll */}
-        <div aria-hidden className="h-screen w-full pointer-events-none" />
         <Statement />
-        <div className="bg-paper">
-          <Projects />
-          <Contact />
-        </div>
+        <Projects />
+        <Contact />
       </main>
-
-      <FloatingPlayer />
     </>
   );
 }

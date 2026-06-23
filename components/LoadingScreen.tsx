@@ -3,43 +3,37 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { colors } from "@/lib/theme/colors";
-import { LOADER } from "@/lib/constants/loader";
+import { SITE } from "@/lib/constants/site";
 
-const { labels: LABELS, cycles: CYCLES, stepDuration: STEP_DURATION } = LOADER;
+const COUNTER_DURATION = 1.6;
+const FADE_DURATION = 0.5;
 
 export default function LoadingScreen() {
   const overlayRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
   const percentRef = useRef<HTMLSpanElement>(null);
+  const barRef = useRef<HTMLSpanElement>(null);
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     if (!hidden) return;
-
-    // Wait for overlay to unmount before hero entrance starts
     const id = window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
         window.dispatchEvent(new CustomEvent("loader:done"));
       });
     });
-
     return () => window.cancelAnimationFrame(id);
   }, [hidden]);
 
   useEffect(() => {
     const overlay = overlayRef.current;
-    const text = textRef.current;
     const percent = percentRef.current;
-    if (!overlay || !text) return;
+    const bar = barRef.current;
+    if (!overlay) return;
 
     const prevOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
 
-    text.textContent = LABELS[0];
-    if (percent) percent.textContent = "0%";
-
     const counter = { value: 0 };
-
     const tl = gsap.timeline({
       onComplete: () => {
         document.documentElement.style.overflow = prevOverflow;
@@ -47,59 +41,20 @@ export default function LoadingScreen() {
       },
     });
 
-    const addSyncedStep = (nextLabel: string, endPercent: number, position: string | number = ">") => {
-      tl.to(
-        counter,
-        {
-          value: endPercent,
-          duration: STEP_DURATION,
-          ease: "power2.inOut",
-          onUpdate: () => {
-            if (percent) {
-              percent.textContent = `${Math.round(counter.value)}%`;
-            }
-          },
-        },
-        position
-      );
-
-      tl.to(
-        text,
-        {
-          y: -10,
-          opacity: 0,
-          duration: STEP_DURATION * 0.4,
-          ease: "power2.in",
-          onComplete: () => {
-            text.textContent = nextLabel;
-          },
-        },
-        position
-      );
-
-      tl.to(
-        text,
-        {
-          y: 0,
-          opacity: 1,
-          duration: STEP_DURATION * 0.6,
-          ease: "power2.out",
-        },
-        `${position}+=${STEP_DURATION * 0.4}`
-      );
-    };
-
-    for (let i = 0; i < CYCLES; i++) {
-      const nextLabel = LABELS[(i + 1) % LABELS.length];
-      const endPercent = Math.round(((i + 1) / CYCLES) * 100);
-      addSyncedStep(nextLabel, endPercent, i === 0 ? 0 : ">");
-    }
-
-    tl.to({}, { duration: 0.2 });
+    tl.to(counter, {
+      value: 100,
+      duration: COUNTER_DURATION,
+      ease: "power2.inOut",
+      onUpdate: () => {
+        const v = Math.round(counter.value);
+        if (percent) percent.textContent = v.toString().padStart(3, "0");
+        if (bar) bar.style.transform = `scaleX(${counter.value / 100})`;
+      },
+    });
 
     tl.to(overlay, {
       opacity: 0,
-      duration: 0.6,
+      duration: FADE_DURATION,
       ease: "power2.inOut",
     });
 
@@ -114,27 +69,29 @@ export default function LoadingScreen() {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[10000] flex items-center justify-center pointer-events-auto"
+      className="fixed inset-0 z-[10000] flex flex-col items-center justify-center pointer-events-auto"
       style={{ backgroundColor: colors.loader.bg, color: colors.loader.fg }}
       aria-live="polite"
       aria-busy="true"
       aria-label="Loading"
     >
-      <span
-        ref={textRef}
-        className="font-headline text-2xl md:text-3xl italic tracking-[-0.02em] will-change-transform"
-      >
-        {LABELS[0]}
+      <span className="font-main not-italic leading-none tracking-tight text-[clamp(3.5rem,12vw,9rem)]">
+        {SITE.brand}.
       </span>
-
-      <span
-        ref={percentRef}
-        className="absolute bottom-4 right-4 md:bottom-8 md:right-10 font-headline italic tabular-nums tracking-[-0.04em] leading-none"
-        style={{ fontSize: "clamp(4rem, 18vw, 12rem)", color: colors.loader.fg, opacity: 0.8 }}
-        aria-hidden
-      >
-        0%
-      </span>
+      <div className="mt-8 md:mt-10 flex items-center gap-4">
+        <span
+          aria-hidden
+          ref={barRef}
+          className="block h-px w-32 md:w-44 origin-left bg-current opacity-60"
+          style={{ transform: "scaleX(0)" }}
+        />
+        <span
+          ref={percentRef}
+          className="font-body text-[10px] uppercase tracking-[0.32em] tabular-nums opacity-60"
+        >
+          000
+        </span>
+      </div>
     </div>
   );
 }

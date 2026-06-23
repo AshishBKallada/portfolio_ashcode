@@ -95,15 +95,6 @@ export default function Contact() {
       className="relative z-10 w-full bg-paper text-ink border-t border-ink/10 overflow-hidden"
     >
       <div className="relative mx-auto max-w-6xl px-6 md:px-12 pt-24 md:pt-32 pb-8 md:pb-10 flex flex-col items-center text-center">
-        <div className="meta-label mb-10 md:mb-12 w-full flex items-start justify-between gap-6">
-          <p>
-            <span className="opacity-60">{CONTACT_COPY.metaSection}</span>
-            <span className="mx-2 opacity-30">/</span>
-            {CONTACT_COPY.metaLabel}
-          </p>
-          <p className="text-right">{CONTACT_COPY.availability}</p>
-        </div>
-
         {/* Focal headline */}
         <h2 className="section-title">
           {CONTACT_COPY.headline}
@@ -158,7 +149,7 @@ export default function Contact() {
           })}
         </ul>
 
-        {/* Bottom strip — copyright only; back-to-top floats above the audio circle */}
+        {/* Bottom strip — copyright only */}
         <div className="w-full mt-14 md:mt-20 pt-5 border-t border-ink/10 flex items-center justify-center meta-label">
           <span className="tabular-nums">
             © {SITE.copyrightYear} {SITE.brand}
@@ -166,15 +157,13 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* Floating back-to-top — icon-only, sits above the audio player.
-          Audio container: bottom-4 + h-28 (112px) mobile / bottom-6 + h-36 (144px) md.
-          Aligning right edges (both right-4 / right-6); offset bottom so it clears the circle. */}
+      {/* Floating back-to-top */}
       <button
         ref={backTopRef}
         type="button"
         onClick={scrollTop}
         aria-label={CONTACT_COPY.backToTop}
-        className={`fixed z-[95] bottom-[8.5rem] right-4 md:bottom-[10.5rem] md:right-6 w-10 h-10 md:w-11 md:h-11 rounded-full border border-ink/15 bg-paper/85 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.25)] flex items-center justify-center text-ink transition-[opacity,transform,background-color,color] duration-500 will-change-transform hover:bg-ink hover:text-paper hover:scale-105 active:scale-95 ${
+        className={`fixed z-[95] bottom-4 right-4 md:bottom-6 md:right-6 w-10 h-10 md:w-11 md:h-11 rounded-full border border-ink/15 bg-paper/85 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.25)] flex items-center justify-center text-ink transition-[opacity,transform,background-color,color] duration-500 will-change-transform hover:bg-ink hover:text-paper hover:scale-105 active:scale-95 ${
           showBackTop ? "opacity-100" : "opacity-0 pointer-events-none translate-y-2"
         }`}
       >

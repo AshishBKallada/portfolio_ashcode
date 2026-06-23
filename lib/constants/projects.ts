@@ -79,13 +79,8 @@ export const PROJECTS: Project[] = [
 ];
 
 export const PROJECTS_COPY = {
-  metaSection: "(03)",
-  metaLabel: "Selected Works · 制作実績",
-  metaSuffix: "Projects · 2024–25",
   headlineLeft: "Selected",
   headlineRight: "works.",
   lede:
     "A few of the ones I'm proud of. I didn't build these alone — but on each one I played a crucial role and took the risky calls that kept the requirements landing on time. The kind of bets you only make when the deadline is real.",
-  hoverHint: "Hover · cursor reveals preview",
-  openHint: "↗ Open for the case study",
 } as const;

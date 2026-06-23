@@ -11,7 +11,7 @@
 
 .dark {
   --paper: 0 0 0;
-  --ink: 225 224 204;
+  --ink: 255 255 255;
   --surface: 17 17 17;
 }
 
@@ -61,13 +61,23 @@ html.custom-cursor, html.custom-cursor * {
   text-rendering: optimizeLegibility;
 }
 
+/* Japanese variant of the hero headline — Mitshuka has no Japanese glyphs,
+   so when .is-jp is on we switch the font stack to Yuji Mai (a brush-script
+   JP font loaded from Google Fonts in layout.tsx). The stroke below adds a
+   touch of weight to match the Mitshuka brush feel. */
+.hero-line.is-jp {
+  font-family: "Yuji Mai", cursive, system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  -webkit-text-stroke: 0.012em currentColor;
+}
+
 @layer components {
   .section-title {
-    @apply font-main font-normal not-italic tracking-[0.02em] leading-[0.92] text-[clamp(1.85rem,7vw,5.5rem)];
+    @apply font-main font-normal not-italic tracking-[0.02em] leading-[1.12] text-[clamp(1.85rem,7vw,5.5rem)];
   }
 
   .section-title-sm {
-    @apply font-main font-normal not-italic tracking-[0.02em] leading-[0.92] text-[clamp(1.65rem,5.5vw,4rem)];
+    @apply font-main font-normal not-italic tracking-[0.02em] leading-[1.12] text-[clamp(1.65rem,5.5vw,4rem)];
   }
 
   .meta-label {

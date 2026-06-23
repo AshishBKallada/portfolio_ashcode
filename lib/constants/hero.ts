@@ -1,12 +1,14 @@
-import { SITE } from "./site";
-
 export const HERO_IMAGE = "/hero-gemini.png";
 
 export const HERO_COPY = {
   headline: ["Obsession beats", "talent."] as const,
-  note:
-    "Full-stack engineer shipping React, Node, and TypeScript — from interfaces to databases, for founders and teams who need it live.",
-  ctaLabel: "Start experience",
-  availability: SITE.availability,
-  scroll: "Scroll down",
+  headlineJp: ["執着は", "才能を凌駕する"] as const,
+  bottomTitle: "Built end-to-end.",
+  bottomNote:
+    "Interfaces, APIs, and infrastructure shipped as one piece — for founders who need it live, not pitched.",
+  ctaLabel: "Scroll down",
+  aside: {
+    jp: "下へ",
+    line: "the rabbit hole starts here.",
+  },
 } as const;

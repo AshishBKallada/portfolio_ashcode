@@ -37,7 +37,27 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`dark ${inter.variable} ${instrumentSerif.variable} ${mitshuka.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`dark ${inter.variable} ${instrumentSerif.variable} ${mitshuka.variable}`}
+    >
+      <head>
+        {/* Yuji Mai — brush-script JP font, the per-character fallback for
+            Mitshuka so kanji in the hero headline render with a matching
+            hand-drawn feel. Loaded by link tag (rather than next/font/google)
+            so the full Japanese subset ships with the CSS. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap"
+        />
+      </head>
       <body className="m-0 p-0 font-body antialiased bg-paper text-ink transition-colors">
         <ThemeProvider>
           <SmoothScroll />
