@@ -247,8 +247,8 @@ export default function Hero() {
     };
   }, []);
 
-  // Drift the figure down past the hero so it lands over the "Ashish" headline
-  // in the intro section. Eases back when the user scrolls back up.
+  // Drift the figure down + right and scale it down as the user scrolls,
+  // so it lands over the top of the intro portrait. Eases back on scroll up.
   useEffect(() => {
     const root = sectionRef.current;
     const target = heroImageDriftRef.current;
@@ -256,7 +256,10 @@ export default function Hero() {
 
     const ctx = gsap.context(() => {
       gsap.to(target, {
-        yPercent: 90,
+        yPercent: 58,
+        xPercent: 24,
+        scale: 0.65,
+        transformOrigin: "50% 50%",
         ease: "none",
         scrollTrigger: {
           trigger: root,
