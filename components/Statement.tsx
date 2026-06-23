@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { Github, Linkedin, Mail, FileText } from "lucide-react";
 import SkillsModal from "@/components/SkillsModal";
@@ -58,7 +57,7 @@ export default function Statement() {
       <section
         ref={sectionRef}
         id="statement"
-        className="relative z-10 bg-paper text-ink px-5 md:px-10 lg:px-16 py-20 md:py-28 lg:py-32"
+        className="relative z-10 section-panel rounded-t-[2rem] md:rounded-t-[2.75rem] lg:rounded-t-[3.25rem] px-5 md:px-10 lg:px-16 py-20 md:py-28 lg:py-32"
         aria-label="About"
       >
         <div className="relative w-full max-w-[1600px] mx-auto">
@@ -67,7 +66,7 @@ export default function Statement() {
             <span data-reveal="fade" className="inline-block align-baseline mr-[0.18em]">
               {INTRO_COPY.headlineLeft}
             </span>
-            <span data-reveal="fade" className="inline-block align-baseline text-ink/45">
+            <span data-reveal="fade" className="inline-block align-baseline text-section-fg/45">
               {INTRO_COPY.headlineRight}
             </span>
           </h2>
@@ -88,14 +87,14 @@ export default function Statement() {
                     title={label}
                     target={newTab ? "_blank" : undefined}
                     rel={newTab ? "noreferrer" : undefined}
-                    className="group inline-flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-full bg-black text-white border border-black transition-[transform,background-color,color] duration-300 hover:bg-white hover:text-black hover:-translate-y-0.5"
+                    className="group inline-flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-full bg-section-fg text-section-bg border border-section-fg transition-[transform,background-color,color] duration-300 hover:bg-section-bg hover:text-section-fg hover:-translate-y-0.5"
                   >
                     <Icon className="h-[18px] w-[18px]" strokeWidth={1.6} />
                   </a>
                 ))}
               </div>
 
-              <div data-reveal="fade" className="hidden lg:flex items-center gap-3 meta-label text-ink/45">
+              <div data-reveal="fade" className="hidden lg:flex items-center gap-3 meta-label text-section-fg/45">
                 <span aria-hidden className="block h-px w-8 bg-current" />
                 <span>{SITE.locationShort}</span>
               </div>
@@ -105,13 +104,13 @@ export default function Statement() {
             <div className="lg:col-span-5 lg:col-start-4 space-y-6 md:space-y-7">
               <p
                 data-reveal="char"
-                className="font-body text-base md:text-lg leading-relaxed text-ink/85 max-w-xl"
+                className="font-body text-base md:text-lg leading-relaxed text-section-fg/85 max-w-xl"
               >
                 {INTRO_COPY.lead}
               </p>
               <p
                 data-reveal="fade"
-                className="font-body text-sm md:text-[15px] leading-[1.8] text-ink/60 max-w-xl"
+                className="font-body text-sm md:text-[15px] leading-[1.8] text-section-fg/60 max-w-xl"
               >
                 {INTRO_COPY.body}
               </p>
@@ -123,43 +122,30 @@ export default function Statement() {
                 <button
                   type="button"
                   onClick={scrollToContact}
-                  className="group w-fit font-body text-sm md:text-[15px] text-ink underline underline-offset-[6px] decoration-ink/40 transition-colors hover:decoration-ink"
+                  className="group w-fit font-body text-sm md:text-[15px] text-section-fg underline underline-offset-[6px] decoration-section-fg/40 transition-colors hover:decoration-section-fg"
                 >
                   ↳ {INTRO_COPY.cta}
                 </button>
                 <button
                   type="button"
                   onClick={() => setSkillsOpen(true)}
-                  className="group w-fit font-body text-sm md:text-[15px] text-ink/55 underline underline-offset-[6px] decoration-ink/25 transition-colors hover:text-ink/85 hover:decoration-ink/45"
+                  className="group w-fit font-body text-sm md:text-[15px] text-section-fg/55 underline underline-offset-[6px] decoration-section-fg/25 transition-colors hover:text-section-fg/85 hover:decoration-section-fg/45"
                 >
                   ↳ {INTRO_COPY.skillsCta}
                 </button>
               </div>
             </div>
 
-            {/* Portrait + experience — right column */}
-            <div className="lg:col-span-4 lg:col-start-9 space-y-6">
-              <div
-                data-reveal="line"
-                className="relative aspect-[4/5] w-full max-w-[300px] lg:max-w-none overflow-hidden rounded-[1.35rem] md:rounded-[1.75rem] bg-ink/5 ring-1 ring-ink/10"
-              >
-                <Image
-                  src={INTRO_COPY.image}
-                  alt={INTRO_COPY.imageAlt}
-                  fill
-                  sizes="(max-width: 1024px) 300px, 33vw"
-                  className="object-cover object-center"
-                />
-              </div>
-
-              <div data-reveal="fade" className="relative max-w-sm pl-5">
+            {/* Experience — right column */}
+            <div className="lg:col-span-4 lg:col-start-9">
+              <div data-reveal="fade" className="relative max-w-sm pl-5 lg:pt-1">
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute top-1 left-0 h-[calc(100%+0.5rem)] w-px bg-ink/15"
+                  className="pointer-events-none absolute top-1 left-0 h-[calc(100%+0.5rem)] w-px bg-section-fg/15"
                 >
                   <span className="absolute top-0 left-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-400/90" />
                 </span>
-                <p className="font-body text-[11px] md:text-xs leading-[1.85] text-ink/55">
+                <p className="font-body text-[11px] md:text-xs leading-[1.85] text-section-fg/55">
                   {INTRO_COPY.experience}
                 </p>
               </div>

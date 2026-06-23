@@ -18,6 +18,8 @@ const config: Config = {
         paper: "rgb(var(--paper) / <alpha-value>)",
         ink: "rgb(var(--ink) / <alpha-value>)",
         surface: "rgb(var(--surface) / <alpha-value>)",
+        "section-bg": "rgb(var(--section-bg) / <alpha-value>)",
+        "section-fg": "rgb(var(--section-fg) / <alpha-value>)",
       },
     },
   },

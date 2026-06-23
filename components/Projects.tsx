@@ -16,7 +16,7 @@ export default function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className="relative isolate z-10 w-full bg-paper text-ink px-6 md:px-12 lg:px-20 py-24 md:py-36 overflow-hidden"
+      className="relative isolate z-10 w-full section-panel rounded-b-[2rem] md:rounded-b-[2.75rem] lg:rounded-b-[3.25rem] px-6 md:px-12 lg:px-20 py-24 md:py-36 overflow-hidden"
     >
       <CursorPreview projects={PROJECTS} activeIdx={previewIdx} />
 
@@ -26,7 +26,7 @@ export default function Projects() {
           <span data-reveal="fade" className="inline-block align-baseline mr-[0.12em]">
             {PROJECTS_COPY.headlineLeft}
           </span>
-          <span data-reveal="fade" className="inline-block align-baseline text-ink/45">
+          <span data-reveal="fade" className="inline-block align-baseline text-section-fg/45">
             {PROJECTS_COPY.headlineRight}
           </span>
         </h2>
@@ -34,13 +34,13 @@ export default function Projects() {
         {/* Lede */}
         <p
           data-reveal="char"
-          className="mt-10 md:mt-14 max-w-2xl font-body text-base md:text-lg leading-relaxed text-ink/85"
+          className="mt-10 md:mt-14 max-w-2xl font-body text-base md:text-lg leading-relaxed text-section-fg/85"
         >
           {PROJECTS_COPY.lede}
         </p>
 
         {/* Project rows */}
-        <ul className="mt-20 md:mt-28 border-t border-ink/15">
+        <ul className="mt-20 md:mt-28 border-t border-section-fg/15">
           {PROJECTS.map((p, i) => (
             <ProjectRow
               key={p.number}

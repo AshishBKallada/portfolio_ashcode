@@ -7,12 +7,17 @@
   --paper: 255 255 255;
   --ink: 10 10 10;
   --surface: 245 244 235;
+  /* Scroll sections invert the hero: black panel in light mode, white in dark */
+  --section-bg: 0 0 0;
+  --section-fg: 255 255 255;
 }
 
 .dark {
   --paper: 0 0 0;
   --ink: 255 255 255;
   --surface: 17 17 17;
+  --section-bg: 255 255 255;
+  --section-fg: 0 0 0;
 }
 
 html, body {
@@ -82,5 +87,13 @@ html.custom-cursor, html.custom-cursor * {
 
   .meta-label {
     @apply font-body text-[10px] uppercase tracking-[0.32em] text-ink/55;
+  }
+
+  .section-panel {
+    @apply bg-section-bg text-section-fg transition-colors duration-500;
+  }
+
+  .section-panel .meta-label {
+    @apply text-section-fg/55;
   }
 }

@@ -11,6 +11,4 @@ export const INTRO_COPY = {
     "Previously, I've shipped for the Kuppam Area Development Authority (Andhra Pradesh), built hospital ops at Curengo, and delivered brand and product sites for Verdura and Womarpools — experience across government scale, regulated health-tech, and fast-moving founder work.",
   cta: "Let's talk",
   skillsCta: "View stack",
-  image: "/intro-portrait.png",
-  imageAlt: "Ashish Kallada — portrait",
 } as const;

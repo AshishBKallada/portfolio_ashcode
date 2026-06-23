@@ -14,9 +14,12 @@ export default function Page() {
       <Header />
       <main className="relative z-0 m-0 p-0">
         <Hero />
-        <Statement />
-        <Projects />
-        <Contact />
+        <div aria-hidden className="h-screen min-h-screen shrink-0" />
+        <div className="relative z-10">
+          <Statement />
+          <Projects />
+          <Contact />
+        </div>
       </main>
     </>
   );

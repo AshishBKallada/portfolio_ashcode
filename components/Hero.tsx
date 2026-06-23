@@ -199,7 +199,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="home"
-      className="relative w-full h-screen min-h-screen overflow-hidden bg-paper text-ink transition-colors duration-500"
+      className="fixed inset-0 z-0 w-full h-screen min-h-screen overflow-hidden bg-paper text-ink transition-colors duration-500"
     >
       <div className="hero-headline pointer-events-none absolute inset-y-0 left-0 z-[1] flex w-full items-center px-5 md:px-10 lg:px-12">
         <h1 className="font-main font-normal not-italic leading-[0.92] tracking-[0.02em] text-[clamp(2.5rem,9vw,7.5rem)] select-none">
