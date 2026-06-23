@@ -247,18 +247,19 @@ export default function Hero() {
     };
   }, []);
 
-  // Drift the figure down + right and scale it down as the user scrolls,
-  // so it lands over the top of the intro portrait. Eases back on scroll up.
+  // Drift the figure toward the intro portrait as the user scrolls. The portrait
+  // lives in the right column on lg+ and collapses below the bio on smaller
+  // screens, so the offsets differ per breakpoint.
   useEffect(() => {
     const root = sectionRef.current;
     const target = heroImageDriftRef.current;
     if (!root || !target) return;
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+
+    const drift = (vars: { yPercent: number; xPercent: number; scale: number }) => {
       gsap.to(target, {
-        yPercent: 58,
-        xPercent: 24,
-        scale: 0.65,
+        ...vars,
         transformOrigin: "50% 50%",
         ease: "none",
         scrollTrigger: {
@@ -268,8 +269,19 @@ export default function Hero() {
           scrub: 0.5,
         },
       });
-    }, sectionRef);
-    return () => ctx.revert();
+    };
+
+    mm.add("(min-width: 1024px)", () => {
+      drift({ yPercent: 58, xPercent: 24, scale: 0.65 });
+    });
+    mm.add("(min-width: 640px) and (max-width: 1023px)", () => {
+      drift({ yPercent: 78, xPercent: 0, scale: 0.55 });
+    });
+    mm.add("(max-width: 639px)", () => {
+      drift({ yPercent: 95, xPercent: 0, scale: 0.45 });
+    });
+
+    return () => mm.revert();
   }, []);
 
   return (
