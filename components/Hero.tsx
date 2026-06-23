@@ -32,6 +32,7 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const heroImageDriftRef = useRef<HTMLDivElement>(null);
   const heroImageMouseRef = useRef<HTMLDivElement>(null);
+  const heroImageBounceRef = useRef<HTMLDivElement>(null);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.18);
   const entranceRanRef = useRef(false);
   const variantIdxRef = useRef(0);
@@ -247,6 +248,59 @@ export default function Hero() {
     };
   }, []);
 
+  // Gentle floating drift on the hero figure while idle at the top of the page.
+  useEffect(() => {
+    const section = sectionRef.current;
+    const bounceEl = heroImageBounceRef.current;
+    if (!section || !bounceEl || typeof window === "undefined") return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+
+    let stopped = false;
+    let floatTween: gsap.core.Tween | null = null;
+
+    const stopFloat = () => {
+      if (stopped) return;
+      stopped = true;
+      floatTween?.kill();
+      gsap.to(bounceEl, { y: 0, duration: 0.6, ease: "sine.out" });
+    };
+
+    const startFloat = () => {
+      if (stopped || floatTween) return;
+      floatTween = gsap.to(bounceEl, {
+        y: -12,
+        duration: 3.2,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+      });
+    };
+
+    const onLoaderDone = () => window.setTimeout(startFloat, 1400);
+    window.addEventListener("loader:done", onLoaderDone, { once: true });
+    const safety = window.setTimeout(startFloat, 7200);
+
+    const scrollTrigger = ScrollTrigger.create({
+      trigger: section,
+      start: "top top",
+      end: "bottom top",
+      onUpdate(self) {
+        if (self.progress > 0.01) stopFloat();
+      },
+    });
+
+    if (window.scrollY > 12) stopFloat();
+
+    return () => {
+      window.removeEventListener("loader:done", onLoaderDone);
+      window.clearTimeout(safety);
+      scrollTrigger.kill();
+      floatTween?.kill();
+    };
+  }, []);
+
   // Drift the figure toward the intro portrait as the user scrolls. The portrait
   // lives in the right column on lg+ and collapses below the bio on smaller
   // screens, so the offsets differ per breakpoint.
@@ -312,16 +366,18 @@ export default function Hero() {
         >
           <div
             ref={heroImageMouseRef}
-            className="hero-image-inner relative h-full w-full will-change-transform"
+            className="relative h-full w-full will-change-transform"
           >
-            <Image
-              src={HERO_IMAGE}
-              alt=""
-              fill
-              priority
-              sizes="(max-width: 1024px) 88vw, 620px"
-              className="object-contain object-bottom"
-            />
+            <div ref={heroImageBounceRef} className="hero-image-inner relative h-full w-full will-change-transform">
+              <Image
+                src={HERO_IMAGE}
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1024px) 88vw, 620px"
+                className="object-contain object-bottom"
+              />
+            </div>
           </div>
         </div>
 
