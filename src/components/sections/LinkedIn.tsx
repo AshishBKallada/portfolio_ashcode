@@ -1,26 +1,23 @@
 import { linkedinSays } from "@/data/linkedin";
 import { LinkedInGrid } from "@/components/sections/linkedin/LinkedInGrid";
-import { RevealText } from "@/components/motion/Reveal";
-import { Section } from "@/components/layout/Section";
-import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 
 export function LinkedIn() {
   return (
-    <Section id="linkedin" className="py-20 sm:py-24">
-      <RevealText className="flex justify-center">
-        <SectionEyebrow number="03" label="LinkedIn" />
-      </RevealText>
-      <RevealText>
-        <h2 className="mt-5 text-center font-sans text-3xl leading-[1.2] font-medium tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
-          {linkedinSays.headlineBefore}{" "}
-          <em className="font-serif font-extralight italic">
-            {linkedinSays.headlineItalic}
-          </em>{" "}
-          {linkedinSays.headlineAfter}
-        </h2>
-      </RevealText>
+    <section
+      id="linkedin"
+      className="flex min-h-[70svh] scroll-mt-20 flex-col items-center justify-center bg-background px-4 py-24 sm:px-8 sm:py-32"
+    >
+      <h2 className="mb-4 w-full max-w-5xl text-center font-serif text-[clamp(1.05rem,2.4vw,1.5rem)] font-extralight italic tracking-tight text-foreground">
+        {linkedinSays.title}
+      </h2>
 
-      <LinkedInGrid />
-    </Section>
+      <div className="w-full max-w-5xl">
+        <LinkedInGrid />
+      </div>
+
+      <p className="mt-5 text-center font-serif text-[13px] font-extralight italic tracking-tight text-foreground sm:text-sm">
+        {linkedinSays.subtitle}
+      </p>
+    </section>
   );
 }

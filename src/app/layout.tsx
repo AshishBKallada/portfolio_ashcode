@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
@@ -88,7 +87,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <main id="main" className="flex-1">
                 {children}
               </main>
-              <Footer />
             </div>
           </SmoothScroll>
         </MotionProvider>

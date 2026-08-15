@@ -41,6 +41,11 @@ body {
   font-weight: 400;
 }
 
+html:has(.hero-stage),
+body:has(.hero-stage) {
+  background: #dc2626;
+}
+
 /* Editorial grain — very subtle, fixed to viewport, ignored by pointer/reader. */
 body::before {
   content: "";

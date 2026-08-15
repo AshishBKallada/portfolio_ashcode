@@ -1,19 +1,12 @@
-import Image from "next/image";
 import { site } from "@/data/site";
+import { HeroCta } from "@/components/sections/hero/HeroCta";
+import { HeroOverlay } from "@/components/sections/hero/HeroOverlay";
 
 export function Hero() {
   return (
-    <section className="relative h-full w-full overflow-hidden bg-red-600">
-      <Image
-        src="/images/hero/bg.png"
-        alt=""
-        width={669}
-        height={373}
-        priority
-        sizes="100vw"
-        className="relative z-[1] h-auto w-full select-none object-contain object-top"
-      />
-      <div className="absolute inset-0 z-10 flex h-full w-full flex-col px-6 pt-24 pb-8 md:px-12 md:pt-28 lg:px-20">
+    <section className="relative h-full w-full overflow-hidden bg-[#dc2626]">
+      <HeroOverlay />
+      <div className="absolute inset-0 z-10 flex h-full w-full flex-col px-6 pt-24 pb-12 md:px-12 md:pt-28 md:pb-14 lg:px-20">
         <div className="mt-auto grid grid-cols-1 gap-10 md:grid-cols-12 md:items-end md:gap-6">
           <div className="md:col-span-4 lg:col-span-3">
             <p className="text-[10px] uppercase tracking-[0.3em] text-white/70">
@@ -59,10 +52,7 @@ export function Hero() {
               <br />
               {site.hero.headlineLineThree}
             </h1>
-            <div className="mt-6 ml-auto h-px w-full max-w-md bg-white/40" />
-            <p className="mt-3 ml-auto max-w-md text-xs uppercase tracking-[0.25em] text-white/80">
-              {site.tagline}
-            </p>
+            <HeroCta />
           </div>
         </div>
 

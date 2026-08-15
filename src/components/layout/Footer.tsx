@@ -1,10 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "motion/react";
 import { AnchorLink } from "@/components/motion/AnchorLink";
 import { site } from "@/data/site";
-import { intro, introEase, introFooterDelay } from "@/components/motion/intro";
 
 function GitHubIcon() {
   return (
@@ -27,17 +25,7 @@ export function Footer() {
   const linkedin = site.socials.find((social) => social.label === "LinkedIn");
 
   return (
-    <motion.footer
-      className="mt-auto flex h-screen flex-col overflow-hidden bg-[#dc2626] font-sans text-white"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{
-        delay: introFooterDelay,
-        duration: intro.footerDuration,
-        ease: introEase,
-      }}
-    >
+    <footer className="flex h-full min-h-svh flex-col overflow-hidden bg-[#dc2626] font-sans text-white">
       <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-6 pt-20 sm:px-10 md:px-14 lg:px-20 xl:px-28">
         <figure className="mx-auto mt-6 w-full max-w-xl shrink-0 sm:mt-8">
           <div className="flex items-center gap-2">
@@ -68,7 +56,7 @@ export function Footer() {
             width={1306}
             height={816}
             sizes="(min-width: 768px) 36rem, 90vw"
-            className="h-full max-h-full w-auto max-w-full object-contain"
+            className="h-full max-h-full w-auto max-w-full border border-white/40 object-contain"
           />
         </div>
       </div>
@@ -151,6 +139,6 @@ export function Footer() {
           </div>
         </div>
       </div>
-    </motion.footer>
+    </footer>
   );
 }

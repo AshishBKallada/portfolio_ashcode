@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/Container";
+import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import { getProject, projects } from "@/data/projects";
 import { site } from "@/data/site";
@@ -47,7 +48,8 @@ export default async function ProjectPage({
   }
 
   return (
-    <article className="py-16 sm:py-24">
+    <>
+      <article className="bg-background py-16 sm:py-24">
       <Container>
         <Link
           href="/#work"
@@ -97,5 +99,7 @@ export default async function ProjectPage({
         </p>
       </Container>
     </article>
+    <Footer />
+    </>
   );
 }

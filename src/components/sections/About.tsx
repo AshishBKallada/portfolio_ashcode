@@ -5,7 +5,10 @@ import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 
 export function About() {
   return (
-    <section id="about" className="scroll-mt-20 bg-background pt-8 pb-16 sm:pt-10 sm:pb-20">
+    <section
+      id="about"
+      className="relative z-10 scroll-mt-20 overflow-visible bg-background pt-8 pb-40 sm:pt-10 sm:pb-48 lg:pb-56"
+    >
       <div className="px-3 text-left sm:px-4">
         <RevealItem>
           <SectionEyebrow number="01" label={site.about.eyebrow} />

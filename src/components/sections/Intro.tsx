@@ -4,7 +4,7 @@ export function Intro() {
   return (
     <section
       id="intro"
-      className="flex min-h-svh flex-col items-center justify-center bg-red-600 px-6 text-white"
+      className="flex h-full min-h-svh flex-col items-center justify-center bg-[#dc2626] px-6 text-white"
     >
       <p className="font-sans text-[10px] font-medium tracking-[0.28em] text-white uppercase">
         {site.intro.number} — {site.intro.eyebrow}

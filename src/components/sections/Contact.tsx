@@ -6,7 +6,11 @@ import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 
 export function Contact() {
   return (
-    <Section id="contact" bleedRight className="py-20 sm:py-28">
+    <Section
+      id="contact"
+      bleedRight
+      className="flex h-full min-h-svh flex-col justify-center py-20 sm:py-28"
+    >
       <div className="flex flex-col items-stretch gap-10 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
         <div className="max-w-xl shrink-0 lg:w-[46%]">
           <SectionEyebrow number="04" label={site.contact.eyebrow} />

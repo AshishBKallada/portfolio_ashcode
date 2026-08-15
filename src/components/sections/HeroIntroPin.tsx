@@ -8,7 +8,7 @@ import { Intro } from "@/components/sections/Intro";
 
 function slideY(scroll: number) {
   const vh = window.innerHeight || 1;
-  return -Math.min(Math.max(scroll, 0), vh);
+  return -Math.round(Math.min(Math.max(scroll, 0), vh));
 }
 
 export function HeroIntroPin() {
@@ -28,18 +28,25 @@ export function HeroIntroPin() {
   }, [lenis, y]);
 
   return (
-    <div className="relative h-[200svh]">
-      <div className="sticky top-0 z-20 h-svh overflow-hidden bg-red-600">
+    <>
+      <div className="hero-stage sticky top-0 z-10 h-dvh min-h-svh overflow-hidden bg-[#dc2626]">
         <div className="absolute inset-0 z-0">
           <Intro />
         </div>
         <motion.div
           style={{ y }}
-          className="absolute inset-0 z-10 will-change-transform"
+          transformTemplate={(_values, generated) => {
+            const nextY = _values.y;
+            const n =
+              typeof nextY === "number" ? nextY : parseFloat(String(nextY ?? 0));
+            return !n ? "none" : generated;
+          }}
+          className="absolute inset-0 z-10 bg-transparent"
         >
           <Hero />
         </motion.div>
       </div>
-    </div>
+      <div className="h-dvh" aria-hidden />
+    </>
   );
 }

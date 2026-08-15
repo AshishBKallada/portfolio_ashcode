@@ -1,11 +1,18 @@
 import { linkedinSays } from "@/data/linkedin";
 import { LinkedInCard } from "./LinkedInCard";
 
+const TILES = 10;
+
 export function LinkedInGrid() {
+  const frames = Array.from(
+    { length: TILES },
+    (_, index) => linkedinSays.items[index % linkedinSays.items.length],
+  );
+
   return (
-    <div className="mt-12 columns-1 sm:mt-16 sm:columns-2 lg:columns-4 sm:gap-x-4 lg:gap-x-5">
-      {linkedinSays.items.map((item) => (
-        <LinkedInCard key={item.id} item={item} />
+    <div className="flex w-full gap-px">
+      {frames.map((item, index) => (
+        <LinkedInCard key={`${item.id}-${index}`} item={item} />
       ))}
     </div>
   );

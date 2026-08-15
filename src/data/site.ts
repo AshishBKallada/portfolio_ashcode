@@ -47,6 +47,8 @@ export const site = {
     sublineMiddle: "and interfaces with",
     sublineHighlightTwo: "weight",
     note: "Obsession beats talent. Embarrassment rips talent into craft.",
+    cta: { label: "Get in Touch", href: "/#contact" },
+    services: ["Brand Design", "Motion", "UI/UX"],
   },
   work: {
     eyebrow: "Work",

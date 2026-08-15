@@ -2,20 +2,21 @@ export type LinkedInItem = {
   id: string;
   title: string;
   tag: string;
+  note: string;
   image: string;
   width: number;
   height: number;
 };
 
 export const linkedinSays = {
-  headlineBefore: "What my",
-  headlineItalic: "LinkedIn",
-  headlineAfter: "says.",
+  title: "What my LinkedIn says",
+  subtitle: "more than a highlight reel",
   items: [
     {
       id: "intro",
       title: "Intro",
       tag: "Web",
+      note: "First impression, still sharp.",
       image: "/images/linkedin/intro.avif",
       width: 750,
       height: 485,
@@ -24,6 +25,7 @@ export const linkedinSays = {
       id: "mockup-2",
       title: "Product",
       tag: "UI",
+      note: "Interfaces with actual weight.",
       image: "/images/linkedin/mockup-2.avif",
       width: 750,
       height: 562,
@@ -32,6 +34,7 @@ export const linkedinSays = {
       id: "responsive",
       title: "Responsive",
       tag: "Web Design",
+      note: "One system. Every screen.",
       image: "/images/linkedin/mockup-responsive.avif",
       width: 750,
       height: 562,
@@ -40,6 +43,7 @@ export const linkedinSays = {
       id: "mockup-1",
       title: "Screens",
       tag: "App",
+      note: "Flows, not just frames.",
       image: "/images/linkedin/mockup-1.avif",
       width: 750,
       height: 562,
@@ -48,6 +52,7 @@ export const linkedinSays = {
       id: "still-life",
       title: "Still life",
       tag: "Visual",
+      note: "Quiet shots. Loud craft.",
       image: "/images/linkedin/still-life.avif",
       width: 750,
       height: 503,
@@ -56,6 +61,7 @@ export const linkedinSays = {
       id: "intro-project",
       title: "Project",
       tag: "Case study",
+      note: "The story after ship.",
       image: "/images/linkedin/intro-project.avif",
       width: 750,
       height: 439,
@@ -64,6 +70,7 @@ export const linkedinSays = {
       id: "mockup",
       title: "Desktop",
       tag: "Product",
+      note: "Built to sit on a desk all day.",
       image: "/images/linkedin/mockup.avif",
       width: 750,
       height: 562,
@@ -72,6 +79,7 @@ export const linkedinSays = {
       id: "laptop",
       title: "Laptop",
       tag: "Mockup",
+      note: "Looks like it belongs.",
       image: "/images/linkedin/mockup-laptop.avif",
       width: 750,
       height: 563,

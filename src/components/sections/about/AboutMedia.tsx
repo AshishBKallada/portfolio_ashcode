@@ -39,7 +39,7 @@ export function AboutMedia() {
   return (
     <div
       ref={containerRef}
-      className="relative mt-8 min-h-[16rem] w-full aspect-[16/7] sm:mt-10 sm:min-h-[20rem] lg:min-h-[24rem]"
+      className="relative mt-8 min-h-[22rem] w-full aspect-[16/9] sm:mt-10 sm:min-h-[28rem] lg:min-h-[36rem]"
     >
       <div className="absolute inset-0 overflow-hidden">
         {gallery.map((src, i) => (
@@ -49,7 +49,7 @@ export function AboutMedia() {
             alt=""
             fill
             sizes="100vw"
-            className={`object-cover transition-opacity duration-300 ${
+            className={`object-cover object-center transition-opacity duration-300 ${
               i === index ? "opacity-100" : "opacity-0"
             }`}
           />

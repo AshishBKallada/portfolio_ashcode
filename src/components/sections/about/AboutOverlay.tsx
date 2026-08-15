@@ -1,7 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import type { RefObject } from "react";
 import { site } from "@/data/site";
 
@@ -17,15 +23,21 @@ export function AboutOverlay({ targetRef }: AboutOverlayProps) {
   });
   const rotate = useTransform(
     scrollYProgress,
-    [0, 0.28, 0.72, 1],
-    [0, 45, 45, 0],
+    [0, 0.38, 0.68, 1],
+    [0, 42, 42, 0],
   );
+  const smoothRotate = useSpring(rotate, {
+    stiffness: 48,
+    damping: 24,
+    mass: 0.9,
+    restDelta: 0.001,
+  });
 
   return (
     <div className="pointer-events-none absolute right-20 -bottom-36 z-10 sm:right-28 sm:-bottom-44 lg:right-36 lg:-bottom-52">
       <motion.div
         className="origin-bottom-right will-change-transform"
-        style={reduceMotion ? undefined : { rotate }}
+        style={reduceMotion ? undefined : { rotate: smoothRotate }}
       >
         <Image
           src={site.about.overlay}
