@@ -10,7 +10,7 @@ export function LinkedInGrid() {
   );
 
   return (
-    <div className="flex w-full gap-px">
+    <div className="group/strip flex aspect-[15/2] w-full items-stretch gap-px overflow-visible">
       {frames.map((item, index) => (
         <LinkedInCard key={`${item.id}-${index}`} item={item} />
       ))}

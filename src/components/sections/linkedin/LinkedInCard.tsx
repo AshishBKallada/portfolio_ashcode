@@ -5,7 +5,7 @@ export function LinkedInCard({ item }: { item: LinkedInItem }) {
   return (
     <div
       tabIndex={0}
-      className="group relative aspect-[3/4] min-w-0 flex-1 cursor-pointer outline-none [perspective:900px]"
+      className="group relative z-0 h-full min-h-0 min-w-0 grow basis-0 cursor-pointer outline-none transition-[flex-grow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [perspective:900px] motion-safe:group-has-[:is(:hover,:focus-within)]/strip:grow-[0.78] motion-safe:hover:z-20 motion-safe:hover:!grow-[2] motion-safe:focus-within:z-20 motion-safe:focus-within:!grow-[2]"
     >
       <div className="relative h-full w-full transition-transform duration-500 ease-out [transform-style:preserve-3d] [-webkit-transform-style:preserve-3d] motion-safe:group-hover:[transform:rotateY(180deg)] motion-safe:group-focus-within:[transform:rotateY(180deg)]">
         <div className="absolute inset-0 overflow-hidden bg-surface [backface-visibility:hidden] [-webkit-backface-visibility:hidden]">
