@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { site } from "@/data/site";
+import { AboutOverlay } from "@/components/sections/about/AboutOverlay";
 
 const gallery = site.about.gallery;
 
@@ -38,16 +39,16 @@ export function AboutMedia() {
   return (
     <div
       ref={containerRef}
-      className="mt-8 flex aspect-[16/7] min-h-[16rem] gap-2 sm:mt-10 sm:min-h-[20rem] sm:gap-3 lg:min-h-[24rem]"
+      className="relative mt-8 min-h-[16rem] w-full aspect-[16/7] sm:mt-10 sm:min-h-[20rem] lg:min-h-[24rem]"
     >
-      <div className="relative w-3/4 overflow-hidden rounded-xl bg-surface">
+      <div className="absolute inset-0 overflow-hidden">
         {gallery.map((src, i) => (
           <Image
             key={src}
             src={src}
             alt=""
             fill
-            sizes="75vw"
+            sizes="100vw"
             className={`object-cover transition-opacity duration-300 ${
               i === index ? "opacity-100" : "opacity-0"
             }`}
@@ -55,16 +56,7 @@ export function AboutMedia() {
         ))}
       </div>
 
-      <div className="relative flex w-1/4 items-end overflow-hidden rounded-xl">
-        <Image
-          src={site.about.cardImage}
-          alt=""
-          width={1280}
-          height={854}
-          sizes="25vw"
-          className="h-auto w-full object-contain object-bottom grayscale"
-        />
-      </div>
+      <AboutOverlay targetRef={containerRef} />
     </div>
   );
 }

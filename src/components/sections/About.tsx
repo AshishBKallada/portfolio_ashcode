@@ -1,13 +1,12 @@
 import { site } from "@/data/site";
 import { AboutMedia } from "@/components/sections/about/AboutMedia";
 import { RevealItem } from "@/components/motion/Reveal";
-import { Section } from "@/components/layout/Section";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 
 export function About() {
   return (
-    <Section id="about" className="pt-8 pb-16 sm:pt-10 sm:pb-20">
-      <div className="text-left">
+    <section id="about" className="scroll-mt-20 bg-background pt-8 pb-16 sm:pt-10 sm:pb-20">
+      <div className="px-3 text-left sm:px-4">
         <RevealItem>
           <SectionEyebrow number="01" label={site.about.eyebrow} />
         </RevealItem>
@@ -30,6 +29,6 @@ export function About() {
       </div>
 
       <AboutMedia />
-    </Section>
+    </section>
   );
 }

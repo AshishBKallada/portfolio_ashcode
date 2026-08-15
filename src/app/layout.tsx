@@ -83,11 +83,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <MotionProvider>
           <SmoothScroll>
-            <Header />
-            <main id="main" className="flex-1">
-              {children}
-            </main>
-            <Footer />
+            <div className="relative z-[2]">
+              <Header />
+              <main id="main" className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
           </SmoothScroll>
         </MotionProvider>
       </body>

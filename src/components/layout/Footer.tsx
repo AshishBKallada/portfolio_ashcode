@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "motion/react";
 import { AnchorLink } from "@/components/motion/AnchorLink";
 import { site } from "@/data/site";
@@ -7,7 +8,7 @@ import { intro, introEase, introFooterDelay } from "@/components/motion/intro";
 
 function GitHubIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-3.5 fill-background">
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-3.5 fill-[#dc2626]">
       <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 7.5c.85 0 1.71.12 2.51.34 1.9-1.32 2.74-1.05 2.74-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.58 5.06.36.32.68.95.68 1.92 0 1.38-.01 2.49-.01 2.83 0 .27.18.6.69.49A10.03 10.03 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z" />
     </svg>
   );
@@ -15,7 +16,7 @@ function GitHubIcon() {
 
 function LinkedInIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-3.5 fill-background">
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-3.5 fill-[#dc2626]">
       <path d="M6.5 8.5A2 2 0 1 1 6.48 4.5 2 2 0 0 1 6.5 8.5ZM4.75 20h3.5V9.75h-3.5V20ZM13.2 9.75c-1.86 0-2.7 1.02-2.7 1.02V9.75H7.1V20h3.4v-5.7c0-1.5.7-2.4 1.95-2.4 1.16 0 1.8.82 1.8 2.4V20H17.7v-6.3c0-3.18-1.7-4.95-4.5-4.95Z" />
     </svg>
   );
@@ -27,27 +28,62 @@ export function Footer() {
 
   return (
     <motion.footer
-      className="mt-auto bg-background font-sans text-foreground"
+      className="mt-auto flex h-screen flex-col overflow-hidden bg-[#dc2626] font-sans text-white"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.15 }}
       transition={{
         delay: introFooterDelay,
         duration: intro.footerDuration,
         ease: introEase,
       }}
     >
-      <div className="px-6 py-14 sm:px-10 sm:py-16 lg:px-14 lg:py-20">
-        <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-6 pt-20 sm:px-10 md:px-14 lg:px-20 xl:px-28">
+        <figure className="mx-auto mt-6 w-full max-w-xl shrink-0 sm:mt-8">
+          <div className="flex items-center gap-2">
+            <span className="h-px w-8 shrink-0 bg-white" />
+            <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-white">
+              Attributed to the school of AshCode
+            </p>
+          </div>
+          <blockquote className="mt-3 border-b border-white pb-3 font-serif text-[0.95rem] leading-[1.55] tracking-tight text-white sm:text-base">
+            &ldquo;If it bears the mark of{" "}
+            <em className="font-serif font-extralight italic">AshCode</em>, the
+            code shall run{" "}
+            <em className="font-serif font-extralight italic">
+              cleaner than water
+            </em>
+            , truer than stone, and last{" "}
+            <em className="font-serif font-extralight italic">
+              longer than the hand that carved it
+            </em>
+            .&rdquo;
+          </blockquote>
+        </figure>
+
+        <div className="mx-auto mt-6 flex min-h-0 w-full max-w-md flex-1 items-center justify-center sm:max-w-lg md:max-w-xl">
+          <Image
+            src="/images/ancients.png"
+            alt="Ancient philosophers examining a laptop, painted in classical oil style."
+            width={1306}
+            height={816}
+            sizes="(min-width: 768px) 36rem, 90vw"
+            className="h-full max-h-full w-auto max-w-full object-contain"
+          />
+        </div>
+      </div>
+
+      <div className="shrink-0 px-6 py-6 sm:px-10 lg:px-14">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
           <div className="max-w-sm">
-            <p className="font-sans text-2xl font-medium tracking-[-0.04em] sm:text-[1.75rem]">
+            <p className="font-sans text-xl font-medium tracking-[-0.04em] text-white sm:text-2xl">
               {site.name}
             </p>
-            <p className="mt-4 max-w-xs font-sans text-[13px] leading-6 tracking-[-0.02em] text-muted">
+            <p className="mt-3 max-w-xs font-sans text-[13px] leading-6 tracking-[-0.02em] text-white/80">
               {site.footer.noteBefore}{" "}
               <a
                 href={`mailto:${site.email}`}
-                className="underline decoration-subtle underline-offset-2 transition-colors hover:decoration-foreground"
+                className="underline decoration-white/50 underline-offset-2 transition-colors hover:decoration-white"
               >
                 {site.email}
               </a>
@@ -57,7 +93,7 @@ export function Footer() {
 
           <nav aria-label="Footer" className="flex gap-16 sm:gap-24">
             {site.footer.columns.map((column, index) => (
-              <ul key={index} className="flex flex-col gap-3">
+              <ul key={index} className="flex flex-col gap-2">
                 {column.map((item) => (
                   <li key={item.label}>
                     {"external" in item && item.external ? (
@@ -65,14 +101,14 @@ export function Footer() {
                         href={item.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-sans text-[13px] tracking-[-0.02em] text-foreground transition-opacity hover:opacity-50"
+                        className="font-sans text-[13px] tracking-[-0.02em] text-white transition-opacity hover:opacity-50"
                       >
                         {item.label}
                       </a>
                     ) : (
                       <AnchorLink
                         href={item.href}
-                        className="font-sans text-[13px] tracking-[-0.02em] text-foreground transition-opacity hover:opacity-50"
+                        className="font-sans text-[13px] tracking-[-0.02em] text-white transition-opacity hover:opacity-50"
                       >
                         {item.label}
                       </AnchorLink>
@@ -84,8 +120,8 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-16 flex items-center justify-between gap-4 sm:mt-20">
-          <p className="inline-flex items-center rounded-md bg-foreground px-3 py-2 font-sans text-[11px] font-medium tracking-[-0.02em] text-background sm:text-xs">
+        <div className="mt-8 flex items-center justify-between gap-4">
+          <p className="inline-flex items-center rounded-md bg-white px-3 py-2 font-sans text-[11px] font-medium tracking-[-0.02em] text-[#dc2626] sm:text-xs">
             {site.footer.badge}
           </p>
 
@@ -96,7 +132,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="inline-flex size-8 items-center justify-center rounded-full bg-foreground transition-opacity hover:opacity-70"
+                className="inline-flex size-8 items-center justify-center rounded-full bg-white transition-opacity hover:opacity-70"
               >
                 <LinkedInIcon />
               </a>
@@ -107,7 +143,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="inline-flex size-8 items-center justify-center rounded-full bg-foreground transition-opacity hover:opacity-70"
+                className="inline-flex size-8 items-center justify-center rounded-full bg-white transition-opacity hover:opacity-70"
               >
                 <GitHubIcon />
               </a>
