@@ -41,9 +41,11 @@ body {
   font-weight: 400;
 }
 
-html:has(.hero-stage),
-body:has(.hero-stage) {
-  background: #dc2626;
+/* Lock scroll while the initial loader is mounted. The loader renders in SSR,
+   so this kicks in on the very first paint — no flash, no JS class-attach race. */
+html:has(.site-loader),
+body:has(.site-loader) {
+  overflow: hidden;
 }
 
 /* Editorial grain — very subtle, fixed to viewport, ignored by pointer/reader. */

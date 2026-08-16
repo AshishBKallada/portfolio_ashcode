@@ -29,7 +29,7 @@ export function HeroIntroPin() {
 
   return (
     <>
-      <div className="hero-stage sticky top-0 z-10 h-dvh min-h-svh overflow-hidden bg-[#dc2626]">
+      <div className="hero-stage sticky top-0 z-10 h-dvh min-h-svh overflow-hidden bg-transparent">
         <div className="absolute inset-0 z-0">
           <Intro />
         </div>

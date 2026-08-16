@@ -1,15 +1,18 @@
-import { FastImage } from "@/components/ui/FastImage";
-
 export function HeroOverlay() {
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-[5] bg-transparent">
-      <FastImage
-        src="/images/hero/bg.png?v=original"
+    <div className="pointer-events-none absolute inset-0 z-[5] bg-transparent">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/hero/bg.png"
+        srcSet="/images/hero/bg.png 1376w"
+        sizes="100vw"
         alt=""
         width={1376}
         height={768}
-        priority
-        className="h-auto w-full bg-transparent object-contain object-top select-none"
+        decoding="async"
+        fetchPriority="high"
+        draggable={false}
+        className="block h-full w-full bg-transparent object-cover object-top select-none"
       />
     </div>
   );

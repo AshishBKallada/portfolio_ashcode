@@ -7,7 +7,7 @@ export function ContactActions() {
     <div className="mt-8 flex flex-wrap gap-3">
       <a
         href={`mailto:${site.email}`}
-        className="inline-flex items-center rounded-lg bg-foreground px-5 py-2.5 font-sans text-[13px] font-medium tracking-[-0.02em] text-background transition-opacity hover:opacity-80"
+        className="inline-flex items-center rounded-lg bg-[#dc2626] px-5 py-2.5 font-sans text-[13px] font-medium tracking-[-0.02em] text-white transition-opacity hover:opacity-80"
       >
         {site.email}
       </a>

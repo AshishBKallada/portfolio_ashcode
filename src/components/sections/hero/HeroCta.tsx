@@ -19,14 +19,7 @@ export function HeroCta() {
         className="hidden h-8 w-px border-l border-dashed border-white/45 sm:block"
       />
 
-      <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-[13px] text-white">
-        {site.hero.services.map((label) => (
-          <li key={label} className="flex items-center gap-2">
-            <span className="size-1 shrink-0 rounded-full bg-white" />
-            {label}
-          </li>
-        ))}
-      </ul>
+      <p className="font-sans text-[13px] text-white">{site.hero.role}</p>
     </div>
   );
 }
