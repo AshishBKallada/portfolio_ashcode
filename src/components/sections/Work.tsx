@@ -5,7 +5,7 @@ import Image from "next/image";
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
 import { ProjectCard } from "@/components/ui/ProjectCard";
-import { RevealItem } from "@/components/motion/Reveal";
+import { SectionReveal } from "@/components/motion/SectionReveal";
 import { Section } from "@/components/layout/Section";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 
@@ -39,16 +39,20 @@ export function Work() {
 
   return (
     <Section id="work" className="pt-16 pb-20 sm:pt-20 sm:pb-24">
-      <RevealItem className="mb-16 ml-auto max-w-xl sm:mb-20 lg:max-w-2xl lg:w-[52%]">
-        <SectionEyebrow number="02" label={site.work.eyebrow} />
-        <h2 className="mt-4 font-sans text-3xl leading-[1.2] font-medium tracking-tight text-foreground sm:text-4xl lg:text-[2.85rem]">
-          {site.work.headlineBefore}{" "}
-          <em className="font-serif font-extralight italic">
-            {site.work.headlineItalic}
-          </em>
-          {site.work.headlineAfter}
-        </h2>
-      </RevealItem>
+      <div className="mb-16 ml-auto max-w-xl sm:mb-20 lg:max-w-2xl lg:w-[52%]">
+        <SectionReveal>
+          <SectionEyebrow number="02" label={site.work.eyebrow} />
+        </SectionReveal>
+        <SectionReveal delay={0.08} className="mt-4">
+          <h2 className="font-sans text-3xl leading-[1.2] font-medium tracking-tight text-foreground sm:text-4xl lg:text-[2.85rem]">
+            {site.work.headlineBefore}{" "}
+            <em className="font-serif font-extralight italic">
+              {site.work.headlineItalic}
+            </em>
+            {site.work.headlineAfter}
+          </h2>
+        </SectionReveal>
+      </div>
 
       <div className="border-b border-border">
         {projects.map((project, index) => (

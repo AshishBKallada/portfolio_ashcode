@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/Header";
 import { SiteLoader } from "@/components/layout/SiteLoader";
+import { HeroIntroProvider } from "@/components/motion/HeroIntroProvider";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { site } from "@/data/site";
@@ -109,17 +110,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        <SiteLoader />
-        <MotionProvider>
-          <SmoothScroll>
-            <div className="relative z-[2]">
-              <Header />
-              <main id="main" className="flex-1">
-                {children}
-              </main>
-            </div>
-          </SmoothScroll>
-        </MotionProvider>
+        <HeroIntroProvider>
+          <SiteLoader />
+          <MotionProvider>
+            <SmoothScroll>
+              <div className="relative z-[2]">
+                <Header />
+                <main id="main" className="flex-1">
+                  {children}
+                </main>
+              </div>
+            </SmoothScroll>
+          </MotionProvider>
+        </HeroIntroProvider>
       </body>
     </html>
   );

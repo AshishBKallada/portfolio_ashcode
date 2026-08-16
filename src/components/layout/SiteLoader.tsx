@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
+import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { introEase } from "@/components/motion/intro";
 import { site } from "@/data/site";
 
@@ -13,6 +14,7 @@ const MAX_DISPLAY_MS = 6000;
 export function SiteLoader() {
   const [ready, setReady] = useState(false);
   const reduce = useReducedMotion();
+  const { markLoaded } = useHeroIntro();
 
   useEffect(() => {
     const start = performance.now();
@@ -23,7 +25,9 @@ export function SiteLoader() {
       const elapsed = performance.now() - start;
       const wait = Math.max(0, MIN_DISPLAY_MS - elapsed);
       window.setTimeout(() => {
-        if (!cancelled) setReady(true);
+        if (cancelled) return;
+        setReady(true);
+        markLoaded();
       }, wait);
     };
 
@@ -49,7 +53,7 @@ export function SiteLoader() {
       cancelled = true;
       window.clearTimeout(cap);
     };
-  }, []);
+  }, [markLoaded]);
 
   return (
     <AnimatePresence>

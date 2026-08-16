@@ -1,8 +1,11 @@
 "use client";
 
+import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { AnchorLink } from "@/components/motion/AnchorLink";
+import { introEase } from "@/components/motion/intro";
 import { site } from "@/data/site";
 
 const nav = [
@@ -14,6 +17,9 @@ const nav = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const { phase } = useHeroIntro();
+  const reduce = useReducedMotion();
+  const visible = phase === "done";
 
   useEffect(() => {
     if (!open) return;
@@ -25,7 +31,13 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-transparent font-sans text-white">
+    <motion.header
+      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+      animate={
+        visible || reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }
+      }
+      transition={{ duration: reduce ? 0 : 0.55, ease: introEase }}
+      className="fixed inset-x-0 top-0 z-50 bg-transparent font-sans text-white">
       <div className="mx-4 border-b border-white/15 sm:mx-5">
         <div className="flex items-center gap-4 py-3">
           <Link
@@ -106,6 +118,6 @@ export function Header() {
           </ul>
         </nav>
       </div>
-    </header>
+    </motion.header>
   );
 }
