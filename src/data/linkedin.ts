@@ -66,23 +66,5 @@ export const linkedinSays = {
       width: 750,
       height: 439,
     },
-    {
-      id: "mockup",
-      title: "Desktop",
-      tag: "Product",
-      note: "Built to sit on a desk all day.",
-      image: "/images/linkedin/mockup.avif",
-      width: 750,
-      height: 562,
-    },
-    {
-      id: "laptop",
-      title: "Laptop",
-      tag: "Mockup",
-      note: "Looks like it belongs.",
-      image: "/images/linkedin/mockup-laptop.avif",
-      width: 750,
-      height: 563,
-    },
   ] satisfies LinkedInItem[],
 } as const;

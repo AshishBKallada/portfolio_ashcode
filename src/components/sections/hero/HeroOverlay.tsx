@@ -13,7 +13,8 @@ const CYCLE = [
   "/images/hero/bg.png",
 ];
 const STEP_MS = 320;
-const RED = "#c0392b";
+/** Same red as Intro — sits under the transparent PNG cutout so page white never shows. */
+const RED = "#dc2626";
 
 export function HeroOverlay() {
   const { phase } = useHeroIntro();
@@ -22,7 +23,6 @@ export function HeroOverlay() {
 
   const cycling = phase === "loading" || phase === "cycle";
   const zoomed = phase === "zoom" || phase === "text" || phase === "done";
-  const settled = phase === "done";
   const index = reduce || !cycling ? CYCLE.length - 1 : cycleTick;
 
   useEffect(() => {
@@ -38,16 +38,8 @@ export function HeroOverlay() {
     <div
       aria-hidden
       className="pointer-events-none absolute inset-0 z-[5]"
+      style={{ backgroundColor: RED }}
     >
-      {/* Red backdrop fades out once the image starts filling the screen. */}
-      <motion.div
-        className="absolute inset-0"
-        initial={{ opacity: reduce ? 0 : 1 }}
-        animate={{ opacity: cycling && !reduce ? 1 : 0 }}
-        transition={{ duration: 0.55, ease: introEase }}
-        style={{ backgroundColor: RED }}
-      />
-
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
           initial={
@@ -72,7 +64,7 @@ export function HeroOverlay() {
             duration: reduce ? 0 : 0.9,
             ease: introEase,
           }}
-          className="relative overflow-hidden will-change-[width,height]"
+          className="relative overflow-hidden bg-transparent will-change-[width,height]"
         >
           <AnimatePresence mode="sync" initial={false}>
             <motion.img
@@ -89,23 +81,24 @@ export function HeroOverlay() {
               }
               animate={{
                 opacity: 1,
-                scale: settled && !reduce ? 1.04 : 1,
+                scale: 1,
               }}
               exit={{ opacity: 0, scale: 1 }}
               transition={{
                 opacity: { duration: cycling ? 0.18 : 0.4, ease: introEase },
                 scale: {
-                  duration: settled ? 6 : cycling ? 0.5 : 0.9,
-                  ease: settled ? "linear" : introEase,
+                  duration: cycling ? 0.5 : 0.9,
+                  ease: introEase,
                 },
               }}
-              className="absolute inset-0 h-full w-full object-cover select-none"
+              className="absolute inset-0 h-full w-full bg-transparent object-cover select-none [backface-visibility:hidden]"
               decoding="async"
               fetchPriority="high"
+              width={1376}
+              height={768}
             />
           </AnimatePresence>
         </motion.div>
-
       </div>
     </div>
   );

@@ -11,13 +11,14 @@ export function ContactFigure({ src }: { src: string }) {
     target: ref,
     offset: ["start 0.98", "start 0.42"],
   });
-  const rotate = useTransform(scrollYProgress, [0, 1], [-45, 0]);
-  const x = useTransform(scrollYProgress, [0, 1], ["30%", "0%"]);
+  const rotate = useTransform(scrollYProgress, [0, 1], [-38, 0]);
+  const x = useTransform(scrollYProgress, [0, 1], ["24%", "0%"]);
 
   return (
     <div
       ref={ref}
-      className="relative ml-auto w-full max-w-[360px] shrink-0 sm:max-w-[420px] lg:max-w-none lg:w-[min(42vw,520px)]"
+      aria-hidden="true"
+      className="pointer-events-none absolute right-0 bottom-0 z-0 w-[62%] max-w-[440px] opacity-90 sm:w-[46%] sm:max-w-[520px] lg:w-[40%] lg:max-w-[560px]"
     >
       <motion.div
         className="origin-bottom-right"
@@ -28,8 +29,8 @@ export function ContactFigure({ src }: { src: string }) {
           alt=""
           width={1152}
           height={927}
-          sizes="(max-width: 1024px) 80vw, 42vw"
-          className="h-auto w-full select-none object-contain object-right object-bottom grayscale"
+          sizes="(max-width: 1024px) 60vw, 40vw"
+          className="h-auto w-full select-none object-contain object-right-bottom grayscale"
         />
       </motion.div>
     </div>

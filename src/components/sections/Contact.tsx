@@ -1,38 +1,80 @@
 import { site } from "@/data/site";
 import { ContactActions } from "@/components/sections/contact/ContactActions";
 import { ContactFigure } from "@/components/sections/contact/ContactFigure";
+import { LiveClock } from "@/components/sections/contact/LiveClock";
 import { Section } from "@/components/layout/Section";
 import { SectionReveal } from "@/components/motion/SectionReveal";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 
+type Meta = { label: string; value: React.ReactNode };
+
 export function Contact() {
+  const meta: Meta[] = [
+    { label: "Location", value: site.contact.location },
+    {
+      label: `Local time · ${site.contact.timezoneLabel}`,
+      value: (
+        <LiveClock
+          timezone={site.contact.timezone}
+          label={site.contact.timezoneLabel}
+        />
+      ),
+    },
+    { label: "Response", value: site.contact.response },
+    { label: "Coordinates", value: site.contact.coordinates },
+  ];
+
   return (
     <Section
       id="contact"
-      bleedRight
-      className="flex h-full min-h-svh flex-col justify-center py-20 sm:py-28"
+      className="relative flex h-full min-h-svh flex-col justify-between overflow-hidden py-16 sm:py-20"
     >
-      <div className="flex flex-col items-stretch gap-10 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
-        <div className="max-w-xl shrink-0 lg:w-[46%]">
-          <SectionReveal>
-            <SectionEyebrow number="04" label={site.contact.eyebrow} />
-          </SectionReveal>
-          <SectionReveal delay={0.08} className="mt-4">
-            <h2 className="font-sans text-3xl leading-[1.15] font-medium tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
-              {site.contact.headlineBefore}{" "}
-              <em className="font-serif font-extralight italic">
-                {site.contact.headlineItalic}
-              </em>
-              .
-            </h2>
-          </SectionReveal>
-          <p className="mt-5 max-w-md font-sans text-[15px] leading-7 tracking-[-0.02em] text-muted">
+      <ContactFigure src={site.contact.image} />
+
+      <div className="relative z-10 flex items-start justify-between gap-6">
+        <SectionReveal>
+          <SectionEyebrow number="04" label={site.contact.eyebrow} />
+        </SectionReveal>
+        <SectionReveal delay={0.05}>
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1.5 font-sans text-[10px] font-medium tracking-[0.18em] text-muted uppercase backdrop-blur-sm">
+            <span className="dot-pulse inline-block size-1.5 rounded-full bg-[#dc2626]" />
+            {site.contact.availability}
+          </span>
+        </SectionReveal>
+      </div>
+
+      <div className="relative z-10 mt-16 max-w-5xl sm:mt-20">
+        <SectionReveal delay={0.08}>
+          <h2 className="font-sans text-[clamp(2.25rem,6.4vw,5.75rem)] font-medium leading-[1.02] tracking-[-0.03em] text-foreground">
+            {site.contact.headlineBefore}
+            <br />
+            <em className="font-serif font-extralight italic tracking-tight">
+              {site.contact.headlineItalic}.
+            </em>
+          </h2>
+        </SectionReveal>
+        <SectionReveal delay={0.16} className="mt-6">
+          <p className="max-w-md font-sans text-[15px] leading-7 tracking-[-0.02em] text-muted">
             {site.contact.body}
           </p>
-          <ContactActions />
-        </div>
+        </SectionReveal>
+      </div>
 
-        <ContactFigure src={site.contact.image} />
+      <div className="relative z-10 mt-12 max-w-3xl sm:mt-16">
+        <ContactActions />
+      </div>
+
+      <div className="relative z-10 mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-border pt-6 sm:mt-16 sm:grid-cols-4">
+        {meta.map((item) => (
+          <div key={item.label} className="flex flex-col gap-1.5">
+            <span className="font-sans text-[10px] font-medium tracking-[0.22em] text-subtle uppercase">
+              {item.label}
+            </span>
+            <span className="font-sans text-[13px] tracking-[-0.02em] text-foreground">
+              {item.value}
+            </span>
+          </div>
+        ))}
       </div>
     </Section>
   );

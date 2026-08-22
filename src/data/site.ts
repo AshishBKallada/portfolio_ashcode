@@ -62,6 +62,17 @@ export const site = {
     headlineItalic: "lasts",
     body: "Open to freelance, full-time, and collaborations that deserve real craft.",
     image: "/images/contact-hand.png",
+    availability: "Available for work — 2026",
+    location: "Remote · India",
+    timezone: "Asia/Kolkata",
+    timezoneLabel: "IST",
+    response: "Within 24 hours",
+    coordinates: "12.97° N · 77.59° E",
+    prompts: {
+      email: "Write me a note",
+      linkedin: "Say hello on",
+      github: "Read my commits on",
+    },
   },
   socials: [
     { label: "GitHub", href: "https://github.com/ashishbkallada" },

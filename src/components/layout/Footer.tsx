@@ -25,16 +25,10 @@ export function Footer() {
   const linkedin = site.socials.find((social) => social.label === "LinkedIn");
 
   return (
-    <footer className="flex h-full min-h-svh flex-col overflow-hidden bg-[#dc2626] font-sans text-white">
+    <footer className="relative flex h-full min-h-svh flex-col overflow-hidden bg-[#dc2626] font-sans text-white">
       <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-6 pt-20 sm:px-10 md:px-14 lg:px-20 xl:px-28">
         <figure className="mx-auto mt-6 w-full max-w-xl shrink-0 sm:mt-8">
-          <div className="flex items-center gap-2">
-            <span className="h-px w-8 shrink-0 bg-white" />
-            <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-white">
-              Attributed to the school of AshCode
-            </p>
-          </div>
-          <blockquote className="mt-3 border-b border-white pb-3 font-serif text-[0.95rem] leading-[1.55] tracking-tight text-white sm:text-base">
+          <blockquote className="font-serif text-[1.1rem] leading-[1.5] tracking-tight text-white sm:text-[1.25rem] md:text-[1.35rem]">
             &ldquo;If it bears the mark of{" "}
             <em className="font-serif font-extralight italic">AshCode</em>, the
             code shall run{" "}
@@ -48,20 +42,23 @@ export function Footer() {
             .&rdquo;
           </blockquote>
         </figure>
-
-        <div className="mx-auto mt-6 flex min-h-0 w-full max-w-md flex-1 items-center justify-center sm:max-w-lg md:max-w-xl">
-          <Image
-            src="/images/ancients.png"
-            alt="Ancient philosophers examining a laptop, painted in classical oil style."
-            width={1306}
-            height={816}
-            sizes="(min-width: 768px) 36rem, 90vw"
-            className="h-full max-h-full w-auto max-w-full border border-white/40 object-contain"
-          />
-        </div>
       </div>
 
-      <div className="shrink-0 px-6 py-6 sm:px-10 lg:px-14">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 bottom-0 z-0 w-[72vw] max-w-[420px] sm:max-w-[520px] md:max-w-[620px] lg:max-w-[720px] xl:max-w-[820px]"
+      >
+        <Image
+          src="/images/ancients.png"
+          alt=""
+          width={1306}
+          height={816}
+          sizes="(min-width: 1280px) 52rem, (min-width: 1024px) 46rem, (min-width: 640px) 32rem, 72vw"
+          className="block h-auto w-full object-contain"
+        />
+      </div>
+
+      <div className="relative z-10 shrink-0 px-6 py-6 sm:px-10 lg:px-14">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
           <div className="max-w-sm">
             <p className="font-sans text-xl font-medium tracking-[-0.04em] text-white sm:text-2xl">
@@ -108,7 +105,7 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-8 flex items-center justify-between gap-4">
+        <div className="mt-8 flex flex-wrap items-center gap-3">
           <p className="inline-flex items-center rounded-md bg-white px-3 py-2 font-sans text-[11px] font-medium tracking-[-0.02em] text-[#dc2626] sm:text-xs">
             {site.footer.badge}
           </p>

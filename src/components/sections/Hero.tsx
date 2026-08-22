@@ -24,7 +24,7 @@ export function Hero() {
   });
 
   return (
-    <section className="relative h-full w-full overflow-hidden bg-[#7b5532]">
+    <section className="relative h-full w-full overflow-hidden bg-[#dc2626]">
       <HeroOverlay />
       <div className="absolute inset-0 z-10 flex h-full w-full flex-col px-6 pt-24 pb-12 md:px-12 md:pt-28 md:pb-14 lg:px-20">
         <div className="mt-auto grid grid-cols-1 gap-10 md:grid-cols-12 md:items-end md:gap-6">
