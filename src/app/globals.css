@@ -21,6 +21,8 @@
   --font-sans: var(--font-general-sans);
   --font-serif: var(--font-editorial);
   --font-inter: var(--font-inter-face);
+  --font-display: var(--font-anton);
+  --font-script: var(--font-pinyon);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,6 +34,26 @@
     --surface: #171717;
     --border: #262626;
   }
+}
+
+/* Forces dark tokens on a section regardless of the OS color scheme. */
+.theme-dark {
+  --background: #000000;
+  --foreground: #ededed;
+  --muted: #a3a3a3;
+  --subtle: #737373;
+  --surface: #171717;
+  --border: #262626;
+}
+
+/* Forces light tokens on a section regardless of the OS color scheme. */
+.theme-light {
+  --background: #ffffff;
+  --foreground: #111111;
+  --muted: #525252;
+  --subtle: #a3a3a3;
+  --surface: #f5f5f5;
+  --border: #e5e5e5;
 }
 
 body {
@@ -117,4 +139,31 @@ h3 {
   .dot-pulse {
     animation: none;
   }
+}
+
+/* Loader T-Rex (DinoRun) — one cactus per 1.1s loop, jump timed to clear it. */
+@keyframes dino-cactus {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - 18rem)); }
+}
+@keyframes dino-jump {
+  0%, 60%, 98%, 100% { transform: translateY(0); }
+  79% { transform: translateY(-125%); }
+}
+@keyframes dino-legs {
+  0%, 49.9% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes dino-ground {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.dino-cactus { animation: dino-cactus 1.1s linear infinite; }
+.dino-jump { animation: dino-jump 1.1s cubic-bezier(0.33, 0, 0.67, 1) infinite; }
+.dino-legs-a { animation: dino-legs 0.2s steps(1) infinite; }
+.dino-legs-b { animation: dino-legs 0.2s steps(1) infinite reverse; }
+.dino-ground { animation: dino-ground 2.2s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .dino-cactus, .dino-jump, .dino-legs-a, .dino-legs-b, .dino-ground { animation: none; }
+  .dino-legs-b { opacity: 0; }
 }

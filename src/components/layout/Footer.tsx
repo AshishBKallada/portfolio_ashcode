@@ -1,139 +1,92 @@
-"use client";
-
-import Image from "next/image";
-import { AnchorLink } from "@/components/motion/AnchorLink";
 import { site } from "@/data/site";
 
-function GitHubIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-3.5 fill-[#dc2626]">
-      <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 7.5c.85 0 1.71.12 2.51.34 1.9-1.32 2.74-1.05 2.74-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.58 5.06.36.32.68.95.68 1.92 0 1.38-.01 2.49-.01 2.83 0 .27.18.6.69.49A10.03 10.03 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z" />
-    </svg>
-  );
-}
-
-function LinkedInIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-3.5 fill-[#dc2626]">
-      <path d="M6.5 8.5A2 2 0 1 1 6.48 4.5 2 2 0 0 1 6.5 8.5ZM4.75 20h3.5V9.75h-3.5V20ZM13.2 9.75c-1.86 0-2.7 1.02-2.7 1.02V9.75H7.1V20h3.4v-5.7c0-1.5.7-2.4 1.95-2.4 1.16 0 1.8.82 1.8 2.4V20H17.7v-6.3c0-3.18-1.7-4.95-4.5-4.95Z" />
-    </svg>
-  );
-}
+const CORNER =
+  "text-[11px] leading-tight tracking-[-0.01em] text-black sm:text-[13px]";
+const LINK = "transition-opacity hover:opacity-60";
 
 export function Footer() {
-  const github = site.socials.find((social) => social.label === "GitHub");
+  const year = new Date().getFullYear();
   const linkedin = site.socials.find((social) => social.label === "LinkedIn");
+  const github = site.socials.find((social) => social.label === "GitHub");
 
   return (
-    <footer className="relative flex h-full min-h-svh flex-col overflow-hidden bg-[#dc2626] font-sans text-white">
-      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-6 pt-20 sm:px-10 md:px-14 lg:px-20 xl:px-28">
-        <figure className="mx-auto mt-6 w-full max-w-xl shrink-0 sm:mt-8">
-          <blockquote className="font-serif text-[1.1rem] leading-[1.5] tracking-tight text-white sm:text-[1.25rem] md:text-[1.35rem]">
-            &ldquo;If it bears the mark of{" "}
-            <em className="font-serif font-extralight italic">AshCode</em>, the
-            code shall run{" "}
-            <em className="font-serif font-extralight italic">
-              cleaner than water
-            </em>
-            , truer than stone, and last{" "}
-            <em className="font-serif font-extralight italic">
-              longer than the hand that carved it
-            </em>
-            .&rdquo;
-          </blockquote>
-        </figure>
-      </div>
-
+    <footer className="relative isolate flex min-h-[70svh] flex-col justify-between overflow-hidden bg-white px-5 py-6 font-sans text-black sm:min-h-[85svh] sm:px-10 sm:py-8">
+      {/* Oversized red wordmark behind everything */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 bottom-0 z-0 w-[72vw] max-w-[420px] sm:max-w-[520px] md:max-w-[620px] lg:max-w-[720px] xl:max-w-[820px]"
+        className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center"
       >
-        <Image
-          src="/images/ancients.png"
-          alt=""
-          width={1306}
-          height={816}
-          sizes="(min-width: 1280px) 52rem, (min-width: 1024px) 46rem, (min-width: 640px) 32rem, 72vw"
-          className="block h-auto w-full object-contain"
-        />
+        <span className="font-display text-[34vw] leading-[0.8] tracking-[-0.02em] whitespace-nowrap text-[#b3201b] uppercase">
+          {site.name}
+        </span>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(255,255,255,0.8)_100%)]" />
       </div>
 
-      <div className="relative z-10 shrink-0 px-6 py-6 sm:px-10 lg:px-14">
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
-          <div className="max-w-sm">
-            <p className="font-sans text-xl font-medium tracking-[-0.04em] text-white sm:text-2xl">
-              {site.name}
-            </p>
-            <p className="mt-3 max-w-xs font-sans text-[13px] leading-6 tracking-[-0.02em] text-white/80">
-              {site.footer.noteBefore}{" "}
-              <a
-                href={`mailto:${site.email}`}
-                className="underline decoration-white/50 underline-offset-2 transition-colors hover:decoration-white"
-              >
-                {site.email}
-              </a>
-              .
-            </p>
-          </div>
+      {/* Top corners */}
+      <div className="flex items-start justify-between">
+        <p className={CORNER}>
+          <span className="block font-medium">{site.name}.</span>
+          <span className="block text-[9px] text-black/70 sm:text-[10px]">
+            Edition.
+          </span>
+        </p>
+        <p className="text-[9px] font-medium tracking-[0.12em] uppercase sm:text-[10px]">
+          Portfolio
+        </p>
+        <p className={`${CORNER} text-right`}>
+          <span className="block font-medium">{site.role}</span>
+          <span className="block text-[9px] text-black/70 sm:text-[10px]">
+            {site.location}
+          </span>
+        </p>
+      </div>
 
-          <nav aria-label="Footer" className="flex gap-16 sm:gap-24">
-            {site.footer.columns.map((column, index) => (
-              <ul key={index} className="flex flex-col gap-2">
-                {column.map((item) => (
-                  <li key={item.label}>
-                    {"external" in item && item.external ? (
-                      <a
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-sans text-[13px] tracking-[-0.02em] text-white transition-opacity hover:opacity-50"
-                      >
-                        {item.label}
-                      </a>
-                    ) : (
-                      <AnchorLink
-                        href={item.href}
-                        className="font-sans text-[13px] tracking-[-0.02em] text-white transition-opacity hover:opacity-50"
-                      >
-                        {item.label}
-                      </AnchorLink>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ))}
-          </nav>
-        </div>
+      {/* Centerpiece */}
+      <div className="relative flex flex-col items-center text-center">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[58%] font-script text-[clamp(4rem,17vw,15rem)] leading-none whitespace-nowrap text-black/85"
+        >
+          Thank you
+        </span>
+        <p className="relative font-display text-[clamp(3rem,12vw,10rem)] leading-[0.9] tracking-[-0.01em] uppercase">
+          {String(year).slice(0, 2)} {site.name} {String(year).slice(2)}
+        </p>
+        <p className="relative mt-8 text-[10px] font-semibold tracking-[0.02em] uppercase sm:mt-12 sm:text-xs">
+          Credits reserved.
+        </p>
+        <p className="relative mt-4 max-w-xs text-[10px] leading-snug text-black/75 sm:text-[11px]">
+          {site.hero.note}
+        </p>
+      </div>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <p className="inline-flex items-center rounded-md bg-white px-3 py-2 font-sans text-[11px] font-medium tracking-[-0.02em] text-[#dc2626] sm:text-xs">
-            {site.footer.badge}
-          </p>
-
-          <div className="flex items-center gap-2">
-            {linkedin ? (
-              <a
-                href={linkedin.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="inline-flex size-8 items-center justify-center rounded-full bg-white transition-opacity hover:opacity-70"
-              >
-                <LinkedInIcon />
-              </a>
-            ) : null}
-            {github ? (
-              <a
-                href={github.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="inline-flex size-8 items-center justify-center rounded-full bg-white transition-opacity hover:opacity-70"
-              >
-                <GitHubIcon />
-              </a>
-            ) : null}
-          </div>
+      {/* Bottom corners */}
+      <div className="flex items-end justify-between">
+        <a href={`mailto:${site.email}`} className={`${CORNER} ${LINK}`}>
+          {site.email}
+        </a>
+        <p className={`${CORNER} text-black/60`}>© {year}</p>
+        <div className={`${CORNER} flex gap-4`}>
+          {linkedin ? (
+            <a
+              href={linkedin.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={LINK}
+            >
+              LinkedIn
+            </a>
+          ) : null}
+          {github ? (
+            <a
+              href={github.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={LINK}
+            >
+              GitHub
+            </a>
+          ) : null}
         </div>
       </div>
     </footer>

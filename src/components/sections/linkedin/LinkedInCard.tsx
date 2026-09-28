@@ -1,34 +1,30 @@
 import Image from "next/image";
 import type { LinkedInItem } from "@/data/linkedin";
 
-export function LinkedInCard({ item }: { item: LinkedInItem }) {
+export function LinkedInCard({
+  item,
+  className = "",
+}: {
+  item: LinkedInItem;
+  className?: string;
+}) {
   return (
     <div
       tabIndex={0}
-      className="group relative z-0 h-full min-h-0 min-w-0 grow basis-0 cursor-pointer outline-none transition-[flex-grow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [perspective:900px] motion-safe:group-has-[:is(:hover,:focus-within)]/strip:grow-[0.78] motion-safe:hover:z-20 motion-safe:hover:!grow-[2] motion-safe:focus-within:z-20 motion-safe:focus-within:!grow-[2]"
+      className={`group overflow-hidden outline-none ${className}`}
     >
-      <div className="relative h-full w-full transition-transform duration-500 ease-out [transform-style:preserve-3d] [-webkit-transform-style:preserve-3d] motion-safe:group-hover:[transform:rotateY(180deg)] motion-safe:group-focus-within:[transform:rotateY(180deg)]">
-        <div className="absolute inset-0 overflow-hidden bg-surface [backface-visibility:hidden] [-webkit-backface-visibility:hidden]">
-          <Image
-            src={item.image}
-            alt={item.title}
-            fill
-            sizes="10vw"
-            className="object-cover"
-          />
-        </div>
-
-        <div className="absolute inset-0 flex flex-col justify-end overflow-hidden bg-[#dc2626] px-1.5 py-2 [backface-visibility:hidden] [transform:rotateY(180deg)] [-webkit-backface-visibility:hidden] sm:px-2 sm:py-2.5">
-          <p className="font-sans text-[8px] uppercase tracking-[0.18em] text-white/70 sm:text-[9px]">
-            {item.tag}
-          </p>
-          <h3 className="mt-1 font-serif text-[11px] leading-tight font-extralight italic text-white sm:text-xs">
-            {item.title}
-          </h3>
-          <p className="mt-1.5 font-serif text-[10px] leading-snug font-extralight italic text-white/90 sm:text-[11px]">
-            {item.note}
-          </p>
-        </div>
+      <Image
+        src={item.image}
+        alt={item.title}
+        fill
+        sizes="(min-width: 768px) 25vw, 50vw"
+        className="object-cover object-top opacity-80 grayscale-[35%] transition duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 group-hover:opacity-100 group-hover:grayscale-0 group-focus-visible:opacity-100 group-focus-visible:grayscale-0"
+      />
+      <div className="absolute inset-x-3 bottom-3 translate-y-2 rounded-xl bg-black/55 p-3 opacity-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-xl transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+        <p className="text-xs leading-snug text-white sm:text-sm">{item.title}</p>
+        <p className="mt-1 text-[10px] tracking-[0.16em] text-white/70 uppercase">
+          {item.note}
+        </p>
       </div>
     </div>
   );

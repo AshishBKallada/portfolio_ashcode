@@ -9,7 +9,7 @@ export default function Home() {
     <>
       <div className="relative">
         <HeroIntroPin />
-        <div className="relative z-20 bg-background">
+        <div className="theme-light relative z-20 bg-background">
           <About />
           <Work />
           <LinkedIn />

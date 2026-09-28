@@ -1,5 +1,6 @@
 export const site = {
   name: "AshCode",
+  loaderPhrase: "Veni, vidi, vici",
   role: "Developer",
   tagline: "I forge products that feel immortal, even when they're not.",
   email: "ashercode4u@gmail.com",
@@ -61,8 +62,7 @@ export const site = {
     headlineBefore: "Let's forge something that",
     headlineItalic: "lasts",
     body: "Open to freelance, full-time, and collaborations that deserve real craft.",
-    image: "/images/contact-hand.png",
-    availability: "Available for work — 2026",
+    image: "/images/contact-text-me.png",
     location: "Remote · India",
     timezone: "Asia/Kolkata",
     timezoneLabel: "IST",
@@ -79,6 +79,11 @@ export const site = {
     { label: "LinkedIn", href: "https://www.linkedin.com/in/ashishbkallada" },
   ],
   footer: {
+    quoteBefore: "Yo twin, if da code bears the mark of ",
+    quoteHighlightOne: "AshCode",
+    quoteMiddle: ", its sm dop ",
+    quoteHighlightTwo: "sh*t",
+    quoteAfter: " (for real).",
     noteBefore: "Open to freelance, full-time, and collaborations. Reach me at",
     noteLink: "email",
     badge: "Independent developer",

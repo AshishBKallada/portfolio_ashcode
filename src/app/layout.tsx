@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Anton, Pinyon_Script } from "next/font/google";
 import localFont from "next/font/local";
 import { Header } from "@/components/layout/Header";
 import { SiteLoader } from "@/components/layout/SiteLoader";
@@ -46,6 +47,20 @@ const inter = localFont({
   variable: "--font-inter-face",
   display: "swap",
   weight: "100 900",
+});
+
+const anton = Anton({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-anton",
+  display: "swap",
+});
+
+const pinyon = Pinyon_Script({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-pinyon",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -97,7 +112,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${generalSans.variable} ${editorial.variable} ${inter.variable} h-full antialiased`}
+      className={`${generalSans.variable} ${editorial.variable} ${inter.variable} ${anton.variable} ${pinyon.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
         <script

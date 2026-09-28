@@ -24,7 +24,8 @@ const IntroContext = createContext<IntroContextValue>({
 
 export const heroIntroTiming = {
   cycleMs: 3000,
-  zoomMs: 800,
+  // Covers the figure flight + backdrop reveal in HeroOverlay's timeline.
+  zoomMs: 1900,
   textMs: 1100,
 } as const;
 
@@ -48,12 +49,12 @@ export function HeroIntroProvider({ children }: { children: React.ReactNode }) {
       setPhase("done");
       return;
     }
-    setPhase("cycle");
-    const { cycleMs, zoomMs, textMs } = heroIntroTiming;
+    // Image cycle runs in SiteLoader; hero picks up at zoom.
+    setPhase("zoom");
+    const { zoomMs, textMs } = heroIntroTiming;
     timersRef.current = [
-      window.setTimeout(() => setPhase("zoom"), cycleMs),
-      window.setTimeout(() => setPhase("text"), cycleMs + zoomMs),
-      window.setTimeout(() => setPhase("done"), cycleMs + zoomMs + textMs),
+      window.setTimeout(() => setPhase("text"), zoomMs),
+      window.setTimeout(() => setPhase("done"), zoomMs + textMs),
     ];
   }, []);
 

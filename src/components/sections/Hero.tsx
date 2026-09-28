@@ -1,6 +1,9 @@
 "use client";
 
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useReducedMotion } from "motion/react";
+import { useEffect, useRef } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { MaskLine } from "@/components/motion/MaskLine";
 import { introEase } from "@/components/motion/intro";
@@ -8,10 +11,33 @@ import { site } from "@/data/site";
 import { HeroCta } from "@/components/sections/hero/HeroCta";
 import { HeroOverlay } from "@/components/sections/hero/HeroOverlay";
 
+gsap.registerPlugin(ScrollTrigger);
+
 export function Hero() {
   const { phase } = useHeroIntro();
   const reduce = useReducedMotion();
   const show = phase === "text" || phase === "done";
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Copy lifts away faster than the hero slides, opposite to the backdrop.
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el || reduce) return;
+    const ctx = gsap.context(() => {
+      gsap.to(el, {
+        y: () => -window.innerHeight * 0.25,
+        opacity: 0.2,
+        ease: "none",
+        scrollTrigger: {
+          start: 0,
+          end: () => window.innerHeight,
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+    });
+    return () => ctx.revert();
+  }, [reduce]);
 
   const fade = (i: number) => ({
     initial: reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 },
@@ -24,9 +50,12 @@ export function Hero() {
   });
 
   return (
-    <section className="relative h-full w-full overflow-hidden bg-[#dc2626]">
+    <section className="relative h-full w-full bg-white">
       <HeroOverlay />
-      <div className="absolute inset-0 z-10 flex h-full w-full flex-col px-6 pt-24 pb-12 md:px-12 md:pt-28 md:pb-14 lg:px-20">
+      <div
+        ref={contentRef}
+        className="absolute inset-0 z-10 flex h-full w-full flex-col px-6 pt-24 pb-12 md:px-12 md:pt-28 md:pb-14 lg:px-20"
+      >
         <div className="mt-auto grid grid-cols-1 gap-10 md:grid-cols-12 md:items-end md:gap-6">
           <div className="md:col-span-4 lg:col-span-3">
             <motion.p

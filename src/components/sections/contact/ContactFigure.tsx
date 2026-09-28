@@ -18,19 +18,20 @@ export function ContactFigure({ src }: { src: string }) {
     <div
       ref={ref}
       aria-hidden="true"
-      className="pointer-events-none absolute right-0 bottom-0 z-0 w-[62%] max-w-[440px] opacity-90 sm:w-[46%] sm:max-w-[520px] lg:w-[40%] lg:max-w-[560px]"
+      className="pointer-events-none absolute right-0 bottom-0 z-0 flex w-[42%] max-w-[280px] items-end justify-end opacity-90 sm:w-[34%] sm:max-w-[320px] lg:w-[28%] lg:max-w-[360px]"
     >
       <motion.div
-        className="origin-bottom-right"
+        className="w-full origin-bottom-right"
         style={reduceMotion ? undefined : { rotate, x }}
       >
         <Image
           src={src}
           alt=""
+          loading="eager"
           width={1152}
-          height={927}
-          sizes="(max-width: 1024px) 60vw, 40vw"
-          className="h-auto w-full select-none object-contain object-right-bottom grayscale"
+          height={2048}
+          sizes="(max-width: 1024px) 40vw, 28vw"
+          className="h-auto w-full select-none object-contain object-right-bottom"
         />
       </motion.div>
     </div>

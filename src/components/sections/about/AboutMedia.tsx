@@ -49,7 +49,7 @@ export function AboutMedia() {
             alt=""
             fill
             sizes="100vw"
-            className={`object-cover object-center transition-opacity duration-300 ${
+            className={`object-cover object-center grayscale transition-opacity duration-300 ${
               i === index ? "opacity-100" : "opacity-0"
             }`}
           />

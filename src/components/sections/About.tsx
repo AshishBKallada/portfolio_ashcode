@@ -8,7 +8,7 @@ export function About() {
   return (
     <section
       id="about"
-      className="relative z-10 scroll-mt-20 overflow-visible bg-background pt-8 pb-40 sm:pt-10 sm:pb-48 lg:pb-56"
+      className="theme-light relative z-10 scroll-mt-20 overflow-visible bg-background pt-8 pb-40 sm:pt-10 sm:pb-48 lg:pb-56"
     >
       <div className="px-3 text-left sm:px-4">
         <SectionReveal>
