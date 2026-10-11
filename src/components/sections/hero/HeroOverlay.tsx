@@ -7,8 +7,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { introEase } from "@/components/motion/intro";
 import {
+  HERO_CLOUD,
   HERO_INTRO_CYCLE,
   HERO_INTRO_FRAME,
+  HERO_EXIT_START,
   HERO_INTRO_STEP_MS,
   HERO_OVERLAY,
   HERO_SIDE,
@@ -21,6 +23,11 @@ import {
 gsap.registerPlugin(ScrollTrigger);
 
 const CYCLE = HERO_INTRO_CYCLE;
+// Temporarily hide the hero backdrop once the intro cycle hands off.
+const SHOW_HERO_BG = false;
+// Guitar cutout to the right of the figure — hidden for now. Its wrappers stay
+// mounted so the handoff, exit and mouse tweens keep their targets.
+const SHOW_HERO_SIDE = false;
 const STEP_MS = HERO_INTRO_STEP_MS;
 
 export function HeroOverlay() {
@@ -32,8 +39,10 @@ export function HeroOverlay() {
   const backdropMouseRef = useRef<HTMLDivElement>(null);
   const figureMouseRef = useRef<HTMLDivElement>(null);
   const handoffRef = useRef<HTMLDivElement>(null);
+  const cloudRef = useRef<HTMLDivElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
   const sideRef = useRef<HTMLDivElement>(null);
+  const sideScrollRef = useRef<HTMLDivElement>(null);
   const sideMouseRef = useRef<HTMLDivElement>(null);
   const handoffRectRef = useRef<DOMRect | null>(null);
 
@@ -53,34 +62,37 @@ export function HeroOverlay() {
     return () => timers.forEach((id) => window.clearTimeout(id));
   }, [phase, reduce]);
 
-  // The hero slides up one viewport as the page scrolls (HeroIntroPin). Pushing
-  // the figure down faster than that makes it sink and settle into the top of
-  // the Intro section underneath instead of leaving with the hero.
+  // After the navbar hold, the figure exits to the left and the side cutout
+  // to the right over one screen of scroll, before Intro stacks over the
+  // hero. Scroll-only wrappers keep these tweens off the intro/mouse ones.
   useEffect(() => {
     const el = figureRef.current;
-    const backdrop = backdropRef.current;
-    if (!el || !backdrop || reduce) return;
+    const side = sideScrollRef.current;
+    if (!el || !side || reduce) return;
     const ctx = gsap.context(() => {
       const scrollTrigger = {
-        start: 0,
-        end: () => window.innerHeight,
+        start: () => window.innerHeight * HERO_EXIT_START,
+        end: () => window.innerHeight * (HERO_EXIT_START + 1),
         scrub: true,
         invalidateOnRefresh: true,
       };
-      // Backdrop trails the hero at 40% speed for depth.
-      gsap.to(backdrop, {
-        y: () => window.innerHeight * 0.4,
-        scale: 1.08,
-        ease: "none",
-        scrollTrigger,
-      });
       gsap.fromTo(
         el,
-        { y: 0, scale: 1 },
+        { x: 0, rotate: 0 },
         {
-          y: () => window.innerHeight * 1.45,
-          scale: 0.85,
-          ease: "none",
+          x: () => -window.innerWidth,
+          rotate: -8,
+          ease: "power1.in",
+          scrollTrigger,
+        },
+      );
+      gsap.fromTo(
+        side,
+        { x: 0, rotate: 0 },
+        {
+          x: () => window.innerWidth * 0.6,
+          rotate: 14,
+          ease: "power1.in",
           scrollTrigger,
         },
       );
@@ -97,7 +109,8 @@ export function HeroOverlay() {
     const el = handoffRef.current;
     const reveal = revealRef.current;
     const side = sideRef.current;
-    if (!zoomed || !el || !reveal || !side || reduce) return;
+    const cloud = cloudRef.current;
+    if (!zoomed || !el || !reveal || !side || !cloud || reduce) return;
     const from = handoffRectRef.current ?? takeHeroHandoff();
     if (!from) return;
     handoffRectRef.current = from;
@@ -115,7 +128,7 @@ export function HeroOverlay() {
         handoffRectRef.current = null;
       },
     });
-    tl.set([reveal, side], { opacity: 0 })
+    tl.set([reveal, side, cloud], { opacity: 0 })
       .fromTo(
         el,
         {
@@ -133,6 +146,12 @@ export function HeroOverlay() {
         "-=0.1",
       )
       .fromTo(
+        cloud,
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 1.1, ease: "power3.out" },
+        "-=0.9",
+      )
+      .fromTo(
         side,
         { opacity: 0, y: 60, rotate: -10 },
         { opacity: 1, y: 0, rotate: 0, duration: 1, ease: "power3.out" },
@@ -141,7 +160,7 @@ export function HeroOverlay() {
 
     return () => {
       tl.kill();
-      gsap.set([el, reveal, side], { clearProps: "opacity,transform" });
+      gsap.set([el, reveal, side, cloud], { clearProps: "opacity,transform" });
     };
   }, [zoomed, reduce]);
 
@@ -187,10 +206,7 @@ export function HeroOverlay() {
   }, [reduce]);
 
   return (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 z-[5] bg-white"
-    >
+    <div className="pointer-events-none absolute inset-0 z-[5]">
       <div
         ref={revealRef}
         className="absolute inset-0 flex items-center justify-center"
@@ -229,80 +245,104 @@ export function HeroOverlay() {
               className="absolute inset-0 will-change-transform"
             >
               <AnimatePresence mode="sync" initial={false}>
-                <motion.img
-                  key={imageSrc}
-                  src={imageSrc}
-                  alt=""
-                  draggable={false}
-                  initial={
-                    reduce
-                      ? { opacity: 1, scale: 1 }
-                      : cycling
-                        ? { opacity: 0, scale: 1.08 }
-                        : { opacity: 1, scale: 1 }
-                  }
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                  }}
-                  exit={{ opacity: 0, scale: 1 }}
-                  transition={{
-                    opacity: {
-                      duration: cycling ? 0.18 : 0.4,
-                      ease: introEase,
-                    },
-                    scale: {
-                      duration: cycling ? 0.5 : 0.9,
-                      ease: introEase,
-                    },
-                  }}
-                  className={`absolute inset-0 h-full w-full bg-transparent select-none [backface-visibility:hidden] ${
-                    cycling && !reduce
-                      ? "object-contain object-bottom"
-                      : "object-cover"
-                  }`}
-                  decoding="async"
-                  fetchPriority="high"
-                  width={1672}
-                  height={941}
-                />
+                {(SHOW_HERO_BG || (cycling && !reduce)) && (
+                  <motion.img
+                    key={imageSrc}
+                    src={imageSrc}
+                    alt=""
+                    draggable={false}
+                    initial={
+                      reduce
+                        ? { opacity: 1, scale: 1 }
+                        : cycling
+                          ? { opacity: 0, scale: 1.08 }
+                          : { opacity: 1, scale: 1 }
+                    }
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                    }}
+                    exit={{ opacity: 0, scale: 1 }}
+                    transition={{
+                      opacity: {
+                        duration: cycling ? 0.18 : 0.4,
+                        ease: introEase,
+                      },
+                      scale: {
+                        duration: cycling ? 0.5 : 0.9,
+                        ease: introEase,
+                      },
+                    }}
+                    className={`absolute inset-0 h-full w-full bg-transparent select-none [backface-visibility:hidden] ${
+                      cycling && !reduce
+                        ? "object-contain object-bottom"
+                        : "object-cover"
+                    }`}
+                    decoding="async"
+                    fetchPriority="high"
+                    width={1672}
+                    height={941}
+                  />
+                )}
               </AnimatePresence>
             </div>
           </div>
         </motion.div>
       </div>
+      {/* Stacked above the figure so the guitar paints in front of it. */}
       <div
-        ref={sideRef}
-        className="absolute top-[46%] left-3/4 w-[clamp(9rem,17vw,17rem)] -translate-x-1/2 -translate-y-1/2"
+        ref={sideScrollRef}
+        className="absolute inset-0 z-[1] will-change-transform"
       >
-        <div ref={sideMouseRef} className="will-change-transform">
-          <motion.img
-            src={HERO_SIDE}
-            alt=""
-            draggable={false}
-            initial={reduce ? { opacity: 1 } : { opacity: 0 }}
-            animate={
-              zoomed || reduce
-                ? {
-                    opacity: 1,
-                    y: reduce ? 0 : [0, -16, 0],
-                    rotate: reduce ? 0 : [4, 7, 4],
-                  }
-                : { opacity: 0 }
-            }
-            transition={{
-              opacity: {
-                duration: reduce || handoff ? 0 : 0.9,
-                ease: introEase,
-              },
-              y: { duration: 5, ease: "easeInOut", repeat: Infinity },
-              rotate: { duration: 5, ease: "easeInOut", repeat: Infinity },
-            }}
-            className="block h-auto w-full select-none drop-shadow-[0_30px_40px_rgba(0,0,0,0.35)]"
-            decoding="async"
-            width={640}
-            height={944}
-          />
+        <div
+          ref={sideRef}
+          className="absolute top-[52%] left-3/4 w-[clamp(10rem,min(19vw,32svh),20rem)] -translate-x-1/2 -translate-y-1/2"
+        >
+          <div ref={sideMouseRef} className="will-change-transform">
+            {SHOW_HERO_SIDE && (
+            <a
+              href="/resume"
+              target="_blank"
+              rel="noopener"
+              aria-label="Open résumé in a new tab"
+              className="group pointer-events-auto relative block cursor-pointer"
+            >
+            <motion.img
+              src={HERO_SIDE}
+              alt=""
+              draggable={false}
+              initial={reduce ? { opacity: 1 } : { opacity: 0 }}
+              animate={
+                zoomed || reduce
+                  ? {
+                      opacity: 1,
+                      y: reduce ? 0 : [0, -16, 0],
+                      rotate: reduce ? -10 : [-12, -8, -12],
+                    }
+                  : { opacity: 0 }
+              }
+              transition={{
+                opacity: {
+                  duration: reduce || handoff ? 0 : 0.9,
+                  ease: introEase,
+                },
+                y: { duration: 5, ease: "easeInOut", repeat: Infinity },
+                rotate: { duration: 5, ease: "easeInOut", repeat: Infinity },
+              }}
+              className="block h-auto w-full select-none will-change-transform drop-shadow-[0_30px_40px_rgba(0,0,0,0.35)]"
+              decoding="async"
+              width={768}
+              height={1365}
+            />
+              <span
+                style={{ color: "#6b1414" }}
+                className="pointer-events-none absolute top-1/2 left-1/2 flex size-24 -translate-x-1/2 -translate-y-1/2 scale-50 items-center justify-center rounded-full bg-white font-sans text-[13px] font-semibold tracking-[0.08em] uppercase opacity-0 shadow-[0_12px_30px_rgba(0,0,0,0.25)] transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+              >
+                Resume ↗
+              </span>
+            </a>
+            )}
+          </div>
         </div>
       </div>
       <div
@@ -313,6 +353,34 @@ export function HeroOverlay() {
           ref={figureMouseRef}
           className="absolute inset-0 will-change-transform"
         >
+          {/* Big cloud centered behind the figure: drifts on its own slower
+              beat so the figure reads as floating in front of it. Exits left
+              with the figure. */}
+          <div ref={cloudRef} className="absolute inset-0">
+            <motion.img
+              src={HERO_CLOUD}
+              alt=""
+              draggable={false}
+              initial={reduce ? { opacity: 1 } : { opacity: 0 }}
+              animate={
+                zoomed || reduce
+                  ? { opacity: 1, y: reduce ? 0 : [0, -9, 0] }
+                  : { opacity: 0 }
+              }
+              transition={{
+                opacity: {
+                  duration: reduce || handoff ? 0 : 0.9,
+                  ease: introEase,
+                  delay: reduce || handoff ? 0 : 0.45,
+                },
+                y: { duration: 7.5, ease: "easeInOut", repeat: Infinity, delay: 0.8 },
+              }}
+              className="absolute top-1/2 left-1/2 h-auto w-[clamp(24rem,92vw,84rem)] max-w-none -translate-x-1/2 -translate-y-1/2 select-none will-change-transform"
+              decoding="async"
+              width={1024}
+              height={1024}
+            />
+          </div>
           <motion.div
             className="absolute inset-0 will-change-transform"
             animate={

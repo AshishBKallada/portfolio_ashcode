@@ -8,31 +8,28 @@ export function About() {
   return (
     <section
       id="about"
-      className="theme-light relative z-10 scroll-mt-20 overflow-visible bg-background pt-8 pb-40 sm:pt-10 sm:pb-48 lg:pb-56"
+      className="theme-light relative z-10 scroll-mt-20 overflow-visible bg-background pb-16 sm:pb-20"
     >
-      <div className="px-3 text-left sm:px-4">
+      <AboutMedia>
         <SectionReveal>
           <SectionEyebrow number="01" label={site.about.eyebrow} />
         </SectionReveal>
 
-        <SectionReveal delay={0.08} className="mt-6">
-          <h2 className="font-serif text-[clamp(1.35rem,4.6vw,4.25rem)] leading-[1.15] whitespace-nowrap text-foreground">
-            {site.about.headlineBefore}{" "}
-            <em className="italic">{site.about.headlineItalic}</em>
-            {site.about.headlineAfter}
-          </h2>
-        </SectionReveal>
+        <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-10">
+          <SectionReveal delay={0.08}>
+            <h2 className="font-serif text-[clamp(1.35rem,3.6vw,3.25rem)] leading-[1.1] whitespace-nowrap text-foreground">
+              {site.about.headlineBefore}{" "}
+              <em className="italic">{site.about.headlineItalic}</em>
+              {site.about.headlineAfter}
+            </h2>
+          </SectionReveal>
 
-        <RevealItem>
-          <p className="mt-6 max-w-xl text-lg leading-8 text-muted">{site.bio}</p>
-        </RevealItem>
-
-        <RevealItem>
-          <p className="mt-4 text-sm text-muted">{site.location}</p>
-        </RevealItem>
-      </div>
-
-      <AboutMedia />
+          <RevealItem className="max-w-md md:text-right">
+            <p className="text-sm leading-6 text-muted">{site.bio}</p>
+            <p className="mt-1 text-xs text-muted">{site.location}</p>
+          </RevealItem>
+        </div>
+      </AboutMedia>
     </section>
   );
 }

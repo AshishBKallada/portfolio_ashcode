@@ -10,7 +10,7 @@ export function Footer() {
   const github = site.socials.find((social) => social.label === "GitHub");
 
   return (
-    <footer className="relative isolate flex min-h-[70svh] flex-col justify-between overflow-hidden bg-white px-5 py-6 font-sans text-black sm:min-h-[85svh] sm:px-10 sm:py-8">
+    <footer className="relative isolate flex min-h-[70svh] flex-col overflow-hidden bg-white px-5 py-6 font-sans text-black sm:min-h-[85svh] sm:px-10 sm:py-8">
       {/* Oversized red wordmark behind everything */}
       <div
         aria-hidden="true"
@@ -22,27 +22,8 @@ export function Footer() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(255,255,255,0.8)_100%)]" />
       </div>
 
-      {/* Top corners */}
-      <div className="flex items-start justify-between">
-        <p className={CORNER}>
-          <span className="block font-medium">{site.name}.</span>
-          <span className="block text-[9px] text-black/70 sm:text-[10px]">
-            Edition.
-          </span>
-        </p>
-        <p className="text-[9px] font-medium tracking-[0.12em] uppercase sm:text-[10px]">
-          Portfolio
-        </p>
-        <p className={`${CORNER} text-right`}>
-          <span className="block font-medium">{site.role}</span>
-          <span className="block text-[9px] text-black/70 sm:text-[10px]">
-            {site.location}
-          </span>
-        </p>
-      </div>
-
       {/* Centerpiece */}
-      <div className="relative flex flex-col items-center text-center">
+      <div className="relative my-auto flex flex-col items-center text-center">
         <span
           aria-hidden="true"
           className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[58%] font-script text-[clamp(4rem,17vw,15rem)] leading-none whitespace-nowrap text-black/85"

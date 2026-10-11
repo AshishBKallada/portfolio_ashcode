@@ -167,3 +167,28 @@ h3 {
   .dino-cactus, .dino-jump, .dino-legs-a, .dino-legs-b, .dino-ground { animation: none; }
   .dino-legs-b { opacity: 0; }
 }
+
+/* Skills band: each row holds two copies and slides by one copy's width. */
+@keyframes skills-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.skills-marquee {
+  animation: skills-marquee 40s linear infinite;
+  will-change: transform;
+}
+
+.skills-marquee-reverse {
+  animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-marquee {
+    animation: none;
+  }
+}

@@ -5,11 +5,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
-import { MaskLine } from "@/components/motion/MaskLine";
 import { introEase } from "@/components/motion/intro";
 import { site } from "@/data/site";
+import { NavbarBackdrop } from "@/components/layout/Navbar";
+import { AboutPoster } from "@/components/sections/AboutPoster";
 import { HeroCta } from "@/components/sections/hero/HeroCta";
 import { HeroOverlay } from "@/components/sections/hero/HeroOverlay";
+import { HERO_EXIT_START } from "@/components/sections/hero/heroIntroCycle";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,19 +20,38 @@ export function Hero() {
   const reduce = useReducedMotion();
   const show = phase === "text" || phase === "done";
   const contentRef = useRef<HTMLDivElement>(null);
+  const revealRef = useRef<HTMLDivElement>(null);
 
-  // Copy lifts away faster than the hero slides, opposite to the backdrop.
+  // Copy fades out as soon as the figures start to exit, while the About-me
+  // poster behind them fades up as they clear.
   useEffect(() => {
     const el = contentRef.current;
-    if (!el || reduce) return;
+    const reveal = revealRef.current;
+    if (!el || !reveal || reduce) return;
     const ctx = gsap.context(() => {
+      gsap.fromTo(
+        reveal,
+        { autoAlpha: 0, scale: 0.94 },
+        {
+          autoAlpha: 1,
+          scale: 1,
+          ease: "power1.out",
+          scrollTrigger: {
+            start: () => window.innerHeight * (HERO_EXIT_START + 0.15),
+            end: () => window.innerHeight * (HERO_EXIT_START + 0.85),
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+      // Gone within the first few steps of the figures' exit.
       gsap.to(el, {
-        y: () => -window.innerHeight * 0.25,
-        opacity: 0.2,
+        y: () => -window.innerHeight * 0.06,
+        autoAlpha: 0,
         ease: "none",
         scrollTrigger: {
-          start: 0,
-          end: () => window.innerHeight,
+          start: () => window.innerHeight * HERO_EXIT_START,
+          end: () => window.innerHeight * (HERO_EXIT_START + 0.12),
           scrub: true,
           invalidateOnRefresh: true,
         },
@@ -50,109 +71,47 @@ export function Hero() {
   });
 
   return (
-    <section className="relative h-full w-full bg-white">
+    <section
+      style={{ backgroundColor: site.navbar.bg }}
+      className="relative h-full w-full"
+    >
+      {/* Navbar backdrop sits under the overlay so the hero figure paints
+          above it; NavbarBar (page level) draws the controls on top. */}
+      <NavbarBackdrop />
+      {/* About-me poster under the figures (z-5), so their exit uncovers it. */}
+      <div
+        ref={revealRef}
+        style={reduce ? undefined : { opacity: 0, visibility: "hidden" }}
+        className="absolute inset-0 z-[3]"
+      >
+        <AboutPoster />
+      </div>
       <HeroOverlay />
       <div
         ref={contentRef}
-        className="absolute inset-0 z-10 flex h-full w-full flex-col px-6 pt-24 pb-12 md:px-12 md:pt-28 md:pb-14 lg:px-20"
+        className="pointer-events-none absolute inset-0 z-10 flex h-full w-full flex-col px-6 pt-24 pb-12 md:px-12 md:pt-28 md:pb-14 lg:px-20"
       >
-        <div className="mt-auto grid grid-cols-1 gap-10 md:grid-cols-12 md:items-end md:gap-6">
-          <div className="md:col-span-4 lg:col-span-3">
-            <motion.p
-              {...fade(0)}
-              className="text-[10px] uppercase tracking-[0.3em] text-white/70"
-            >
-              — Chapter 01 / Portfolio 2026
-            </motion.p>
-            <motion.div {...fade(1)} className="mt-3 h-px w-full bg-white/40" />
-            <motion.p
-              {...fade(2)}
-              className="my-4 max-w-xs text-xs leading-relaxed text-white/85"
-            >
-              {site.hero.sublineBefore}{" "}
-              <span className="font-semibold text-white">
-                {site.hero.sublineHighlightOne}
-              </span>{" "}
-              {site.hero.sublineMiddle}{" "}
-              <span className="font-semibold text-white">
-                {site.hero.sublineHighlightTwo}
-              </span>
-              . {site.bio}
-            </motion.p>
-            <motion.div {...fade(3)} className="h-px w-full bg-white/40" />
-            <motion.div
-              {...fade(4)}
-              className="mt-3 flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-white/70"
-            >
-              <span>{site.location}</span>
-              <span className="mx-3 h-px flex-1 bg-white/25" />
-              <span>{site.role}</span>
-            </motion.div>
-            <motion.p
-              {...fade(5)}
-              className="mt-4 max-w-xs text-[11px] italic leading-relaxed text-white/70"
-            >
-              &ldquo;{site.hero.note}&rdquo;
-            </motion.p>
-          </div>
+        <div className="pointer-events-auto mt-auto max-w-3xl">
+          <motion.p
+            {...fade(2)}
+            className="font-serif text-[clamp(1.9rem,4.4vw,4rem)] leading-[1.02] tracking-[-0.02em] text-[#f4f1ea]"
+          >
+            {site.hero.statementLineOne}
+            <br />
+            {site.hero.statementLineTwo}
+          </motion.p>
 
-          <div className="md:col-span-8 md:text-right lg:col-span-9">
-            <motion.p
-              {...fade(0)}
-              className="mb-4 text-[10px] uppercase tracking-[0.35em] text-white/70"
-            >
-              <span className="mr-3 inline-block h-px w-8 bg-white/50 align-middle" />
-              {site.hero.greeting} — I&apos;m {site.hero.name}
-              <span className="ml-3 inline-block h-px w-8 bg-white/50 align-middle" />
-            </motion.p>
-            <h1 className="font-serif text-[clamp(2.5rem,6vw,5.75rem)] leading-[0.95] tracking-tight text-white">
-              <MaskLine
-                as="div"
-                active={show}
-                reduce={reduce ?? false}
-                delay={0}
-                duration={0.9}
-              >
-                {site.hero.headlineLineOne}
-              </MaskLine>
-              <MaskLine
-                as="div"
-                active={show}
-                reduce={reduce ?? false}
-                delay={0.12}
-                duration={0.9}
-              >
-                {site.hero.headlineLineTwoBefore}{" "}
-                <em className="font-serif font-extralight italic">
-                  {site.hero.headlineItalic}
-                </em>
-                {site.hero.headlineLineTwoAfter}
-              </MaskLine>
-              <MaskLine
-                as="div"
-                active={show}
-                reduce={reduce ?? false}
-                delay={0.24}
-                duration={0.9}
-              >
-                {site.hero.headlineLineThree}
-              </MaskLine>
-            </h1>
-            <motion.div {...fade(4)}>
-              <HeroCta />
-            </motion.div>
-          </div>
+          <motion.div {...fade(4)}>
+            <HeroCta />
+          </motion.div>
         </div>
 
         <motion.div
           {...fade(5)}
-          className="mt-8 flex items-center gap-4 text-[10px] uppercase tracking-[0.3em] text-white/70"
+          className="mt-8 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-[#f4f1ea]/70"
         >
-          <span className="h-px flex-1 bg-white/25" />
-          <span>Scroll to explore</span>
-          <span className="h-px w-8 bg-white/50" />
-          <span>Selected work · About · Contact</span>
-          <span className="h-px flex-1 bg-white/25" />
+          <span>Scroll to explore ↓</span>
+          <span>↓ Down</span>
         </motion.div>
       </div>
     </section>

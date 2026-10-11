@@ -11,7 +11,7 @@ import { site } from "@/data/site";
 const nav = [
   { href: "/#work", label: "Work" },
   { href: "/#about", label: "About" },
-  { href: "/#linkedin", label: "LinkedIn" },
+  // { href: "/#linkedin", label: "LinkedIn" }, — hidden for now
   { href: "/#contact", label: "Contact" },
 ];
 
