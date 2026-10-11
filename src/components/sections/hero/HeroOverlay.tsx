@@ -11,6 +11,8 @@ import {
   HERO_INTRO_CYCLE,
   HERO_INTRO_FRAME,
   HERO_EXIT_START,
+  HERO_FIGURE_HEIGHT,
+  HERO_FIGURE_LIFT,
   HERO_INTRO_STEP_MS,
   HERO_OVERLAY,
   HERO_SIDE,
@@ -25,10 +27,13 @@ gsap.registerPlugin(ScrollTrigger);
 const CYCLE = HERO_INTRO_CYCLE;
 // Temporarily hide the hero backdrop once the intro cycle hands off.
 const SHOW_HERO_BG = false;
-// Guitar cutout to the right of the figure — hidden for now. Its wrappers stay
-// mounted so the handoff, exit and mouse tweens keep their targets.
-const SHOW_HERO_SIDE = false;
+// Harp cutout to the right of the figure. Its wrappers stay mounted even when
+// hidden so the handoff, exit and mouse tweens keep their targets.
+const SHOW_HERO_SIDE = true;
 const STEP_MS = HERO_INTRO_STEP_MS;
+// How much further than the character the cloud travels, as a share of the
+// character's move: scroll exit and cursor parallax both use it.
+const CLOUD_LEAD = 0.12;
 
 export function HeroOverlay() {
   const { phase } = useHeroIntro();
@@ -40,10 +45,13 @@ export function HeroOverlay() {
   const figureMouseRef = useRef<HTMLDivElement>(null);
   const handoffRef = useRef<HTMLDivElement>(null);
   const cloudRef = useRef<HTMLDivElement>(null);
+  const cloudMouseRef = useRef<HTMLDivElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
   const sideRef = useRef<HTMLDivElement>(null);
   const sideScrollRef = useRef<HTMLDivElement>(null);
   const sideMouseRef = useRef<HTMLDivElement>(null);
+  const sideLinkRef = useRef<HTMLAnchorElement>(null);
+  const sideBadgeRef = useRef<HTMLSpanElement>(null);
   const handoffRectRef = useRef<DOMRect | null>(null);
 
   const cycling = phase === "loading" || phase === "cycle";
@@ -68,7 +76,8 @@ export function HeroOverlay() {
   useEffect(() => {
     const el = figureRef.current;
     const side = sideScrollRef.current;
-    if (!el || !side || reduce) return;
+    const cloud = cloudRef.current;
+    if (!el || !side || !cloud || reduce) return;
     const ctx = gsap.context(() => {
       const scrollTrigger = {
         start: () => window.innerHeight * HERO_EXIT_START,
@@ -82,6 +91,17 @@ export function HeroOverlay() {
         {
           x: () => -window.innerWidth,
           rotate: -8,
+          ease: "power1.in",
+          scrollTrigger,
+        },
+      );
+      // The cloud rides inside the figure wrapper, so this extra bit of
+      // travel makes it lead the character slightly as the pair exits.
+      gsap.fromTo(
+        cloud,
+        { x: 0 },
+        {
+          x: () => -window.innerWidth * CLOUD_LEAD,
           ease: "power1.in",
           scrollTrigger,
         },
@@ -102,8 +122,9 @@ export function HeroOverlay() {
 
   // Intro timeline: FLIP the figure from the loader's character rect to its
   // drawn rect here, and only once it lands bring the backdrop in behind it.
-  // The img is object-contain + bottom-aligned inside the lower 74% of the
-  // wrapper, so its drawn rect is derived from the image's aspect ratio. The
+  // The img is object-contain + bottom-aligned inside the lower
+  // HERO_FIGURE_HEIGHT of the wrapper, so its drawn rect is derived from the
+  // image's aspect ratio. The
   // rect is kept in a ref so a Strict Mode effect re-run can replay it.
   useLayoutEffect(() => {
     const el = handoffRef.current;
@@ -116,12 +137,12 @@ export function HeroOverlay() {
     handoffRectRef.current = from;
 
     const box = el.getBoundingClientRect();
-    const boxH = box.height * 0.74;
+    const boxH = box.height * HERO_FIGURE_HEIGHT;
     const fit = Math.min(box.width / 1445, boxH / 1089);
     const w = 1445 * fit;
     const h = 1089 * fit;
     const left = box.left + (box.width - w) / 2;
-    const top = box.bottom - h;
+    const top = box.bottom - box.height * HERO_FIGURE_LIFT - h;
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -171,7 +192,8 @@ export function HeroOverlay() {
     const bg = backdropMouseRef.current;
     const fig = figureMouseRef.current;
     const side = sideMouseRef.current;
-    if (!bg || !fig || !side || reduce) return;
+    const cloud = cloudMouseRef.current;
+    if (!bg || !fig || !side || !cloud || reduce) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     gsap.set(bg, { scale: 1.06 });
@@ -184,6 +206,9 @@ export function HeroOverlay() {
     const figR = gsap.quickTo(fig, "rotationY", opts);
     const sideX = gsap.quickTo(side, "x", opts);
     const sideY = gsap.quickTo(side, "y", opts);
+    // Cloud sits inside the figure's mouse wrapper, so this is on top of it.
+    const cloudX = gsap.quickTo(cloud, "x", opts);
+    const cloudY = gsap.quickTo(cloud, "y", opts);
 
     const onMove = (e: PointerEvent) => {
       const nx = e.clientX / window.innerWidth - 0.5;
@@ -195,15 +220,55 @@ export function HeroOverlay() {
       figR(nx * 6);
       sideX(nx * 22);
       sideY(ny * 14);
+      cloudX(nx * 36 * CLOUD_LEAD);
+      cloudY(ny * 20 * CLOUD_LEAD);
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
-      gsap.killTweensOf([bg, fig, side]);
-      gsap.set([bg, fig, side], { clearProps: "transform" });
+      gsap.killTweensOf([bg, fig, side, cloud]);
+      gsap.set([bg, fig, side, cloud], { clearProps: "transform" });
     };
   }, [reduce]);
+
+  // The "Resume" badge stands in for the cursor over the harp: it snaps to
+  // the pointer on enter and trails it while hovering. Position is in the
+  // link's own box, so ancestor parallax/translate don't skew it.
+  useEffect(() => {
+    const link = sideLinkRef.current;
+    const badge = sideBadgeRef.current;
+    if (!link || !badge) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
+    // Centre the badge on the pointer via GSAP's own percent offsets.
+    gsap.set(badge, { xPercent: -50, yPercent: -50 });
+    const opts = { duration: 0.35, ease: "power3.out" };
+    const toX = gsap.quickTo(badge, "x", opts);
+    const toY = gsap.quickTo(badge, "y", opts);
+    const local = (e: PointerEvent) => {
+      const r = link.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    };
+    const onEnter = (e: PointerEvent) => {
+      const { x, y } = local(e);
+      gsap.set(badge, { x, y });
+    };
+    const onMove = (e: PointerEvent) => {
+      const { x, y } = local(e);
+      toX(x);
+      toY(y);
+    };
+
+    link.addEventListener("pointerenter", onEnter);
+    link.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      link.removeEventListener("pointerenter", onEnter);
+      link.removeEventListener("pointermove", onMove);
+      gsap.killTweensOf(badge);
+      gsap.set(badge, { clearProps: "transform" });
+    };
+  }, []);
 
   return (
     <div className="pointer-events-none absolute inset-0 z-[5]">
@@ -289,23 +354,30 @@ export function HeroOverlay() {
           </div>
         </motion.div>
       </div>
-      {/* Stacked above the figure so the guitar paints in front of it. */}
+      {/* Stacked above the figure so the harp paints in front of it. */}
       <div
         ref={sideScrollRef}
         className="absolute inset-0 z-[1] will-change-transform"
       >
+        {/* Harp anchors by its top edge at 30% down the hero. The handoff
+            timeline tweens this wrapper with GSAP, which folds any Tailwind
+            `translate` into its own transform, so centering lives on the
+            CSS-only child below and the position is the same on a full load
+            and a hot reload. */}
         <div
           ref={sideRef}
-          className="absolute top-[52%] left-3/4 w-[clamp(10rem,min(19vw,32svh),20rem)] -translate-x-1/2 -translate-y-1/2"
+          className="absolute top-[30%] left-3/4 w-[clamp(10rem,min(19vw,32svh),20rem)]"
         >
+          <div className="-translate-x-1/2">
           <div ref={sideMouseRef} className="will-change-transform">
             {SHOW_HERO_SIDE && (
             <a
+              ref={sideLinkRef}
               href="/resume"
               target="_blank"
               rel="noopener"
               aria-label="Open résumé in a new tab"
-              className="group pointer-events-auto relative block cursor-pointer"
+              className="group pointer-events-auto relative block cursor-pointer [@media(pointer:fine)]:cursor-none"
             >
             <motion.img
               src={HERO_SIDE}
@@ -317,7 +389,7 @@ export function HeroOverlay() {
                   ? {
                       opacity: 1,
                       y: reduce ? 0 : [0, -16, 0],
-                      rotate: reduce ? -10 : [-12, -8, -12],
+                      rotate: reduce ? 22 : [24, 20, 24],
                     }
                   : { opacity: 0 }
               }
@@ -331,17 +403,27 @@ export function HeroOverlay() {
               }}
               className="block h-auto w-full select-none will-change-transform drop-shadow-[0_30px_40px_rgba(0,0,0,0.35)]"
               decoding="async"
-              width={768}
-              height={1365}
+              width={941}
+              height={1672}
             />
+              {/* Outer span is GSAP's: it only carries the cursor position.
+                  Inner span is CSS's: fade/pop on hover. Kept apart because
+                  GSAP bakes Tailwind's `scale`/`translate` into its own
+                  transform the first time it writes to an element. */}
               <span
-                style={{ color: "#6b1414" }}
-                className="pointer-events-none absolute top-1/2 left-1/2 flex size-24 -translate-x-1/2 -translate-y-1/2 scale-50 items-center justify-center rounded-full bg-white font-sans text-[13px] font-semibold tracking-[0.08em] uppercase opacity-0 shadow-[0_12px_30px_rgba(0,0,0,0.25)] transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+                ref={sideBadgeRef}
+                className="pointer-events-none absolute top-0 left-0 z-[1]"
               >
-                Resume ↗
+                <span
+                  style={{ color: "#6b1414" }}
+                  className="flex size-24 scale-50 items-center justify-center rounded-full bg-white font-sans text-[13px] font-semibold tracking-[0.08em] uppercase opacity-0 shadow-[0_12px_30px_rgba(0,0,0,0.25)] transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+                >
+                  Resume ↗
+                </span>
               </span>
             </a>
             )}
+          </div>
           </div>
         </div>
       </div>
@@ -356,7 +438,8 @@ export function HeroOverlay() {
           {/* Big cloud centered behind the figure: drifts on its own slower
               beat so the figure reads as floating in front of it. Exits left
               with the figure. */}
-          <div ref={cloudRef} className="absolute inset-0">
+          <div ref={cloudRef} className="absolute inset-0 will-change-transform">
+            <div ref={cloudMouseRef} className="absolute inset-0 will-change-transform">
             <motion.img
               src={HERO_CLOUD}
               alt=""
@@ -380,6 +463,7 @@ export function HeroOverlay() {
               width={1024}
               height={1024}
             />
+            </div>
           </div>
           <motion.div
             className="absolute inset-0 will-change-transform"
@@ -418,7 +502,11 @@ export function HeroOverlay() {
                   ease: introEase,
                   delay: reduce || handoff ? 0 : 0.25,
                 }}
-                className="absolute inset-x-0 bottom-0 h-[74%] w-full object-contain object-bottom select-none"
+                style={{
+                  height: `${HERO_FIGURE_HEIGHT * 100}%`,
+                  bottom: `${HERO_FIGURE_LIFT * 100}%`,
+                }}
+                className="absolute inset-x-0 w-full object-contain object-bottom select-none"
                 decoding="async"
                 width={1445}
                 height={1089}

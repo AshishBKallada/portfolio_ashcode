@@ -49,7 +49,7 @@ export function HeroIntroProvider({ children }: { children: React.ReactNode }) {
       setPhase("done");
       return;
     }
-    // Image cycle runs in SiteLoader; hero picks up at zoom.
+    // SiteLoader runs the counter + phrase; hero picks up at zoom.
     setPhase("zoom");
     const { zoomMs, textMs } = heroIntroTiming;
     timersRef.current = [

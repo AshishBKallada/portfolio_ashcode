@@ -8,15 +8,22 @@ export const HERO_INTRO_FRAME = "/images/hero/hero-bg.png";
 export const HERO_OVERLAY = "/images/hero/hero-overlay.png";
 
 /** Secondary cutout floating to the right of the figure (3/4 across). */
-export const HERO_SIDE = "/images/hero/float-guitar.png";
+export const HERO_SIDE = "/images/hero/float-harp.png";
 
 /** Cloud cutout the figure floats above, drawn behind its feet. */
 export const HERO_CLOUD = "/images/hero/cloud.png";
 
-export const HERO_INTRO_STEP_MS = 320;
+/**
+ * Height of the hero figure as a fraction of the hero. The img is
+ * object-contain + bottom-aligned, and the loader handoff derives its drawn
+ * rect from this same number, so change it here only.
+ */
+export const HERO_FIGURE_HEIGHT = 0.66;
 
-export const heroIntroSequenceMs =
-  (HERO_INTRO_CYCLE.length - 1) * HERO_INTRO_STEP_MS;
+/** How far the figure's feet sit above the hero's bottom edge, as a fraction of the hero. */
+export const HERO_FIGURE_LIFT = 0.07;
+
+export const HERO_INTRO_STEP_MS = 320;
 
 /**
  * Viewport-heights of scroll the hero holds still before its figures start
