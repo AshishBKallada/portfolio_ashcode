@@ -98,7 +98,11 @@ export function Hero() {
           >
             {site.hero.statementLineOne}
             <br />
-            {site.hero.statementLineTwo}
+            {site.hero.statementLineTwoBefore}{" "}
+            <span className="font-script text-[1.18em] leading-none">
+              {site.hero.statementScript}
+            </span>
+            {site.hero.statementLineTwoAfter}
           </motion.p>
 
           <motion.div {...fade(4)}>
@@ -110,7 +114,7 @@ export function Hero() {
           {...fade(5)}
           className="mt-8 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-[#f4f1ea]/70"
         >
-          <span>Scroll to explore ↓</span>
+          <span>Scroll ↓</span>
           <span>↓ Down</span>
         </motion.div>
       </div>

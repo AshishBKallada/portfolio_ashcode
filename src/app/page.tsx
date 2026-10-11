@@ -6,6 +6,7 @@ import { About } from "@/components/sections/About";
 import { ContactStatement } from "@/components/sections/ContactStatement";
 import { HeroIntroPin } from "@/components/sections/HeroIntroPin";
 import { Projects } from "@/components/sections/Projects";
+import { site } from "@/data/site";
 // import { LinkedIn } from "@/components/sections/LinkedIn";
 // import { Work } from "@/components/sections/Work";
 
@@ -16,7 +17,10 @@ export default function Home() {
       <BackToTop />
       <div className="relative">
         <HeroIntroPin />
-        <div className="theme-light relative bg-background">
+        <div
+          style={{ backgroundColor: site.navbar.bg }}
+          className="theme-light relative"
+        >
           <About />
           <Projects />
           <ContactStatement />

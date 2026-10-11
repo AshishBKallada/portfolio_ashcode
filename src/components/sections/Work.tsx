@@ -7,7 +7,6 @@ import { site } from "@/data/site";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { SectionReveal } from "@/components/motion/SectionReveal";
 import { Section } from "@/components/layout/Section";
-import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 
 const PREVIEW_WIDTH = 256;
 const CURSOR_OFFSET = 24;
@@ -40,10 +39,7 @@ export function Work() {
   return (
     <Section id="work" className="pt-16 pb-20 sm:pt-20 sm:pb-24">
       <div className="mb-16 ml-auto max-w-xl sm:mb-20 lg:max-w-2xl lg:w-[52%]">
-        <SectionReveal>
-          <SectionEyebrow number="02" label={site.work.eyebrow} />
-        </SectionReveal>
-        <SectionReveal delay={0.08} className="mt-4">
+        <SectionReveal delay={0.08}>
           <h2 className="font-sans text-3xl leading-[1.2] font-medium tracking-tight text-foreground sm:text-4xl lg:text-[2.85rem]">
             {site.work.headlineBefore}{" "}
             <em className="font-serif font-extralight italic">

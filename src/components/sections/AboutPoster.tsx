@@ -1,6 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import gsap from "gsap";
+import { useReducedMotion } from "motion/react";
+import { useEffect, useRef } from "react";
 import { HERO_OVERLAY } from "@/components/sections/hero/heroIntroCycle";
 import { site } from "@/data/site";
 
@@ -9,22 +11,65 @@ const red = site.navbar.bg;
 const grain =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
 
-/** Cream marker stroke that draws itself in when the poster comes into view. */
-function Stroke({ d, width = 5 }: { d: string; width?: number }) {
+/**
+ * Lets its child follow the cursor: the card moves a share of the way from
+ * its resting spot toward the pointer, and GSAP quickTo eases every step so
+ * it glides. Fine pointers only, off with reduced motion.
+ */
+const FOLLOW = 0.42; // share of the cursor-to-card distance the card covers
+const MAX_X = 260;
+const MAX_Y = 180;
+
+function CursorFloat({ className, children }: { className: string; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduce) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
+    const opts = { duration: 1.1, ease: "power3.out" };
+    const x = gsap.quickTo(el, "x", opts);
+    const y = gsap.quickTo(el, "y", opts);
+    const r = gsap.quickTo(el, "rotation", { duration: 1.4, ease: "power3.out" });
+
+    // Resting center, measured without the current offset.
+    const home = () => {
+      const b = el.getBoundingClientRect();
+      const cx = Number(gsap.getProperty(el, "x")) || 0;
+      const cy = Number(gsap.getProperty(el, "y")) || 0;
+      return { x: b.left + b.width / 2 - cx, y: b.top + b.height / 2 - cy };
+    };
+
+    const onMove = (e: PointerEvent) => {
+      const h = home();
+      const dx = gsap.utils.clamp(-MAX_X, MAX_X, (e.clientX - h.x) * FOLLOW);
+      const dy = gsap.utils.clamp(-MAX_Y, MAX_Y, (e.clientY - h.y) * FOLLOW);
+      x(dx);
+      y(dy);
+      r(gsap.utils.clamp(-10, 10, dx / 28));
+    };
+    const onLeave = () => {
+      x(0);
+      y(0);
+      r(0);
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("pointerleave", onLeave);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerleave", onLeave);
+      gsap.killTweensOf(el);
+      gsap.set(el, { clearProps: "transform" });
+    };
+  }, [reduce]);
+
   return (
-    <motion.path
-      d={d}
-      fill="none"
-      stroke="#f4f1ea"
-      strokeWidth={width}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      initial={reduce ? false : { pathLength: 0 }}
-      whileInView={{ pathLength: 1 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 1.2, ease: "easeInOut", delay: 0.3 }}
-    />
+    <div ref={ref} className={`will-change-transform ${className}`}>
+      {children}
+    </div>
   );
 }
 
@@ -47,40 +92,6 @@ function Polaroid({ className }: { className: string }) {
   );
 }
 
-function Badge({ className }: { className: string }) {
-  return (
-    <div className={className}>
-      <svg viewBox="0 0 200 200" className="size-full motion-safe:animate-[spin_22s_linear_infinite]" aria-hidden>
-        <defs>
-          <path id="badge-circle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
-        </defs>
-        <text fill="#f4f1ea" style={{ fontFamily: "var(--font-display)", fontSize: 25 }}>
-          <textPath href="#badge-circle" textLength="488" lengthAdjust="spacingAndGlyphs">
-            {copy.badge}
-          </textPath>
-        </text>
-      </svg>
-      <svg viewBox="0 0 100 100" className="absolute inset-[30%]" aria-hidden>
-        <Stroke d="M50 12 C78 10 92 36 86 60 C80 84 46 94 26 80 C8 66 10 32 34 18 C44 12 58 14 66 20" width={6} />
-        <Stroke d="M40 64 L62 34" width={6} />
-      </svg>
-    </div>
-  );
-}
-
-function Starburst({ className }: { className: string }) {
-  const points = Array.from({ length: 24 }, (_, i) => {
-    const r = i % 2 ? 22 : 50;
-    const a = (i / 24) * Math.PI * 2;
-    return `${(50 + Math.cos(a) * r).toFixed(1)},${(50 + Math.sin(a) * r).toFixed(1)}`;
-  }).join(" ");
-  return (
-    <svg viewBox="0 0 100 100" className={className} aria-hidden>
-      <polygon points={points} fill="#f4f1ea" />
-    </svg>
-  );
-}
-
 function Bio({ className = "" }: { className?: string }) {
   return (
     <div className={`space-y-[1.2em] text-[#f4f1ea] ${className}`}>
@@ -98,20 +109,20 @@ function Bio({ className = "" }: { className?: string }) {
 function ContactPills({ className = "" }: { className?: string }) {
   const github = site.socials.find((s) => s.label === "GitHub");
   const items = [
-    { label: site.email, href: `mailto:${site.email}` },
-    { label: site.location, href: null },
-    ...(github ? [{ label: github.href.replace("https://", ""), href: github.href }] : []),
+    { label: site.email, href: `mailto:${site.email}`, newTab: false },
+    ...(github ? [{ label: github.href.replace("https://", ""), href: github.href, newTab: true }] : []),
+    { label: "Resume", href: "/resume", newTab: true },
   ];
   return (
     <div className={`flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-[#f4f1ea] ${className}`}>
       {items.map((item, i) => (
         <span key={item.label} className="flex items-center gap-5">
-          {i > 0 && <span aria-hidden className="hidden text-[0.9em] sm:inline">✷</span>}
+          {i > 0 && <span aria-hidden className="hidden text-[0.9em] sm:inline">•</span>}
           {item.href ? (
             <a
               href={item.href}
-              target={item.href.startsWith("http") ? "_blank" : undefined}
-              rel="noreferrer"
+              target={item.newTab ? "_blank" : undefined}
+              rel={item.newTab ? "noreferrer" : undefined}
               className="rounded-full border border-[#f4f1ea]/80 px-3 py-0.5 transition-colors hover:bg-[#f4f1ea] hover:text-[#6b1414]"
             >
               {item.label}
@@ -125,9 +136,8 @@ function ContactPills({ className = "" }: { className?: string }) {
   );
 }
 
-// Grungy "about me" poster on red: a tilted polaroid with captions and
-// stickers, a spinning role badge, red marker strokes, a blocky HI!! with the
-// bio, and contact pills underneath.
+// Grungy "about me" poster on red: a tilted polaroid that drifts after the
+// cursor, a blocky HI!! with the bio, and contact pills underneath.
 export function AboutPoster() {
   return (
     <section
@@ -148,9 +158,9 @@ export function AboutPoster() {
           <p className="absolute top-[3%] left-[17%] -rotate-[8deg] font-script text-[6.5cqw] leading-none text-[#f4f1ea]">
             {copy.heading}
           </p>
-          <Badge className="absolute top-[36%] left-[1%] w-[15%] -rotate-12 aspect-square" />
-          <Polaroid className="absolute top-[18%] left-[15%] w-[27%] -rotate-[6deg] text-[2.2cqw]" />
-          <Starburst className="absolute top-[40%] left-[38%] w-[9%]" />
+          <CursorFloat className="absolute top-[18%] left-[15%] z-10 w-[27%] text-[2.2cqw]">
+            <Polaroid className="relative w-full -rotate-[6deg]" />
+          </CursorFloat>
 
           <p className="absolute top-[17%] left-[53%] font-display text-[11cqw] leading-[0.8] text-[#f4f1ea]">HI!!</p>
           <p className="absolute top-[38%] left-[53%] w-[24%] text-[1.35cqw] leading-[1.25] font-medium text-[#f4f1ea]">
@@ -170,7 +180,6 @@ export function AboutPoster() {
         <div className="mx-auto flex max-w-sm flex-col items-center gap-6 md:hidden">
           <div className="relative w-[70%]">
             <Polaroid className="relative w-full -rotate-[5deg] text-[1.1rem]" />
-            <Starburst className="absolute -bottom-5 -left-6 w-16" />
           </div>
           <div className="w-full">
             <p className="font-display text-6xl leading-none text-[#f4f1ea]">HI!!</p>

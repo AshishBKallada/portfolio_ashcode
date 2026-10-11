@@ -36,6 +36,8 @@ export function SiteFooter() {
       style={{ backgroundColor: site.navbar.bg }}
       className="relative z-20 overflow-hidden px-4 pt-10 text-white sm:px-8 sm:pt-12 lg:px-[6%]"
     >
+      {/* Light rule separating the footer from the contact section above. */}
+      <div aria-hidden className="absolute inset-x-4 top-0 h-px bg-white/25 sm:inset-x-8 lg:inset-x-[6%]" />
       <div className="grid grid-cols-2 gap-x-6 gap-y-10 font-sans md:grid-cols-[1fr_1.3fr_1.4fr]">
         <nav aria-label="Explore" className="text-sm">
           <p className="mb-3 font-medium">Explore</p>

@@ -14,7 +14,7 @@ export function Projects() {
   return (
     <section
       id="projects"
-      style={{ color: site.navbar.bg, backgroundColor: copy.bg }}
+      style={{ color: "#f4f1ea", backgroundColor: site.navbar.bg }}
       className="relative z-10 overflow-hidden px-4 pt-6 pb-24 sm:px-5 sm:pb-32"
     >
       {/* Meta row: five small labels spread across the top. */}
@@ -58,7 +58,7 @@ export function Projects() {
             <RevealItem>
               <Link
                 href={`/projects/${project.slug}`}
-                className="group relative block aspect-[3/4] overflow-hidden bg-black/5"
+                className="group relative block aspect-[3/4] overflow-hidden bg-white/5"
               >
                 <Image
                   src={project.image}

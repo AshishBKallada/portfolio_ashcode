@@ -102,7 +102,7 @@ export function HeroOverlay() {
 
   // Intro timeline: FLIP the figure from the loader's character rect to its
   // drawn rect here, and only once it lands bring the backdrop in behind it.
-  // The img is object-contain + bottom-aligned inside the lower 82% of the
+  // The img is object-contain + bottom-aligned inside the lower 74% of the
   // wrapper, so its drawn rect is derived from the image's aspect ratio. The
   // rect is kept in a ref so a Strict Mode effect re-run can replay it.
   useLayoutEffect(() => {
@@ -116,7 +116,7 @@ export function HeroOverlay() {
     handoffRectRef.current = from;
 
     const box = el.getBoundingClientRect();
-    const boxH = box.height * 0.82;
+    const boxH = box.height * 0.74;
     const fit = Math.min(box.width / 1445, boxH / 1089);
     const w = 1445 * fit;
     const h = 1089 * fit;
@@ -418,7 +418,7 @@ export function HeroOverlay() {
                   ease: introEase,
                   delay: reduce || handoff ? 0 : 0.25,
                 }}
-                className="absolute inset-x-0 bottom-0 h-[82%] w-full object-contain object-bottom select-none"
+                className="absolute inset-x-0 bottom-0 h-[74%] w-full object-contain object-bottom select-none"
                 decoding="async"
                 width={1445}
                 height={1089}

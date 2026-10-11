@@ -72,12 +72,16 @@ export const site = {
     cta: { label: "Get in Touch", href: "/#contact" },
     /** Big two-line serif statement at the bottom left of the hero. */
     statementLineOne: "I forge products",
-    statementLineTwo: "that feel immortal.",
+    statementLineTwoBefore: "that feel",
+    /** Set in the cursive script face. */
+    statementScript: "immortal",
+    statementLineTwoAfter: ".",
     /** Bulleted tags beside the CTA. */
     tags: ["Full-stack", "Interfaces", "Motion"],
     role: "Full Stack Developer",
   },
   projects: {
+    /** Cream still used by the resume page and the hidden contact poster. */
     bg: "#f7f5f2",
     meta: [
       "Built for shipping\nreal products.",
@@ -103,7 +107,6 @@ export const site = {
   },
   aboutPoster: {
     heading: "About me",
-    badge: "DEVELOPER · BUILDER · FULL STACK · ",
     caption: "Ashish B Kallada",
     intro:
       "My name is AshCode, I'm a full-stack developer building products remotely.",
