@@ -4,8 +4,7 @@ import { useLenis } from "lenis/react";
 import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
 
-// After the hero hook the page reads as four chapters; ids match the
-// sections' SectionLabel indexes.
+// After the hero hook the page reads as four chapters, in page order.
 const CHAPTERS = [
   { id: "about-me", label: "About me" },
   { id: "about", label: "Journey" },

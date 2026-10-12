@@ -3,7 +3,6 @@ import { AboutMedia } from "@/components/sections/about/AboutMedia";
 import { RevealItem } from "@/components/motion/Reveal";
 import { SectionReveal } from "@/components/motion/SectionReveal";
 import { AnchorLink } from "@/components/motion/AnchorLink";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 
 export function About() {
   return (
@@ -15,9 +14,6 @@ export function About() {
       <AboutMedia>
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-10">
           <SectionReveal delay={0.08}>
-            <SectionLabel index={2} className="mb-4">
-              Journey
-            </SectionLabel>
             <h2 className="font-serif text-[clamp(1.35rem,3.6vw,3.25rem)] leading-[1.1] whitespace-nowrap text-foreground">
               {site.about.headlineBefore}{" "}
               <em className="italic">{site.about.headlineItalic}</em>

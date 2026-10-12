@@ -6,7 +6,6 @@ import { ViewTransition } from "react";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { AnchorLink } from "@/components/motion/AnchorLink";
 import { Button } from "@/components/ui/Button";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { getProject, projects } from "@/data/projects";
 
 export async function generateStaticParams() {
@@ -61,9 +60,6 @@ export default async function ProjectPage({
           >
             ← Back to projects
           </AnchorLink>
-          <SectionLabel index={index + 1}>
-            Case study / {String(projects.length).padStart(2, "0")}
-          </SectionLabel>
         </div>
 
         <header className="mx-auto mt-16 max-w-5xl sm:mt-24">

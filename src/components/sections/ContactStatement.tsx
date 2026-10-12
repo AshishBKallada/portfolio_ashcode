@@ -7,7 +7,6 @@ import { Parallax } from "@/components/motion/Parallax";
 import { SectionReveal } from "@/components/motion/SectionReveal";
 import { ContactClouds } from "@/components/sections/contact/ContactClouds";
 import { CopyEmail } from "@/components/sections/contact/CopyEmail";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { site } from "@/data/site";
 
 const copy = site.contactStatement;
@@ -30,9 +29,6 @@ export function ContactStatement() {
     >
       <ContactClouds target={ref} />
 
-      <SectionLabel index={4} className="relative z-10 mb-8">
-        Contact
-      </SectionLabel>
 
       <h2 className="sr-only">
         {copy.lines.join(" ")} {copy.script}

@@ -15,8 +15,10 @@ const links = [
   { href: "/resume", label: "Résumé" },
 ];
 
+// Small from the start: the wordmark sits at the bar's left at the same size
+// in the hero and once the bar goes compact.
 const wordmarkClass =
-  "font-display text-[clamp(2.75rem,7.5vw,7rem)] uppercase leading-[0.82] tracking-tight";
+  "font-display text-[26px] uppercase leading-[0.82] tracking-tight";
 
 const COMPACT_HEIGHT = 60;
 const COMPACT_WORDMARK_PX = 26;
@@ -56,8 +58,10 @@ function BarSpacer() {
 }
 
 /**
- * Red bar under the wordmark. Rendered under the hero figure so the figure
- * paints above it; NavbarBar draws the controls on top of everything.
+ * Transparent spacer the height of the full bar, so the hero (clouds and
+ * all) shows through behind the wordmark while it is in view. NavbarBar
+ * measures it, draws the controls on top, and paints its own red bar only
+ * once it goes compact.
  */
 export function NavbarBackdrop() {
   const compact = useNavbarCompact();
@@ -65,8 +69,7 @@ export function NavbarBackdrop() {
   return (
     <motion.div
       id="navbar-backdrop"
-      style={{ backgroundColor: site.navbar.bg }}
-      className="absolute inset-x-0 top-0 z-[4] overflow-hidden text-cream"
+      className="pointer-events-none absolute inset-x-0 top-0 z-[4] overflow-hidden text-cream"
       initial={false}
       animate={{ height: compact ? COMPACT_HEIGHT : "auto" }}
       transition={compactTransition}

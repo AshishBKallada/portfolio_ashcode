@@ -16,7 +16,7 @@ import { useEffect, type RefObject } from "react";
  * Pink cloud cutout, painted wide (1000×542) with one flat edge; turned ±90°
  * so the flat edge always faces off-screen. Never mirror it.
  */
-const CLOUD = "/images/side-cutout.png";
+export const SIDE_CLOUD = "/images/side-cutout.png";
 
 type Layer = {
   side: "left" | "right";
@@ -114,7 +114,7 @@ function Cloud({
             } ${back ? "opacity-60 blur-[2px]" : ""}`}
           >
             <Image
-              src={CLOUD}
+              src={SIDE_CLOUD}
               alt=""
               fill
               draggable={false}

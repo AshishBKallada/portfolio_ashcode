@@ -6,7 +6,6 @@ import { Parallax } from "@/components/motion/Parallax";
 import { RevealItem } from "@/components/motion/Reveal";
 import { SectionReveal } from "@/components/motion/SectionReveal";
 import { buttonOutline } from "@/components/ui/buttonStyles";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
 
@@ -21,16 +20,13 @@ export function Projects() {
       style={{ backgroundColor: site.navbar.bg }}
       className="relative z-10 overflow-hidden px-4 text-cream pt-6 pb-24 sm:px-5 sm:pb-32"
     >
-      {/* Meta row: the chapter label, then four small labels across the top. */}
+      {/* Meta row: five small labels spread across the top. */}
       <div className="grid grid-cols-2 gap-y-2 border-b border-cream/20 pb-4 font-sans text-[11px] leading-tight font-medium tracking-[0.14em] uppercase sm:grid-cols-5">
-        <SectionLabel index={3} className="leading-tight">
-          Selected work
-        </SectionLabel>
-        {copy.meta.slice(1).map((item, i, rest) => (
+        {copy.meta.map((item, i) => (
           <p
             key={item}
             className={`whitespace-pre-line ${
-              i === rest.length - 1 ? "text-right" : "hidden sm:block"
+              i === copy.meta.length - 1 ? "text-right" : i > 0 ? "hidden sm:block" : ""
             }`}
           >
             {item}

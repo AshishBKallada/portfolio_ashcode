@@ -8,7 +8,10 @@ import {
   INTRO_STACK_START,
 } from "@/components/sections/hero/heroIntroCycle";
 
-/** Past this share of the exit, a pause completes it; before it, it rewinds. */
+/**
+ * How far into the exit (in the direction you are scrolling) a pause has to
+ * be before it completes that way; short of it, the hero settles back.
+ */
 const SNAP_FORWARD_AT = 0.15;
 /** How long the scroll has to be quiet before the exit auto-completes. */
 const SETTLE_MS = 140;
@@ -20,13 +23,17 @@ const SETTLE_MS = 140;
 export function HeroIntroPin() {
   const snapping = useRef(false);
   const timer = useRef(0);
+  // Last direction the user actually scrolled: 1 down, -1 up.
+  const direction = useRef(1);
 
   // Never leave the hero half-exited: once scrolling settles inside the exit
-  // window, Lenis carries the page on to the About-me poster (or back to the
-  // top if the exit had barely begun). A wheel or touch mid-snap hands
-  // control straight back to the user.
+  // window, Lenis finishes the move the user was making — on to the About-me
+  // poster when heading down, back to the hero when heading up — unless they
+  // had barely started it. A wheel or touch mid-snap hands control straight
+  // back to the user.
   useLenis((lenis) => {
     if (snapping.current) return;
+    if (lenis.direction) direction.current = lenis.direction;
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
       const vh = window.innerHeight;
@@ -35,7 +42,14 @@ export function HeroIntroPin() {
       const s = lenis.scroll;
       if (s <= start + 1 || s >= end - 1) return;
       const progress = (s - start) / (end - start);
-      const target = progress >= SNAP_FORWARD_AT ? end : start;
+      const target =
+        direction.current < 0
+          ? progress <= 1 - SNAP_FORWARD_AT
+            ? start
+            : end
+          : progress >= SNAP_FORWARD_AT
+            ? end
+            : start;
       snapping.current = true;
       lenis.scrollTo(target, {
         duration: 1.1,

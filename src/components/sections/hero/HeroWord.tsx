@@ -10,9 +10,10 @@ const WORD = site.hero.statementScript.toUpperCase();
 const PIVOT = WORD.indexOf("O");
 
 /**
- * Towering Anton word between the cloud and the figure, so the character
- * overlaps it. Letters rise out of a mask once the figure has landed. The
- * outer wrapper belongs to the scroll exit (it swells around the pivot
+ * Towering word in the statement's own hairline serif (Editorial New
+ * Ultralight), set between the cloud and the figure so the character
+ * overlaps it and the thin strokes sit back behind the art. Letters rise
+ * out of a mask once the figure has landed. The outer wrapper belongs to the scroll exit (it swells around the pivot
  * letter), the inner one to the cursor parallax, so the tweens never fight.
  * Decorative: the statement below carries the same word for readers.
  */
@@ -37,11 +38,11 @@ export function HeroWord({
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-[44%] -translate-y-1/2 select-none max-md:top-[34%]"
+      className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none max-md:top-[34%]"
     >
       <div ref={wordRef} className="will-change-transform">
         <div ref={mouseRef} className="will-change-transform">
-          <p className="flex justify-center font-display text-[24vw] leading-[0.8] tracking-[-0.01em] text-cream uppercase">
+          <p className="flex origin-center scale-y-[1.1] justify-center font-serif text-[18.5vw] leading-[0.8] font-extralight tracking-[-0.04em] text-cream uppercase">
             {WORD.split("").map((char, i) => (
               <span key={i} className="block overflow-hidden pb-[0.02em]">
                 <motion.span
