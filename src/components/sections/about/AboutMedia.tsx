@@ -84,7 +84,7 @@ export function AboutMedia({ children }: { children?: ReactNode }) {
         }`}
       >
         <div ref={trackRef} className="flex h-full w-max will-change-transform">
-          {gallery.map((src) => (
+          {gallery.map((src, i) => (
             <div
               key={src}
               className="relative h-full w-screen shrink-0 snap-start overflow-hidden"
@@ -102,6 +102,9 @@ export function AboutMedia({ children }: { children?: ReactNode }) {
                   className="object-cover object-top"
                 />
               </div>
+              <span className="absolute bottom-4 left-4 bg-cream px-2 py-1 font-sans text-[11px] leading-none font-medium tracking-[0.14em] text-brand uppercase tabular-nums sm:bottom-5 sm:left-5">
+                {String(i + 1).padStart(2, "0")} / {String(gallery.length).padStart(2, "0")}
+              </span>
             </div>
           ))}
         </div>

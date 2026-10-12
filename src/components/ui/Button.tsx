@@ -1,10 +1,9 @@
 import Link from "next/link";
+import { buttonOutline, buttonSolid } from "@/components/ui/buttonStyles";
 
-// Square, uppercase, cream-on-oxblood: the same language as the navbar
-// Contact button and the contact CTA.
 const variants = {
-  primary: "bg-cream text-brand hover:bg-white",
-  secondary: "border border-cream text-cream hover:bg-cream hover:text-brand",
+  primary: buttonSolid,
+  secondary: buttonOutline,
 };
 
 type ButtonProps = {
@@ -20,7 +19,7 @@ export function Button({
   external,
   variant = "primary",
 }: ButtonProps) {
-  const className = `inline-flex min-h-11 items-center gap-2 px-5 font-sans text-[12px] font-semibold tracking-[0.08em] uppercase transition-colors focus-visible:outline-cream ${variants[variant]}`;
+  const className = variants[variant];
 
   if (external) {
     return (

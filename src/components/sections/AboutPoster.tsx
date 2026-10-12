@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { HERO_OVERLAY } from "@/components/sections/hero/heroIntroCycle";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { site } from "@/data/site";
 
 const copy = site.aboutPoster;
@@ -148,6 +149,9 @@ export function AboutPoster() {
       <h2 className="sr-only">
         {copy.heading}: {copy.intro}
       </h2>
+      <SectionLabel index={1} className="mb-4 text-[#f4f1ea] sm:px-1">
+        {copy.heading}
+      </SectionLabel>
 
       <div className="w-full">
         {/* Desktop: a poster laid out in its own coordinate space. */}

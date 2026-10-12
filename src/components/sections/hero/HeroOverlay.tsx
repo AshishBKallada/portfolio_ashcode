@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { HeroWord } from "@/components/sections/hero/HeroWord";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { introEase } from "@/components/motion/intro";
@@ -53,6 +54,9 @@ export function HeroOverlay() {
   const sideLinkRef = useRef<HTMLAnchorElement>(null);
   const sideBadgeRef = useRef<HTMLSpanElement>(null);
   const handoffRectRef = useRef<DOMRect | null>(null);
+  const wordRef = useRef<HTMLDivElement>(null);
+  const wordMouseRef = useRef<HTMLDivElement>(null);
+  const wordPivotRef = useRef<HTMLSpanElement>(null);
 
   const cycling = phase === "loading" || phase === "cycle";
   const zoomed = phase === "zoom" || phase === "text" || phase === "done";
@@ -77,7 +81,9 @@ export function HeroOverlay() {
     const el = figureRef.current;
     const side = sideScrollRef.current;
     const cloud = cloudRef.current;
-    if (!el || !side || !cloud || reduce) return;
+    const word = wordRef.current;
+    const pivot = wordPivotRef.current;
+    if (!el || !side || !cloud || !word || !pivot || reduce) return;
     const ctx = gsap.context(() => {
       const scrollTrigger = {
         start: () => window.innerHeight * HERO_EXIT_START,
@@ -95,15 +101,46 @@ export function HeroOverlay() {
           scrollTrigger,
         },
       );
-      // The cloud rides inside the figure wrapper, so this extra bit of
-      // travel makes it lead the character slightly as the pair exits.
+      // The cloud travels a little further than the character, so it leads
+      // the pair out.
       gsap.fromTo(
         cloud,
-        { x: 0 },
+        { x: 0, rotate: 0 },
         {
-          x: () => -window.innerWidth * CLOUD_LEAD,
+          x: () => -window.innerWidth * (1 + CLOUD_LEAD),
+          rotate: -8,
           ease: "power1.in",
           scrollTrigger,
+        },
+      );
+      // Fly-through: the word swells around the counter of its "O" until the
+      // view passes through it, fading as the About-me poster takes over.
+      const pivotOrigin = () => {
+        const w = word.getBoundingClientRect();
+        const p = pivot.getBoundingClientRect();
+        const sx = Number(gsap.getProperty(word, "scaleX")) || 1;
+        return `${(p.left + p.width / 2 - w.left) / sx}px ${(p.top + p.height * 0.5 - w.top) / sx}px`;
+      };
+      gsap.fromTo(
+        word,
+        { scale: 1 },
+        {
+          scale: 14,
+          ease: "power2.in",
+          transformOrigin: pivotOrigin,
+          scrollTrigger,
+        },
+      );
+      gsap.fromTo(
+        word,
+        { autoAlpha: 1 },
+        {
+          autoAlpha: 0,
+          ease: "none",
+          scrollTrigger: {
+            ...scrollTrigger,
+            start: () => window.innerHeight * (HERO_EXIT_START + 0.45),
+          },
         },
       );
       gsap.fromTo(
@@ -194,7 +231,8 @@ export function HeroOverlay() {
     const fig = figureMouseRef.current;
     const side = sideMouseRef.current;
     const cloud = cloudMouseRef.current;
-    if (!bg || !fig || !side || !cloud || reduce) return;
+    const word = wordMouseRef.current;
+    if (!bg || !fig || !side || !cloud || !word || reduce) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     gsap.set(bg, { scale: 1.06 });
@@ -207,9 +245,10 @@ export function HeroOverlay() {
     const figR = gsap.quickTo(fig, "rotationY", opts);
     const sideX = gsap.quickTo(side, "x", opts);
     const sideY = gsap.quickTo(side, "y", opts);
-    // Cloud sits inside the figure's mouse wrapper, so this is on top of it.
     const cloudX = gsap.quickTo(cloud, "x", opts);
     const cloudY = gsap.quickTo(cloud, "y", opts);
+    const wordX = gsap.quickTo(word, "x", opts);
+    const wordY = gsap.quickTo(word, "y", opts);
 
     const onMove = (e: PointerEvent) => {
       const nx = e.clientX / window.innerWidth - 0.5;
@@ -221,15 +260,18 @@ export function HeroOverlay() {
       figR(nx * 6);
       sideX(nx * 22);
       sideY(ny * 14);
-      cloudX(nx * 36 * CLOUD_LEAD);
-      cloudY(ny * 20 * CLOUD_LEAD);
+      cloudX(nx * 36 * (1 + CLOUD_LEAD));
+      cloudY(ny * 20 * (1 + CLOUD_LEAD));
+      // Behind the figure, ahead of the cloud: drifts against the cursor.
+      wordX(nx * -18);
+      wordY(ny * -10);
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
-      gsap.killTweensOf([bg, fig, side, cloud]);
-      gsap.set([bg, fig, side, cloud], { clearProps: "transform" });
+      gsap.killTweensOf([bg, fig, side, cloud, word]);
+      gsap.set([bg, fig, side, cloud, word], { clearProps: "transform" });
     };
   }, [reduce]);
 
@@ -416,8 +458,7 @@ export function HeroOverlay() {
                 className="pointer-events-none absolute top-0 left-0 z-[1]"
               >
                 <span
-                  style={{ color: "#6b1414" }}
-                  className="flex size-24 scale-50 items-center justify-center rounded-full bg-white font-sans text-[13px] font-semibold tracking-[0.08em] uppercase opacity-0 shadow-[0_12px_30px_rgba(0,0,0,0.25)] transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+                  className="flex size-24 scale-50 items-center justify-center rounded-full bg-cream text-brand font-sans text-[13px] font-semibold tracking-[0.08em] uppercase opacity-0 shadow-[0_12px_30px_rgba(0,0,0,0.25)] transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
                 >
                   Resume ↗
                 </span>
@@ -428,18 +469,9 @@ export function HeroOverlay() {
           </div>
         </div>
       </div>
-      <div
-        ref={figureRef}
-        className="absolute inset-0 origin-bottom will-change-transform"
-      >
-        <div
-          ref={figureMouseRef}
-          className="absolute inset-0 will-change-transform"
-        >
-          {/* Big cloud centered behind the figure: drifts on its own slower
-              beat so the figure reads as floating in front of it. Exits left
-              with the figure. */}
-          <div ref={cloudRef} className="absolute inset-0 will-change-transform">
+      {/* Big cloud at the back of the figure stack: drifts on its own slower
+          beat and exits left just ahead of the character. */}
+          <div ref={cloudRef} className="absolute inset-0 origin-bottom will-change-transform">
             <div ref={cloudMouseRef} className="absolute inset-0 will-change-transform">
             <motion.img
               src={HERO_CLOUD}
@@ -466,6 +498,22 @@ export function HeroOverlay() {
             />
             </div>
           </div>
+      <HeroWord
+        wordRef={wordRef}
+        mouseRef={wordMouseRef}
+        pivotRef={wordPivotRef}
+        show={zoomed}
+        reduce={!!reduce}
+        handoff={handoff}
+      />
+      <div
+        ref={figureRef}
+        className="absolute inset-0 origin-bottom will-change-transform"
+      >
+        <div
+          ref={figureMouseRef}
+          className="absolute inset-0 will-change-transform"
+        >
           <motion.div
             className="absolute inset-0 will-change-transform"
             animate={

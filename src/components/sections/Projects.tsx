@@ -1,8 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ViewTransition } from "react";
+import { AnchorLink } from "@/components/motion/AnchorLink";
 import { Parallax } from "@/components/motion/Parallax";
 import { RevealItem } from "@/components/motion/Reveal";
 import { SectionReveal } from "@/components/motion/SectionReveal";
+import { buttonOutline } from "@/components/ui/buttonStyles";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
 
@@ -17,14 +21,17 @@ export function Projects() {
       style={{ backgroundColor: site.navbar.bg }}
       className="relative z-10 overflow-hidden px-4 text-cream pt-6 pb-24 sm:px-5 sm:pb-32"
     >
-      {/* Meta row: five small labels spread across the top. */}
-      <div className="grid grid-cols-2 gap-y-2 font-sans text-[11px] leading-tight font-medium tracking-[0.08em] uppercase sm:grid-cols-5">
-        {copy.meta.map((item, i) => (
+      {/* Meta row: the chapter label, then four small labels across the top. */}
+      <div className="grid grid-cols-2 gap-y-2 border-b border-cream/20 pb-4 font-sans text-[11px] leading-tight font-medium tracking-[0.14em] uppercase sm:grid-cols-5">
+        <SectionLabel index={3} className="leading-tight">
+          Selected work
+        </SectionLabel>
+        {copy.meta.slice(1).map((item, i, rest) => (
           <p
             key={item}
             className={`whitespace-pre-line ${
-              i === copy.meta.length - 1 ? "sm:text-right" : ""
-            } ${i > 0 && i < copy.meta.length - 1 ? "hidden sm:block" : ""}`}
+              i === rest.length - 1 ? "text-right" : "hidden sm:block"
+            }`}
           >
             {item}
           </p>
@@ -61,13 +68,16 @@ export function Projects() {
                 href={`/projects/${project.slug}`}
                 className="group relative block aspect-[3/4] overflow-hidden bg-cream/5 transition-[opacity,filter] duration-500 focus-visible:outline-cream"
               >
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  fill
-                  sizes="(min-width: 640px) 33vw, 100vw"
-                  className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
-                />
+                {/* Named view transition: morphs into the project page cover. */}
+                <ViewTransition name={`project-${project.slug}`} share="morph" default="none">
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    sizes="(min-width: 640px) 33vw, 100vw"
+                    className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+                  />
+                </ViewTransition>
                 <span className="absolute top-3 right-3 bg-cream px-1.5 py-0.5 font-sans text-[11px] font-medium text-brand tabular-nums">
                   {project.year}
                 </span>
@@ -105,6 +115,11 @@ export function Projects() {
         <p className="mx-auto mt-4 max-w-sm text-center text-[13px] leading-relaxed text-cream/80">
           {copy.closingBody}
         </p>
+        <div className="mt-8 flex justify-center">
+          <AnchorLink href="/#contact" className={buttonOutline}>
+            Start a project <span aria-hidden>↗</span>
+          </AnchorLink>
+        </div>
       </Parallax>
     </section>
   );

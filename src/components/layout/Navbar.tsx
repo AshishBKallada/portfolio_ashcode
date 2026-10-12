@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AnchorLink } from "@/components/motion/AnchorLink";
+import { buttonOutline } from "@/components/ui/buttonStyles";
 import { HERO_EXIT_START } from "@/components/sections/hero/heroIntroCycle";
 import { site } from "@/data/site";
 
@@ -160,7 +161,7 @@ export function NavbarBar() {
 
           <AnchorLink
             href="/#contact"
-            className="flex min-h-10 items-center border border-cream px-4 font-sans text-[12px] font-medium tracking-[0.08em] uppercase transition-colors hover:bg-cream hover:text-brand"
+            className={buttonOutline}
           >
             Contact
           </AnchorLink>

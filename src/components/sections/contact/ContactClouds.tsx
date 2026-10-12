@@ -66,7 +66,7 @@ const LAYERS: Layer[] = [
   {
     side: "right",
     depth: "front",
-    place: "-bottom-[4%] lg:top-1/2 lg:bottom-auto lg:-translate-y-1/2",
+    place: "-bottom-[12%] lg:top-1/2 lg:bottom-auto lg:-translate-y-1/2",
     size: "[--h:36svh] [--peek:0.42] lg:[--h:100svh] lg:[--peek:0.36]",
     drift: ["70%", "0%", "30%"],
     pull: 18,

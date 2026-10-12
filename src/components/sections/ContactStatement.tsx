@@ -2,9 +2,12 @@
 
 import { useRef } from "react";
 import { Magnetic } from "@/components/motion/Magnetic";
+import { buttonSolid } from "@/components/ui/buttonStyles";
 import { Parallax } from "@/components/motion/Parallax";
 import { SectionReveal } from "@/components/motion/SectionReveal";
 import { ContactClouds } from "@/components/sections/contact/ContactClouds";
+import { CopyEmail } from "@/components/sections/contact/CopyEmail";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { site } from "@/data/site";
 
 const copy = site.contactStatement;
@@ -26,6 +29,10 @@ export function ContactStatement() {
       className="relative isolate flex min-h-svh flex-col items-center justify-center overflow-hidden px-4 pt-28 pb-20 text-center text-cream"
     >
       <ContactClouds target={ref} />
+
+      <SectionLabel index={4} className="relative z-10 mb-8">
+        Contact
+      </SectionLabel>
 
       <h2 className="sr-only">
         {copy.lines.join(" ")} {copy.script}
@@ -64,11 +71,14 @@ export function ContactStatement() {
         <Magnetic className="mt-10">
         <a
           href={`mailto:${site.email}`}
-          className=" inline-flex min-h-11 items-center gap-2 bg-cream px-5 font-sans text-[12px] font-semibold tracking-[0.08em] text-brand uppercase transition-colors hover:bg-white focus-visible:outline-cream"
+          className={buttonSolid}
         >
           {copy.cta} <span aria-hidden>↗</span>
         </a>
         </Magnetic>
+        <div className="mt-6">
+          <CopyEmail email={site.email} />
+        </div>
       </Parallax>
     </section>
   );

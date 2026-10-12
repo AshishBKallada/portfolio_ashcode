@@ -184,3 +184,36 @@ h3 {
     animation: none;
   }
 }
+
+/* Route change: the new page wipes up over the old one like the loader's
+   curtain in reverse; project images morph on their own named group. */
+@keyframes page-wipe-in {
+  from { clip-path: inset(100% 0 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes page-sink-out {
+  to { transform: translateY(-4%); opacity: 0.5; }
+}
+::view-transition-old(root) {
+  animation: 520ms cubic-bezier(0.76, 0, 0.24, 1) both page-sink-out;
+}
+::view-transition-new(root) {
+  animation: 640ms cubic-bezier(0.76, 0, 0.24, 1) both page-wipe-in;
+}
+::view-transition-group(.morph) {
+  animation-duration: 640ms;
+  animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+}
+::view-transition-image-pair(.morph) {
+  animation-name: morph-blur;
+}
+@keyframes morph-blur {
+  30% { filter: blur(3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-group(.morph) {
+    animation: none;
+  }
+}
