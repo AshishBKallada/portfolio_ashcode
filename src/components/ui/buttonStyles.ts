@@ -3,5 +3,5 @@
 const base =
   "inline-flex min-h-11 shrink-0 items-center gap-2 px-5 font-sans text-[12px] font-semibold tracking-[0.08em] uppercase transition-colors duration-200 focus-visible:outline-ink";
 
-export const buttonSolid = `${base} bg-ink text-wall hover:bg-gold`;
+export const buttonSolid = `${base} bg-ink text-wall hover:bg-flame`;
 export const buttonOutline = `${base} border border-ink text-ink hover:bg-ink hover:text-wall`;

@@ -86,7 +86,7 @@ export function Hero() {
 
   return (
     <section
-      className="bg-wall relative h-full w-full"
+      className="sky relative h-full w-full"
     >
       {/* Navbar backdrop sits under the overlay so the hero figure paints
           above it; NavbarBar (page level) draws the controls on top. */}

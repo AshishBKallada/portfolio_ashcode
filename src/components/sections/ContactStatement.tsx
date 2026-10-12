@@ -26,7 +26,7 @@ export function ContactStatement() {
     <section
       ref={ref}
       id="contact"
-      className="relative isolate flex min-h-svh items-center overflow-hidden bg-wall px-4 pt-28 pb-20 text-ink sm:px-5"
+      className="sky-band relative isolate flex min-h-svh items-center overflow-hidden px-4 pt-28 pb-20 text-ink sm:px-5"
     >
       <ContactClouds target={ref} />
 

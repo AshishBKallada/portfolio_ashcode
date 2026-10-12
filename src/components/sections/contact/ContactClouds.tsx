@@ -174,7 +174,7 @@ export function ContactClouds({
       className="pointer-events-none absolute inset-0 z-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_86%,transparent)]"
     >
       {/* Warm glow behind the statement so the clouds read as lit from it. */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_50%,rgba(230,58,38,0.22),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_50%,rgba(255,214,150,0.45),transparent_70%)]" />
       {LAYERS.map((layer) => (
         <Cloud
           key={`${layer.side}-${layer.depth}`}

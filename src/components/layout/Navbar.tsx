@@ -65,7 +65,7 @@ export function NavbarBackdrop() {
   return (
     <motion.div
       id="navbar-backdrop"
-      className="bg-wall absolute inset-x-0 top-0 z-[4] overflow-hidden text-ink"
+      className="absolute inset-x-0 top-0 z-[4] overflow-hidden text-ink"
       initial={false}
       animate={{ height: compact ? COMPACT_HEIGHT : "auto" }}
       transition={compactTransition}
@@ -108,7 +108,7 @@ export function NavbarBar() {
           backdrop takes over. */}
       <motion.div
         aria-hidden
-        className="bg-wall absolute inset-x-0 top-0 overflow-hidden"
+        className="absolute inset-x-0 top-0 overflow-hidden border-b border-ink/10 bg-wall"
         initial={false}
         animate={
           compact

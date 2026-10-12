@@ -9,12 +9,13 @@
   --border: #e5e5e5;
   --accent: #6b7280;
 
-  /* Oxblood gallery wall, cream labels, gold leaf. */
-  --wall: #6b1414;
-  --ink: #f4f1ea;
-  --gold: #d4a94e;
-  --flame: #e63a26;
-  --paper: #f4f1ea;
+  /* Heavenly sky: warm cream ground, deep oxblood ink, burnished gold
+     (dark enough for small text on cream), red kept to the script word. */
+  --wall: #f5ede1;
+  --ink: #2a0f0c;
+  --gold: #8a5f14;
+  --flame: #b8321c;
+  --paper: #fffaf2;
   --placard: #2a0f0c;
 }
 
@@ -228,4 +229,32 @@ h3 {
   ::view-transition-group(.morph) {
     animation: none;
   }
+}
+
+/* Golden-hour sky for the open-air chapters (hero, contact): pale blue at
+   the zenith warming to peach, settling into the cream wall at the bottom,
+   so the white and pink clouds read against it. */
+.sky {
+  background-color: var(--wall);
+  background-image: linear-gradient(
+    180deg,
+    #cfdfeb 0%,
+    #e6e4e0 38%,
+    #f3dcc4 72%,
+    var(--wall) 100%
+  );
+}
+
+/* Mid-page sky (contact): rises out of the cream wall, opens to a pale
+   blue band, and settles back to cream before the footer — no seams. */
+.sky-band {
+  background-color: var(--wall);
+  background-image: linear-gradient(
+    180deg,
+    var(--wall) 0%,
+    #f3dcc4 22%,
+    #dde4e8 55%,
+    #f3dcc4 82%,
+    var(--wall) 100%
+  );
 }
