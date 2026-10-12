@@ -9,10 +9,9 @@ import { HERO_EXIT_START } from "@/components/sections/hero/heroIntroCycle";
 import { site } from "@/data/site";
 
 const links = [
-  { href: "/#work", label: "Work" },
   { href: "/#about", label: "About" },
-  { href: "/#services", label: "Services" },
-  { href: "/#careers", label: "Careers" },
+  { href: "/#projects", label: "Projects" },
+  { href: "/resume", label: "Résumé" },
 ];
 
 const wordmarkClass =
@@ -66,7 +65,7 @@ export function NavbarBackdrop() {
     <motion.div
       id="navbar-backdrop"
       style={{ backgroundColor: site.navbar.bg }}
-      className="absolute inset-x-0 top-0 z-[4] overflow-hidden text-white"
+      className="absolute inset-x-0 top-0 z-[4] overflow-hidden text-cream"
       initial={false}
       animate={{ height: compact ? COMPACT_HEIGHT : "auto" }}
       transition={compactTransition}
@@ -103,7 +102,7 @@ export function NavbarBar() {
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 text-white">
+    <header className="fixed inset-x-0 top-0 z-50 text-cream">
       {/* Covers the hero backdrop at full height, then shrinks together with
           the wordmark. Expanding again, it fades straight away and the
           backdrop takes over. */}
@@ -146,48 +145,25 @@ export function NavbarBar() {
         <div className="flex items-start justify-end gap-6 md:justify-between">
           <nav
             aria-label="Primary"
-            className="hidden items-center gap-7 pt-2.5 font-mono text-[12px] uppercase md:flex"
+            className="hidden items-center gap-7 pt-3 font-sans text-[12px] font-medium tracking-[0.08em] uppercase md:flex"
           >
             {links.map((link) => (
               <AnchorLink
                 key={link.href}
                 href={link.href}
-                className="transition-opacity hover:opacity-60"
+                className="nav-link"
               >
                 {link.label}
               </AnchorLink>
             ))}
           </nav>
 
-          <div className="flex items-stretch gap-2">
-            <AnchorLink
-              href="/#contact"
-              className="flex items-center border border-white px-4 py-2 font-mono text-[12px] uppercase transition-colors hover:bg-white hover:text-black"
-            >
-              Contact
-            </AnchorLink>
-            <button
-              type="button"
-              aria-label="Accessibility options"
-              className="flex aspect-square items-center justify-center border border-white px-2 transition-colors hover:bg-white hover:text-black"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                className="size-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="4.5" r="1.5" fill="currentColor" />
-                <path d="M5 8.5l7 1.5 7-1.5" />
-                <path d="M12 10v4.5" />
-                <path d="M12 14.5L9 21M12 14.5L15 21" />
-              </svg>
-            </button>
-          </div>
+          <AnchorLink
+            href="/#contact"
+            className="flex min-h-10 items-center border border-cream px-4 font-sans text-[12px] font-medium tracking-[0.08em] uppercase transition-colors hover:bg-cream hover:text-brand"
+          >
+            Contact
+          </AnchorLink>
         </div>
       </div>
     </header>

@@ -1,6 +1,5 @@
 import { BackToTop } from "@/components/layout/BackToTop";
 import { NavbarBar } from "@/components/layout/Navbar";
-import { SideCutouts } from "@/components/layout/SideCutouts";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { About } from "@/components/sections/About";
 // import { ContactFooterPin } from "@/components/sections/ContactFooterPin";
@@ -16,7 +15,6 @@ export default function Home() {
     <>
       <NavbarBar />
       <BackToTop />
-      <SideCutouts />
       <div className="relative">
         <HeroIntroPin />
         <div

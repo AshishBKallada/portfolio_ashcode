@@ -1,8 +1,10 @@
 import Link from "next/link";
 
+// Square, uppercase, cream-on-oxblood: the same language as the navbar
+// Contact button and the contact CTA.
 const variants = {
-  primary: "bg-foreground text-background hover:opacity-80",
-  secondary: "border border-border text-foreground hover:bg-foreground/[.04]",
+  primary: "bg-cream text-brand hover:bg-white",
+  secondary: "border border-cream text-cream hover:bg-cream hover:text-brand",
 };
 
 type ButtonProps = {
@@ -18,7 +20,7 @@ export function Button({
   external,
   variant = "primary",
 }: ButtonProps) {
-  const className = `inline-flex items-center rounded-full px-5 py-2.5 text-sm font-medium transition-opacity ${variants[variant]}`;
+  const className = `inline-flex min-h-11 items-center gap-2 px-5 font-sans text-[12px] font-semibold tracking-[0.08em] uppercase transition-colors focus-visible:outline-cream ${variants[variant]}`;
 
   if (external) {
     return (

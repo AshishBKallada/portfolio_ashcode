@@ -1,23 +1,24 @@
-import { Container } from "@/components/layout/Container";
-import { Footer } from "@/components/layout/Footer";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Button } from "@/components/ui/Button";
 
 export default function NotFound() {
   return (
-    <>
-      <Container className="bg-background py-24 text-center">
-        <p className="text-sm text-muted">404</p>
-        <h1 className="mt-3 text-3xl font-medium tracking-tight text-foreground">
-          Page not found
+    <div className="bg-brand text-cream">
+      <section className="flex min-h-[80svh] flex-col items-center justify-center px-4 text-center">
+        <p className="font-display text-[clamp(7rem,28vw,22rem)] leading-[0.8] uppercase">
+          404
+        </p>
+        <h1 className="mt-6 text-[clamp(1.75rem,4vw,3rem)] leading-[1.05]">
+          This page went <em className="font-script not-italic">missing</em>.
         </h1>
-        <p className="mx-auto mt-3 max-w-md text-muted">
+        <p className="mt-4 max-w-md text-[15px] leading-relaxed text-cream/75">
           That route doesn&rsquo;t exist. Head back home to see selected work.
         </p>
-        <div className="mt-8 flex justify-center">
-          <Button href="/">Back home</Button>
+        <div className="mt-10">
+          <Button href="/">Back home ↗</Button>
         </div>
-      </Container>
-      <Footer />
-    </>
+      </section>
+      <SiteFooter />
+    </div>
   );
 }

@@ -12,7 +12,7 @@ import {
   HERO_INTRO_FRAME,
   HERO_EXIT_START,
   HERO_FIGURE_HEIGHT,
-  HERO_FIGURE_LIFT,
+  HERO_FIGURE_LIFT_CLASS,
   HERO_INTRO_STEP_MS,
   HERO_OVERLAY,
   HERO_SIDE,
@@ -142,7 +142,8 @@ export function HeroOverlay() {
     const w = 1445 * fit;
     const h = 1089 * fit;
     const left = box.left + (box.width - w) / 2;
-    const top = box.bottom - box.height * HERO_FIGURE_LIFT - h;
+    const lift = parseFloat(getComputedStyle(el).getPropertyValue("--hero-lift")) || 0;
+    const top = box.bottom - box.height * lift - h;
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -366,7 +367,7 @@ export function HeroOverlay() {
             and a hot reload. */}
         <div
           ref={sideRef}
-          className="absolute top-[30%] left-3/4 w-[clamp(10rem,min(19vw,32svh),20rem)]"
+          className="absolute top-[30%] left-3/4 w-[clamp(10rem,min(19vw,32svh),20rem)] max-md:top-[12%] max-md:left-[78%] max-md:w-[8.5rem]"
         >
           <div className="-translate-x-1/2">
           <div ref={sideMouseRef} className="will-change-transform">
@@ -458,7 +459,7 @@ export function HeroOverlay() {
                 },
                 y: { duration: 7.5, ease: "easeInOut", repeat: Infinity, delay: 0.8 },
               }}
-              className="absolute top-1/2 left-1/2 h-auto w-[clamp(24rem,92vw,84rem)] max-w-none -translate-x-1/2 -translate-y-1/2 select-none will-change-transform"
+              className="absolute top-1/2 left-1/2 h-auto w-[clamp(24rem,92vw,84rem)] max-w-none -translate-x-1/2 -translate-y-1/2 select-none will-change-transform max-md:top-auto max-md:bottom-[calc(32%+46vw)] max-md:w-[170vw] max-md:translate-y-1/2"
               decoding="async"
               width={1024}
               height={1024}
@@ -485,7 +486,7 @@ export function HeroOverlay() {
           >
             <div
               ref={handoffRef}
-              className="absolute inset-0 will-change-transform"
+              className={`absolute inset-0 will-change-transform ${HERO_FIGURE_LIFT_CLASS}`}
             >
               <motion.img
                 src={HERO_OVERLAY}
@@ -504,7 +505,7 @@ export function HeroOverlay() {
                 }}
                 style={{
                   height: `${HERO_FIGURE_HEIGHT * 100}%`,
-                  bottom: `${HERO_FIGURE_LIFT * 100}%`,
+                  bottom: "calc(var(--hero-lift) * 100%)",
                 }}
                 className="absolute inset-x-0 w-full object-contain object-bottom select-none"
                 decoding="async"

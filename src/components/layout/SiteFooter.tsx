@@ -12,7 +12,7 @@ function ArrowDot() {
   return (
     <span
       aria-hidden
-      className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-white"
+      className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-cream transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
       style={{ color: site.navbar.bg }}
     >
       <svg
@@ -34,19 +34,19 @@ export function SiteFooter() {
   return (
     <footer
       style={{ backgroundColor: site.navbar.bg }}
-      className="relative z-20 overflow-hidden px-4 pt-10 text-white sm:px-8 sm:pt-12 lg:px-[6%]"
+      className="relative z-20 overflow-hidden px-4 pt-10 text-cream sm:px-5 sm:pt-12"
     >
       {/* Light rule separating the footer from the contact section above. */}
-      <div aria-hidden className="absolute inset-x-4 top-0 h-px bg-white/25 sm:inset-x-8 lg:inset-x-[6%]" />
+      <div aria-hidden className="absolute inset-x-4 top-0 h-px bg-cream/25 sm:inset-x-5" />
       <div className="grid grid-cols-2 gap-x-6 gap-y-10 font-sans md:grid-cols-[1fr_1.3fr_1.4fr]">
         <nav aria-label="Explore" className="text-sm">
           <p className="mb-3 font-medium">Explore</p>
-          <ul className="space-y-1.5 text-[13px] text-white/60">
+          <ul className="space-y-1.5 text-[13px] text-cream/70">
             {explore.map((link) => (
               <li key={link.href}>
                 <AnchorLink
                   href={link.href}
-                  className="transition-colors hover:text-white"
+                  className="transition-colors hover:text-cream"
                 >
                   {link.label}
                 </AnchorLink>
@@ -64,7 +64,7 @@ export function SiteFooter() {
                   href={social.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-block rounded-full bg-white/12 px-3 py-1 text-[12px] transition-colors hover:bg-white/25"
+                  className="inline-flex min-h-9 items-center rounded-full bg-cream/12 px-4 text-[13px] transition-colors hover:bg-cream/25"
                 >
                   {social.label}
                 </a>
@@ -78,11 +78,11 @@ export function SiteFooter() {
             <span className="flex items-center gap-2 text-[clamp(1.15rem,1.6vw,1.4rem)] font-medium">
               Email {site.name} <ArrowDot />
             </span>
-            <span className="mt-0.5 block text-[12px] text-white/60">
+            <span className="mt-0.5 block text-[13px] text-cream/70">
               Let&apos;s work together
             </span>
           </a>
-          <p className="mt-6 text-[12px] text-white/60">
+          <p className="mt-6 text-[12px] text-cream/70">
             © {new Date().getFullYear()} {site.name}
           </p>
         </div>

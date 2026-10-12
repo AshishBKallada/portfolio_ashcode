@@ -14,11 +14,11 @@ export function Projects() {
   return (
     <section
       id="projects"
-      style={{ color: "#f4f1ea", backgroundColor: site.navbar.bg }}
-      className="relative z-10 overflow-hidden px-4 pt-6 pb-24 sm:px-5 sm:pb-32"
+      style={{ backgroundColor: site.navbar.bg }}
+      className="relative z-10 overflow-hidden px-4 text-cream pt-6 pb-24 sm:px-5 sm:pb-32"
     >
       {/* Meta row: five small labels spread across the top. */}
-      <div className="grid grid-cols-2 gap-y-2 font-mono text-[10px] leading-tight uppercase sm:grid-cols-5">
+      <div className="grid grid-cols-2 gap-y-2 font-sans text-[11px] leading-tight font-medium tracking-[0.08em] uppercase sm:grid-cols-5">
         {copy.meta.map((item, i) => (
           <p
             key={item}
@@ -51,27 +51,43 @@ export function Projects() {
         </SectionReveal>
       </Parallax>
 
-      {/* Three project tiles, edge to edge. */}
-      <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-1 sm:mt-24 sm:grid-cols-3">
+      {/* Three project tiles, edge to edge. Hovering or focusing one dims
+          and softens its neighbours so the eye lands on it. */}
+      <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-1 sm:mt-24 sm:grid-cols-3 [@media(hover:hover)]:[&:has(a:hover)_a:not(:hover)]:opacity-45 [@media(hover:hover)]:[&:has(a:hover)_a:not(:hover)]:blur-[2px] [&:has(a:focus-visible)_a:not(:focus-visible)]:opacity-45">
         {projects.slice(0, 3).map((project, i) => (
           <Parallax key={project.slug} speed={TILE_SPEEDS[i]}>
             <RevealItem>
               <Link
                 href={`/projects/${project.slug}`}
-                className="group relative block aspect-[3/4] overflow-hidden bg-white/5"
+                className="group relative block aspect-[3/4] overflow-hidden bg-cream/5 transition-[opacity,filter] duration-500 focus-visible:outline-cream"
               >
                 <Image
                   src={project.image}
                   alt={project.title}
                   fill
                   sizes="(min-width: 640px) 33vw, 100vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                 />
-                <span className="absolute top-3 right-3 bg-white px-1.5 py-0.5 font-mono text-[10px] text-black">
+                <span className="absolute top-3 right-3 bg-cream px-1.5 py-0.5 font-sans text-[11px] font-medium text-brand tabular-nums">
                   {project.year}
                 </span>
-                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 font-mono text-[11px] tracking-wide text-white uppercase opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  {project.title}
+                <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-4 pt-16 text-cream transition-[opacity,translate] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-focus-visible:translate-y-0 group-focus-visible:opacity-100 [@media(hover:hover)]:translate-y-3 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100">
+                  <span className="min-w-0">
+                    <span className="block font-sans text-[11px] font-medium tracking-[0.08em] text-cream/70 uppercase tabular-nums">
+                      {String(i + 1).padStart(2, "0")} · {project.tags.join(" · ")}
+                    </span>
+                    <span className="mt-1 block font-display text-[clamp(1.75rem,2.6vw,2.5rem)] leading-none uppercase">
+                      {project.title}
+                    </span>
+                  </span>
+                  <span
+                    aria-hidden
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-cream text-brand transition-transform duration-500 group-hover:rotate-45"
+                  >
+                    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.25">
+                      <path d="M7 17 17 7M8 7h9v9" />
+                    </svg>
+                  </span>
                 </span>
               </Link>
             </RevealItem>
@@ -86,7 +102,7 @@ export function Projects() {
             {copy.closing}
           </p>
         </SectionReveal>
-        <p className="mx-auto mt-4 max-w-xs text-center text-[11px] leading-snug">
+        <p className="mx-auto mt-4 max-w-sm text-center text-[13px] leading-relaxed text-cream/80">
           {copy.closingBody}
         </p>
       </Parallax>

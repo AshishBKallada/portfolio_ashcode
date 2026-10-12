@@ -20,8 +20,13 @@ export const HERO_CLOUD = "/images/hero/cloud.png";
  */
 export const HERO_FIGURE_HEIGHT = 0.66;
 
-/** How far the figure's feet sit above the hero's bottom edge, as a fraction of the hero. */
-export const HERO_FIGURE_LIFT = 0.07;
+/**
+ * How far the figure's feet sit above the hero's bottom edge, as a fraction
+ * of the hero. Set as the `--hero-lift` CSS variable on the figure wrapper:
+ * phones lift the figure clear of the headline and CTA below it, and the
+ * loader handoff reads the live value back so both stay in step.
+ */
+export const HERO_FIGURE_LIFT_CLASS = "[--hero-lift:0.07] max-md:[--hero-lift:0.32]";
 
 export const HERO_INTRO_STEP_MS = 320;
 

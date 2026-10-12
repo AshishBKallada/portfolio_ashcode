@@ -123,7 +123,7 @@ function ContactPills({ className = "" }: { className?: string }) {
               href={item.href}
               target={item.newTab ? "_blank" : undefined}
               rel={item.newTab ? "noreferrer" : undefined}
-              className="rounded-full border border-[#f4f1ea]/80 px-3 py-0.5 transition-colors hover:bg-[#f4f1ea] hover:text-[#6b1414]"
+              className="inline-flex min-h-8 items-center rounded-full border border-cream/80 px-3.5 transition-colors hover:bg-cream hover:text-brand"
             >
               {item.label}
             </a>

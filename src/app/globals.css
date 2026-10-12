@@ -18,6 +18,11 @@
   --color-surface: var(--surface);
   --color-border: var(--border);
   --color-accent: var(--accent);
+  /* Brand: oxblood ground, cream ink, flame accent (match site.navbar.bg,
+     the poster cream and site.intro.bg). */
+  --color-brand: #6b1414;
+  --color-cream: #f4f1ea;
+  --color-flame: #e63a26;
   --font-sans: var(--font-general-sans);
   --font-serif: var(--font-editorial);
   --font-inter: var(--font-inter-face);
@@ -101,7 +106,7 @@ h3 {
 }
 
 :focus-visible {
-  outline: 2px solid var(--foreground);
+  outline: 2px solid currentColor;
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -162,6 +167,20 @@ h3 {
 
 @media (prefers-reduced-motion: reduce) {
   .skills-marquee {
+    animation: none;
+  }
+}
+
+/* Slow bob for the contact clouds; each layer sets its own duration/delay. */
+@keyframes cloud-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(0, -14px, 0) rotate(-0.6deg); }
+}
+.cloud-float {
+  animation: cloud-float 10s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cloud-float {
     animation: none;
   }
 }

@@ -70,7 +70,7 @@ export function AboutMedia({ children }: { children?: ReactNode }) {
       {children ? (
         <div
           style={{ backgroundColor: site.navbar.bg }}
-          className="relative z-20 flex h-1/4 min-h-[13rem] shrink-0 flex-col justify-end px-4 pt-[68px] pb-5 text-white [--border:rgba(255,255,255,0.35)] [--foreground:#ffffff] [--muted:rgba(255,255,255,0.72)] [--subtle:rgba(255,255,255,0.5)] sm:px-5"
+          className="relative z-20 flex h-1/4 min-h-[13rem] shrink-0 flex-col justify-end px-4 pt-[68px] pb-5 text-cream [--border:rgba(244,241,234,0.35)] [--foreground:#f4f1ea] [--muted:rgba(244,241,234,0.78)] [--subtle:rgba(244,241,234,0.55)] sm:px-5"
         >
           {children}
         </div>

@@ -1,10 +1,12 @@
 import { AnchorLink } from "@/components/motion/AnchorLink";
+import { Magnetic } from "@/components/motion/Magnetic";
 import { site } from "@/data/site";
 
 /** CTA row under the hero statement: outlined button, dashed rule, tag list. */
 export function HeroCta() {
   return (
     <div className="mt-5 flex flex-wrap items-stretch gap-4 sm:gap-6">
+      <Magnetic className="shrink-0">
       <AnchorLink
         href={site.hero.cta.href}
         className="inline-flex shrink-0 items-center gap-3 border border-[#f4f1ea] px-5 py-2.5 font-serif text-sm tracking-tight text-[#f4f1ea] transition-opacity hover:opacity-70 sm:px-6 sm:py-3 sm:text-base"
@@ -14,6 +16,7 @@ export function HeroCta() {
           ↗
         </span>
       </AnchorLink>
+      </Magnetic>
 
       <span
         aria-hidden

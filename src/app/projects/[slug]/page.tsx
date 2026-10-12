@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Container } from "@/components/layout/Container";
-import { Footer } from "@/components/layout/Footer";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import { AnchorLink } from "@/components/motion/AnchorLink";
 import { Button } from "@/components/ui/Button";
 import { getProject, projects } from "@/data/projects";
-import { site } from "@/data/site";
 
 export async function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
@@ -48,58 +46,61 @@ export default async function ProjectPage({
   }
 
   return (
-    <>
-      <article className="bg-background py-16 sm:py-24">
-      <Container>
-        <Link
-          href="/#work"
-          className="text-sm text-muted transition-colors hover:text-foreground"
+    <div className="bg-brand text-cream">
+      <article className="px-4 pt-8 pb-20 sm:px-5 sm:pb-28">
+        <AnchorLink
+          href="/#projects"
+          className="nav-link font-sans text-[12px] font-medium tracking-[0.08em] uppercase"
         >
-          ← Back to work
-        </Link>
+          ← Back to projects
+        </AnchorLink>
 
-        <p className="mt-10 text-sm text-muted">{project.year}</p>
-        <h1 className="mt-2 text-4xl font-medium tracking-tight text-foreground sm:text-5xl">
-          {project.title}
-        </h1>
-        <p className="mt-4 text-sm text-muted">{project.tags.join(" · ")}</p>
+        <header className="mx-auto mt-16 max-w-5xl sm:mt-24">
+          <p className="font-sans text-[12px] font-medium tracking-[0.08em] text-cream/70 uppercase tabular-nums">
+            {project.year} · {project.tags.join(" · ")}
+          </p>
+          {/* Span carries the face: the global h1 rule would otherwise win. */}
+          <h1 className="mt-5">
+            <span className="block font-display text-[clamp(4rem,14vw,12rem)] leading-[0.85] uppercase">
+              {project.title}
+            </span>
+          </h1>
+          <p className="mt-6 max-w-xl text-[clamp(1.25rem,2.2vw,1.75rem)] leading-[1.25] font-serif">
+            {project.summary}
+          </p>
+        </header>
 
-        <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-surface">
+        <div className="mx-auto mt-12 max-w-5xl overflow-hidden bg-cream/5">
           <Image
             src={project.image}
             alt={`${project.title} — cover`}
             width={project.imageWidth}
             height={project.imageHeight}
-            sizes="(max-width: 768px) 100vw, 768px"
+            sizes="(max-width: 1024px) 100vw, 1024px"
             className="h-auto w-full"
             priority
           />
         </div>
 
-        <p className="mt-10 max-w-2xl text-lg leading-8 text-muted">
-          {project.description}
-        </p>
-
-        <div className="mt-10 flex flex-wrap gap-3">
-          {project.liveUrl ? (
-            <Button href={project.liveUrl} external>
-              View live
-            </Button>
-          ) : null}
-          {project.githubUrl ? (
-            <Button href={project.githubUrl} external variant="secondary">
-              GitHub
-            </Button>
-          ) : null}
+        <div className="mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-[1fr_auto] md:items-start">
+          <p className="max-w-2xl text-[17px] leading-8 text-cream/85">
+            {project.description}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {project.liveUrl ? (
+              <Button href={project.liveUrl} external>
+                View live ↗
+              </Button>
+            ) : null}
+            {project.githubUrl ? (
+              <Button href={project.githubUrl} external variant="secondary">
+                GitHub ↗
+              </Button>
+            ) : null}
+          </div>
         </div>
-
-        <p className="mt-16 text-sm text-muted">
-          A project by {site.name}. Replace this dummy write-up with the real
-          case study.
-        </p>
-      </Container>
-    </article>
-    <Footer />
-    </>
+      </article>
+      <SiteFooter />
+    </div>
   );
 }
