@@ -46,11 +46,6 @@ export const site = {
     headlineAfter: ", not assembled.",
     image: "/images/about.jpg",
     overlay: "/images/about-overlay.png",
-    gallery: [
-      "/images/linkedin/intro.avif",
-      "/images/linkedin/mockup-2.avif",
-      "/images/linkedin/mockup-responsive.avif",
-    ],
   },
   navbar: {
     bg: "#6b1414",
@@ -98,6 +93,37 @@ export const site = {
     closing: "Who prefer weight\nover noise.",
     closingBody:
       "A short run of products built end to end, for people who would rather ship something that lasts than something that trends.",
+  },
+  /** Museum framing: every chapter is hung like a room in a gallery. */
+  gallery: {
+    heroCaption: ["Fig. I — Ascension", "Oil, chrome & TypeScript, 2026"],
+    pantheon: {
+      label: "The Pantheon",
+      statue: "/images/hero-angel.png",
+      statueAlt: "Marble archangel with gilded armbands and a spear, wings raised",
+      placard: {
+        no: "No. 02",
+        title: "AshCode",
+        lines: ["Full-stack developer", "Remote · India", "Active 2021 — present"],
+        medium: "TypeScript, React, Node.js, PostgreSQL, motion",
+      },
+      tenets: [
+        { numeral: "I", text: "Obsession beats talent." },
+        { numeral: "II", text: "Embarrassment rips talent into craft." },
+        { numeral: "III", text: "Weight over noise, every time." },
+      ],
+    },
+    collection: {
+      label: "The Collection",
+      hint: "Scroll to walk the room →",
+    },
+    textMe: {
+      label: "Text me",
+      image: "/images/contact-text-me.png",
+      imageAlt: "Halftone collage of a hand typing on a pink phone, with a torn note reading Text me",
+    },
+    colophon:
+      "Set in Editorial New, General Sans, Anton & Pinyon Script. Built by hand with Next.js, GSAP and Motion.",
   },
   work: {
     eyebrow: "Work",

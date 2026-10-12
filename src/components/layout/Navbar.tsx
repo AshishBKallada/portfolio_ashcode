@@ -11,7 +11,7 @@ import { site } from "@/data/site";
 
 const links = [
   { href: "/#about", label: "About" },
-  { href: "/#projects", label: "Projects" },
+  { href: "/#projects", label: "Collection" },
   { href: "/resume", label: "Résumé" },
 ];
 
@@ -65,8 +65,7 @@ export function NavbarBackdrop() {
   return (
     <motion.div
       id="navbar-backdrop"
-      style={{ backgroundColor: site.navbar.bg }}
-      className="absolute inset-x-0 top-0 z-[4] overflow-hidden text-cream"
+      className="bg-wall absolute inset-x-0 top-0 z-[4] overflow-hidden text-ink"
       initial={false}
       animate={{ height: compact ? COMPACT_HEIGHT : "auto" }}
       transition={compactTransition}
@@ -103,14 +102,13 @@ export function NavbarBar() {
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 text-cream">
+    <header className="fixed inset-x-0 top-0 z-50 text-ink">
       {/* Covers the hero backdrop at full height, then shrinks together with
           the wordmark. Expanding again, it fades straight away and the
           backdrop takes over. */}
       <motion.div
         aria-hidden
-        style={{ backgroundColor: site.navbar.bg }}
-        className="absolute inset-x-0 top-0 overflow-hidden"
+        className="bg-wall absolute inset-x-0 top-0 overflow-hidden"
         initial={false}
         animate={
           compact

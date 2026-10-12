@@ -3,17 +3,16 @@ import { Parallax } from "@/components/motion/Parallax";
 import { site } from "@/data/site";
 
 const explore = [
-  { href: "/#about", label: "About" },
-  { href: "/#projects", label: "Projects" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/#about", label: "The Pantheon" },
+  { href: "/#projects", label: "The Collection" },
+  { href: "/#contact", label: "Text me" },
 ];
 
 function ArrowDot() {
   return (
     <span
       aria-hidden
-      className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-cream transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-      style={{ color: site.navbar.bg }}
+      className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-ink text-wall transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
     >
       <svg
         viewBox="0 0 24 24"
@@ -28,25 +27,27 @@ function ArrowDot() {
   );
 }
 
-// Link columns over a giant lowercase wordmark that runs off the bottom edge,
-// white on the navbar red.
+// The closing credits: a gilded "Fin.", link columns and a colophon over a
+// giant lowercase wordmark that runs off the bottom edge.
 export function SiteFooter() {
   return (
     <footer
-      style={{ backgroundColor: site.navbar.bg }}
-      className="relative z-20 overflow-hidden px-4 pt-10 text-cream sm:px-5 sm:pt-12"
+      className="bg-wall relative z-20 overflow-hidden px-4 pt-10 text-ink sm:px-5 sm:pt-12"
     >
       {/* Light rule separating the footer from the contact section above. */}
-      <div aria-hidden className="absolute inset-x-4 top-0 h-px bg-cream/25 sm:inset-x-5" />
+      <div aria-hidden className="absolute inset-x-4 top-0 h-px bg-ink/25 sm:inset-x-5" />
+      <p className="mb-12 text-center font-script text-[clamp(3.5rem,8vw,7rem)] leading-none text-gold sm:mb-16">
+        Fin.
+      </p>
       <div className="grid grid-cols-2 gap-x-6 gap-y-10 font-sans md:grid-cols-[1fr_1.3fr_1.4fr]">
         <nav aria-label="Explore" className="text-sm">
           <p className="mb-3 font-medium">Explore</p>
-          <ul className="space-y-1.5 text-[13px] text-cream/70">
+          <ul className="space-y-1.5 text-[13px] text-ink/70">
             {explore.map((link) => (
               <li key={link.href}>
                 <AnchorLink
                   href={link.href}
-                  className="transition-colors hover:text-cream"
+                  className="transition-colors hover:text-ink"
                 >
                   {link.label}
                 </AnchorLink>
@@ -64,7 +65,7 @@ export function SiteFooter() {
                   href={social.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex min-h-9 items-center rounded-full bg-cream/12 px-4 text-[13px] transition-colors hover:bg-cream/25"
+                  className="inline-flex min-h-9 items-center rounded-full bg-ink/12 px-4 text-[13px] transition-colors hover:bg-ink/25"
                 >
                   {social.label}
                 </a>
@@ -78,12 +79,15 @@ export function SiteFooter() {
             <span className="flex items-center gap-2 text-[clamp(1.15rem,1.6vw,1.4rem)] font-medium">
               Email {site.name} <ArrowDot />
             </span>
-            <span className="mt-0.5 block text-[13px] text-cream/70">
+            <span className="mt-0.5 block text-[13px] text-ink/70">
               Let&apos;s work together
             </span>
           </a>
-          <p className="mt-6 text-[12px] text-cream/70">
+          <p className="mt-6 text-[12px] text-ink/70">
             © {new Date().getFullYear()} {site.name}
+          </p>
+          <p className="mt-2 max-w-xs font-serif text-[13px] leading-snug text-ink/70 italic">
+            {site.gallery.colophon}
           </p>
         </div>
       </div>

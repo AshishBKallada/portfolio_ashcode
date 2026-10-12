@@ -10,7 +10,6 @@ import {
   HERO_OVERLAY,
   HERO_SIDE,
 } from "@/components/sections/hero/heroIntroCycle";
-import { site } from "@/data/site";
 
 /**
  * Boot sequence, all on one red screen:
@@ -194,8 +193,7 @@ export function SiteLoader() {
   return (
     <div
       ref={rootRef}
-      style={{ backgroundColor: site.navbar.bg }}
-      className="site-loader fixed inset-0 z-[999] overflow-hidden text-white"
+      className="bg-wall site-loader fixed inset-0 z-[999] overflow-hidden text-ink"
       role="status"
       aria-label="Loading"
     >

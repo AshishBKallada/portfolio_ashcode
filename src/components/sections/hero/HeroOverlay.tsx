@@ -458,7 +458,7 @@ export function HeroOverlay() {
                 className="pointer-events-none absolute top-0 left-0 z-[1]"
               >
                 <span
-                  className="flex size-24 scale-50 items-center justify-center rounded-full bg-cream text-brand font-sans text-[13px] font-semibold tracking-[0.08em] uppercase opacity-0 shadow-[0_12px_30px_rgba(0,0,0,0.25)] transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+                  className="flex size-24 scale-50 items-center justify-center rounded-full bg-ink text-wall font-sans text-[13px] font-semibold tracking-[0.08em] uppercase opacity-0 shadow-[0_12px_30px_rgba(0,0,0,0.25)] transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
                 >
                   Resume ↗
                 </span>

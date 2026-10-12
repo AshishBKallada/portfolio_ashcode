@@ -41,7 +41,7 @@ export function HeroWord({
     >
       <div ref={wordRef} className="will-change-transform">
         <div ref={mouseRef} className="will-change-transform">
-          <p className="flex justify-center font-display text-[24vw] leading-[0.8] tracking-[-0.01em] text-cream uppercase">
+          <p className="flex justify-center font-display text-[24vw] leading-[0.8] tracking-[-0.01em] text-ink uppercase">
             {WORD.split("").map((char, i) => (
               <span key={i} className="block overflow-hidden pb-[0.02em]">
                 <motion.span

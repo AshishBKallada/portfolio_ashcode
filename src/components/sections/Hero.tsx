@@ -11,6 +11,7 @@ import { NavbarBackdrop } from "@/components/layout/Navbar";
 import { AboutPoster } from "@/components/sections/AboutPoster";
 import { HeroCta } from "@/components/sections/hero/HeroCta";
 import { HeroOverlay } from "@/components/sections/hero/HeroOverlay";
+import { HeroSky } from "@/components/sections/hero/HeroSky";
 import { HERO_EXIT_START } from "@/components/sections/hero/heroIntroCycle";
 import { LiveClock } from "@/components/ui/LiveClock";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -85,12 +86,12 @@ export function Hero() {
 
   return (
     <section
-      style={{ backgroundColor: site.navbar.bg }}
-      className="relative h-full w-full"
+      className="bg-wall relative h-full w-full"
     >
       {/* Navbar backdrop sits under the overlay so the hero figure paints
           above it; NavbarBar (page level) draws the controls on top. */}
       <NavbarBackdrop />
+      <HeroSky />
       {/* About-me poster under the figures (z-5), so their exit uncovers it. */}
       <div
         ref={revealRef}
@@ -105,10 +106,10 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 z-10 flex h-full w-full flex-col px-4 pt-24 pb-4 sm:px-5 sm:pb-5 md:pt-28"
       >
         <div className="pointer-events-auto mt-auto max-w-3xl">
-          <motion.div {...fade(0)} className="mb-5 text-cream">
+          <motion.div {...fade(0)} className="mb-5 text-ink">
             <SectionLabel index={0}>{site.hero.role}</SectionLabel>
           </motion.div>
-          <p className="font-serif text-[clamp(1.9rem,4.4vw,4rem)] leading-[1.02] tracking-[-0.02em] text-cream">
+          <p className="font-serif text-[clamp(1.9rem,4.4vw,4rem)] leading-[1.02] tracking-[-0.02em] text-ink">
             <span className="block overflow-hidden">
               <motion.span {...line(0)} className="block">
                 {site.hero.statementLineOne}
@@ -130,18 +131,30 @@ export function Hero() {
           </motion.div>
         </div>
 
+        {/* Museum caption for the figure, hung beside it like a wall label. */}
+        <motion.div
+          {...fade(5)}
+          className="absolute right-4 bottom-[5.5rem] hidden rotate-1 bg-paper px-4 py-3 text-placard shadow-[0_14px_30px_rgba(0,0,0,0.3)] ring-1 ring-gold/40 sm:right-5 lg:block"
+        >
+          <p className="font-serif text-[15px] leading-tight italic">{site.gallery.heroCaption[0]}</p>
+          <div aria-hidden className="mt-2 h-px w-8 bg-gold" />
+          <p className="mt-2 font-sans text-[11px] leading-none font-medium tracking-[0.14em] uppercase opacity-70">
+            {site.gallery.heroCaption[1]}
+          </p>
+        </motion.div>
+
         {/* Bottom rail: local time, availability, scroll cue. */}
         <motion.div
           {...fade(6)}
-          className="mt-8 grid grid-cols-2 items-center gap-y-2 border-t border-cream/25 pt-3 font-sans text-[11px] leading-none font-medium tracking-[0.14em] text-cream/75 uppercase sm:grid-cols-3"
+          className="mt-8 grid grid-cols-2 items-center gap-y-2 border-t border-ink/25 pt-3 font-sans text-[11px] leading-none font-medium tracking-[0.14em] text-ink/75 uppercase sm:grid-cols-3"
         >
           <span className="flex items-center gap-2">
             {site.contact.timezoneLabel}
-            <LiveClock timeZone={site.contact.timezone} className="text-cream" />
+            <LiveClock timeZone={site.contact.timezone} className="text-ink" />
             <span className="hidden lg:inline">· {site.contact.coordinates}</span>
           </span>
-          <span className="flex items-center gap-2 justify-self-end text-cream sm:justify-self-center">
-            <span aria-hidden className="dot-pulse size-1.5 rounded-full bg-flame" />
+          <span className="flex items-center gap-2 justify-self-end text-ink sm:justify-self-center">
+            <span aria-hidden className="dot-pulse size-1.5 rounded-full bg-gold" />
             Available for work
           </span>
           <span className="hidden justify-self-end sm:block">Scroll ↓</span>

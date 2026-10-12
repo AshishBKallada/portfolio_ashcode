@@ -8,6 +8,14 @@
   --surface: #f5f5f5;
   --border: #e5e5e5;
   --accent: #6b7280;
+
+  /* Oxblood gallery wall, cream labels, gold leaf. */
+  --wall: #6b1414;
+  --ink: #f4f1ea;
+  --gold: #d4a94e;
+  --flame: #e63a26;
+  --paper: #f4f1ea;
+  --placard: #2a0f0c;
 }
 
 @theme inline {
@@ -18,11 +26,15 @@
   --color-surface: var(--surface);
   --color-border: var(--border);
   --color-accent: var(--accent);
-  /* Brand: oxblood ground, cream ink, flame accent (match site.navbar.bg,
-     the poster cream and site.intro.bg). */
-  --color-brand: #6b1414;
-  --color-cream: #f4f1ea;
-  --color-flame: #e63a26;
+  /* Gallery palette. Components only use these names; a theme swaps the
+     values on :root. wall = the ground, ink = type on it, gold = leaf
+     accent from the art, flame = the script word, paper = photo paper. */
+  --color-wall: var(--wall);
+  --color-ink: var(--ink);
+  --color-gold: var(--gold);
+  --color-flame: var(--flame);
+  --color-paper: var(--paper);
+  --color-placard: var(--placard);
   --font-sans: var(--font-general-sans);
   --font-serif: var(--font-editorial);
   --font-inter: var(--font-inter-face);

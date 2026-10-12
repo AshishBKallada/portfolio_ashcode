@@ -8,7 +8,6 @@ import { SectionLabel } from "@/components/ui/SectionLabel";
 import { site } from "@/data/site";
 
 const copy = site.aboutPoster;
-const red = site.navbar.bg;
 const grain =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
 
@@ -76,7 +75,7 @@ function CursorFloat({ className, children }: { className: string; children: Rea
 
 function Polaroid({ className }: { className: string }) {
   return (
-    <div className={`bg-[#f4f1ea] p-[0.55em] pb-[2.6em] shadow-[0_20px_40px_rgba(0,0,0,0.6)] ${className}`}>
+    <div className={`bg-paper p-[0.55em] pb-[2.6em] shadow-[0_20px_40px_rgba(0,0,0,0.6)] ${className}`}>
       <div className="relative aspect-square overflow-hidden bg-black">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -95,7 +94,7 @@ function Polaroid({ className }: { className: string }) {
 
 function Bio({ className = "" }: { className?: string }) {
   return (
-    <div className={`space-y-[1.2em] text-[#f4f1ea] ${className}`}>
+    <div className={`space-y-[1.2em] text-ink ${className}`}>
       <p>{copy.intro}</p>
       {copy.blocks.map((block) => (
         <p key={block.lead}>
@@ -115,7 +114,7 @@ function ContactPills({ className = "" }: { className?: string }) {
     { label: "Resume", href: "/resume", newTab: true },
   ];
   return (
-    <div className={`flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-[#f4f1ea] ${className}`}>
+    <div className={`flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-ink ${className}`}>
       {items.map((item, i) => (
         <span key={item.label} className="flex items-center gap-5">
           {i > 0 && <span aria-hidden className="hidden text-[0.9em] sm:inline">•</span>}
@@ -124,7 +123,7 @@ function ContactPills({ className = "" }: { className?: string }) {
               href={item.href}
               target={item.newTab ? "_blank" : undefined}
               rel={item.newTab ? "noreferrer" : undefined}
-              className="inline-flex min-h-8 items-center rounded-full border border-cream/80 px-3.5 transition-colors hover:bg-cream hover:text-brand"
+              className="inline-flex min-h-8 items-center rounded-full border border-ink/80 px-3.5 transition-colors hover:bg-ink hover:text-wall"
             >
               {item.label}
             </a>
@@ -144,12 +143,12 @@ export function AboutPoster() {
     <section
       id="about-me"
       className="relative flex h-full min-h-svh flex-col overflow-hidden px-4 pt-20 pb-6 font-sans"
-      style={{ backgroundColor: red }}
+      
     >
       <h2 className="sr-only">
         {copy.heading}: {copy.intro}
       </h2>
-      <SectionLabel index={1} className="mb-4 text-[#f4f1ea] sm:px-1">
+      <SectionLabel index={1} className="mb-4 text-ink sm:px-1">
         {copy.heading}
       </SectionLabel>
 
@@ -159,22 +158,22 @@ export function AboutPoster() {
           className="@container relative mx-auto hidden aspect-[1.6] md:block"
           style={{ width: "min(94vw, calc((100svh - 14rem) * 1.6))" }}
         >
-          <p className="absolute top-[3%] left-[17%] -rotate-[8deg] font-script text-[6.5cqw] leading-none text-[#f4f1ea]">
+          <p className="absolute top-[3%] left-[17%] -rotate-[8deg] font-script text-[6.5cqw] leading-none text-ink">
             {copy.heading}
           </p>
           <CursorFloat className="absolute top-[18%] left-[15%] z-10 w-[27%] text-[2.2cqw]">
             <Polaroid className="relative w-full -rotate-[6deg]" />
           </CursorFloat>
 
-          <p className="absolute top-[17%] left-[53%] font-display text-[11cqw] leading-[0.8] text-[#f4f1ea]">HI!!</p>
-          <p className="absolute top-[38%] left-[53%] w-[24%] text-[1.35cqw] leading-[1.25] font-medium text-[#f4f1ea]">
+          <p className="absolute top-[17%] left-[53%] font-display text-[11cqw] leading-[0.8] text-ink">HI!!</p>
+          <p className="absolute top-[38%] left-[53%] w-[24%] text-[1.35cqw] leading-[1.25] font-medium text-ink">
             {copy.intro}
           </p>
-          <p className="absolute top-[52%] left-[59%] w-[24%] text-[1.35cqw] leading-[1.25] font-medium text-[#f4f1ea]">
+          <p className="absolute top-[52%] left-[59%] w-[24%] text-[1.35cqw] leading-[1.25] font-medium text-ink">
             <span className="font-display text-[2.1cqw] leading-none uppercase">{copy.blocks[0].lead}</span>{" "}
             {copy.blocks[0].text}
           </p>
-          <p className="absolute top-[70%] left-[64%] w-[22%] text-[1.35cqw] leading-[1.25] font-medium text-[#f4f1ea]">
+          <p className="absolute top-[70%] left-[64%] w-[22%] text-[1.35cqw] leading-[1.25] font-medium text-ink">
             <span className="font-display text-[2.1cqw] leading-none uppercase">{copy.blocks[1].lead}</span>{" "}
             {copy.blocks[1].text}
           </p>
@@ -186,13 +185,13 @@ export function AboutPoster() {
             <Polaroid className="relative w-full -rotate-[5deg] text-[1.1rem]" />
           </div>
           <div className="w-full">
-            <p className="font-display text-6xl leading-none text-[#f4f1ea]">HI!!</p>
+            <p className="font-display text-6xl leading-none text-ink">HI!!</p>
             <Bio className="mt-3 text-[0.9rem] leading-snug" />
           </div>
         </div>
 
         <div className="mt-4 flex flex-col items-center gap-4">
-          <p className="font-display text-xl leading-none tracking-wide text-[#f4f1ea] uppercase">{site.name}</p>
+          <p className="font-display text-xl leading-none tracking-wide text-ink uppercase">{site.name}</p>
           <ContactPills className="text-[12px] sm:text-[13px]" />
         </div>
       </div>
