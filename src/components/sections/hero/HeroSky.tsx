@@ -22,6 +22,12 @@ type Layer = {
   depth: number;
   /** The side cutout's flat edge is its bottom; flip so it always faces off-screen. */
   flip?: "x" | "y" | "xy";
+  /**
+   * Scroll drift away from the edge the layer is cut off by, so its flat
+   * edge never slides into view: top layers rise, bottom layers sink, and
+   * the sky parts around the figure as you fly up through it.
+   */
+  drift: "up" | "down";
   rotate?: number;
 };
 
@@ -29,10 +35,10 @@ type Layer = {
 // its sky: far layers soft and slow, near layers sharp and fast. The lower
 // left stays clear for the statement.
 const LAYERS: Layer[] = [
-  { src: SIDE_CLOUD, box: "-top-[7%] -left-[6%] w-[34vw] max-md:w-[64vw]", depth: 0.1, flip: "y", rotate: 2 },
-  { src: SIDE_CLOUD, box: "-top-[9%] -right-[8%] w-[40vw] max-md:w-[72vw]", depth: 0.25, flip: "xy", rotate: -2 },
-  { src: HERO_CLOUD, box: "top-[56%] -right-[14%] w-[36vw] max-md:hidden", depth: 0.55 },
-  { src: SIDE_CLOUD, box: "-bottom-[14%] -right-[6%] w-[46vw] max-md:-bottom-[24%] max-md:w-[80vw]", depth: 0.95, rotate: -3 },
+  { src: SIDE_CLOUD, box: "-top-[7%] -left-[6%] w-[34vw] max-md:w-[64vw]", depth: 0.1, flip: "y", rotate: 2, drift: "up" },
+  { src: SIDE_CLOUD, box: "-top-[9%] -right-[8%] w-[40vw] max-md:w-[72vw]", depth: 0.25, flip: "xy", rotate: -2, drift: "up" },
+  { src: HERO_CLOUD, box: "top-[56%] -right-[14%] w-[36vw] max-md:hidden", depth: 0.55, drift: "down" },
+  { src: SIDE_CLOUD, box: "-bottom-[14%] -right-[6%] w-[46vw] max-md:-bottom-[24%] max-md:w-[80vw]", depth: 0.95, rotate: -3, drift: "down" },
 ];
 
 function SkyLayer({
@@ -49,8 +55,9 @@ function SkyLayer({
   still: boolean;
 }) {
   const { depth } = layer;
-  // Flying up through the sky: nearer clouds rush past faster.
-  const y = useTransform(scroll, (v) => v * -(0.15 + depth * 0.9));
+  // Nearer clouds rush past faster; each moves away from its cut edge.
+  const sign = layer.drift === "up" ? -1 : 1;
+  const y = useTransform(scroll, (v) => v * sign * (0.15 + depth * 0.9));
   const px = useTransform(mx, (v) => v * (6 + depth * 40));
   const py = useTransform(my, (v) => v * (4 + depth * 22));
 
