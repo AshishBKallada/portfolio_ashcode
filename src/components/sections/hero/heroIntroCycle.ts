@@ -37,9 +37,24 @@ export const HERO_INTRO_STEP_MS = 320;
 export const HERO_HOLD_SCREENS = 0;
 
 /**
- * Scroll timeline (in viewport heights) after the hold: the hero figures
- * exit sideways over one screen, revealing the centered line behind them,
- * and only then does the next section stack up over the hero.
+ * Scroll timeline (in viewport heights) after the hold: the hero's exit runs
+ * over HERO_EXIT_SCREENS, and only then does the next section stack up over
+ * the hero.
  */
 export const HERO_EXIT_START = HERO_HOLD_SCREENS;
-export const INTRO_STACK_START = HERO_EXIT_START + 1;
+export const HERO_EXIT_SCREENS = 1.6;
+export const INTRO_STACK_START = HERO_EXIT_START + HERO_EXIT_SCREENS;
+
+/**
+ * Beats of the exit, as shares of it: the figures slide out left and right,
+ * clouds roll in from the edges and close over the screen midway, the
+ * About-me poster is swapped in behind them, and they part to reveal it.
+ */
+export const EXIT_FIGURES = [0, 0.5] as const;
+export const EXIT_CLOUDS_IN = [0.25, 0.55] as const;
+export const EXIT_COVERED = [0.55, 0.62] as const;
+export const EXIT_CLOUDS_OUT = [0.62, 1] as const;
+
+/** Scroll position (px) `t` of the way through the hero's exit. */
+export const exitAt = (t: number) =>
+  window.innerHeight * (HERO_EXIT_START + t * HERO_EXIT_SCREENS);

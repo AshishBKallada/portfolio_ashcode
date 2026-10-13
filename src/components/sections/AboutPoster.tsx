@@ -12,13 +12,13 @@ const grain =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
 
 /**
- * Lets its child follow the cursor: the card moves a share of the way from
- * its resting spot toward the pointer, and GSAP quickTo eases every step so
- * it glides. Fine pointers only, off with reduced motion.
+ * Lets its child lean toward the cursor: a small shift and tilt, eased by
+ * GSAP quickTo so it glides, without pulling the eye off the copy. Fine
+ * pointers only, off with reduced motion.
  */
-const FOLLOW = 0.42; // share of the cursor-to-card distance the card covers
-const MAX_X = 260;
-const MAX_Y = 180;
+const FOLLOW = 0.03; // share of the cursor-to-card distance the card covers
+const MAX_X = 14;
+const MAX_Y = 10;
 
 function CursorFloat({ className, children }: { className: string; children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ function CursorFloat({ className, children }: { className: string; children: Rea
       const dy = gsap.utils.clamp(-MAX_Y, MAX_Y, (e.clientY - h.y) * FOLLOW);
       x(dx);
       y(dy);
-      r(gsap.utils.clamp(-10, 10, dx / 28));
+      r(gsap.utils.clamp(-2.5, 2.5, dx / 6));
     };
     const onLeave = () => {
       x(0);
@@ -106,43 +106,13 @@ function Bio({ className = "" }: { className?: string }) {
   );
 }
 
-function ContactPills({ className = "" }: { className?: string }) {
-  const github = site.socials.find((s) => s.label === "GitHub");
-  const items = [
-    { label: site.email, href: `mailto:${site.email}`, newTab: false },
-    ...(github ? [{ label: github.href.replace("https://", ""), href: github.href, newTab: true }] : []),
-    { label: "Resume", href: "/resume", newTab: true },
-  ];
-  return (
-    <div className={`flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-[#f4f1ea] ${className}`}>
-      {items.map((item, i) => (
-        <span key={item.label} className="flex items-center gap-5">
-          {i > 0 && <span aria-hidden className="hidden text-[0.9em] sm:inline">•</span>}
-          {item.href ? (
-            <a
-              href={item.href}
-              target={item.newTab ? "_blank" : undefined}
-              rel={item.newTab ? "noreferrer" : undefined}
-              className="inline-flex min-h-8 items-center rounded-full border border-cream/80 px-3.5 transition-colors hover:bg-cream hover:text-brand"
-            >
-              {item.label}
-            </a>
-          ) : (
-            <span>{item.label}</span>
-          )}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-// Grungy "about me" poster on red: a tilted polaroid that drifts after the
-// cursor, a blocky HI!! with the bio, and contact pills underneath.
+// Grungy "about me" poster on red: a tilted polaroid that leans toward the
+// cursor, and a blocky HI!! with the bio.
 export function AboutPoster() {
   return (
     <section
       id="about-me"
-      className="relative flex h-full min-h-svh flex-col overflow-hidden px-4 pt-20 pb-6 font-sans"
+      className="relative flex h-full min-h-svh flex-col justify-center overflow-hidden px-4 pt-20 pb-6 font-sans"
       style={{ backgroundColor: red }}
     >
       <h2 className="sr-only">
@@ -185,11 +155,6 @@ export function AboutPoster() {
             <p className="font-display text-6xl leading-none text-[#f4f1ea]">HI!!</p>
             <Bio className="mt-3 text-[0.9rem] leading-snug" />
           </div>
-        </div>
-
-        <div className="mt-4 flex flex-col items-center gap-4">
-          <p className="font-display text-xl leading-none tracking-wide text-[#f4f1ea] uppercase">{site.name}</p>
-          <ContactPills className="text-[12px] sm:text-[13px]" />
         </div>
       </div>
     </section>

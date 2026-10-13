@@ -11,6 +11,7 @@ import {
 } from "motion/react";
 import Image from "next/image";
 import { useEffect, type RefObject } from "react";
+import { CloudPillar } from "@/components/sections/contact/CloudPillar";
 
 /**
  * Pink cloud cutout, painted wide (1000×542) with one flat edge; turned ±90°
@@ -20,59 +21,30 @@ export const SIDE_CLOUD = "/images/side-cutout.png";
 
 type Layer = {
   side: "left" | "right";
-  /** Front clouds frame the copy; back clouds add depth behind them. */
-  depth: "front" | "back";
   /** Vertical anchor inside the section. */
   place: string;
-  /** Sizing, visible share and visibility per breakpoint, as CSS vars. */
+  /** Sizing and visible share per breakpoint, as CSS vars. */
   size: string;
   /** Scroll drift in % of the cloud's own width: off-screen → framed → easing out. */
   drift: [string, string, string];
-  /** Cursor parallax in px at the pointer's furthest reach. */
-  pull: number;
-  float: string;
 };
 
 // --h is the cloud's visual height; its visual width is --h × 0.542 and
 // --peek is how much of that width sits off-screen at rest.
-const LAYERS: Layer[] = [
-  {
-    side: "left",
-    depth: "back",
-    place: "top-[4%]",
-    size: "hidden lg:block [--h:72svh] [--peek:0.55]",
-    drift: ["-45%", "0%", "-20%"],
-    pull: 8,
-    float: "cloud-float [animation-duration:11s]",
-  },
-  {
-    side: "right",
-    depth: "back",
-    place: "bottom-[2%]",
-    size: "hidden lg:block [--h:72svh] [--peek:0.55]",
-    drift: ["45%", "0%", "20%"],
-    pull: 8,
-    float: "cloud-float [animation-duration:12s] [animation-delay:-4s]",
-  },
-  {
-    side: "left",
-    depth: "front",
-    place: "-top-[4%] lg:top-1/2 lg:-translate-y-1/2",
-    size: "[--h:36svh] [--peek:0.42] lg:[--h:100svh] lg:[--peek:0.36]",
-    drift: ["-70%", "0%", "-30%"],
-    pull: 18,
-    float: "cloud-float [animation-duration:9s] [animation-delay:-2s]",
-  },
-  {
-    side: "right",
-    depth: "front",
-    place: "-bottom-[12%] lg:top-1/2 lg:bottom-auto lg:-translate-y-1/2",
-    size: "[--h:36svh] [--peek:0.42] lg:[--h:100svh] lg:[--peek:0.36]",
-    drift: ["70%", "0%", "30%"],
-    pull: 18,
-    float: "cloud-float [animation-duration:10s] [animation-delay:-6s]",
-  },
-];
+const LEFT: Layer = {
+  side: "left",
+  place: "-top-[4%] lg:top-1/2 lg:-translate-y-1/2",
+  size: "[--h:36svh] [--peek:0.42] lg:[--h:100svh] lg:[--peek:0.36]",
+  drift: ["-70%", "0%", "-30%"],
+};
+const RIGHT: Layer = {
+  side: "right",
+  place: "-bottom-[12%] lg:top-1/2 lg:bottom-auto lg:-translate-y-1/2",
+  size: "[--h:36svh] [--peek:0.42] lg:[--h:100svh] lg:[--peek:0.36]",
+  drift: ["70%", "0%", "30%"],
+};
+/** Cursor parallax in px at the pointer's furthest reach. */
+const PULL = 18;
 
 function Cloud({
   layer,
@@ -91,9 +63,8 @@ function Cloud({
   // Arrives while the section scrolls up, holds while it fills the screen,
   // then rolls back out a little as it leaves.
   const x = useTransform(progress, [0, 0.42, 0.62, 1], [from, rest, rest, to]);
-  const px = useTransform(mx, (v) => v * layer.pull);
-  const py = useTransform(my, (v) => v * layer.pull * 0.6);
-  const back = layer.depth === "back";
+  const px = useTransform(mx, (v) => v * PULL);
+  const py = useTransform(my, (v) => v * PULL * 0.6);
   const edge =
     layer.side === "left"
       ? "left-[calc(var(--h)*-0.542*var(--peek))]"
@@ -105,27 +76,19 @@ function Cloud({
       className={`absolute ${layer.place} ${edge} ${layer.size} h-[var(--h)] w-[calc(var(--h)*0.542)] will-change-transform`}
     >
       <motion.div style={still ? undefined : { x: px, y: py }} className="size-full">
-        <div className={`relative size-full ${still ? "" : layer.float}`}>
-          <div
-            className={`absolute top-1/2 left-1/2 aspect-[1000/542] w-[var(--h)] -translate-x-1/2 -translate-y-1/2 ${
-              layer.side === "left"
-                ? back ? "rotate-[82deg]" : "rotate-90"
-                : back ? "-rotate-[82deg]" : "-rotate-90"
-            } ${back ? "opacity-60 blur-[2px]" : ""}`}
-          >
-            <Image
-              src={SIDE_CLOUD}
-              alt=""
-              fill
-              draggable={false}
-              sizes="(min-width: 1024px) 100vh, 36vh"
-              className={`object-contain select-none ${
-                back
-                  ? ""
-                  : "drop-shadow-[0_30px_40px_rgba(0,0,0,0.35)]"
-              }`}
-            />
-          </div>
+        <div
+          className={`absolute top-1/2 left-1/2 aspect-[1000/542] w-[var(--h)] -translate-x-1/2 -translate-y-1/2 ${
+            layer.side === "left" ? "rotate-90" : "-rotate-90"
+          }`}
+        >
+          <Image
+            src={SIDE_CLOUD}
+            alt=""
+            fill
+            draggable={false}
+            sizes="(min-width: 1024px) 100vh, 36vh"
+            className="object-contain drop-shadow-[0_30px_40px_rgba(0,0,0,0.35)] select-none"
+          />
         </div>
       </motion.div>
     </motion.div>
@@ -133,12 +96,10 @@ function Cloud({
 }
 
 /**
- * Two layers of clouds on each side of the contact statement. They drift in
- * from the edges as the section arrives, frame the copy while it fills the
- * screen and roll back out as it leaves; the front layer leans further toward
- * the cursor than the softer back layer, and each bobs on its own slow
- * rhythm. Phones keep one cloud in the empty top-left and bottom-right corners,
- * clear of the copy.
+ * A cloud on each side of the contact statement. They drift in from the
+ * edges as the section arrives, frame the copy while it fills the screen and
+ * roll back out as it leaves, leaning a little toward the cursor. Phones keep
+ * them in the empty top-left and bottom-right corners, clear of the copy.
  */
 export function ContactClouds({
   target,
@@ -175,16 +136,10 @@ export function ContactClouds({
     >
       {/* Warm glow behind the statement so the clouds read as lit from it. */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_50%,rgba(230,58,38,0.22),transparent_70%)]" />
-      {LAYERS.map((layer) => (
-        <Cloud
-          key={`${layer.side}-${layer.depth}`}
-          layer={layer}
-          progress={scrollYProgress}
-          mx={mx}
-          my={my}
-          still={reduce}
-        />
-      ))}
+      <Cloud layer={LEFT} progress={scrollYProgress} mx={mx} my={my} still={reduce} />
+      {/* The column stands just behind the right-hand cloud. */}
+      <CloudPillar progress={scrollYProgress} mx={mx} my={my} still={reduce} />
+      <Cloud layer={RIGHT} progress={scrollYProgress} mx={mx} my={my} still={reduce} />
     </div>
   );
 }

@@ -3,7 +3,6 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { HeroWord } from "@/components/sections/hero/HeroWord";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { introEase } from "@/components/motion/intro";
@@ -11,12 +10,13 @@ import {
   HERO_CLOUD,
   HERO_INTRO_CYCLE,
   HERO_INTRO_FRAME,
-  HERO_EXIT_START,
+  EXIT_FIGURES,
   HERO_FIGURE_HEIGHT,
   HERO_FIGURE_LIFT_CLASS,
   HERO_INTRO_STEP_MS,
   HERO_OVERLAY,
   HERO_SIDE,
+  exitAt,
 } from "@/components/sections/hero/heroIntroCycle";
 import {
   peekHeroHandoff,
@@ -54,9 +54,6 @@ export function HeroOverlay() {
   const sideLinkRef = useRef<HTMLAnchorElement>(null);
   const sideBadgeRef = useRef<HTMLSpanElement>(null);
   const handoffRectRef = useRef<DOMRect | null>(null);
-  const wordRef = useRef<HTMLDivElement>(null);
-  const wordMouseRef = useRef<HTMLDivElement>(null);
-  const wordPivotRef = useRef<HTMLSpanElement>(null);
 
   const cycling = phase === "loading" || phase === "cycle";
   const zoomed = phase === "zoom" || phase === "text" || phase === "done";
@@ -75,19 +72,18 @@ export function HeroOverlay() {
   }, [phase, reduce]);
 
   // After the navbar hold, the figure exits to the left and the side cutout
-  // to the right over one screen of scroll, before Intro stacks over the
-  // hero. Scroll-only wrappers keep these tweens off the intro/mouse ones.
+  // to the right over the first half of the hero's exit, clearing the stage
+  // for the clouds. Scroll-only wrappers keep these tweens off the
+  // intro/mouse ones.
   useEffect(() => {
     const el = figureRef.current;
     const side = sideScrollRef.current;
     const cloud = cloudRef.current;
-    const word = wordRef.current;
-    const pivot = wordPivotRef.current;
-    if (!el || !side || !cloud || !word || !pivot || reduce) return;
+    if (!el || !side || !cloud || reduce) return;
     const ctx = gsap.context(() => {
       const scrollTrigger = {
-        start: () => window.innerHeight * HERO_EXIT_START,
-        end: () => window.innerHeight * (HERO_EXIT_START + 1),
+        start: () => exitAt(EXIT_FIGURES[0]),
+        end: () => exitAt(EXIT_FIGURES[1]),
         scrub: true,
         invalidateOnRefresh: true,
       };
@@ -111,36 +107,6 @@ export function HeroOverlay() {
           rotate: -8,
           ease: "power1.in",
           scrollTrigger,
-        },
-      );
-      // Fly-through: the word swells around the counter of its "O" until the
-      // view passes through it, fading as the About-me poster takes over.
-      const pivotOrigin = () => {
-        const w = word.getBoundingClientRect();
-        const p = pivot.getBoundingClientRect();
-        const sx = Number(gsap.getProperty(word, "scaleX")) || 1;
-        return `${(p.left + p.width / 2 - w.left) / sx}px ${(p.top + p.height * 0.5 - w.top) / sx}px`;
-      };
-      gsap.fromTo(
-        word,
-        { scale: 1 },
-        {
-          scale: 14,
-          ease: "power2.in",
-          transformOrigin: pivotOrigin,
-          scrollTrigger,
-        },
-      );
-      gsap.fromTo(
-        word,
-        { autoAlpha: 1 },
-        {
-          autoAlpha: 0,
-          ease: "none",
-          scrollTrigger: {
-            ...scrollTrigger,
-            start: () => window.innerHeight * (HERO_EXIT_START + 0.45),
-          },
         },
       );
       gsap.fromTo(
@@ -231,8 +197,7 @@ export function HeroOverlay() {
     const fig = figureMouseRef.current;
     const side = sideMouseRef.current;
     const cloud = cloudMouseRef.current;
-    const word = wordMouseRef.current;
-    if (!bg || !fig || !side || !cloud || !word || reduce) return;
+    if (!bg || !fig || !side || !cloud || reduce) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     gsap.set(bg, { scale: 1.06 });
@@ -247,8 +212,6 @@ export function HeroOverlay() {
     const sideY = gsap.quickTo(side, "y", opts);
     const cloudX = gsap.quickTo(cloud, "x", opts);
     const cloudY = gsap.quickTo(cloud, "y", opts);
-    const wordX = gsap.quickTo(word, "x", opts);
-    const wordY = gsap.quickTo(word, "y", opts);
 
     const onMove = (e: PointerEvent) => {
       const nx = e.clientX / window.innerWidth - 0.5;
@@ -262,16 +225,13 @@ export function HeroOverlay() {
       sideY(ny * 14);
       cloudX(nx * 36 * (1 + CLOUD_LEAD));
       cloudY(ny * 20 * (1 + CLOUD_LEAD));
-      // Behind the figure, ahead of the cloud: drifts against the cursor.
-      wordX(nx * -18);
-      wordY(ny * -10);
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
-      gsap.killTweensOf([bg, fig, side, cloud, word]);
-      gsap.set([bg, fig, side, cloud, word], { clearProps: "transform" });
+      gsap.killTweensOf([bg, fig, side, cloud]);
+      gsap.set([bg, fig, side, cloud], { clearProps: "transform" });
     };
   }, [reduce]);
 
@@ -429,20 +389,14 @@ export function HeroOverlay() {
               initial={reduce ? { opacity: 1 } : { opacity: 0 }}
               animate={
                 zoomed || reduce
-                  ? {
-                      opacity: 1,
-                      y: reduce ? 0 : [0, -16, 0],
-                      rotate: reduce ? 22 : [24, 20, 24],
-                    }
-                  : { opacity: 0 }
+                  ? { opacity: 1, rotate: 22 }
+                  : { opacity: 0, rotate: 22 }
               }
               transition={{
                 opacity: {
                   duration: reduce || handoff ? 0 : 0.9,
                   ease: introEase,
                 },
-                y: { duration: 5, ease: "easeInOut", repeat: Infinity },
-                rotate: { duration: 5, ease: "easeInOut", repeat: Infinity },
               }}
               className="block h-auto w-full select-none will-change-transform drop-shadow-[0_30px_40px_rgba(0,0,0,0.35)]"
               decoding="async"
@@ -469,8 +423,8 @@ export function HeroOverlay() {
           </div>
         </div>
       </div>
-      {/* Big cloud at the back of the figure stack: drifts on its own slower
-          beat and exits left just ahead of the character. */}
+      {/* Big cloud at the back of the figure stack: exits left just ahead
+          of the character. */}
           <div ref={cloudRef} className="absolute inset-0 origin-bottom will-change-transform">
             <div ref={cloudMouseRef} className="absolute inset-0 will-change-transform">
             <motion.img
@@ -479,9 +433,7 @@ export function HeroOverlay() {
               draggable={false}
               initial={reduce ? { opacity: 1 } : { opacity: 0 }}
               animate={
-                zoomed || reduce
-                  ? { opacity: 1, y: reduce ? 0 : [0, -9, 0] }
-                  : { opacity: 0 }
+                zoomed || reduce ? { opacity: 1 } : { opacity: 0 }
               }
               transition={{
                 opacity: {
@@ -489,7 +441,6 @@ export function HeroOverlay() {
                   ease: introEase,
                   delay: reduce || handoff ? 0 : 0.45,
                 },
-                y: { duration: 7.5, ease: "easeInOut", repeat: Infinity, delay: 0.8 },
               }}
               className="absolute top-1/2 left-1/2 h-auto w-[clamp(24rem,92vw,84rem)] max-w-none -translate-x-1/2 -translate-y-1/2 select-none will-change-transform max-md:top-auto max-md:bottom-[calc(32%+46vw)] max-md:w-[170vw] max-md:translate-y-1/2"
               decoding="async"
@@ -498,14 +449,6 @@ export function HeroOverlay() {
             />
             </div>
           </div>
-      <HeroWord
-        wordRef={wordRef}
-        mouseRef={wordMouseRef}
-        pivotRef={wordPivotRef}
-        show={zoomed}
-        reduce={!!reduce}
-        handoff={handoff}
-      />
       <div
         ref={figureRef}
         className="absolute inset-0 origin-bottom will-change-transform"

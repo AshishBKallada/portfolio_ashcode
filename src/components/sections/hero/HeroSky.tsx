@@ -31,12 +31,10 @@ type Layer = {
   rotate?: number;
 };
 
-// Four depths of photographic cloud, the way the Awwwards 2021 site built
-// its sky: far layers soft and slow, near layers sharp and fast. The lower
-// left stays clear for the statement.
+// Two depths of photographic cloud in the lower right: the far one soft and
+// slow, the near one sharp and fast. The top stays clear for the navbar and
+// the lower left for the statement.
 const LAYERS: Layer[] = [
-  { src: SIDE_CLOUD, box: "-top-[7%] -left-[6%] w-[34vw] max-md:w-[64vw]", depth: 0.1, flip: "y", rotate: 2, drift: "up" },
-  { src: SIDE_CLOUD, box: "-top-[9%] -right-[8%] w-[40vw] max-md:w-[72vw]", depth: 0.25, flip: "xy", rotate: -2, drift: "up" },
   { src: HERO_CLOUD, box: "top-[56%] -right-[14%] w-[36vw] max-md:hidden", depth: 0.55, drift: "down" },
   { src: SIDE_CLOUD, box: "-bottom-[14%] -right-[6%] w-[46vw] max-md:-bottom-[24%] max-md:w-[80vw]", depth: 0.95, rotate: -3, drift: "down" },
 ];
@@ -64,30 +62,23 @@ function SkyLayer({
   return (
     <motion.div style={still ? undefined : { y }} className={`absolute ${layer.box}`}>
       <motion.div style={still ? undefined : { x: px, y: py }}>
-        <div
-          className={still ? "" : "cloud-float"}
+        <Image
+          src={layer.src}
+          alt=""
+          width={1000}
+          height={layer.src === HERO_CLOUD ? 1000 : 542}
+          sizes="45vw"
+          loading="eager"
+          draggable={false}
           style={{
-            animationDuration: `${14 - depth * 6}s`,
-            animationDelay: `${-depth * 7}s`,
+            opacity: 0.35 + depth * 0.6,
+            filter: `blur(${(1 - depth) * 5}px)`,
+            rotate: `${layer.rotate ?? 0}deg`,
+            scale:
+              layer.flip === "x" ? "-1 1" : layer.flip === "y" ? "1 -1" : layer.flip === "xy" ? "-1 -1" : undefined,
           }}
-        >
-          <Image
-            src={layer.src}
-            alt=""
-            width={1000}
-            height={layer.src === HERO_CLOUD ? 1000 : 542}
-            sizes="45vw"
-            draggable={false}
-            style={{
-              opacity: 0.35 + depth * 0.6,
-              filter: `blur(${(1 - depth) * 5}px)`,
-              rotate: `${layer.rotate ?? 0}deg`,
-              scale:
-                layer.flip === "x" ? "-1 1" : layer.flip === "y" ? "1 -1" : layer.flip === "xy" ? "-1 -1" : undefined,
-            }}
-            className="h-auto w-full select-none"
-          />
-        </div>
+          className="h-auto w-full select-none"
+        />
       </motion.div>
     </motion.div>
   );

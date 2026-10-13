@@ -83,13 +83,6 @@ export const site = {
   projects: {
     /** Cream still used by the resume page and the hidden contact poster. */
     bg: "#f7f5f2",
-    meta: [
-      "Built for shipping\nreal products.",
-      "Build",
-      "Responsibly",
-      "Or don't.",
-      "AshCode\nSelected work ©",
-    ],
     lead: "Not here",
     wordOne: "To",
     wordTwo: "Follow",

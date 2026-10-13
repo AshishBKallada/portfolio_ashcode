@@ -15,7 +15,7 @@ const heavy =
   "font-sans text-[clamp(2.6rem,9vw,8.75rem)] leading-[0.86] font-bold tracking-[-0.04em] uppercase lg:text-[7vw]";
 
 // Centered statement on navbar red: heavy cream lines with a bright red
-// script word slung across the last one, a short bold subline and a small
+// script word tucked under the last one (never across it, so both read), a short bold subline and a small
 // cream mail button, framed by clouds drifting in from both edges.
 export function ContactStatement() {
   const ref = useRef<HTMLElement>(null);
@@ -45,11 +45,11 @@ export function ContactStatement() {
         <Parallax speed={110} className="relative z-10">
           <SectionReveal
             delay={0.3}
-            className="relative z-10 -mt-[0.42em] text-[clamp(4rem,13vw,12.5rem)]"
+            className="relative z-10 -mt-[0.08em] text-[clamp(3.5rem,13vw,12.5rem)]"
           >
             <p
               style={{ color: site.intro.bg }}
-              className="translate-x-[9%] -rotate-[7deg] whitespace-nowrap font-script leading-[1.1]"
+              className="translate-x-[6%] -rotate-[4deg] whitespace-nowrap font-script leading-[1.1]"
             >
               {copy.script}
             </p>

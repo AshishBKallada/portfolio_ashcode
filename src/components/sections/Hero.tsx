@@ -12,7 +12,12 @@ import { AboutPoster } from "@/components/sections/AboutPoster";
 import { HeroCta } from "@/components/sections/hero/HeroCta";
 import { HeroOverlay } from "@/components/sections/hero/HeroOverlay";
 import { HeroSky } from "@/components/sections/hero/HeroSky";
-import { HERO_EXIT_START } from "@/components/sections/hero/heroIntroCycle";
+import { HeroCloudCover } from "@/components/sections/hero/HeroCloudCover";
+import {
+  EXIT_CLOUDS_OUT,
+  EXIT_COVERED,
+  exitAt,
+} from "@/components/sections/hero/heroIntroCycle";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,8 +28,9 @@ export function Hero() {
   const contentRef = useRef<HTMLDivElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
 
-  // Copy fades out as soon as the figures start to exit, while the About-me
-  // poster behind them fades up as they clear.
+  // Copy fades out as soon as the figures start to exit. The About-me poster
+  // is swapped in while the clouds cover the screen, then settles from a
+  // touch too close as they part.
   useEffect(() => {
     const el = contentRef.current;
     const reveal = revealRef.current;
@@ -32,14 +38,27 @@ export function Hero() {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         reveal,
-        { autoAlpha: 0, scale: 0.94 },
+        { autoAlpha: 0 },
         {
           autoAlpha: 1,
-          scale: 1,
-          ease: "power1.out",
+          ease: "none",
           scrollTrigger: {
-            start: () => window.innerHeight * (HERO_EXIT_START + 0.15),
-            end: () => window.innerHeight * (HERO_EXIT_START + 0.85),
+            start: () => exitAt(EXIT_COVERED[0]),
+            end: () => exitAt(EXIT_COVERED[1]),
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+      gsap.fromTo(
+        reveal,
+        { scale: 1.12 },
+        {
+          scale: 1,
+          ease: "power2.out",
+          scrollTrigger: {
+            start: () => exitAt(EXIT_CLOUDS_OUT[0]),
+            end: () => exitAt(EXIT_CLOUDS_OUT[1]),
             scrub: true,
             invalidateOnRefresh: true,
           },
@@ -51,8 +70,8 @@ export function Hero() {
         autoAlpha: 0,
         ease: "none",
         scrollTrigger: {
-          start: () => window.innerHeight * HERO_EXIT_START,
-          end: () => window.innerHeight * (HERO_EXIT_START + 0.12),
+          start: () => exitAt(0),
+          end: () => exitAt(0.08),
           scrub: true,
           invalidateOnRefresh: true,
         },
@@ -100,6 +119,7 @@ export function Hero() {
         <AboutPoster />
       </div>
       <HeroOverlay />
+      {!reduce && <HeroCloudCover />}
       <div
         ref={contentRef}
         className="pointer-events-none absolute inset-0 z-10 flex h-full w-full flex-col px-4 pt-24 pb-10 sm:px-5 sm:pb-12 md:pt-28"
