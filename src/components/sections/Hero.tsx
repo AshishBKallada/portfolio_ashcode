@@ -3,7 +3,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { introEase } from "@/components/motion/intro";
 import { site } from "@/data/site";
@@ -12,12 +12,7 @@ import { AboutPoster } from "@/components/sections/AboutPoster";
 import { HeroCta } from "@/components/sections/hero/HeroCta";
 import { HeroOverlay } from "@/components/sections/hero/HeroOverlay";
 import { HeroSky } from "@/components/sections/hero/HeroSky";
-import { HeroCloudCover } from "@/components/sections/hero/HeroCloudCover";
-import {
-  EXIT_CLOUDS_OUT,
-  EXIT_COVERED,
-  exitAt,
-} from "@/components/sections/hero/heroIntroCycle";
+import { EXIT_REVEAL, exitAt } from "@/components/sections/hero/heroIntroCycle";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,43 +22,79 @@ export function Hero() {
   const show = phase === "text" || phase === "done";
   const contentRef = useRef<HTMLDivElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
+  const revealInnerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const opened = useRef(false);
 
-  // Copy fades out as soon as the figures start to exit. The About-me poster
-  // is swapped in while the clouds cover the screen, then settles from a
-  // touch too close as they part.
+  // First reveal, "the gates of heaven": while the loader is up the hero
+  // waits shut behind a dark backdrop. Once it lifts, a beam of light drops
+  // down the centre, the screen splits open from it to both edges, and the
+  // stage settles from a touch too close; HeroOverlay then lands the cloud,
+  // the figure and the harp in turn. The clip sits on the stage around the
+  // section, so the section's own scale stays free.
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    const stage = section?.parentElement;
+    const beam = stage?.parentElement?.querySelector<HTMLElement>("[data-hero-beam]");
+    if (!section || !stage || !beam || reduce || opened.current) return;
+    if (phase === "loading" || phase === "cycle") {
+      gsap.set(stage, { clipPath: "inset(0% 50% 0% 50%)" });
+      gsap.set(section, { scale: 1.12 });
+      return;
+    }
+    if (phase !== "zoom") return;
+    opened.current = true;
+    const tl = gsap
+      .timeline()
+      // The beam drops from the top, then flares as the gates part.
+      .fromTo(
+        beam,
+        { autoAlpha: 1, scaleY: 0, scaleX: 1 },
+        { scaleY: 1, duration: 0.45, ease: "power3.in" },
+      )
+      .to(beam, { scaleX: 14, autoAlpha: 0, duration: 0.7, ease: "power2.out" }, 0.4)
+      // Explicit start: the browser reports a clip in a shorthand GSAP can't
+      // always pair up with the four-sided end value.
+      .fromTo(
+        stage,
+        { clipPath: "inset(0% 50% 0% 50%)" },
+        { clipPath: "inset(0% 0% 0% 0%)", duration: 1.15, ease: "expo.inOut" },
+        0.4,
+      )
+      .fromTo(section, { scale: 1.12 }, { scale: 1, duration: 1.5, ease: "power3.out" }, 0.4)
+      .set([stage, section], { clearProps: "clipPath,transform" });
+    return () => {
+      tl.kill();
+    };
+  }, [phase, reduce]);
+
+  // Copy fades out as soon as the figures start to exit. Between them the
+  // About-me poster opens from a small rounded window in the centre (the
+  // same move the hero itself opens with) until it fills the screen, its
+  // content settling from a touch too close as the window widens.
   useEffect(() => {
     const el = contentRef.current;
     const reveal = revealRef.current;
-    if (!el || !reveal || reduce) return;
+    const inner = revealInnerRef.current;
+    if (!el || !reveal || !inner || reduce) return;
     const ctx = gsap.context(() => {
+      const scrollTrigger = {
+        start: () => exitAt(EXIT_REVEAL[0]),
+        end: () => exitAt(EXIT_REVEAL[1]),
+        scrub: true,
+        invalidateOnRefresh: true,
+      };
       gsap.fromTo(
         reveal,
-        { autoAlpha: 0 },
+        { autoAlpha: 1, clipPath: "inset(50% 50% 50% 50% round 28px)" },
         {
-          autoAlpha: 1,
-          ease: "none",
-          scrollTrigger: {
-            start: () => exitAt(EXIT_COVERED[0]),
-            end: () => exitAt(EXIT_COVERED[1]),
-            scrub: true,
-            invalidateOnRefresh: true,
-          },
+          clipPath: "inset(0% 0% 0% 0% round 0px)",
+          ease: "power2.inOut",
+          immediateRender: true,
+          scrollTrigger,
         },
       );
-      gsap.fromTo(
-        reveal,
-        { scale: 1.12 },
-        {
-          scale: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            start: () => exitAt(EXIT_CLOUDS_OUT[0]),
-            end: () => exitAt(EXIT_CLOUDS_OUT[1]),
-            scrub: true,
-            invalidateOnRefresh: true,
-          },
-        },
-      );
+      gsap.fromTo(inner, { scale: 1.18 }, { scale: 1, ease: "power2.out", scrollTrigger });
       // Gone within the first few steps of the figures' exit.
       gsap.to(el, {
         y: () => -window.innerHeight * 0.06,
@@ -103,6 +134,7 @@ export function Hero() {
 
   return (
     <section
+      ref={sectionRef}
       style={{ backgroundColor: site.navbar.bg }}
       className="relative h-full w-full"
     >
@@ -110,16 +142,18 @@ export function Hero() {
           above it; NavbarBar (page level) draws the controls on top. */}
       <NavbarBackdrop />
       <HeroSky />
-      {/* About-me poster under the figures (z-5), so their exit uncovers it. */}
+      {/* About-me poster under the figures (z-5); a window opens onto it as
+          they exit. */}
       <div
         ref={revealRef}
         style={reduce ? undefined : { opacity: 0, visibility: "hidden" }}
         className="absolute inset-0 z-[3]"
       >
-        <AboutPoster />
+        <div ref={revealInnerRef} className="h-full">
+          <AboutPoster />
+        </div>
       </div>
       <HeroOverlay />
-      {!reduce && <HeroCloudCover />}
       <div
         ref={contentRef}
         className="pointer-events-none absolute inset-0 z-10 flex h-full w-full flex-col px-4 pt-24 pb-10 sm:px-5 sm:pb-12 md:pt-28"

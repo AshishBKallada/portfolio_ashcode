@@ -100,19 +100,11 @@ export const site = {
   },
   aboutPoster: {
     heading: "About me",
-    caption: "Ashish B Kallada",
-    intro:
-      "My name is AshCode, I'm a full-stack developer building products remotely.",
-    blocks: [
-      {
-        lead: "Ever since",
-        text: "I shipped my first page I've cared about how things feel, not only how they work, from the first sketch to the last deploy.",
-      },
-      {
-        lead: "I live to",
-        text: "build things that stay standing and keep feeling alive long after launch.",
-      },
-    ],
+    /** Cut-out portrait standing in front of the heading. */
+    photo: "/images/about-figure.png",
+    /** Signature set in the script face across the portrait. */
+    signature: "Ashish B Kallada",
+    bio: "I'm Ashish, a full-stack developer building products remotely. I care about how things feel, not only how they work, and I build them to stay standing long after launch.",
   },
   contactStatement: {
     lines: ["Let's build", "something that", "feels"],

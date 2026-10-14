@@ -1,17 +1,20 @@
 /** Shown in the loader intro sequence only (not the hero frame). */
-export const HERO_INTRO_CYCLE = ["/images/hero/hero-overlay.png"] as const;
+export const HERO_INTRO_CYCLE = ["/images/hero/hero-figure.png"] as const;
 
 /** Hero background image after intro zoom. */
 export const HERO_INTRO_FRAME = "/images/hero/hero-bg.png";
 
 /** Transparent cutout layered above the hero background. */
-export const HERO_OVERLAY = "/images/hero/hero-overlay.png";
+export const HERO_OVERLAY = "/images/hero/hero-figure.png";
 
 /** Secondary cutout floating to the right of the figure (3/4 across). */
 export const HERO_SIDE = "/images/hero/float-harp.png";
 
-/** Cloud cutout the figure floats above, drawn behind its feet. */
+/** Sunset cloud cutout, used in the hero's drifting sky. */
 export const HERO_CLOUD = "/images/hero/cloud.png";
+
+/** White cumulus the figure floats above, drawn behind its feet (1000×563). */
+export const HERO_SEAT_CLOUD = "/images/clouds/cumulus.png";
 
 /**
  * Height of the hero figure as a fraction of the hero. The img is
@@ -42,18 +45,16 @@ export const HERO_HOLD_SCREENS = 0;
  * the hero.
  */
 export const HERO_EXIT_START = HERO_HOLD_SCREENS;
-export const HERO_EXIT_SCREENS = 1.6;
+export const HERO_EXIT_SCREENS = 1.1;
 export const INTRO_STACK_START = HERO_EXIT_START + HERO_EXIT_SCREENS;
 
 /**
- * Beats of the exit, as shares of it: the figures slide out left and right,
- * clouds roll in from the edges and close over the screen midway, the
- * About-me poster is swapped in behind them, and they part to reveal it.
+ * Beats of the exit, as shares of it. From the first scroll the figures
+ * drift apart left and right, and between them the About-me poster opens
+ * from a small rounded window in the centre until it fills the screen.
  */
-export const EXIT_FIGURES = [0, 0.5] as const;
-export const EXIT_CLOUDS_IN = [0.25, 0.55] as const;
-export const EXIT_COVERED = [0.55, 0.62] as const;
-export const EXIT_CLOUDS_OUT = [0.62, 1] as const;
+export const EXIT_FIGURES = [0, 0.6] as const;
+export const EXIT_REVEAL = [0.08, 0.9] as const;
 
 /** Scroll position (px) `t` of the way through the hero's exit. */
 export const exitAt = (t: number) =>

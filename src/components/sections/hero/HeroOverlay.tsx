@@ -7,7 +7,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { introEase } from "@/components/motion/intro";
 import {
-  HERO_CLOUD,
   HERO_INTRO_CYCLE,
   HERO_INTRO_FRAME,
   EXIT_FIGURES,
@@ -15,6 +14,7 @@ import {
   HERO_FIGURE_LIFT_CLASS,
   HERO_INTRO_STEP_MS,
   HERO_OVERLAY,
+  HERO_SEAT_CLOUD,
   HERO_SIDE,
   exitAt,
 } from "@/components/sections/hero/heroIntroCycle";
@@ -386,18 +386,22 @@ export function HeroOverlay() {
               src={HERO_SIDE}
               alt=""
               draggable={false}
-              initial={reduce ? { opacity: 1 } : { opacity: 0 }}
+              initial={reduce ? { opacity: 1, rotate: 22 } : { opacity: 0, x: 160, rotate: 52 }}
               animate={
                 zoomed || reduce
-                  ? { opacity: 1, rotate: 22 }
-                  : { opacity: 0, rotate: 22 }
+                  ? { opacity: 1, x: 0, rotate: 22 }
+                  : { opacity: 0, x: 160, rotate: 52 }
               }
-              transition={{
-                opacity: {
-                  duration: reduce || handoff ? 0 : 0.9,
-                  ease: introEase,
-                },
-              }}
+              // Last of the cast: swings in from the right and settles at its tilt.
+              transition={
+                reduce || handoff
+                  ? { duration: 0 }
+                  : {
+                      opacity: { duration: 0.5, delay: 1.05, ease: introEase },
+                      x: { type: "spring", stiffness: 70, damping: 15, delay: 1.05 },
+                      rotate: { type: "spring", stiffness: 60, damping: 11, delay: 1.05 },
+                    }
+              }
               className="block h-auto w-full select-none will-change-transform drop-shadow-[0_30px_40px_rgba(0,0,0,0.35)]"
               decoding="async"
               width={941}
@@ -428,24 +432,25 @@ export function HeroOverlay() {
           <div ref={cloudRef} className="absolute inset-0 origin-bottom will-change-transform">
             <div ref={cloudMouseRef} className="absolute inset-0 will-change-transform">
             <motion.img
-              src={HERO_CLOUD}
+              src={HERO_SEAT_CLOUD}
               alt=""
               draggable={false}
-              initial={reduce ? { opacity: 1 } : { opacity: 0 }}
+              initial={reduce ? { opacity: 1 } : { opacity: 0, y: 110, scale: 0.86 }}
               animate={
-                zoomed || reduce ? { opacity: 1 } : { opacity: 0 }
+                zoomed || reduce
+                  ? { opacity: 1, y: 0, scale: 1 }
+                  : { opacity: 0, y: 110, scale: 0.86 }
               }
+              // Rises into place as the gates part, ready for the figure.
               transition={{
-                opacity: {
-                  duration: reduce || handoff ? 0 : 0.9,
-                  ease: introEase,
-                  delay: reduce || handoff ? 0 : 0.45,
-                },
+                duration: reduce || handoff ? 0 : 1.1,
+                ease: [0.16, 1, 0.3, 1],
+                delay: reduce || handoff ? 0 : 0.55,
               }}
               className="absolute top-1/2 left-1/2 h-auto w-[clamp(24rem,92vw,84rem)] max-w-none -translate-x-1/2 -translate-y-1/2 select-none will-change-transform max-md:top-auto max-md:bottom-[calc(32%+46vw)] max-md:w-[170vw] max-md:translate-y-1/2"
               decoding="async"
-              width={1024}
-              height={1024}
+              width={1000}
+              height={563}
             />
             </div>
           </div>
@@ -483,17 +488,23 @@ export function HeroOverlay() {
                 src={HERO_OVERLAY}
                 alt=""
                 draggable={false}
-                initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: "-55%", rotate: -5 }}
                 animate={
                   zoomed || reduce
-                    ? { opacity: 1, y: 0 }
-                    : { opacity: 0, y: 40 }
+                    ? { opacity: 1, y: 0, rotate: 0 }
+                    : { opacity: 0, y: "-55%", rotate: -5 }
                 }
-                transition={{
-                  duration: reduce || handoff ? 0 : 0.9,
-                  ease: introEase,
-                  delay: reduce || handoff ? 0 : 0.25,
-                }}
+                // Descends from above and lands on the cloud with a soft
+                // spring, as if settling its weight.
+                transition={
+                  reduce || handoff
+                    ? { duration: 0 }
+                    : {
+                        opacity: { duration: 0.45, delay: 0.75, ease: introEase },
+                        y: { type: "spring", stiffness: 55, damping: 12, mass: 1.1, delay: 0.75 },
+                        rotate: { type: "spring", stiffness: 55, damping: 12, delay: 0.75 },
+                      }
+                }
                 style={{
                   height: `${HERO_FIGURE_HEIGHT * 100}%`,
                   bottom: "calc(var(--hero-lift) * 100%)",

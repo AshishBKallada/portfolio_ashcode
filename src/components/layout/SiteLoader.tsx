@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import {
-  HERO_CLOUD,
+  HERO_SEAT_CLOUD,
   HERO_OVERLAY,
   HERO_SIDE,
 } from "@/components/sections/hero/heroIntroCycle";
@@ -32,7 +32,7 @@ const PHRASE_HOLD_S = 0.7;
 // Dismiss even if `load` or `fonts.ready` never resolve (a stalled asset).
 const MAX_WAIT_MS = 8000;
 
-const PRELOAD = [HERO_OVERLAY, HERO_SIDE, HERO_CLOUD];
+const PRELOAD = [HERO_OVERLAY, HERO_SIDE, HERO_SEAT_CLOUD];
 
 export function SiteLoader() {
   const pathname = usePathname();
@@ -114,17 +114,10 @@ export function SiteLoader() {
             },
             `+=${PHRASE_HOLD_S}`,
           )
-          // Hero starts its intro under the curtain as it lifts.
+          // The loader steps aside and the hero opens from a window in the
+          // centre of its own red, the same move About me opens with.
           .add(() => markLoaded())
-          .to(
-            root,
-            {
-              clipPath: "inset(0 0 100% 0)",
-              duration: 1,
-              ease: "power4.inOut",
-            },
-            "-=0.1",
-          );
+          .to(root, { autoAlpha: 0, duration: 0.35, ease: "power2.out" }, "-=0.1");
       };
 
       const maybeFinish = () => {
