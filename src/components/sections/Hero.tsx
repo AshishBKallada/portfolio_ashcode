@@ -12,7 +12,7 @@ import { AboutPoster } from "@/components/sections/AboutPoster";
 import { HeroCta } from "@/components/sections/hero/HeroCta";
 import { HeroOverlay } from "@/components/sections/hero/HeroOverlay";
 import { HeroSky } from "@/components/sections/hero/HeroSky";
-import { EXIT_REVEAL, exitAt } from "@/components/sections/hero/heroIntroCycle";
+import { exitAt } from "@/components/sections/hero/heroIntroCycle";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,8 +21,6 @@ export function Hero() {
   const reduce = useReducedMotion();
   const show = phase === "text" || phase === "done";
   const contentRef = useRef<HTMLDivElement>(null);
-  const revealRef = useRef<HTMLDivElement>(null);
-  const revealInnerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const opened = useRef(false);
 
@@ -68,33 +66,12 @@ export function Hero() {
     };
   }, [phase, reduce]);
 
-  // Copy fades out as soon as the figures start to exit. Between them the
-  // About-me poster opens from a small rounded window in the centre (the
-  // same move the hero itself opens with) until it fills the screen, its
-  // content settling from a touch too close as the window widens.
+  // Copy fades out as soon as the figures start to exit, leaving the stage
+  // to the laptop as it zooms into the About-me poster on its screen.
   useEffect(() => {
     const el = contentRef.current;
-    const reveal = revealRef.current;
-    const inner = revealInnerRef.current;
-    if (!el || !reveal || !inner || reduce) return;
+    if (!el || reduce) return;
     const ctx = gsap.context(() => {
-      const scrollTrigger = {
-        start: () => exitAt(EXIT_REVEAL[0]),
-        end: () => exitAt(EXIT_REVEAL[1]),
-        scrub: true,
-        invalidateOnRefresh: true,
-      };
-      gsap.fromTo(
-        reveal,
-        { autoAlpha: 1, clipPath: "inset(50% 50% 50% 50% round 28px)" },
-        {
-          clipPath: "inset(0% 0% 0% 0% round 0px)",
-          ease: "power2.inOut",
-          immediateRender: true,
-          scrollTrigger,
-        },
-      );
-      gsap.fromTo(inner, { scale: 1.18 }, { scale: 1, ease: "power2.out", scrollTrigger });
       // Gone within the first few steps of the figures' exit.
       gsap.to(el, {
         y: () => -window.innerHeight * 0.06,
@@ -142,18 +119,9 @@ export function Hero() {
           above it; NavbarBar (page level) draws the controls on top. */}
       <NavbarBackdrop />
       <HeroSky />
-      {/* About-me poster under the figures (z-5); a window opens onto it as
-          they exit. */}
-      <div
-        ref={revealRef}
-        style={reduce ? undefined : { opacity: 0, visibility: "hidden" }}
-        className="absolute inset-0 z-[3]"
-      >
-        <div ref={revealInnerRef} className="h-full">
-          <AboutPoster />
-        </div>
-      </div>
-      <HeroOverlay />
+      {/* The About-me poster lives on the laptop's screen until the zoom
+          brings it to full view. */}
+      <HeroOverlay screen={<AboutPoster />} />
       <div
         ref={contentRef}
         className="pointer-events-none absolute inset-0 z-10 flex h-full w-full flex-col px-4 pt-24 pb-10 sm:px-5 sm:pb-12 md:pt-28"

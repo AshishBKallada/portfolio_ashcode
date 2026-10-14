@@ -7,7 +7,7 @@ export const HERO_INTRO_FRAME = "/images/hero/hero-bg.png";
 /** Transparent cutout layered above the hero background. */
 export const HERO_OVERLAY = "/images/hero/hero-figure.png";
 
-/** Secondary cutout floating to the right of the figure (3/4 across). */
+/** Harp cutout, kept for the résumé page's header. */
 export const HERO_SIDE = "/images/hero/float-harp.png";
 
 /** Sunset cloud cutout, used in the hero's drifting sky. */
@@ -49,12 +49,15 @@ export const HERO_EXIT_SCREENS = 1.1;
 export const INTRO_STACK_START = HERO_EXIT_START + HERO_EXIT_SCREENS;
 
 /**
- * Beats of the exit, as shares of it. From the first scroll the figures
- * drift apart left and right, and between them the About-me poster opens
- * from a small rounded window in the centre until it fills the screen.
+ * Beats of the exit, as shares of it: one camera push into the laptop. The
+ * laptop glides to the centre and zooms until its screen, already showing
+ * the About-me poster, fills the view, while the figure eases back a little
+ * behind it and his cloud holds its place; then the screen's edges spill out
+ * to the full stage and the laptop frame falls away.
  */
-export const EXIT_FIGURES = [0, 0.6] as const;
-export const EXIT_REVEAL = [0.08, 0.9] as const;
+export const EXIT_FIGURES = [0.04, 0.7] as const;
+export const EXIT_LAPTOP = [0.04, 0.85] as const;
+export const EXIT_SPILL = [0.85, 1] as const;
 
 /** Scroll position (px) `t` of the way through the hero's exit. */
 export const exitAt = (t: number) =>

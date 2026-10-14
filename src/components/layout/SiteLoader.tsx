@@ -8,7 +8,6 @@ import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import {
   HERO_SEAT_CLOUD,
   HERO_OVERLAY,
-  HERO_SIDE,
 } from "@/components/sections/hero/heroIntroCycle";
 import { site } from "@/data/site";
 
@@ -32,7 +31,7 @@ const PHRASE_HOLD_S = 0.7;
 // Dismiss even if `load` or `fonts.ready` never resolve (a stalled asset).
 const MAX_WAIT_MS = 8000;
 
-const PRELOAD = [HERO_OVERLAY, HERO_SIDE, HERO_SEAT_CLOUD];
+const PRELOAD = [HERO_OVERLAY, HERO_SEAT_CLOUD];
 
 export function SiteLoader() {
   const pathname = usePathname();

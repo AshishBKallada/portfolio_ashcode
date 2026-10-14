@@ -4,18 +4,20 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Laptop, laptopPose } from "@/components/sections/hero/Laptop";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { introEase } from "@/components/motion/intro";
 import {
   HERO_INTRO_CYCLE,
   HERO_INTRO_FRAME,
   EXIT_FIGURES,
+  EXIT_LAPTOP,
+  EXIT_SPILL,
   HERO_FIGURE_HEIGHT,
   HERO_FIGURE_LIFT_CLASS,
   HERO_INTRO_STEP_MS,
   HERO_OVERLAY,
   HERO_SEAT_CLOUD,
-  HERO_SIDE,
   exitAt,
 } from "@/components/sections/hero/heroIntroCycle";
 import {
@@ -28,15 +30,67 @@ gsap.registerPlugin(ScrollTrigger);
 const CYCLE = HERO_INTRO_CYCLE;
 // Temporarily hide the hero backdrop once the intro cycle hands off.
 const SHOW_HERO_BG = false;
-// Harp cutout to the right of the figure. Its wrappers stay mounted even when
-// hidden so the handoff, exit and mouse tweens keep their targets.
-const SHOW_HERO_SIDE = true;
 const STEP_MS = HERO_INTRO_STEP_MS;
 // How much further than the character the cloud travels, as a share of the
-// character's move: scroll exit and cursor parallax both use it.
+// character's move: its scroll drift and the cursor parallax both use it.
 const CLOUD_LEAD = 0.12;
+/** Scale the figure eases back to as the laptop comes forward. */
+const FIGURE_SETTLE = 0.86;
+/** How far the figure drifts left meanwhile, as a share of the stage width. */
+const FIGURE_SHIFT = 0.04;
 
-export function HeroOverlay() {
+/** How asleep the laptop's screen looks at rest: blur (px) and brightness. */
+const SCREEN_BLUR = 1.5;
+const SCREEN_DIM = 0.72;
+/** The zoom carries the screen a touch past the stage's edges, so no sliver
+    of bezel shows at the sides before the screen spills out. */
+const ZOOM_OVERSHOOT = 1.06;
+
+const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
+const zoomEase = gsap.parseEase("power2.inOut");
+
+type Point = { x: number; y: number };
+type Homography = [number, number, number, number, number, number, number, number];
+
+// Projective map from a w×h rectangle onto a quad (TL, TR, BR, BL): the
+// unit-square-to-quad solution (Heckbert), rescaled to the rectangle.
+function homography(w: number, h: number, [p0, p1, p2, p3]: Point[]): Homography {
+  const dx1 = p1.x - p2.x;
+  const dx2 = p3.x - p2.x;
+  const dx3 = p0.x - p1.x + p2.x - p3.x;
+  const dy1 = p1.y - p2.y;
+  const dy2 = p3.y - p2.y;
+  const dy3 = p0.y - p1.y + p2.y - p3.y;
+  const det = dx1 * dy2 - dx2 * dy1 || 1e-9;
+  const g = (dx3 * dy2 - dx2 * dy3) / det;
+  const k = (dx1 * dy3 - dx3 * dy1) / det;
+  return [
+    (p1.x - p0.x + g * p1.x) / w,
+    (p3.x - p0.x + k * p3.x) / h,
+    p0.x,
+    (p1.y - p0.y + g * p1.y) / w,
+    (p3.y - p0.y + k * p3.y) / h,
+    p0.y,
+    g / w,
+    k / h,
+  ];
+}
+
+function project([a, b, c, d, e, f, g, k]: Homography, x: number, y: number): Point {
+  const z = g * x + k * y + 1;
+  return { x: (a * x + b * y + c) / z, y: (d * x + e * y + f) / z };
+}
+
+// Column-major CSS matrix3d for a 2D homography (origin at top-left).
+const toMatrix3d = ([a, b, c, d, e, f, g, k]: Homography) =>
+  `matrix3d(${[a, d, 0, g, b, e, 0, k, 0, 0, 1, 0, c, f, 0, 1].map((n) => +n.toFixed(8)).join(",")})`;
+
+type Props = {
+  /** Shown live on the laptop's screen, then zoomed into full view. */
+  screen: React.ReactNode;
+};
+
+export function HeroOverlay({ screen }: Props) {
   const { phase } = useHeroIntro();
   const reduce = useReducedMotion();
   const [cycleTick, setCycleTick] = useState(0);
@@ -50,7 +104,14 @@ export function HeroOverlay() {
   const revealRef = useRef<HTMLDivElement>(null);
   const sideRef = useRef<HTMLDivElement>(null);
   const sideScrollRef = useRef<HTMLDivElement>(null);
-  const sideMouseRef = useRef<HTMLDivElement>(null);
+  const laptopRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const screenRef = useRef<HTMLDivElement>(null);
+  const screenLayerRef = useRef<HTMLDivElement>(null);
+  const screenInnerRef = useRef<HTMLDivElement>(null);
+  const cornerRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const lidRef = useRef<HTMLDivElement>(null);
   const sideLinkRef = useRef<HTMLAnchorElement>(null);
   const sideBadgeRef = useRef<HTMLSpanElement>(null);
   const handoffRectRef = useRef<DOMRect | null>(null);
@@ -71,15 +132,15 @@ export function HeroOverlay() {
     return () => timers.forEach((id) => window.clearTimeout(id));
   }, [phase, reduce]);
 
-  // After the navbar hold, the figure exits to the left and the side cutout
-  // to the right over the first half of the hero's exit, clearing the stage
-  // for the clouds. Scroll-only wrappers keep these tweens off the
-  // intro/mouse ones.
+  // As the laptop comes forward the figure (whose reaching hand presents
+  // it) eases back a little, shrinking toward his feet and drifting a touch
+  // to the left, and his cloud slides a little further left with a slight
+  // tilt, so the pair give way to the laptop without leaving the stage.
+  // Scroll-only wrappers keep these tweens off the intro/mouse ones.
   useEffect(() => {
     const el = figureRef.current;
-    const side = sideScrollRef.current;
     const cloud = cloudRef.current;
-    if (!el || !side || !cloud || reduce) return;
+    if (!el || !cloud || reduce) return;
     const ctx = gsap.context(() => {
       const scrollTrigger = {
         start: () => exitAt(EXIT_FIGURES[0]),
@@ -89,38 +150,188 @@ export function HeroOverlay() {
       };
       gsap.fromTo(
         el,
-        { x: 0, rotate: 0 },
+        { scale: 1, x: 0 },
         {
-          x: () => -window.innerWidth,
-          rotate: -8,
-          ease: "power1.in",
+          scale: FIGURE_SETTLE,
+          x: () => -window.innerWidth * FIGURE_SHIFT,
+          ease: "power1.inOut",
           scrollTrigger,
         },
       );
-      // The cloud travels a little further than the character, so it leads
-      // the pair out.
       gsap.fromTo(
         cloud,
         { x: 0, rotate: 0 },
         {
-          x: () => -window.innerWidth * (1 + CLOUD_LEAD),
-          rotate: -8,
-          ease: "power1.in",
-          scrollTrigger,
-        },
-      );
-      gsap.fromTo(
-        side,
-        { x: 0, rotate: 0 },
-        {
-          x: () => window.innerWidth * 0.6,
-          rotate: 14,
-          ease: "power1.in",
+          x: () => -window.innerWidth * FIGURE_SHIFT * (1 + CLOUD_LEAD) * 1.5,
+          rotate: -2,
+          ease: "power1.inOut",
           scrollTrigger,
         },
       );
     });
     return () => ctx.revert();
+  }, [reduce]);
+
+  // The laptop's screen is a live window onto the About-me poster. Every
+  // frame the poster is mapped in perspective onto the glass's four corners
+  // (read back from the DOM, so the 3D pose, entrance spring and zoom all
+  // carry it along) and clipped to them. On scroll the laptop turns to face
+  // the viewer, glides to the centre and zooms until its screen spans the
+  // stage; then the clip and mapping spill out to the full stage as the
+  // frame falls away, leaving the poster in place.
+  useEffect(() => {
+    const root = rootRef.current;
+    const side = sideScrollRef.current;
+    const sideIntro = sideRef.current;
+    const laptop = laptopRef.current;
+    const body = bodyRef.current;
+    const lid = lidRef.current;
+    const screenEl = screenRef.current;
+    const layer = screenLayerRef.current;
+    const inner = screenInnerRef.current;
+    const corners = cornerRefs.current;
+    if (
+      !root || !side || !sideIntro || !laptop || !body || !lid || !screenEl || !layer || !inner ||
+      corners.length < 4 || corners.some((c) => !c)
+    ) {
+      return;
+    }
+
+    // The screen matches the stage's shape (within laptop-like limits), so
+    // at full zoom it covers the stage exactly.
+    const sizeScreen = () => {
+      const aspect = Math.min(Math.max(window.innerWidth / window.innerHeight, 1.3), 1.8);
+      root.style.setProperty("--screen-aspect", aspect.toFixed(3));
+    };
+    sizeScreen();
+    window.addEventListener("resize", sizeScreen);
+
+    const st = reduce
+      ? null
+      : ScrollTrigger.create({
+          start: () => exitAt(0),
+          end: () => exitAt(1),
+          invalidateOnRefresh: true,
+        });
+
+    // Where the screen sits once faced front-on, and the move that centres
+    // it and scales it to the stage's width. Measured with the pose and
+    // zoom cleared, on the first step of the zoom (after the entrance has
+    // settled) and again after a resize.
+    let target: { cx: number; cy: number; dx: number; dy: number; scale: number } | null = null;
+    const measure = () => {
+      const saved = [side, body, lid].map((el) => el.style.transform);
+      for (const el of [side, body, lid]) el.style.transform = "none";
+      const r = screenEl.getBoundingClientRect();
+      const o = root.getBoundingClientRect();
+      [side, body, lid].forEach((el, i) => (el.style.transform = saved[i]));
+      const cx = r.left + r.width / 2 - o.left;
+      const cy = r.top + r.height / 2 - o.top;
+      return { cx, cy, dx: o.width / 2 - cx, dy: o.height / 2 - cy, scale: (o.width / screenEl.offsetWidth) * ZOOM_OVERSHOOT };
+    };
+    const onResize = () => {
+      target = null;
+    };
+    ScrollTrigger.addEventListener("refreshInit", onResize);
+
+    let lastZoom = -1;
+    let settled = false;
+
+    const update = () => {
+      const q = st?.progress ?? 0;
+      // Past the end the stage has released; hold the final frame.
+      if (q >= 1 && settled) return;
+      settled = q >= 1;
+      const zoom = clamp01((q - EXIT_LAPTOP[0]) / (EXIT_LAPTOP[1] - EXIT_LAPTOP[0]));
+      const spill = clamp01((q - EXIT_SPILL[0]) / (EXIT_SPILL[1] - EXIT_SPILL[0]));
+
+      if (zoom !== lastZoom) {
+        lastZoom = zoom;
+        // The laptop turns to face the viewer over the first half of the
+        // zoom, so the screen is square-on before it fills the view.
+        const pose = laptopPose(1 - zoomEase(clamp01(zoom / 0.55)));
+        body.style.transform = pose.body;
+        lid.style.transform = pose.lid;
+        if (zoom === 0) {
+          target = null;
+          gsap.set(side, { x: 0, y: 0, scale: 1 });
+        } else {
+          target ??= measure();
+          const e = zoomEase(zoom);
+          gsap.set(side, {
+            x: target.dx * e,
+            y: target.dy * e,
+            // Geometric, so the zoom feels even rather than rushing at the end.
+            scale: target.scale ** e,
+            transformOrigin: `${target.cx}px ${target.cy}px`,
+          });
+        }
+      }
+      // The frame falls away as the screen spills out to the stage.
+      side.style.opacity = String(1 - spill);
+      side.style.visibility = spill >= 1 ? "hidden" : "";
+
+      const o = root.getBoundingClientRect();
+      const quad = corners.map((c) => {
+        const r = c!.getBoundingClientRect();
+        return { x: r.left - o.left, y: r.top - o.top };
+      });
+      const W = o.width;
+      const H = o.height;
+      const lw = screenEl.offsetWidth;
+      const lh = screenEl.offsetHeight;
+      if (!lw || !lh || !W || !H) return;
+
+      // Poster → glass. In the glass's own flat box the poster is centred,
+      // fitting whole at rest (a tall phone stage shows as a miniature with
+      // red bands either side) and easing to the glass's width as it zooms.
+      // Its corners there are projected through the glass's perspective,
+      // then blended out to the stage's corners as the screen spills.
+      const fit = Math.min(lw / W, lh / H);
+      const s = fit + (lw / W - fit) * zoomEase(zoom);
+      const glass = homography(lw, lh, quad);
+      const stage = [
+        { x: 0, y: 0 },
+        { x: W, y: 0 },
+        { x: W, y: H },
+        { x: 0, y: H },
+      ];
+      const poster = stage.map((p, i) => {
+        const at = project(glass, lw / 2 + (p.x - W / 2) * s, lh / 2 + (p.y - H / 2) * s);
+        return { x: at.x + (stage[i].x - at.x) * spill, y: at.y + (stage[i].y - at.y) * spill };
+      });
+      inner.style.transform = toMatrix3d(homography(W, H, poster));
+
+      // Clip to the glass, opening out to the full stage.
+      layer.style.clipPath =
+        spill >= 1
+          ? "none"
+          : `polygon(${quad
+              .map((p, i) => `${(p.x + (stage[i].x - p.x) * spill).toFixed(1)}px ${(p.y + (stage[i].y - p.y) * spill).toFixed(1)}px`)
+              .join(",")})`;
+
+      // The screen fades in and out with the laptop's own entrance.
+      const shown =
+        Number(getComputedStyle(sideIntro).opacity) * Number(getComputedStyle(laptop).opacity);
+      layer.style.opacity = String(Math.max(shown, spill));
+      // At rest the screen is asleep: blurred and dim, so it only hints at
+      // what's on it. It wakes, sharp and bright, as the laptop turns in.
+      const wake = zoomEase(clamp01(zoom / 0.6));
+      layer.style.filter =
+        wake >= 1
+          ? "none"
+          : `blur(${(SCREEN_BLUR * (1 - wake)).toFixed(2)}px) brightness(${(SCREEN_DIM + (1 - SCREEN_DIM) * wake).toFixed(3)})`;
+      layer.style.pointerEvents = spill >= 1 ? "auto" : "none";
+    };
+
+    gsap.ticker.add(update);
+    return () => {
+      gsap.ticker.remove(update);
+      window.removeEventListener("resize", sizeScreen);
+      ScrollTrigger.removeEventListener("refreshInit", onResize);
+      st?.kill();
+      gsap.set(side, { clearProps: "transform,transformOrigin,opacity,visibility" });
+    };
   }, [reduce]);
 
   // Intro timeline: FLIP the figure from the loader's character rect to its
@@ -195,9 +406,8 @@ export function HeroOverlay() {
   useEffect(() => {
     const bg = backdropMouseRef.current;
     const fig = figureMouseRef.current;
-    const side = sideMouseRef.current;
     const cloud = cloudMouseRef.current;
-    if (!bg || !fig || !side || !cloud || reduce) return;
+    if (!bg || !fig || !cloud || reduce) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     gsap.set(bg, { scale: 1.06 });
@@ -208,8 +418,6 @@ export function HeroOverlay() {
     const figX = gsap.quickTo(fig, "x", opts);
     const figY = gsap.quickTo(fig, "y", opts);
     const figR = gsap.quickTo(fig, "rotationY", opts);
-    const sideX = gsap.quickTo(side, "x", opts);
-    const sideY = gsap.quickTo(side, "y", opts);
     const cloudX = gsap.quickTo(cloud, "x", opts);
     const cloudY = gsap.quickTo(cloud, "y", opts);
 
@@ -221,8 +429,6 @@ export function HeroOverlay() {
       figX(nx * 36);
       figY(ny * 20);
       figR(nx * 6);
-      sideX(nx * 22);
-      sideY(ny * 14);
       cloudX(nx * 36 * (1 + CLOUD_LEAD));
       cloudY(ny * 20 * (1 + CLOUD_LEAD));
     };
@@ -230,12 +436,12 @@ export function HeroOverlay() {
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
-      gsap.killTweensOf([bg, fig, side, cloud]);
-      gsap.set([bg, fig, side, cloud], { clearProps: "transform" });
+      gsap.killTweensOf([bg, fig, cloud]);
+      gsap.set([bg, fig, cloud], { clearProps: "transform" });
     };
   }, [reduce]);
 
-  // The "Resume" badge stands in for the cursor over the harp: it snaps to
+  // The "Resume" badge stands in for the cursor over the laptop: it snaps to
   // the pointer on enter and trails it while hovering. Position is in the
   // link's own box, so ancestor parallax/translate don't skew it.
   useEffect(() => {
@@ -274,7 +480,7 @@ export function HeroOverlay() {
   }, []);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-[5]">
+    <div ref={rootRef} className="pointer-events-none absolute inset-0 z-[5] [--screen-aspect:1.6]">
       <div
         ref={revealRef}
         className="absolute inset-0 flex items-center justify-center"
@@ -357,23 +563,33 @@ export function HeroOverlay() {
           </div>
         </motion.div>
       </div>
-      {/* Stacked above the figure so the harp paints in front of it. */}
+      {/* The About-me poster, mapped onto the laptop's screen each frame
+          (see the zoom effect). Above the figure and cloud so they never
+          show through the glass, below the laptop's frame. */}
+      <div
+        ref={screenLayerRef}
+        style={{ opacity: 0 }}
+        className="pointer-events-none absolute inset-0 z-[1] overflow-hidden bg-brand"
+      >
+        <div ref={screenInnerRef} className="absolute inset-0 origin-top-left">
+          {screen}
+        </div>
+      </div>
+      {/* Stacked above the figure and the screen layer. */}
       <div
         ref={sideScrollRef}
         className="absolute inset-0 z-[1] will-change-transform"
       >
-        {/* Harp anchors by its top edge at 30% down the hero. The handoff
+        {/* Laptop anchors by its top edge at 36% down the hero. The handoff
             timeline tweens this wrapper with GSAP, which folds any Tailwind
             `translate` into its own transform, so centering lives on the
             CSS-only child below and the position is the same on a full load
             and a hot reload. */}
         <div
           ref={sideRef}
-          className="absolute top-[30%] left-3/4 w-[clamp(10rem,min(19vw,32svh),20rem)] max-md:top-[12%] max-md:left-[78%] max-md:w-[8.5rem]"
+          className="absolute top-[36%] left-[76%] w-[clamp(10rem,min(18vw,30svh),18rem)] max-md:top-[13%] max-md:left-[74%] max-md:w-[8rem]"
         >
           <div className="-translate-x-1/2">
-          <div ref={sideMouseRef} className="will-change-transform">
-            {SHOW_HERO_SIDE && (
             <a
               ref={sideLinkRef}
               href="/resume"
@@ -382,31 +598,28 @@ export function HeroOverlay() {
               aria-label="Open résumé in a new tab"
               className="group pointer-events-auto relative block cursor-pointer [@media(pointer:fine)]:cursor-none"
             >
-            <motion.img
-              src={HERO_SIDE}
-              alt=""
-              draggable={false}
-              initial={reduce ? { opacity: 1, rotate: 22 } : { opacity: 0, x: 160, rotate: 52 }}
-              animate={
-                zoomed || reduce
-                  ? { opacity: 1, x: 0, rotate: 22 }
-                  : { opacity: 0, x: 160, rotate: 52 }
-              }
-              // Last of the cast: swings in from the right and settles at its tilt.
-              transition={
-                reduce || handoff
-                  ? { duration: 0 }
-                  : {
-                      opacity: { duration: 0.5, delay: 1.05, ease: introEase },
-                      x: { type: "spring", stiffness: 70, damping: 15, delay: 1.05 },
-                      rotate: { type: "spring", stiffness: 60, damping: 11, delay: 1.05 },
-                    }
-              }
-              className="block h-auto w-full select-none will-change-transform drop-shadow-[0_30px_40px_rgba(0,0,0,0.35)]"
-              decoding="async"
-              width={941}
-              height={1672}
-            />
+              <motion.div
+                ref={laptopRef}
+                initial={reduce ? { opacity: 1 } : { opacity: 0, x: 160, y: 40 }}
+                animate={
+                  zoomed || reduce
+                    ? { opacity: 1, x: 0, y: 0 }
+                    : { opacity: 0, x: 160, y: 40 }
+                }
+                // Last of the cast: glides in from the right and settles.
+                transition={
+                  reduce || handoff
+                    ? { duration: 0 }
+                    : {
+                        opacity: { duration: 0.5, delay: 1.05, ease: introEase },
+                        x: { type: "spring", stiffness: 70, damping: 15, delay: 1.05 },
+                        y: { type: "spring", stiffness: 60, damping: 11, delay: 1.05 },
+                      }
+                }
+                className="relative will-change-transform"
+              >
+                <Laptop screenRef={screenRef} cornerRefs={cornerRefs} bodyRef={bodyRef} lidRef={lidRef} />
+              </motion.div>
               {/* Outer span is GSAP's: it only carries the cursor position.
                   Inner span is CSS's: fade/pop on hover. Kept apart because
                   GSAP bakes Tailwind's `scale`/`translate` into its own
@@ -422,8 +635,6 @@ export function HeroOverlay() {
                 </span>
               </span>
             </a>
-            )}
-          </div>
           </div>
         </div>
       </div>
