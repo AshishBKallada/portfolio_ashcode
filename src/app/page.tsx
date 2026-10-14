@@ -2,7 +2,6 @@ import { BackToTop } from "@/components/layout/BackToTop";
 import { NavbarBar } from "@/components/layout/Navbar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { StoryProgress } from "@/components/layout/StoryProgress";
-import { About } from "@/components/sections/About";
 import { ContactStatement } from "@/components/sections/ContactStatement";
 import { HeroIntroPin } from "@/components/sections/HeroIntroPin";
 import { Projects } from "@/components/sections/Projects";
@@ -20,7 +19,6 @@ export default function Home() {
           style={{ backgroundColor: site.navbar.bg }}
           className="theme-light relative"
         >
-          <About />
           <Projects />
           <ContactStatement />
           <SiteFooter />

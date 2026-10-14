@@ -4,7 +4,9 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { HeroFigureReveal } from "@/components/sections/hero/HeroFigureReveal";
 import { Laptop, laptopPose } from "@/components/sections/hero/Laptop";
+import { aboutGallery } from "@/components/sections/hero/screenFeed";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { introEase } from "@/components/motion/intro";
 import {
@@ -12,11 +14,12 @@ import {
   HERO_INTRO_FRAME,
   EXIT_FIGURES,
   EXIT_LAPTOP,
-  EXIT_SPILL,
+  FEED,
   HERO_FIGURE_HEIGHT,
   HERO_FIGURE_LIFT_CLASS,
   HERO_INTRO_STEP_MS,
   HERO_OVERLAY,
+  HERO_REVEAL,
   HERO_SEAT_CLOUD,
   exitAt,
 } from "@/components/sections/hero/heroIntroCycle";
@@ -42,9 +45,12 @@ const FIGURE_SHIFT = 0.04;
 /** How asleep the laptop's screen looks at rest: blur (px) and brightness. */
 const SCREEN_BLUR = 1.5;
 const SCREEN_DIM = 0.72;
-/** The zoom carries the screen a touch past the stage's edges, so no sliver
-    of bezel shows at the sides before the screen spills out. */
+/** The final zoom carries the screen a touch past the stage's edges, so no
+    sliver of bezel shows at the sides before the screen spills out. */
 const ZOOM_OVERSHOOT = 1.06;
+/** The framed shot the laptop holds while its screen plays the About pages:
+    the screen's width as a share of the stage's, and its centre's height. */
+const FRAME = { width: 0.76, y: 0.49 };
 
 const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
 const zoomEase = gsap.parseEase("power2.inOut");
@@ -109,6 +115,7 @@ export function HeroOverlay({ screen }: Props) {
   const screenRef = useRef<HTMLDivElement>(null);
   const screenLayerRef = useRef<HTMLDivElement>(null);
   const screenInnerRef = useRef<HTMLDivElement>(null);
+  const feedRef = useRef<HTMLDivElement>(null);
   const cornerRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const bodyRef = useRef<HTMLDivElement>(null);
   const lidRef = useRef<HTMLDivElement>(null);
@@ -172,27 +179,31 @@ export function HeroOverlay({ screen }: Props) {
     return () => ctx.revert();
   }, [reduce]);
 
-  // The laptop's screen is a live window onto the About-me poster. Every
-  // frame the poster is mapped in perspective onto the glass's four corners
-  // (read back from the DOM, so the 3D pose, entrance spring and zoom all
-  // carry it along) and clipped to them. On scroll the laptop turns to face
-  // the viewer, glides to the centre and zooms until its screen spans the
-  // stage; then the clip and mapping spill out to the full stage as the
-  // frame falls away, leaving the poster in place.
+  // The laptop's screen is a live window onto the About pages. Every frame
+  // they are mapped in perspective onto the glass's four corners (read back
+  // from the DOM, so the 3D pose, entrance spring and zoom all carry them
+  // along) and clipped to them. On scroll the laptop turns to face the
+  // viewer and glides in until it is framed large in the centre; it holds
+  // there while the screen plays the pages (a beat on the About-me poster,
+  // a scroll up to the About section, its gallery sliding by); then the
+  // display zooms out to fill the stage as the frame falls away, and the
+  // stage releases into Projects.
   useEffect(() => {
     const root = rootRef.current;
     const side = sideScrollRef.current;
     const sideIntro = sideRef.current;
+    const link = sideLinkRef.current;
     const laptop = laptopRef.current;
     const body = bodyRef.current;
     const lid = lidRef.current;
     const screenEl = screenRef.current;
     const layer = screenLayerRef.current;
     const inner = screenInnerRef.current;
+    const feed = feedRef.current;
     const corners = cornerRefs.current;
     if (
-      !root || !side || !sideIntro || !laptop || !body || !lid || !screenEl || !layer || !inner ||
-      corners.length < 4 || corners.some((c) => !c)
+      !root || !side || !sideIntro || !link || !laptop || !body || !lid || !screenEl || !layer ||
+      !inner || !feed || corners.length < 4 || corners.some((c) => !c)
     ) {
       return;
     }
@@ -206,19 +217,35 @@ export function HeroOverlay({ screen }: Props) {
     sizeScreen();
     window.addEventListener("resize", sizeScreen);
 
-    const st = reduce
-      ? null
-      : ScrollTrigger.create({
-          start: () => exitAt(0),
-          end: () => exitAt(1),
-          invalidateOnRefresh: true,
-        });
+    // The run after the exit: the feed's beats plus the gallery's travel.
+    // The pin's spacer grows to match (--feed-extra), before each refresh
+    // measures the page.
+    const H = () => window.innerHeight;
+    const slideLength = () => aboutGallery.distance?.() ?? 0;
+    const feedLength = () => (FEED.hold + FEED.rise + FEED.spill) * H() + slideLength();
+    const sizeSpacer = () => {
+      document.documentElement.style.setProperty("--feed-extra", `${Math.round(feedLength())}px`);
+    };
+    sizeSpacer();
+    ScrollTrigger.addEventListener("refreshInit", sizeSpacer);
 
-    // Where the screen sits once faced front-on, and the move that centres
-    // it and scales it to the stage's width. Measured with the pose and
-    // zoom cleared, on the first step of the zoom (after the entrance has
-    // settled) and again after a resize.
-    let target: { cx: number; cy: number; dx: number; dy: number; scale: number } | null = null;
+    const st = ScrollTrigger.create({
+      start: () => exitAt(0),
+      end: () => exitAt(1) + feedLength(),
+      invalidateOnRefresh: true,
+    });
+    // Let everything below (Projects' scroll effects too) re-measure now
+    // that the spacer is its full length.
+    ScrollTrigger.refresh();
+    window.dispatchEvent(new Event("resize"));
+
+    // Where the screen sits once faced front-on, and the moves that frame
+    // it and later fill the stage with it. Measured with the pose and zoom
+    // cleared, fresh on every zooming frame: the zoom multiplies any error
+    // several times over, so a stale reading (taken while the entrance was
+    // still settling, say) would throw the framed shot well off centre.
+    type Shot = { scale: number; dx: number; dy: number };
+    let target: { cx: number; cy: number; frame: Shot; full: Shot } | null = null;
     const measure = () => {
       const saved = [side, body, lid].map((el) => el.style.transform);
       for (const el of [side, body, lid]) el.style.transform = "none";
@@ -227,28 +254,39 @@ export function HeroOverlay({ screen }: Props) {
       [side, body, lid].forEach((el, i) => (el.style.transform = saved[i]));
       const cx = r.left + r.width / 2 - o.left;
       const cy = r.top + r.height / 2 - o.top;
-      return { cx, cy, dx: o.width / 2 - cx, dy: o.height / 2 - cy, scale: (o.width / screenEl.offsetWidth) * ZOOM_OVERSHOOT };
+      const dx = o.width / 2 - cx;
+      return {
+        cx,
+        cy,
+        frame: { scale: (o.width * FRAME.width) / screenEl.offsetWidth, dx, dy: o.height * FRAME.y - cy },
+        full: { scale: (o.width / screenEl.offsetWidth) * ZOOM_OVERSHOOT, dx, dy: o.height / 2 - cy },
+      };
     };
-    const onResize = () => {
-      target = null;
-    };
-    ScrollTrigger.addEventListener("refreshInit", onResize);
-
-    let lastZoom = -1;
+    let lastKey = "";
     let settled = false;
 
     const update = () => {
-      const q = st?.progress ?? 0;
+      const p = Math.max(st.scroll() - st.start, 0);
       // Past the end the stage has released; hold the final frame.
-      if (q >= 1 && settled) return;
-      settled = q >= 1;
-      const zoom = clamp01((q - EXIT_LAPTOP[0]) / (EXIT_LAPTOP[1] - EXIT_LAPTOP[0]));
-      const spill = clamp01((q - EXIT_SPILL[0]) / (EXIT_SPILL[1] - EXIT_SPILL[0]));
+      const done = p >= st.end - st.start;
+      if (done && settled) return;
+      settled = done;
+      const vh = H();
+      const exit = exitAt(1) - exitAt(0);
+      const zoom = clamp01((p / exit - EXIT_LAPTOP[0]) / (EXIT_LAPTOP[1] - EXIT_LAPTOP[0]));
+      const after = p - exit;
+      const hold = FEED.hold * vh;
+      const riseLen = FEED.rise * vh;
+      const slideLen = slideLength();
+      const rise = clamp01((after - hold) / riseLen);
+      const slide = slideLen ? clamp01((after - hold - riseLen) / slideLen) : after >= hold + riseLen ? 1 : 0;
+      const spill = clamp01((after - hold - riseLen - slideLen) / (FEED.spill * vh));
 
-      if (zoom !== lastZoom) {
-        lastZoom = zoom;
+      const key = `${zoom}|${spill}`;
+      if (key !== lastKey || zoom > 0) {
+        lastKey = key;
         // The laptop turns to face the viewer over the first half of the
-        // zoom, so the screen is square-on before it fills the view.
+        // zoom, so the screen is square-on before it is framed.
         const pose = laptopPose(1 - zoomEase(clamp01(zoom / 0.55)));
         body.style.transform = pose.body;
         lid.style.transform = pose.lid;
@@ -256,20 +294,29 @@ export function HeroOverlay({ screen }: Props) {
           target = null;
           gsap.set(side, { x: 0, y: 0, scale: 1 });
         } else {
-          target ??= measure();
+          target = measure();
+          const { frame, full } = target;
           const e = zoomEase(zoom);
+          const f = zoomEase(spill);
+          // Set directly: GSAP would compensate x/y for a moved origin.
+          side.style.transformOrigin = `${target.cx}px ${target.cy}px`;
           gsap.set(side, {
-            x: target.dx * e,
-            y: target.dy * e,
-            // Geometric, so the zoom feels even rather than rushing at the end.
-            scale: target.scale ** e,
-            transformOrigin: `${target.cx}px ${target.cy}px`,
+            x: frame.dx * e,
+            y: frame.dy * e + (full.dy - frame.dy) * f,
+            // Geometric, so each zoom feels even rather than rushing at the end.
+            scale: frame.scale ** e * (full.scale / frame.scale) ** f,
           });
         }
+        // Once the laptop leaves its corner it is a stage, not a link.
+        link.style.pointerEvents = zoom > 0 ? "none" : "";
       }
-      // The frame falls away as the screen spills out to the stage.
+      // The frame falls away as the display spills out to the stage.
       side.style.opacity = String(1 - spill);
       side.style.visibility = spill >= 1 ? "hidden" : "";
+
+      // The feed: pages scroll up the screen, then the gallery slides.
+      feed.style.transform = `translate3d(0,${(-rise * vh).toFixed(1)}px,0)`;
+      aboutGallery.set?.(slide);
 
       const o = root.getBoundingClientRect();
       const quad = corners.map((c) => {
@@ -277,37 +324,38 @@ export function HeroOverlay({ screen }: Props) {
         return { x: r.left - o.left, y: r.top - o.top };
       });
       const W = o.width;
-      const H = o.height;
+      const SH = o.height;
       const lw = screenEl.offsetWidth;
       const lh = screenEl.offsetHeight;
-      if (!lw || !lh || !W || !H) return;
+      if (!lw || !lh || !W || !SH) return;
 
-      // Poster → glass. In the glass's own flat box the poster is centred,
-      // fitting whole at rest (a tall phone stage shows as a miniature with
-      // red bands either side) and easing to the glass's width as it zooms.
-      // Its corners there are projected through the glass's perspective,
-      // then blended out to the stage's corners as the screen spills.
-      const fit = Math.min(lw / W, lh / H);
+      // Pages → glass. In the glass's own flat box the stage-sized page is
+      // centred, fitting whole at rest (a tall phone stage shows as a
+      // miniature with red bands either side) and easing to the glass's
+      // width as it zooms. Its corners there are projected through the
+      // glass's perspective, then blended out to the stage's corners as the
+      // display spills.
+      const fit = Math.min(lw / W, lh / SH);
       const s = fit + (lw / W - fit) * zoomEase(zoom);
       const glass = homography(lw, lh, quad);
       const stage = [
         { x: 0, y: 0 },
         { x: W, y: 0 },
-        { x: W, y: H },
-        { x: 0, y: H },
+        { x: W, y: SH },
+        { x: 0, y: SH },
       ];
-      const poster = stage.map((p, i) => {
-        const at = project(glass, lw / 2 + (p.x - W / 2) * s, lh / 2 + (p.y - H / 2) * s);
+      const page = stage.map((pt, i) => {
+        const at = project(glass, lw / 2 + (pt.x - W / 2) * s, lh / 2 + (pt.y - SH / 2) * s);
         return { x: at.x + (stage[i].x - at.x) * spill, y: at.y + (stage[i].y - at.y) * spill };
       });
-      inner.style.transform = toMatrix3d(homography(W, H, poster));
+      inner.style.transform = toMatrix3d(homography(W, SH, page));
 
       // Clip to the glass, opening out to the full stage.
       layer.style.clipPath =
         spill >= 1
           ? "none"
           : `polygon(${quad
-              .map((p, i) => `${(p.x + (stage[i].x - p.x) * spill).toFixed(1)}px ${(p.y + (stage[i].y - p.y) * spill).toFixed(1)}px`)
+              .map((pt, i) => `${(pt.x + (stage[i].x - pt.x) * spill).toFixed(1)}px ${(pt.y + (stage[i].y - pt.y) * spill).toFixed(1)}px`)
               .join(",")})`;
 
       // The screen fades in and out with the laptop's own entrance.
@@ -321,15 +369,17 @@ export function HeroOverlay({ screen }: Props) {
         wake >= 1
           ? "none"
           : `blur(${(SCREEN_BLUR * (1 - wake)).toFixed(2)}px) brightness(${(SCREEN_DIM + (1 - SCREEN_DIM) * wake).toFixed(3)})`;
-      layer.style.pointerEvents = spill >= 1 ? "auto" : "none";
+      // The pages are live once the laptop is framed.
+      layer.style.pointerEvents = zoom >= 1 ? "auto" : "none";
     };
 
     gsap.ticker.add(update);
     return () => {
       gsap.ticker.remove(update);
       window.removeEventListener("resize", sizeScreen);
-      ScrollTrigger.removeEventListener("refreshInit", onResize);
-      st?.kill();
+      ScrollTrigger.removeEventListener("refreshInit", sizeSpacer);
+      st.kill();
+      link.style.pointerEvents = "";
       gsap.set(side, { clearProps: "transform,transformOrigin,opacity,visibility" });
     };
   }, [reduce]);
@@ -571,14 +621,19 @@ export function HeroOverlay({ screen }: Props) {
         style={{ opacity: 0 }}
         className="pointer-events-none absolute inset-0 z-[1] overflow-hidden bg-brand"
       >
-        <div ref={screenInnerRef} className="absolute inset-0 origin-top-left">
-          {screen}
+        <div ref={screenInnerRef} className="absolute inset-0 origin-top-left overflow-hidden">
+          {/* The pages, stacked; the feed scrolls them up the screen. */}
+          <div ref={feedRef} className="absolute inset-x-0 top-0 will-change-transform">
+            {screen}
+          </div>
         </div>
       </div>
       {/* Stacked above the figure and the screen layer. */}
       <div
         ref={sideScrollRef}
-        className="absolute inset-0 z-[1] will-change-transform"
+        // No will-change: the zoom scales this up several times, and a
+        // promoted layer would stay rastered at its small resting size.
+        className="absolute inset-0 z-[1]"
       >
         {/* Laptop anchors by its top edge at 36% down the hero. The handoff
             timeline tweens this wrapper with GSAP, which folds any Tailwind
@@ -616,7 +671,7 @@ export function HeroOverlay({ screen }: Props) {
                         y: { type: "spring", stiffness: 60, damping: 11, delay: 1.05 },
                       }
                 }
-                className="relative will-change-transform"
+                className="relative"
               >
                 <Laptop screenRef={screenRef} cornerRefs={cornerRefs} bodyRef={bodyRef} lidRef={lidRef} />
               </motion.div>
@@ -695,10 +750,7 @@ export function HeroOverlay({ screen }: Props) {
               ref={handoffRef}
               className={`absolute inset-0 will-change-transform ${HERO_FIGURE_LIFT_CLASS}`}
             >
-              <motion.img
-                src={HERO_OVERLAY}
-                alt=""
-                draggable={false}
+              <motion.div
                 initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: "-55%", rotate: -5 }}
                 animate={
                   zoomed || reduce
@@ -720,11 +772,17 @@ export function HeroOverlay({ screen }: Props) {
                   height: `${HERO_FIGURE_HEIGHT * 100}%`,
                   bottom: "calc(var(--hero-lift) * 100%)",
                 }}
-                className="absolute inset-x-0 w-full object-contain object-bottom select-none"
-                decoding="async"
-                width={1445}
-                height={1089}
-              />
+                className="absolute inset-x-0 w-full"
+              >
+                {/* Hovering reveals the marble twin under a pixel-rimmed lens. */}
+                <HeroFigureReveal
+                  base={HERO_OVERLAY}
+                  reveal={HERO_REVEAL}
+                  width={1445}
+                  height={1089}
+                  reduce={!!reduce}
+                />
+              </motion.div>
             </div>
           </motion.div>
         </div>

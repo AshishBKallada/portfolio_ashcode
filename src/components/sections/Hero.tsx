@@ -8,6 +8,7 @@ import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { introEase } from "@/components/motion/intro";
 import { site } from "@/data/site";
 import { NavbarBackdrop } from "@/components/layout/Navbar";
+import { About } from "@/components/sections/About";
 import { AboutPoster } from "@/components/sections/AboutPoster";
 import { HeroCta } from "@/components/sections/hero/HeroCta";
 import { HeroOverlay } from "@/components/sections/hero/HeroOverlay";
@@ -119,9 +120,18 @@ export function Hero() {
           above it; NavbarBar (page level) draws the controls on top. */}
       <NavbarBackdrop />
       <HeroSky />
-      {/* The About-me poster lives on the laptop's screen until the zoom
-          brings it to full view. */}
-      <HeroOverlay screen={<AboutPoster />} />
+      {/* The About pages play on the laptop's screen, one stage-height
+          each: the About-me poster, then the About section and its gallery. */}
+      <HeroOverlay
+        screen={
+          <>
+            <div className="h-dvh">
+              <AboutPoster />
+            </div>
+            <About embedded />
+          </>
+        }
+      />
       <div
         ref={contentRef}
         className="pointer-events-none absolute inset-0 z-10 flex h-full w-full flex-col px-4 pt-24 pb-10 sm:px-5 sm:pb-12 md:pt-28"

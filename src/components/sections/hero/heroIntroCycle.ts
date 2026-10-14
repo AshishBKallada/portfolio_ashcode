@@ -7,6 +7,9 @@ export const HERO_INTRO_FRAME = "/images/hero/hero-bg.png";
 /** Transparent cutout layered above the hero background. */
 export const HERO_OVERLAY = "/images/hero/hero-figure.png";
 
+/** Marble twin of the figure, revealed under the cursor (same 1445×1089). */
+export const HERO_REVEAL = "/images/hero/hero-marble.png";
+
 /** Harp cutout, kept for the résumé page's header. */
 export const HERO_SIDE = "/images/hero/float-harp.png";
 
@@ -50,14 +53,21 @@ export const INTRO_STACK_START = HERO_EXIT_START + HERO_EXIT_SCREENS;
 
 /**
  * Beats of the exit, as shares of it: one camera push into the laptop. The
- * laptop glides to the centre and zooms until its screen, already showing
- * the About-me poster, fills the view, while the figure eases back a little
- * behind it and his cloud holds its place; then the screen's edges spill out
- * to the full stage and the laptop frame falls away.
+ * laptop turns to face the viewer and glides in until it is framed large in
+ * the centre, its screen showing the About-me poster, while the figure eases
+ * back a little behind it and his cloud drifts aside.
  */
 export const EXIT_FIGURES = [0.04, 0.7] as const;
-export const EXIT_LAPTOP = [0.04, 0.85] as const;
-export const EXIT_SPILL = [0.85, 1] as const;
+export const EXIT_LAPTOP = [0.04, 1] as const;
+
+/**
+ * After the exit the laptop holds its frame while the screen plays the
+ * About pages, in viewport heights of scroll: a beat on the poster, the
+ * screen scrolling up to the About section, then (for as many px as the
+ * gallery travels) its photos sliding by, and finally the display zooming
+ * out to fill the stage before the page carries on into Projects.
+ */
+export const FEED = { hold: 0.35, rise: 1, spill: 0.6 } as const;
 
 /** Scroll position (px) `t` of the way through the hero's exit. */
 export const exitAt = (t: number) =>

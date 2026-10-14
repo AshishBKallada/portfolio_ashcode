@@ -4,14 +4,16 @@ import { RevealItem } from "@/components/motion/Reveal";
 import { SectionReveal } from "@/components/motion/SectionReveal";
 import { AnchorLink } from "@/components/motion/AnchorLink";
 
-export function About() {
+// `embedded`: plays on the hero laptop's screen, which the hero's scroll
+// drives; the page's #about anchor then lives in the hero's pin instead.
+export function About({ embedded = false }: { embedded?: boolean }) {
   return (
     <section
-      id="about"
+      id={embedded ? undefined : "about"}
       style={{ backgroundColor: site.navbar.bg }}
-      className="theme-light relative z-10 scroll-mt-20 overflow-visible pb-16 sm:pb-20"
+      className={`theme-light relative z-10 overflow-visible ${embedded ? "" : "scroll-mt-20 pb-16 sm:pb-20"}`}
     >
-      <AboutMedia>
+      <AboutMedia embedded={embedded}>
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-10">
           <SectionReveal delay={0.08}>
             <h2 className="font-serif text-[clamp(1.35rem,3.6vw,3.25rem)] leading-[1.1] whitespace-nowrap text-foreground">

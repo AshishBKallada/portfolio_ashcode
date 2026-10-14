@@ -6,21 +6,54 @@ import Image from "next/image";
 import { useEffect, useRef, type ReactNode } from "react";
 import { useReducedMotion } from "motion/react";
 import { site } from "@/data/site";
+import { aboutGallery } from "@/components/sections/hero/screenFeed";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const gallery = site.about.gallery;
 
-export function AboutMedia({ children }: { children?: ReactNode }) {
+type Props = {
+  children?: ReactNode;
+  /** Playing on the hero laptop's screen: the hero's scroll engine slides
+      the gallery (see screenFeed) instead of this section pinning itself. */
+  embedded?: boolean;
+};
+
+export function AboutMedia({ children, embedded = false }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
+
+  // Embedded: hand the hero's scroll engine a way to slide the track, with
+  // the same photo parallax as the pinned version.
+  useEffect(() => {
+    const container = containerRef.current;
+    const track = trackRef.current;
+    if (!embedded || !container || !track) return;
+    const photos = Array.from(track.querySelectorAll<HTMLElement>("[data-parallax-photo]"));
+    const distance = () => Math.max(track.scrollWidth - container.clientWidth, 0);
+    aboutGallery.distance = distance;
+    aboutGallery.set = (progress) => {
+      const x = -distance() * progress;
+      track.style.transform = `translate3d(${x}px,0,0)`;
+      const frame = container.clientWidth;
+      photos.forEach((photo, i) => {
+        // Each photo drifts from -6% to 6% as its frame crosses the view.
+        const t = Math.min(Math.max((-x - (i - 1) * frame) / (2 * frame), 0), 1);
+        photo.style.transform = `translate3d(${-6 + 12 * t}%,0,0)`;
+      });
+    };
+    return () => {
+      aboutGallery.distance = undefined;
+      aboutGallery.set = undefined;
+    };
+  }, [embedded]);
 
   // Pin the gallery and translate the track sideways as the page scrolls down.
   useEffect(() => {
     const container = containerRef.current;
     const track = trackRef.current;
-    if (!container || !track || reduceMotion) return;
+    if (embedded || !container || !track || reduceMotion) return;
 
     const ctx = gsap.context(() => {
       const distance = () => track.scrollWidth - container.clientWidth;
@@ -61,7 +94,7 @@ export function AboutMedia({ children }: { children?: ReactNode }) {
     }, container);
 
     return () => ctx.revert();
-  }, [reduceMotion]);
+  }, [embedded, reduceMotion]);
 
   // Pinned as one screen: the red header band holds still while only the
   // gallery below it scrolls sideways.
@@ -78,7 +111,7 @@ export function AboutMedia({ children }: { children?: ReactNode }) {
 
       <div
         className={`relative min-h-0 flex-1 ${
-          reduceMotion
+          reduceMotion && !embedded
             ? "snap-x snap-mandatory overflow-x-auto"
             : "overflow-hidden"
         }`}
