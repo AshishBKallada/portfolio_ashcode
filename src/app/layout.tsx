@@ -41,13 +41,6 @@ const editorial = localFont({
   display: "swap",
 });
 
-const inter = localFont({
-  src: "./fonts/Inter-Variable.woff2",
-  variable: "--font-inter-face",
-  display: "swap",
-  weight: "100 900",
-});
-
 const anton = Anton({
   subsets: ["latin"],
   weight: "400",
@@ -69,9 +62,6 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description: site.tagline,
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     siteName: site.name,
@@ -111,12 +101,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${generalSans.variable} ${editorial.variable} ${inter.variable} ${anton.variable} ${pinyon.variable} h-full antialiased`}
+      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+          // Escape "<" so the JSON can never close the script tag early.
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c"),
+          }}
         />
         <a
           href="#main"

@@ -5,11 +5,7 @@ import { useReducedMotion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
-import {
-  HERO_SEAT_CLOUD,
-  HERO_OVERLAY,
-} from "@/components/sections/hero/heroIntroCycle";
-import { site } from "@/data/site";
+import { HERO_FIGURE_URL, HERO_SEAT_CLOUD_URL } from "@/lib/hero";
 
 /**
  * Boot sequence, all on one red screen:
@@ -31,7 +27,7 @@ const PHRASE_HOLD_S = 0.7;
 // Dismiss even if `load` or `fonts.ready` never resolve (a stalled asset).
 const MAX_WAIT_MS = 8000;
 
-const PRELOAD = [HERO_OVERLAY, HERO_SEAT_CLOUD];
+const PRELOAD = [HERO_FIGURE_URL, HERO_SEAT_CLOUD_URL];
 
 export function SiteLoader() {
   const pathname = usePathname();
@@ -186,8 +182,7 @@ export function SiteLoader() {
   return (
     <div
       ref={rootRef}
-      style={{ backgroundColor: site.navbar.bg }}
-      className="site-loader fixed inset-0 z-[999] overflow-hidden text-white"
+      className="bg-brand site-loader fixed inset-0 z-[999] overflow-hidden text-white"
       role="status"
       aria-label="Loading"
     >

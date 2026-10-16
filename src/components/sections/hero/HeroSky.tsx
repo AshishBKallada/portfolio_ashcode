@@ -11,11 +11,13 @@ import {
 } from "motion/react";
 import Image from "next/image";
 import { useEffect } from "react";
-import { HERO_CLOUD } from "@/components/sections/hero/heroIntroCycle";
+import { HERO_CLOUD } from "@/lib/hero";
 import { SIDE_CLOUD } from "@/components/sections/contact/ContactClouds";
 
 type Layer = {
   src: string;
+  width: number;
+  height: number;
   /** Box placement and size; the image fills it. */
   box: string;
   /** Depth 0 (far) → 1 (near): drives blur, opacity, scroll and cursor travel. */
@@ -35,8 +37,8 @@ type Layer = {
 // slow, the near one sharp and fast. The top stays clear for the navbar and
 // the lower left for the statement.
 const LAYERS: Layer[] = [
-  { src: HERO_CLOUD, box: "top-[56%] -right-[14%] w-[36vw] max-md:hidden", depth: 0.55, drift: "down" },
-  { src: SIDE_CLOUD, box: "-bottom-[14%] -right-[6%] w-[46vw] max-md:-bottom-[24%] max-md:w-[80vw]", depth: 0.95, rotate: -3, drift: "down" },
+  { ...HERO_CLOUD, box: "top-[56%] -right-[14%] w-[36vw] max-md:hidden", depth: 0.55, drift: "down" },
+  { ...SIDE_CLOUD, box: "-bottom-[14%] -right-[6%] w-[46vw] max-md:-bottom-[24%] max-md:w-[80vw]", depth: 0.95, rotate: -3, drift: "down" },
 ];
 
 function SkyLayer({
@@ -65,8 +67,8 @@ function SkyLayer({
         <Image
           src={layer.src}
           alt=""
-          width={1000}
-          height={layer.src === HERO_CLOUD ? 1000 : 542}
+          width={layer.width}
+          height={layer.height}
           sizes="45vw"
           loading="eager"
           draggable={false}

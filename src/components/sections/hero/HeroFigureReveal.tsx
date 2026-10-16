@@ -290,7 +290,7 @@ export function HeroFigureReveal({ base, reveal, width, height, reduce }: Props)
   return (
     <div ref={boxRef} className="absolute inset-0">
       {/* eslint-disable-next-line @next/next/no-img-element -- the canvas
-          below must draw this exact bitmap at its exact drawn rect. */}
+          below redraws this same (already optimized) bitmap over it. */}
       <img
         ref={imgRef}
         src={base}

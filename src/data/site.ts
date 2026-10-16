@@ -1,74 +1,31 @@
+// Site-wide copy and links. Brand colours live in globals.css (@theme).
 export const site = {
   name: "AshCode",
-  loaderPhrase: "Veni, vidi, vici",
   role: "Developer",
   tagline: "I forge products that feel immortal, even when they're not.",
   email: "ashercode4u@gmail.com",
   location: "Remote",
   bio: "I'm a developer who treats code like craft — sharp, deliberate, and built to last. This site is a short index of selected work.",
   url: "https://ashcode.dev",
-  intro: {
-    bg: "#e63a26",
-    poster: {
-      lineOne: "Obsession",
-      lineTwo: "beats",
-      lineTwoItalic: "your",
-      lineThree: "Talent.",
-      credits: [
-        { name: "AshCode", index: "00.", detail: "— Intro" },
-        { name: "Developer", index: "01.", detail: "— Remote" },
-      ],
-      note: "Embarrassment rips talent\ninto craft.",
-    },
-    eyebrow: "Intro",
-    number: "00",
-    lineOneBefore: "Obsession beats",
-    lineOneItalic: "talent.",
-    lineTwo: "Embarrassment rips talent",
-    lineThree: "into craft.",
-    body: "This site is a short index of selected work — built by hand, shipped with weight, and judged by whether it still feels alive after the first impression fades.",
-  },
   skills: {
-    eyebrow: "Stack",
-    // Each row scrolls across the band; odd rows run the opposite way.
     rows: [
       ["TYPESCRIPT", "JAVASCRIPT (ES2024)", "PYTHON", "SQL", "GO", "BASH", "HTML5", "CSS3"],
       ["REACT 19", "NEXT.JS", "NODE.JS", "EXPRESS", "TAILWIND CSS", "REST", "GRAPHQL", "tRPC"],
       ["POSTGRESQL", "MONGODB", "REDIS", "PRISMA", "DOCKER", "AWS", "VERCEL", "CI/CD"],
       ["THREE.JS", "R3F", "GSAP", "MOTION", "LENIS", "WEBGL", "GIT", "#FULL_STACK"],
     ],
-    ring: "DIVINE RING OF MERITS · ",
   },
   about: {
-    eyebrow: "About",
     headlineBefore: "Work that feels",
     headlineItalic: "carved",
     headlineAfter: ", not assembled.",
-    image: "/images/about.jpg",
-    overlay: "/images/about-overlay.png",
     gallery: [
       "/images/linkedin/intro.avif",
       "/images/linkedin/mockup-2.avif",
       "/images/linkedin/mockup-responsive.avif",
     ],
   },
-  navbar: {
-    bg: "#6b1414",
-  },
   hero: {
-    greeting: "Hello",
-    name: "AshCode",
-    figure: "/images/hero-angel.png",
-    headlineLineOne: "I forge products",
-    headlineLineTwoBefore: "that feel",
-    headlineItalic: "immortal,",
-    headlineLineTwoAfter: "",
-    headlineLineThree: "even when they're not.",
-    sublineBefore: "Currently building",
-    sublineHighlightOne: "full-stack products",
-    sublineMiddle: "and interfaces with",
-    sublineHighlightTwo: "weight",
-    note: "Obsession beats talent. Embarrassment rips talent into craft.",
     cta: { label: "Get in Touch", href: "/#contact" },
     /** Big two-line serif statement at the bottom left of the hero. */
     statementLineOne: "I forge products",
@@ -78,25 +35,15 @@ export const site = {
     statementLineTwoAfter: ".",
     /** Bulleted tags beside the CTA. */
     tags: ["Full-stack", "Interfaces", "Motion"],
-    role: "Full Stack Developer",
   },
   projects: {
-    /** Cream still used by the resume page and the hidden contact poster. */
-    bg: "#f7f5f2",
     lead: "Not here",
     wordOne: "To",
     wordTwo: "Follow",
     trail: "the hype.",
-    figure: "/images/hero/hero-side.png",
     closing: "Who prefer weight\nover noise.",
     closingBody:
       "A short run of products built end to end, for people who would rather ship something that lasts than something that trends.",
-  },
-  work: {
-    eyebrow: "Work",
-    headlineBefore: "Selected work shipped",
-    headlineItalic: "end to end",
-    headlineAfter: ", from first commit to production build.",
   },
   aboutPoster: {
     heading: "About me",
@@ -112,60 +59,8 @@ export const site = {
     sub: ["and ship work that performs", "because it was built by hand."],
     cta: "I'm ready when you are",
   },
-  contactPoster: {
-    lineOne: "Let's",
-    lineTwoLead: "W",
-    lineThree: "rk.",
-    note: [
-      "I build what others won't.",
-      "Ship what others can't. ↩",
-      "And reply within a day. 👀",
-    ],
-    image: "/images/contact-text-me.png",
-    overlay: "AshCode.",
-  },
-  contact: {
-    eyebrow: "Contact",
-    headlineBefore: "Let's forge something that",
-    headlineItalic: "lasts",
-    body: "Open to freelance, full-time, and collaborations that deserve real craft.",
-    image: "/images/contact-text-me.png",
-    location: "Remote · India",
-    timezone: "Asia/Kolkata",
-    timezoneLabel: "IST",
-    response: "Within 24 hours",
-    coordinates: "12.97° N · 77.59° E",
-    prompts: {
-      email: "Write me a note",
-      linkedin: "Say hello on",
-      github: "Read my commits on",
-    },
-  },
   socials: [
     { label: "GitHub", href: "https://github.com/ashishbkallada" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/ashishbkallada" },
   ],
-  footer: {
-    quoteBefore: "Yo twin, if da code bears the mark of ",
-    quoteHighlightOne: "AshCode",
-    quoteMiddle: ", its sm dop ",
-    quoteHighlightTwo: "sh*t",
-    quoteAfter: " (for real).",
-    noteBefore: "Open to freelance, full-time, and collaborations. Reach me at",
-    noteLink: "email",
-    badge: "Independent developer",
-    columns: [
-      [
-        { href: "/#work", label: "Work" },
-        { href: "/#about", label: "About" },
-        { href: "/#linkedin", label: "LinkedIn" },
-        { href: "/#contact", label: "Contact" },
-        {
-          href: "https://github.com/ashishbkallada",
-          label: "GitHub",
-          external: true,
-        },
-      ],
-    ],
-  },
 } as const;

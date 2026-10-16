@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
-import { introEase } from "@/components/motion/intro";
+import { introEase } from "@/lib/motion";
 import { site } from "@/data/site";
 import { NavbarBackdrop } from "@/components/layout/Navbar";
 import { About } from "@/components/sections/About";
@@ -13,7 +13,7 @@ import { AboutPoster } from "@/components/sections/AboutPoster";
 import { HeroCta } from "@/components/sections/hero/HeroCta";
 import { HeroOverlay } from "@/components/sections/hero/HeroOverlay";
 import { HeroSky } from "@/components/sections/hero/HeroSky";
-import { exitAt } from "@/components/sections/hero/heroIntroCycle";
+import { exitAt } from "@/lib/hero";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -24,6 +24,7 @@ export function Hero() {
   const contentRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const opened = useRef(false);
+  const openTl = useRef<gsap.core.Timeline | null>(null);
 
   // First reveal, "the gates of heaven": while the loader is up the hero
   // waits shut behind a dark backdrop. Once it lifts, a beam of light drops
@@ -36,14 +37,17 @@ export function Hero() {
     const stage = section?.parentElement;
     const beam = stage?.parentElement?.querySelector<HTMLElement>("[data-hero-beam]");
     if (!section || !stage || !beam || reduce || opened.current) return;
-    if (phase === "loading" || phase === "cycle") {
+    if (phase === "loading") {
       gsap.set(stage, { clipPath: "inset(0% 50% 0% 50%)" });
       gsap.set(section, { scale: 1.12 });
       return;
     }
     if (phase !== "zoom") return;
     opened.current = true;
-    const tl = gsap
+    // Owned by the component, not this effect: the phase moves on to "text"
+    // on a timer while the gates may still be opening (a busy main thread
+    // stretches the timeline), and killing it then would leave them shut.
+    openTl.current = gsap
       .timeline()
       // The beam drops from the top, then flares as the gates part.
       .fromTo(
@@ -62,10 +66,9 @@ export function Hero() {
       )
       .fromTo(section, { scale: 1.12 }, { scale: 1, duration: 1.5, ease: "power3.out" }, 0.4)
       .set([stage, section], { clearProps: "clipPath,transform" });
-    return () => {
-      tl.kill();
-    };
   }, [phase, reduce]);
+
+  useEffect(() => () => void openTl.current?.kill(), []);
 
   // Copy fades out as soon as the figures start to exit, leaving the stage
   // to the laptop as it zooms into the About-me poster on its screen.
@@ -113,8 +116,7 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      style={{ backgroundColor: site.navbar.bg }}
-      className="relative h-full w-full"
+      className="bg-brand relative h-full w-full"
     >
       {/* Navbar backdrop sits under the overlay so the hero figure paints
           above it; NavbarBar (page level) draws the controls on top. */}

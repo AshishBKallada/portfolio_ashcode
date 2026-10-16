@@ -1,17 +1,17 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 /** Opens the print dialog, where the résumé can be saved as a PDF. */
 export function PrintButton({
   className,
-  style,
   children,
 }: {
   className?: string;
-  style?: React.CSSProperties;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <button type="button" onClick={() => window.print()} className={className} style={style}>
+    <button type="button" onClick={() => window.print()} className={className}>
       {children}
     </button>
   );

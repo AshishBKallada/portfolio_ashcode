@@ -8,15 +8,16 @@ import { AnchorLink } from "@/components/motion/AnchorLink";
 import { Button } from "@/components/ui/Button";
 import { getProject, projects } from "@/data/projects";
 
+// Only the slugs below exist; anything else is a 404 rather than a render.
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+}: PageProps<"/projects/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const project = getProject(slug);
 
@@ -27,19 +28,20 @@ export async function generateMetadata({
   return {
     title: project.title,
     description: project.summary,
+    alternates: { canonical: `/projects/${project.slug}` },
     openGraph: {
+      type: "article",
+      url: `/projects/${project.slug}`,
       title: project.title,
       description: project.summary,
-      images: [project.image],
+      images: [{ url: project.image, width: project.imageWidth, height: project.imageHeight }],
     },
   };
 }
 
 export default async function ProjectPage({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+}: PageProps<"/projects/[slug]">) {
   const { slug } = await params;
   const project = getProject(slug);
 
@@ -86,7 +88,7 @@ export default async function ProjectPage({
               height={project.imageHeight}
               sizes="(max-width: 1024px) 100vw, 1024px"
               className="block h-auto w-full"
-              priority
+              preload
             />
           </ViewTransition>
         </div>

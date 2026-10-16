@@ -1,5 +1,5 @@
 import { Hero } from "@/components/sections/Hero";
-import { FEED, INTRO_STACK_START } from "@/components/sections/hero/heroIntroCycle";
+import { FEED, INTRO_STACK_START } from "@/lib/hero";
 
 // The hero holds still while the laptop glides in and plays the About pages
 // on its screen, then zooms its display out to fill the stage. The stage is

@@ -10,8 +10,7 @@ export function About({ embedded = false }: { embedded?: boolean }) {
   return (
     <section
       id={embedded ? undefined : "about"}
-      style={{ backgroundColor: site.navbar.bg }}
-      className={`theme-light relative z-10 overflow-visible ${embedded ? "" : "scroll-mt-20 pb-16 sm:pb-20"}`}
+      className={`bg-brand theme-light relative z-10 overflow-visible ${embedded ? "" : "scroll-mt-20 pb-16 sm:pb-20"}`}
     >
       <AboutMedia embedded={embedded}>
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-10">

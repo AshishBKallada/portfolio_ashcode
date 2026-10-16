@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { PrintButton } from "@/components/resume/PrintButton";
-import { HERO_OVERLAY, HERO_SIDE } from "@/components/sections/hero/heroIntroCycle";
+import { HERO_FIGURE, HERO_HARP } from "@/lib/hero";
 import { resume } from "@/data/resume";
 import { site } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Résumé",
   description: `${site.name} — ${resume.role}. ${resume.summary}`,
+  alternates: { canonical: "/resume" },
 };
 
-const accent = site.navbar.bg;
 const nav = [
   { href: "#about", label: "About" },
   { href: "#experience", label: "Experience" },
@@ -18,7 +20,7 @@ const nav = [
   { href: "#skills", label: "Skills" },
 ];
 
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section id={id} className="scroll-mt-20 border-t border-black/10 py-14">
       <h2 className="font-serif text-[2rem] leading-none text-black">{title}</h2>
@@ -32,28 +34,31 @@ function Section({ id, title, children }: { id: string; title: string; children:
 export default function ResumePage() {
   return (
     <div
-      style={{ backgroundColor: site.projects.bg }}
-      className="min-h-screen font-sans text-black/80 print:bg-white"
+      className="min-h-screen bg-paper font-sans text-black/80 print:bg-white"
     >
       <div className="mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-[17rem_1fr]">
         {/* Sidebar */}
         <aside className="border-black/10 px-6 pt-8 pb-10 md:sticky md:top-0 md:h-screen md:border-r md:pb-8">
           <div className="flex h-full flex-col">
             <div className="relative size-16 overflow-hidden rounded-md bg-black/10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={HERO_OVERLAY} alt={site.name} className="absolute top-0 left-[-55%] h-[230%] w-auto max-w-none" />
+              <Image
+                src={HERO_FIGURE}
+                alt={site.name}
+                sizes="200px"
+                className="absolute top-0 left-[-55%] h-[230%] w-auto max-w-none"
+              />
             </div>
             <h1 className="mt-5 font-serif text-[1.6rem] leading-tight text-black">{site.name}</h1>
             <p className="text-[12px] text-black/50">{resume.role}</p>
             <p className="mt-4 text-[13px] leading-relaxed text-black/60">{resume.summary}</p>
-            <p style={{ color: accent }} className="mt-5 font-script text-[2.6rem] leading-none">
+            <p className="mt-5 font-script text-brand text-[2.6rem] leading-none">
               {site.name}
             </p>
 
             <ul className="mt-6 space-y-2 border-t border-black/10 pt-5 text-[12px] text-black/70">
               {resume.facts.map((fact) => (
                 <li key={fact} className="flex items-center gap-2">
-                  <span style={{ backgroundColor: accent }} className="size-1.5 rounded-full" />
+                  <span className="size-1.5 rounded-full bg-brand" />
                   {fact}
                 </li>
               ))}
@@ -69,8 +74,7 @@ export default function ResumePage() {
               </div>
               <div className="mt-4 flex gap-2 print:hidden">
                 <PrintButton
-                  style={{ backgroundColor: accent }}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-3 text-[13px] font-medium text-white transition-opacity hover:opacity-90"
+                  className="flex flex-1 bg-brand items-center justify-center gap-2 rounded-md px-4 py-3 text-[13px] font-medium text-white transition-opacity hover:opacity-90"
                 >
                   <span aria-hidden>↓</span> Download CV
                 </PrintButton>
@@ -86,10 +90,10 @@ export default function ResumePage() {
           </div>
         </aside>
 
-        {/* Main column */}
-        <main className="px-6 md:px-14">
-          <header className="sticky top-0 z-10 flex items-center justify-between bg-inherit py-4 print:hidden" style={{ backgroundColor: site.projects.bg }}>
-            <Link href="/" style={{ color: accent }} className="font-display text-lg uppercase">
+        {/* Main column (the root layout already provides <main>). */}
+        <div className="px-6 md:px-14">
+          <header className="sticky top-0 z-10 flex items-center justify-between bg-paper py-4 print:hidden">
+            <Link href="/" className="font-display text-lg text-brand uppercase">
               {site.name}
             </Link>
             <nav className="hidden gap-6 text-[12px] text-black/60 sm:flex">
@@ -101,16 +105,19 @@ export default function ResumePage() {
             </nav>
             <a
               href={`mailto:${site.email}`}
-              style={{ backgroundColor: accent }}
-              className="rounded-md px-3 py-1.5 text-[12px] font-medium text-white"
+              className="rounded-md bg-brand px-3 py-1.5 text-[12px] font-medium text-white"
             >
               Contact me
             </a>
           </header>
 
           <div className="flex flex-col items-center py-14 text-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={HERO_SIDE} alt="" className="h-36 w-auto -rotate-12 drop-shadow-[0_14px_20px_rgba(0,0,0,0.2)]" />
+            <Image
+              src={HERO_HARP}
+              alt=""
+              sizes="82px"
+              className="h-36 w-auto -rotate-12 drop-shadow-[0_14px_20px_rgba(0,0,0,0.2)]"
+            />
             <h2 className="mt-6 font-serif text-[clamp(2.2rem,4vw,3rem)] leading-none text-black">{resume.headline}</h2>
             <p className="mt-4 max-w-md text-[14px] leading-relaxed text-black/55">{resume.subline}</p>
             <a
@@ -142,7 +149,7 @@ export default function ResumePage() {
             <ol className="relative space-y-10 border-l border-black/10 pl-8">
               {resume.experience.map((job) => (
                 <li key={`${job.title}-${job.period}`} className="relative">
-                  <span style={{ backgroundColor: accent }} className="absolute top-1 -left-[2.4rem] size-4 rounded-sm" />
+                  <span className="absolute top-1 -left-[2.4rem] size-4 rounded-sm bg-brand" />
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <h3 className="font-serif text-[1.25rem] text-black">{job.title}</h3>
                     <span className="text-[12px] text-black/45">{job.period}</span>
@@ -180,7 +187,7 @@ export default function ResumePage() {
           <footer className="border-t border-black/10 py-10 text-[12px] text-black/45">
             © {new Date().getFullYear()} {site.name} · {site.email}
           </footer>
-        </main>
+        </div>
       </div>
     </div>
   );

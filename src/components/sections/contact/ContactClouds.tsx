@@ -17,7 +17,7 @@ import { CloudPillar } from "@/components/sections/contact/CloudPillar";
  * Pink cloud cutout, painted wide (1000×542) with one flat edge; turned ±90°
  * so the flat edge always faces off-screen. Never mirror it.
  */
-export const SIDE_CLOUD = "/images/side-cutout.png";
+export const SIDE_CLOUD = { src: "/images/side-cutout.png", width: 1000, height: 542 };
 
 type Layer = {
   side: "left" | "right";
@@ -82,7 +82,7 @@ function Cloud({
           }`}
         >
           <Image
-            src={SIDE_CLOUD}
+            src={SIDE_CLOUD.src}
             alt=""
             fill
             draggable={false}

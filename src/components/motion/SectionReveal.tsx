@@ -2,7 +2,7 @@
 
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { useRef } from "react";
-import { introEase } from "@/components/motion/intro";
+import { introEase } from "@/lib/motion";
 
 type Props = {
   children: React.ReactNode;

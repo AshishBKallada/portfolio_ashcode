@@ -12,8 +12,7 @@ function ArrowDot() {
   return (
     <span
       aria-hidden
-      className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-cream transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-      style={{ color: site.navbar.bg }}
+      className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-cream transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-brand"
     >
       <svg
         viewBox="0 0 24 24"
@@ -33,8 +32,7 @@ function ArrowDot() {
 export function SiteFooter() {
   return (
     <footer
-      style={{ backgroundColor: site.navbar.bg }}
-      className="relative z-20 overflow-hidden px-4 pt-10 text-cream sm:px-5 sm:pt-12"
+      className="bg-brand relative z-20 overflow-hidden px-4 pt-10 text-cream sm:px-5 sm:pt-12"
     >
       {/* Light rule separating the footer from the contact section above. */}
       <div aria-hidden className="absolute inset-x-4 top-0 h-px bg-cream/25 sm:inset-x-5" />

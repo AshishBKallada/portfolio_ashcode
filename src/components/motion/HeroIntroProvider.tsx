@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 
-export type IntroPhase = "loading" | "cycle" | "zoom" | "text" | "done";
+export type IntroPhase = "loading" | "zoom" | "text" | "done";
 
 type IntroContextValue = {
   phase: IntroPhase;
@@ -22,8 +22,7 @@ const IntroContext = createContext<IntroContextValue>({
   markLoaded: () => {},
 });
 
-export const heroIntroTiming = {
-  cycleMs: 3000,
+const heroIntroTiming = {
   // Covers the figure flight + backdrop reveal in HeroOverlay's timeline.
   zoomMs: 1900,
   textMs: 1100,

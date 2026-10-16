@@ -33,7 +33,7 @@ export function AboutPoster() {
           src={copy.photo}
           alt={copy.signature}
           fill
-          priority
+          preload
           sizes="(min-width: 640px) 40svh, 90vw"
           className="object-contain object-bottom"
         />

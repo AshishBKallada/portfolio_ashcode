@@ -1,40 +1,42 @@
-/** Shown in the loader intro sequence only (not the hero frame). */
-export const HERO_INTRO_CYCLE = ["/images/hero/hero-figure.png"] as const;
+import { optimizedSrc } from "@/lib/images";
 
-/** Hero background image after intro zoom. */
-export const HERO_INTRO_FRAME = "/images/hero/hero-bg.png";
+// Hero art and the scroll timeline shared by the hero, navbar and loader.
 
-/** Transparent cutout layered above the hero background. */
-export const HERO_OVERLAY = "/images/hero/hero-figure.png";
+/** Transparent cutout of the hero figure. */
+export const HERO_FIGURE = { src: "/images/hero/hero-figure.png", width: 1445, height: 1089 };
 
-/** Marble twin of the figure, revealed under the cursor (same 1445×1089). */
-export const HERO_REVEAL = "/images/hero/hero-marble.png";
+/** Marble twin of the figure, revealed under the cursor (same size). */
+export const HERO_MARBLE = { src: "/images/hero/hero-marble.png", width: 1445, height: 1089 };
 
-/** Harp cutout, kept for the résumé page's header. */
-export const HERO_SIDE = "/images/hero/float-harp.png";
+/** Harp cutout, used in the résumé page's header. */
+export const HERO_HARP = { src: "/images/hero/float-harp.png", width: 941, height: 1672 };
 
 /** Sunset cloud cutout, used in the hero's drifting sky. */
-export const HERO_CLOUD = "/images/hero/cloud.png";
+export const HERO_CLOUD = { src: "/images/hero/cloud.png", width: 1024, height: 1024 };
 
-/** White cumulus the figure floats above, drawn behind its feet (1000×563). */
-export const HERO_SEAT_CLOUD = "/images/clouds/cumulus.png";
+/** White cumulus the figure floats above, drawn behind its feet. */
+export const HERO_SEAT_CLOUD = { src: "/images/clouds/cumulus.png", width: 1000, height: 563 };
+
+/**
+ * Optimized URLs for the hero art drawn outside <Image> (plain img, canvas).
+ * The loader preloads these same URLs, so the hero paints from cache.
+ */
+export const HERO_FIGURE_URL = optimizedSrc(HERO_FIGURE);
+export const HERO_MARBLE_URL = optimizedSrc(HERO_MARBLE);
+export const HERO_SEAT_CLOUD_URL = optimizedSrc(HERO_SEAT_CLOUD);
 
 /**
  * Height of the hero figure as a fraction of the hero. The img is
- * object-contain + bottom-aligned, and the loader handoff derives its drawn
- * rect from this same number, so change it here only.
+ * object-contain + bottom-aligned, so change it here only.
  */
 export const HERO_FIGURE_HEIGHT = 0.66;
 
 /**
  * How far the figure's feet sit above the hero's bottom edge, as a fraction
  * of the hero. Set as the `--hero-lift` CSS variable on the figure wrapper:
- * phones lift the figure clear of the headline and CTA below it, and the
- * loader handoff reads the live value back so both stay in step.
+ * phones lift the figure clear of the headline and CTA below it.
  */
 export const HERO_FIGURE_LIFT_CLASS = "[--hero-lift:0.07] max-md:[--hero-lift:0.32]";
-
-export const HERO_INTRO_STEP_MS = 320;
 
 /**
  * Viewport-heights of scroll the hero holds still before its figures start

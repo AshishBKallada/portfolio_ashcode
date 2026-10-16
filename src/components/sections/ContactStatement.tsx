@@ -24,8 +24,7 @@ export function ContactStatement() {
     <section
       ref={ref}
       id="contact"
-      style={{ backgroundColor: site.navbar.bg }}
-      className="relative isolate flex min-h-svh flex-col items-center justify-center overflow-hidden px-4 pt-28 pb-20 text-center text-cream"
+      className="bg-brand relative isolate flex min-h-svh flex-col items-center justify-center overflow-hidden px-4 pt-28 pb-20 text-center text-cream"
     >
       <ContactClouds target={ref} />
 
@@ -48,8 +47,7 @@ export function ContactStatement() {
             className="relative z-10 -mt-[0.08em] text-[clamp(3.5rem,13vw,12.5rem)]"
           >
             <p
-              style={{ color: site.intro.bg }}
-              className="translate-x-[6%] -rotate-[4deg] whitespace-nowrap font-script leading-[1.1]"
+              className="text-flame translate-x-[6%] -rotate-[4deg] whitespace-nowrap font-script leading-[1.1]"
             >
               {copy.script}
             </p>

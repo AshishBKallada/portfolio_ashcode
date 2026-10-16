@@ -30,13 +30,12 @@ export function Projects() {
   return (
     <section
       id="projects"
-      style={{ backgroundColor: site.navbar.bg }}
-      className="relative isolate z-10 overflow-hidden px-4 text-cream pt-24 pb-24 sm:px-5 sm:pt-32 sm:pb-32"
+      className="bg-brand relative isolate z-10 overflow-hidden px-4 text-cream pt-24 pb-24 sm:px-5 sm:pt-32 sm:pb-32"
     >
       {/* A flame thread burns its way through the section as it scrolls
           past, weaving over and under the content. Desktop only: on a
           narrow column the curls squash. */}
-      <ScrollThread color={site.intro.bg} className="hidden sm:block" />
+      <ScrollThread color="var(--color-flame)" className="hidden sm:block" />
 
       {/* Headline: lead · WORD · WORD · trail */}
       <Parallax speed={50}>

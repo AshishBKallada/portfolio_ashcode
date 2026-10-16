@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AnchorLink } from "@/components/motion/AnchorLink";
 import { buttonOutline } from "@/components/ui/buttonStyles";
-import { HERO_EXIT_START } from "@/components/sections/hero/heroIntroCycle";
+import { HERO_EXIT_START } from "@/lib/hero";
 import { site } from "@/data/site";
 
 const links = [
@@ -112,8 +112,7 @@ export function NavbarBar() {
           backdrop takes over. */}
       <motion.div
         aria-hidden
-        style={{ backgroundColor: site.navbar.bg }}
-        className="absolute inset-x-0 top-0 overflow-hidden"
+        className="bg-brand absolute inset-x-0 top-0 overflow-hidden"
         initial={false}
         animate={
           compact

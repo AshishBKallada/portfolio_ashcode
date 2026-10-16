@@ -18,14 +18,14 @@
   --color-surface: var(--surface);
   --color-border: var(--border);
   --color-accent: var(--accent);
-  /* Brand: oxblood ground, cream ink, flame accent (match site.navbar.bg,
-     the poster cream and site.intro.bg). */
+  /* Brand: oxblood ground, cream ink, flame accent, and the warm paper the
+     résumé is printed on. The single source for these colours. */
   --color-brand: #6b1414;
   --color-cream: #f4f1ea;
   --color-flame: #e63a26;
+  --color-paper: #f7f5f2;
   --font-sans: var(--font-general-sans);
   --font-serif: var(--font-editorial);
-  --font-inter: var(--font-inter-face);
   --font-display: var(--font-anton);
   --font-script: var(--font-pinyon);
 }
@@ -39,16 +39,6 @@
     --surface: #171717;
     --border: #262626;
   }
-}
-
-/* Forces dark tokens on a section regardless of the OS color scheme. */
-.theme-dark {
-  --background: #000000;
-  --foreground: #ededed;
-  --muted: #a3a3a3;
-  --subtle: #737373;
-  --surface: #171717;
-  --border: #262626;
 }
 
 /* Forces light tokens on a section regardless of the OS color scheme. */

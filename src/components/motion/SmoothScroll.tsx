@@ -8,6 +8,14 @@ import "lenis/dist/lenis.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const LENIS_OPTIONS = {
+  autoRaf: false,
+  lerp: 0.1,
+  duration: 1.4,
+  anchors: true,
+  syncTouch: false,
+} as const;
+
 // One clock for everything: GSAP's ticker drives Lenis, and every Lenis
 // scroll updates ScrollTrigger in the same frame, so scrubbed tweens never
 // trail the smoothed scroll position by a frame.
@@ -40,23 +48,14 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     return () => media.removeEventListener("change", update);
   }, []);
 
-  if (reduce) {
-    return <>{children}</>;
-  }
-
+  // A root Lenis publishes itself through a global store, so it mounts
+  // beside the page rather than around it: toggling reduced motion then
+  // starts or stops smoothing without remounting the whole tree.
   return (
-    <ReactLenis
-      root
-      options={{
-        autoRaf: false,
-        lerp: 0.1,
-        duration: 1.4,
-        anchors: true,
-        syncTouch: false,
-      }}
-    >
+    <>
+      {!reduce && <ReactLenis root options={LENIS_OPTIONS} />}
       <ScrollTriggerSync />
       {children}
-    </ReactLenis>
+    </>
   );
 }

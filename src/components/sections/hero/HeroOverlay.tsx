@@ -1,39 +1,30 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HeroFigureReveal } from "@/components/sections/hero/HeroFigureReveal";
 import { Laptop, laptopPose } from "@/components/sections/hero/Laptop";
 import { aboutGallery } from "@/components/sections/hero/screenFeed";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
-import { introEase } from "@/components/motion/intro";
+import { introEase } from "@/lib/motion";
 import {
-  HERO_INTRO_CYCLE,
-  HERO_INTRO_FRAME,
   EXIT_FIGURES,
   EXIT_LAPTOP,
   FEED,
+  HERO_FIGURE,
   HERO_FIGURE_HEIGHT,
   HERO_FIGURE_LIFT_CLASS,
-  HERO_INTRO_STEP_MS,
-  HERO_OVERLAY,
-  HERO_REVEAL,
+  HERO_FIGURE_URL,
+  HERO_MARBLE_URL,
   HERO_SEAT_CLOUD,
+  HERO_SEAT_CLOUD_URL,
   exitAt,
-} from "@/components/sections/hero/heroIntroCycle";
-import {
-  peekHeroHandoff,
-  takeHeroHandoff,
-} from "@/components/sections/hero/heroHandoff";
+} from "@/lib/hero";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const CYCLE = HERO_INTRO_CYCLE;
-// Temporarily hide the hero backdrop once the intro cycle hands off.
-const SHOW_HERO_BG = false;
-const STEP_MS = HERO_INTRO_STEP_MS;
 // How much further than the character the cloud travels, as a share of the
 // character's move: its scroll drift and the cursor parallax both use it.
 const CLOUD_LEAD = 0.12;
@@ -99,15 +90,10 @@ type Props = {
 export function HeroOverlay({ screen }: Props) {
   const { phase } = useHeroIntro();
   const reduce = useReducedMotion();
-  const [cycleTick, setCycleTick] = useState(0);
   const figureRef = useRef<HTMLDivElement>(null);
-  const backdropRef = useRef<HTMLDivElement>(null);
-  const backdropMouseRef = useRef<HTMLDivElement>(null);
   const figureMouseRef = useRef<HTMLDivElement>(null);
-  const handoffRef = useRef<HTMLDivElement>(null);
   const cloudRef = useRef<HTMLDivElement>(null);
   const cloudMouseRef = useRef<HTMLDivElement>(null);
-  const revealRef = useRef<HTMLDivElement>(null);
   const sideRef = useRef<HTMLDivElement>(null);
   const sideScrollRef = useRef<HTMLDivElement>(null);
   const laptopRef = useRef<HTMLDivElement>(null);
@@ -121,23 +107,8 @@ export function HeroOverlay({ screen }: Props) {
   const lidRef = useRef<HTMLDivElement>(null);
   const sideLinkRef = useRef<HTMLAnchorElement>(null);
   const sideBadgeRef = useRef<HTMLSpanElement>(null);
-  const handoffRectRef = useRef<DOMRect | null>(null);
 
-  const cycling = phase === "loading" || phase === "cycle";
   const zoomed = phase === "zoom" || phase === "text" || phase === "done";
-  const imageSrc = reduce || !cycling ? HERO_INTRO_FRAME : CYCLE[cycleTick];
-  // When the loader handed its character off, the figure is visible at once
-  // and GSAP flies it into place instead of the fade-up entrance.
-  const handoff = zoomed && !reduce && peekHeroHandoff() !== null;
-
-  useEffect(() => {
-    if (reduce || phase !== "cycle") return;
-    const timers: number[] = [];
-    for (let i = 1; i < CYCLE.length; i++) {
-      timers.push(window.setTimeout(() => setCycleTick(i), i * STEP_MS));
-    }
-    return () => timers.forEach((id) => window.clearTimeout(id));
-  }, [phase, reduce]);
 
   // As the laptop comes forward the figure (whose reaching hand presents
   // it) eases back a little, shrinking toward his feet and drifting a touch
@@ -384,87 +355,17 @@ export function HeroOverlay({ screen }: Props) {
     };
   }, [reduce]);
 
-  // Intro timeline: FLIP the figure from the loader's character rect to its
-  // drawn rect here, and only once it lands bring the backdrop in behind it.
-  // The img is object-contain + bottom-aligned inside the lower
-  // HERO_FIGURE_HEIGHT of the wrapper, so its drawn rect is derived from the
-  // image's aspect ratio. The
-  // rect is kept in a ref so a Strict Mode effect re-run can replay it.
-  useLayoutEffect(() => {
-    const el = handoffRef.current;
-    const reveal = revealRef.current;
-    const side = sideRef.current;
-    const cloud = cloudRef.current;
-    if (!zoomed || !el || !reveal || !side || !cloud || reduce) return;
-    const from = handoffRectRef.current ?? takeHeroHandoff();
-    if (!from) return;
-    handoffRectRef.current = from;
-
-    const box = el.getBoundingClientRect();
-    const boxH = box.height * HERO_FIGURE_HEIGHT;
-    const fit = Math.min(box.width / 1445, boxH / 1089);
-    const w = 1445 * fit;
-    const h = 1089 * fit;
-    const left = box.left + (box.width - w) / 2;
-    const lift = parseFloat(getComputedStyle(el).getPropertyValue("--hero-lift")) || 0;
-    const top = box.bottom - box.height * lift - h;
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        handoffRectRef.current = null;
-      },
-    });
-    tl.set([reveal, side, cloud], { opacity: 0 })
-      .fromTo(
-        el,
-        {
-          x: from.left - left,
-          y: from.top - top,
-          scale: from.width / w,
-          transformOrigin: `${left - box.left}px ${top - box.top}px`,
-        },
-        { x: 0, y: 0, scale: 1, duration: 1.15, ease: "power3.inOut" },
-      )
-      .fromTo(
-        reveal,
-        { opacity: 0, scale: 1.12 },
-        { opacity: 1, scale: 1, duration: 1, ease: "power2.out" },
-        "-=0.1",
-      )
-      .fromTo(
-        cloud,
-        { opacity: 0, y: 40 },
-        { opacity: 1, y: 0, duration: 1.1, ease: "power3.out" },
-        "-=0.9",
-      )
-      .fromTo(
-        side,
-        { opacity: 0, y: 60, rotate: -10 },
-        { opacity: 1, y: 0, rotate: 0, duration: 1, ease: "power3.out" },
-        "-=0.55",
-      );
-
-    return () => {
-      tl.kill();
-      gsap.set([el, reveal, side, cloud], { clearProps: "opacity,transform" });
-    };
-  }, [zoomed, reduce]);
-
-  // Mouse parallax: backdrop drifts against the cursor, the figure follows it
-  // further, so the two layers separate in depth. Mouse wrappers are separate
-  // from the scroll-driven ones so the tweens never fight over `y`.
+  // Mouse parallax: the figure and its cloud follow the cursor. Mouse
+  // wrappers are separate from the scroll-driven ones so the tweens never
+  // fight over `y`.
   useEffect(() => {
-    const bg = backdropMouseRef.current;
     const fig = figureMouseRef.current;
     const cloud = cloudMouseRef.current;
-    if (!bg || !fig || !cloud || reduce) return;
+    if (!fig || !cloud || reduce) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
-    gsap.set(bg, { scale: 1.06 });
     gsap.set(fig, { transformPerspective: 1200 });
     const opts = { duration: 1.1, ease: "power3.out" };
-    const bgX = gsap.quickTo(bg, "x", opts);
-    const bgY = gsap.quickTo(bg, "y", opts);
     const figX = gsap.quickTo(fig, "x", opts);
     const figY = gsap.quickTo(fig, "y", opts);
     const figR = gsap.quickTo(fig, "rotationY", opts);
@@ -474,8 +375,6 @@ export function HeroOverlay({ screen }: Props) {
     const onMove = (e: PointerEvent) => {
       const nx = e.clientX / window.innerWidth - 0.5;
       const ny = e.clientY / window.innerHeight - 0.5;
-      bgX(nx * -28);
-      bgY(ny * -18);
       figX(nx * 36);
       figY(ny * 20);
       figR(nx * 6);
@@ -486,8 +385,8 @@ export function HeroOverlay({ screen }: Props) {
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
-      gsap.killTweensOf([bg, fig, cloud]);
-      gsap.set([bg, fig, cloud], { clearProps: "transform" });
+      gsap.killTweensOf([fig, cloud]);
+      gsap.set([fig, cloud], { clearProps: "transform" });
     };
   }, [reduce]);
 
@@ -531,88 +430,6 @@ export function HeroOverlay({ screen }: Props) {
 
   return (
     <div ref={rootRef} className="pointer-events-none absolute inset-0 z-[5] [--screen-aspect:1.6]">
-      <div
-        ref={revealRef}
-        className="absolute inset-0 flex items-center justify-center"
-      >
-        <motion.div
-          initial={
-            reduce
-              ? { width: "100%", height: "100%", borderRadius: 0 }
-              : {
-                  width: "min(340px, 62vw)",
-                  height: "min(200px, 36vh)",
-                  borderRadius: 10,
-                }
-          }
-          animate={
-            zoomed || reduce
-              ? { width: "100%", height: "100%", borderRadius: 0 }
-              : {
-                  width: "min(340px, 62vw)",
-                  height: "min(200px, 36vh)",
-                  borderRadius: 10,
-                }
-          }
-          transition={{
-            duration: reduce ? 0 : 0.9,
-            ease: introEase,
-          }}
-          className="relative overflow-hidden bg-transparent will-change-[width,height]"
-        >
-          <div
-            ref={backdropRef}
-            className="absolute inset-0 origin-top will-change-transform"
-          >
-            <div
-              ref={backdropMouseRef}
-              className="absolute inset-0 will-change-transform"
-            >
-              <AnimatePresence mode="sync" initial={false}>
-                {(SHOW_HERO_BG || (cycling && !reduce)) && (
-                  <motion.img
-                    key={imageSrc}
-                    src={imageSrc}
-                    alt=""
-                    draggable={false}
-                    initial={
-                      reduce
-                        ? { opacity: 1, scale: 1 }
-                        : cycling
-                          ? { opacity: 0, scale: 1.08 }
-                          : { opacity: 1, scale: 1 }
-                    }
-                    animate={{
-                      opacity: 1,
-                      scale: 1,
-                    }}
-                    exit={{ opacity: 0, scale: 1 }}
-                    transition={{
-                      opacity: {
-                        duration: cycling ? 0.18 : 0.4,
-                        ease: introEase,
-                      },
-                      scale: {
-                        duration: cycling ? 0.5 : 0.9,
-                        ease: introEase,
-                      },
-                    }}
-                    className={`absolute inset-0 h-full w-full bg-transparent select-none [backface-visibility:hidden] ${
-                      cycling && !reduce
-                        ? "object-contain object-bottom"
-                        : "object-cover"
-                    }`}
-                    decoding="async"
-                    fetchPriority="high"
-                    width={1672}
-                    height={941}
-                  />
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </motion.div>
-      </div>
       {/* The About-me poster, mapped onto the laptop's screen each frame
           (see the zoom effect). Above the figure and cloud so they never
           show through the glass, below the laptop's frame. */}
@@ -635,11 +452,9 @@ export function HeroOverlay({ screen }: Props) {
         // promoted layer would stay rastered at its small resting size.
         className="absolute inset-0 z-[1]"
       >
-        {/* Laptop anchors by its top edge at 36% down the hero. The handoff
-            timeline tweens this wrapper with GSAP, which folds any Tailwind
-            `translate` into its own transform, so centering lives on the
-            CSS-only child below and the position is the same on a full load
-            and a hot reload. */}
+        {/* Laptop anchors by its top edge at 36% down the hero; centering
+            lives on the CSS-only child below so it never mixes with the
+            transforms GSAP writes to the wrappers. */}
         <div
           ref={sideRef}
           className="absolute top-[36%] left-[76%] w-[clamp(10rem,min(18vw,30svh),18rem)] max-md:top-[13%] max-md:left-[74%] max-md:w-[8rem]"
@@ -663,7 +478,7 @@ export function HeroOverlay({ screen }: Props) {
                 }
                 // Last of the cast: glides in from the right and settles.
                 transition={
-                  reduce || handoff
+                  reduce
                     ? { duration: 0 }
                     : {
                         opacity: { duration: 0.5, delay: 1.05, ease: introEase },
@@ -698,7 +513,7 @@ export function HeroOverlay({ screen }: Props) {
           <div ref={cloudRef} className="absolute inset-0 origin-bottom will-change-transform">
             <div ref={cloudMouseRef} className="absolute inset-0 will-change-transform">
             <motion.img
-              src={HERO_SEAT_CLOUD}
+              src={HERO_SEAT_CLOUD_URL}
               alt=""
               draggable={false}
               initial={reduce ? { opacity: 1 } : { opacity: 0, y: 110, scale: 0.86 }}
@@ -709,14 +524,14 @@ export function HeroOverlay({ screen }: Props) {
               }
               // Rises into place as the gates part, ready for the figure.
               transition={{
-                duration: reduce || handoff ? 0 : 1.1,
+                duration: reduce ? 0 : 1.1,
                 ease: [0.16, 1, 0.3, 1],
-                delay: reduce || handoff ? 0 : 0.55,
+                delay: reduce ? 0 : 0.55,
               }}
               className="absolute top-1/2 left-1/2 h-auto w-[clamp(24rem,92vw,84rem)] max-w-none -translate-x-1/2 -translate-y-1/2 select-none will-change-transform max-md:top-auto max-md:bottom-[calc(32%+46vw)] max-md:w-[170vw] max-md:translate-y-1/2"
               decoding="async"
-              width={1000}
-              height={563}
+              width={HERO_SEAT_CLOUD.width}
+              height={HERO_SEAT_CLOUD.height}
             />
             </div>
           </div>
@@ -747,7 +562,6 @@ export function HeroOverlay({ screen }: Props) {
             }
           >
             <div
-              ref={handoffRef}
               className={`absolute inset-0 will-change-transform ${HERO_FIGURE_LIFT_CLASS}`}
             >
               <motion.div
@@ -760,7 +574,7 @@ export function HeroOverlay({ screen }: Props) {
                 // Descends from above and lands on the cloud with a soft
                 // spring, as if settling its weight.
                 transition={
-                  reduce || handoff
+                  reduce
                     ? { duration: 0 }
                     : {
                         opacity: { duration: 0.45, delay: 0.75, ease: introEase },
@@ -776,10 +590,10 @@ export function HeroOverlay({ screen }: Props) {
               >
                 {/* Hovering reveals the marble twin under a pixel-rimmed lens. */}
                 <HeroFigureReveal
-                  base={HERO_OVERLAY}
-                  reveal={HERO_REVEAL}
-                  width={1445}
-                  height={1089}
+                  base={HERO_FIGURE_URL}
+                  reveal={HERO_MARBLE_URL}
+                  width={HERO_FIGURE.width}
+                  height={HERO_FIGURE.height}
                   reduce={!!reduce}
                 />
               </motion.div>

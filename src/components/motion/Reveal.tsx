@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { introEase } from "@/components/motion/intro";
+import { introEase } from "@/lib/motion";
 
 const variants = {
   hidden: { opacity: 0, y: 24 },
@@ -26,17 +26,5 @@ export function RevealItem({
     >
       {children}
     </motion.div>
-  );
-}
-
-export function RevealText({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <RevealItem className={className}>{children}</RevealItem>
   );
 }
