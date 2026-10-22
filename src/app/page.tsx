@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { BackToTop } from "@/components/layout/BackToTop";
-import { NavbarBar } from "@/components/layout/Navbar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
-import { StoryProgress } from "@/components/layout/StoryProgress";
 import { ContactStatement } from "@/components/sections/ContactStatement";
-import { HeroIntroPin } from "@/components/sections/HeroIntroPin";
-import { Projects } from "@/components/sections/Projects";
+import { StoryProgress } from "@/components/layout/StoryProgress";
+import { ProjectIndex } from "@/components/signal/Sections";
+import { HeroStage, SignalAbout } from "@/components/signal/SignalAbout";
+import { SignalNav } from "@/components/signal/SignalNav";
+import { SkyHero } from "@/components/signal/SkyHero";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -14,19 +14,18 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      <NavbarBar />
-      <BackToTop />
       <StoryProgress />
-      <div className="relative">
-        <HeroIntroPin />
-        <div
-          className="bg-brand theme-light relative"
-        >
-          <Projects />
-          <ContactStatement />
-          <SiteFooter />
+      <SignalNav />
+      <HeroStage hero={<SkyHero />}>
+        <SignalAbout />
+        <div className="relative bg-background text-foreground">
+          <div className="relative">
+            <ProjectIndex />
+            <ContactStatement />
+            <SiteFooter />
+          </div>
         </div>
-      </div>
+      </HeroStage>
     </>
   );
 }

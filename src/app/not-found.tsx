@@ -1,21 +1,22 @@
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { SignalNav } from "@/components/signal/SignalNav";
+import { SectionLabel } from "@/components/signal/primitives";
 import { Button } from "@/components/ui/Button";
 
 export default function NotFound() {
   return (
-    <div className="bg-brand text-cream">
-      <section className="flex min-h-[80svh] flex-col items-center justify-center px-4 text-center">
-        <p className="font-display text-[clamp(7rem,28vw,22rem)] leading-[0.8] uppercase">
-          404
-        </p>
-        <h1 className="mt-6 text-[clamp(1.75rem,4vw,3rem)] leading-[1.05]">
-          This page went <em className="font-script not-italic">missing</em>.
+    <div className="bg-background text-foreground">
+      <SignalNav />
+      <section className="flex min-h-[85dvh] flex-col items-center justify-center px-4 pt-24 text-center">
+        <SectionLabel>[ 404 ]</SectionLabel>
+        <h1 className="mt-6 font-serif text-[clamp(3.5rem,10vw,9rem)] leading-[0.9] tracking-[-0.035em] text-balance">
+          Lost in the <em className="font-script text-[1.05em] text-cream not-italic">clouds</em>
         </h1>
-        <p className="mt-4 max-w-md text-[15px] leading-relaxed text-cream/75">
+        <p className="mt-6 max-w-md text-[clamp(1.05rem,1.5vw,1.25rem)] leading-[1.45] text-pretty">
           That route doesn&rsquo;t exist. Head back home to see selected work.
         </p>
         <div className="mt-10">
-          <Button href="/">Back home ↗</Button>
+          <Button href="/">Back home</Button>
         </div>
       </section>
       <SiteFooter />

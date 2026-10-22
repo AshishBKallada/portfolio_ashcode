@@ -11,8 +11,7 @@ import {
 } from "motion/react";
 import Image from "next/image";
 import { useEffect } from "react";
-import { HERO_CLOUD } from "@/lib/hero";
-import { SIDE_CLOUD } from "@/components/sections/contact/ContactClouds";
+import { CLOUD_QUALITY, HERO_SEAT_CLOUD } from "@/lib/hero";
 
 type Layer = {
   src: string;
@@ -33,12 +32,11 @@ type Layer = {
   rotate?: number;
 };
 
-// Two depths of photographic cloud in the lower right: the far one soft and
+// Two depths of white and pink cloud in the lower right: the far one soft and
 // slow, the near one sharp and fast. The top stays clear for the navbar and
 // the lower left for the statement.
 const LAYERS: Layer[] = [
-  { ...HERO_CLOUD, box: "top-[56%] -right-[14%] w-[36vw] max-md:hidden", depth: 0.55, drift: "down" },
-  { ...SIDE_CLOUD, box: "-bottom-[14%] -right-[6%] w-[46vw] max-md:-bottom-[24%] max-md:w-[80vw]", depth: 0.95, rotate: -3, drift: "down" },
+  { ...HERO_SEAT_CLOUD, box: "top-[58%] -right-[12%] w-[34vw] max-md:hidden", depth: 0.55, drift: "up" },
 ];
 
 function SkyLayer({
@@ -70,11 +68,12 @@ function SkyLayer({
           width={layer.width}
           height={layer.height}
           sizes="45vw"
+          quality={CLOUD_QUALITY}
           loading="eager"
           draggable={false}
           style={{
             opacity: 0.35 + depth * 0.6,
-            filter: `blur(${(1 - depth) * 5}px)`,
+            filter: `blur(${(1 - depth) * 5}px) sepia(0.12) saturate(1.15)`,
             rotate: `${layer.rotate ?? 0}deg`,
             scale:
               layer.flip === "x" ? "-1 1" : layer.flip === "y" ? "1 -1" : layer.flip === "xy" ? "-1 -1" : undefined,
@@ -108,8 +107,6 @@ export function HeroSky() {
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
-      {/* Golden-hour light pooling behind the figure. */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_55%_at_55%_45%,rgba(212,169,78,0.22),transparent_70%)]" />
       {LAYERS.map((layer, i) => (
         <SkyLayer key={i} layer={layer} scroll={scrollY} mx={mx} my={my} still={reduce} />
       ))}

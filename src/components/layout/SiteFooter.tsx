@@ -1,99 +1,81 @@
-import { AnchorLink } from "@/components/motion/AnchorLink";
-import { Parallax } from "@/components/motion/Parallax";
+import Link from "next/link";
+import { LocalTime } from "@/components/signal/LocalTime";
+import { Dot, frame, metaLabel, monoLabel } from "@/components/signal/primitives";
 import { site } from "@/data/site";
 
-const explore = [
+const index = [
+  { href: "/", label: "Home" },
+  { href: "/#index", label: "Work" },
   { href: "/#about", label: "About" },
-  { href: "/#projects", label: "Projects" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/resume", label: "Résumé" },
 ];
 
-function ArrowDot() {
-  return (
-    <span
-      aria-hidden
-      className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-cream transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-brand"
-    >
-      <svg
-        viewBox="0 0 24 24"
-        className="size-3.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-      >
-        <path d="M7 17 17 7M8 7h9v9" />
-      </svg>
-    </span>
-  );
-}
+const heading = `${monoLabel} text-muted`;
+const link = "nav-link text-[15px]";
 
-// Link columns over a giant lowercase wordmark that runs off the bottom edge,
-// white on the navbar red.
+/**
+ * A light closing strip on every page, sitting on the red ground: the
+ * wordmark and a line about the work, two short link lists, the visitor's
+ * clock, and a hairline legal row.
+ */
 export function SiteFooter() {
   return (
-    <footer
-      className="bg-brand relative z-20 overflow-hidden px-4 pt-10 text-cream sm:px-5 sm:pt-12"
-    >
-      {/* Light rule separating the footer from the contact section above. */}
-      <div aria-hidden className="absolute inset-x-4 top-0 h-px bg-cream/25 sm:inset-x-5" />
-      <div className="grid grid-cols-2 gap-x-6 gap-y-10 font-sans md:grid-cols-[1fr_1.3fr_1.4fr]">
-        <nav aria-label="Explore" className="text-sm">
-          <p className="mb-3 font-medium">Explore</p>
-          <ul className="space-y-1.5 text-[13px] text-cream/70">
-            {explore.map((link) => (
-              <li key={link.href}>
-                <AnchorLink
-                  href={link.href}
-                  className="transition-colors hover:text-cream"
-                >
-                  {link.label}
-                </AnchorLink>
+    <footer className="relative border-t border-border text-foreground">
+      <div className={`${frame} grid grid-cols-2 gap-y-10 py-14 md:grid-cols-4`}>
+        <div className="col-span-2 px-3 md:col-span-1">
+          <Link href="/" className="font-display text-[28px] leading-none tracking-[0.02em] uppercase">
+            {site.name}
+          </Link>
+          <p className="mt-3 max-w-[16rem] text-[15px] leading-[1.55]">{site.signal.contact}</p>
+        </div>
+
+        <nav aria-label="Footer" className="px-3">
+          <p className={heading}>Index</p>
+          <ul className="mt-4 space-y-1.5">
+            {index.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className={link}>
+                  {item.label}
+                </Link>
               </li>
             ))}
           </ul>
         </nav>
 
-        <div className="text-sm">
-          <p className="mb-3 font-medium">Follow me</p>
-          <ul className="flex flex-wrap gap-2">
-            {site.socials.map((social) => (
-              <li key={social.href}>
-                <a
-                  href={social.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex min-h-9 items-center rounded-full bg-cream/12 px-4 text-[13px] transition-colors hover:bg-cream/25"
-                >
-                  {social.label}
+        <div className="px-3">
+          <p className={heading}>Elsewhere</p>
+          <ul className="mt-4 space-y-1.5">
+            {site.socials.map((s) => (
+              <li key={s.href}>
+                <a href={s.href} target="_blank" rel="noopener noreferrer" className={link}>
+                  {s.label}
                 </a>
               </li>
             ))}
+            <li>
+              <a href={`mailto:${site.email}`} className={link}>
+                Email
+              </a>
+            </li>
           </ul>
         </div>
 
-        <div className="col-span-2 md:col-span-1">
-          <a href={`mailto:${site.email}`} className="group block">
-            <span className="flex items-center gap-2 text-[clamp(1.15rem,1.6vw,1.4rem)] font-medium">
-              Email {site.name} <ArrowDot />
-            </span>
-            <span className="mt-0.5 block text-[13px] text-cream/70">
-              Let&apos;s work together
-            </span>
-          </a>
-          <p className="mt-6 text-[12px] text-cream/70">
-            © {new Date().getFullYear()} {site.name}
+        <div className="col-span-2 px-3 md:col-span-1">
+          <p className={heading}>Based</p>
+          <p className="mt-4 text-[15px] leading-[1.5]">{site.location}, across time zones</p>
+          <p className="mt-2 flex items-center gap-2 text-[14px]">
+            <Dot className="bg-script" />
+            <LocalTime /> your time
           </p>
         </div>
       </div>
 
-      <Parallax y={[140, 0]} offset={["start end", "end end"]}>
-        <p
-          aria-hidden
-          className="mt-[clamp(2.5rem,6vw,5rem)] -mb-[0.26em] -ml-[0.04em] font-sans text-[clamp(5rem,22.5vw,24rem)] leading-[0.8] font-bold tracking-[-0.06em] whitespace-nowrap lowercase"
-        >
-          {site.name}
-        </p>
-      </Parallax>
+      <div className="border-t border-border">
+        <div className={`${frame} flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-4`}>
+          <p className={`${metaLabel} px-3`}>© {new Date().getFullYear()} {site.name}</p>
+          <p className={`${metaLabel} px-3 text-muted`}>Set in Editorial New, General Sans</p>
+        </div>
+      </div>
     </footer>
   );
 }

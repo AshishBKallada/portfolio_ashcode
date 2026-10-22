@@ -2,21 +2,25 @@
 
 import { useRef } from "react";
 import { Magnetic } from "@/components/motion/Magnetic";
+import { Dot, SectionLabel, frame } from "@/components/signal/primitives";
 import { buttonSolid } from "@/components/ui/buttonStyles";
 import { Parallax } from "@/components/motion/Parallax";
 import { SectionReveal } from "@/components/motion/SectionReveal";
 import { ContactClouds } from "@/components/sections/contact/ContactClouds";
 import { CopyEmail } from "@/components/sections/contact/CopyEmail";
+import { ImageTrail } from "@/components/ui/image-trail";
 import { site } from "@/data/site";
 
 const copy = site.contactStatement;
+// The work trails the cursor behind the closing lines: every LinkedIn panel.
+const trail = site.signal.linkedin.posts.map((post) => post.src);
 
-const heavy =
-  "font-sans text-[clamp(2.6rem,9vw,8.75rem)] leading-[0.86] font-bold tracking-[-0.04em] uppercase lg:text-[7vw]";
+const display = "font-serif text-[clamp(2.75rem,7.5vw,7rem)] leading-[0.92] tracking-[-0.035em]";
 
-// Centered statement on navbar red: heavy cream lines with a bright red
-// script word tucked under the last one (never across it, so both read), a short bold subline and a small
-// cream mail button, framed by clouds drifting in from both edges.
+// [05] Contact: centred hairline-serif lines with a cream script word
+// tucked under the last one (never across it, so both read), a short
+// subline and the mail button, framed by clouds drifting in from both edges
+// and a marble column leaning out of the right-hand one.
 export function ContactStatement() {
   const ref = useRef<HTMLElement>(null);
 
@@ -24,10 +28,15 @@ export function ContactStatement() {
     <section
       ref={ref}
       id="contact"
-      className="bg-brand relative isolate flex min-h-svh flex-col items-center justify-center overflow-hidden px-4 pt-28 pb-20 text-center text-cream"
+      className="relative isolate flex min-h-dvh flex-col items-center justify-center overflow-hidden px-4 pt-36 pb-24 text-center"
     >
       <ContactClouds target={ref} />
+      {/* Above the clouds, below the copy (z-10). */}
+      <ImageTrail images={trail} imageWidth={220} imageHeight={165} threshold={80} className="z-[1]" />
 
+      <div className={`${frame} absolute inset-x-0 top-16 z-10 text-left`}>
+        <SectionLabel index="03">Contact</SectionLabel>
+      </div>
 
       <h2 className="sr-only">
         {copy.lines.join(" ")} {copy.script}
@@ -37,17 +46,17 @@ export function ContactStatement() {
         <Parallax speed={40}>
           {copy.lines.map((line, i) => (
             <SectionReveal key={line} delay={i * 0.08}>
-              <p className={heavy}>{line}</p>
+              <p className={display}>{line}</p>
             </SectionReveal>
           ))}
         </Parallax>
         <Parallax speed={110} className="relative z-10">
           <SectionReveal
             delay={0.3}
-            className="relative z-10 -mt-[0.08em] text-[clamp(3.5rem,13vw,12.5rem)]"
+            className="relative z-10 -mt-[0.08em] text-[clamp(3.25rem,10vw,9.5rem)]"
           >
             <p
-              className="text-flame translate-x-[6%] -rotate-[4deg] whitespace-nowrap font-script leading-[1.1]"
+              className="text-script -rotate-[4deg] whitespace-nowrap px-[0.25em] font-script leading-[1.1]"
             >
               {copy.script}
             </p>
@@ -56,7 +65,7 @@ export function ContactStatement() {
       </div>
 
       <Parallax speed={20} className="relative z-10 flex flex-col items-center">
-        <p className="mt-[clamp(1.5rem,4vw,3.5rem)] font-sans text-[clamp(1.1rem,1.9vw,1.75rem)] leading-[1.2] font-semibold tracking-[-0.02em]">
+        <p className="mt-[clamp(1.5rem,4vw,3.5rem)] font-sans text-[clamp(1.15rem,1.7vw,1.5rem)] leading-[1.3] tracking-[-0.015em]">
           {copy.sub[0]}
           <br />
           {copy.sub[1]}
@@ -67,7 +76,8 @@ export function ContactStatement() {
           href={`mailto:${site.email}`}
           className={buttonSolid}
         >
-          {copy.cta} <span aria-hidden>↗</span>
+          <Dot />
+          {copy.cta}
         </a>
         </Magnetic>
         <div className="mt-6">

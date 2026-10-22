@@ -2,8 +2,8 @@ import { optimizedSrc } from "@/lib/images";
 
 // Hero art and the scroll timeline shared by the hero, navbar and loader.
 
-/** Transparent cutout of the hero figure. */
-export const HERO_FIGURE = { src: "/images/hero/hero-figure.png", width: 1445, height: 1089 };
+/** Transparent cutout of the hero figure: a modern Hermes floating cross-legged with a laptop. */
+export const HERO_FIGURE = { src: "/images/hero/hero-figure-v2.png", width: 1254, height: 1254 };
 
 /** Marble twin of the figure, revealed under the cursor (same size). */
 export const HERO_MARBLE = { src: "/images/hero/hero-marble.png", width: 1445, height: 1089 };
@@ -14,8 +14,24 @@ export const HERO_HARP = { src: "/images/hero/float-harp.png", width: 941, heigh
 /** Sunset cloud cutout, used in the hero's drifting sky. */
 export const HERO_CLOUD = { src: "/images/hero/cloud.png", width: 1024, height: 1024 };
 
+/** Image quality for cloud art; must be listed in next.config `qualities`. */
+export const CLOUD_QUALITY = 90;
+
 /** White cumulus the figure floats above, drawn behind its feet. */
 export const HERO_SEAT_CLOUD = { src: "/images/clouds/cumulus.png", width: 1000, height: 563 };
+
+/** Cursor-driven head-turn sequence on the home hero (SkyHero / HeadFollow). */
+export const HERO_HEAD_COUNT = 25;
+export const HEAD_FRAME_SIZE = { width: 3840, height: 3344 };
+/** Bump when replacing public/images/hero/head/*.webp so browsers skip stale cache. */
+export const HERO_HEAD_ASSET_VERSION = "4k-2026-10-18";
+
+export const heroHeadFrameSrc = (index: number) =>
+  `/images/hero/head/head-${String(index).padStart(2, "0")}.webp?v=${HERO_HEAD_ASSET_VERSION}`;
+
+export const HERO_HEAD_FRAME_URLS = Array.from({ length: HERO_HEAD_COUNT }, (_, i) =>
+  heroHeadFrameSrc(i),
+);
 
 /**
  * Optimized URLs for the hero art drawn outside <Image> (plain img, canvas).
@@ -23,13 +39,13 @@ export const HERO_SEAT_CLOUD = { src: "/images/clouds/cumulus.png", width: 1000,
  */
 export const HERO_FIGURE_URL = optimizedSrc(HERO_FIGURE);
 export const HERO_MARBLE_URL = optimizedSrc(HERO_MARBLE);
-export const HERO_SEAT_CLOUD_URL = optimizedSrc(HERO_SEAT_CLOUD);
+export const HERO_SEAT_CLOUD_URL = optimizedSrc(HERO_SEAT_CLOUD, CLOUD_QUALITY);
 
 /**
  * Height of the hero figure as a fraction of the hero. The img is
  * object-contain + bottom-aligned, so change it here only.
  */
-export const HERO_FIGURE_HEIGHT = 0.66;
+export const HERO_FIGURE_HEIGHT = 0.6;
 
 /**
  * How far the figure's feet sit above the hero's bottom edge, as a fraction

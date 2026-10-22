@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Pinyon_Script } from "next/font/google";
+import { pageModeScript } from "@/theme/mode";
+import { Anton, Geist_Mono, Pinyon_Script } from "next/font/google";
 import localFont from "next/font/local";
 import { SiteLoader } from "@/components/layout/SiteLoader";
 import { HeroIntroProvider } from "@/components/motion/HeroIntroProvider";
@@ -10,14 +11,8 @@ import "./globals.css";
 
 const generalSans = localFont({
   src: [
-    {
-      path: "./fonts/GeneralSans-Variable.woff2",
-      style: "normal",
-    },
-    {
-      path: "./fonts/GeneralSans-VariableItalic.woff2",
-      style: "italic",
-    },
+    { path: "./fonts/GeneralSans-Variable.woff2", style: "normal" },
+    { path: "./fonts/GeneralSans-VariableItalic.woff2", style: "italic" },
   ],
   variable: "--font-general-sans",
   display: "swap",
@@ -26,16 +21,8 @@ const generalSans = localFont({
 
 const editorial = localFont({
   src: [
-    {
-      path: "./fonts/PPEditorialNew-Ultralight.woff2",
-      weight: "200",
-      style: "normal",
-    },
-    {
-      path: "./fonts/PPEditorialNew-UltralightItalic.woff2",
-      weight: "200",
-      style: "italic",
-    },
+    { path: "./fonts/PPEditorialNew-Ultralight.woff2", weight: "200", style: "normal" },
+    { path: "./fonts/PPEditorialNew-UltralightItalic.woff2", weight: "200", style: "italic" },
   ],
   variable: "--font-editorial",
   display: "swap",
@@ -52,6 +39,12 @@ const pinyon = Pinyon_Script({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-pinyon",
+  display: "swap",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
   display: "swap",
 });
 
@@ -79,11 +72,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "light dark",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
-  ],
+  colorScheme: "light",
+  themeColor: "#ec4726",
 };
 
 const personJsonLd = {
@@ -101,8 +91,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} h-full antialiased`}
+      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} ${geistMono.variable} h-full antialiased`}
+      // The page-mode script may set data-theme before React hydrates.
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: pageModeScript }} />
+      </head>
       <body className="min-h-full flex flex-col font-sans">
         <script
           type="application/ld+json"
@@ -113,7 +108,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-foreground focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-background"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-ink focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-bone"
         >
           Skip to content
         </a>
@@ -121,11 +116,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteLoader />
           <MotionProvider>
             <SmoothScroll>
-              <div className="relative z-[2]">
-                <main id="main" className="flex-1">
-                  {children}
-                </main>
-              </div>
+              <main id="main" className="relative flex-1">
+                {children}
+              </main>
             </SmoothScroll>
           </MotionProvider>
         </HeroIntroProvider>

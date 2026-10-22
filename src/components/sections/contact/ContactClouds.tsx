@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import { useEffect, type RefObject } from "react";
 import { CloudPillar } from "@/components/sections/contact/CloudPillar";
+import { CLOUD_QUALITY } from "@/lib/hero";
 
 /**
  * Pink cloud cutout, painted wide (1000×542) with one flat edge; turned ±90°
@@ -87,7 +88,9 @@ function Cloud({
             fill
             draggable={false}
             sizes="(min-width: 1024px) 100vh, 36vh"
-            className="object-contain drop-shadow-[0_30px_40px_rgba(0,0,0,0.35)] select-none"
+            quality={CLOUD_QUALITY}
+            // The cut-out is a sunset-pink cloud; drained to plain white here.
+            className="object-contain [filter:saturate(0)_brightness(1.06)_drop-shadow(0_30px_40px_rgba(0,0,0,0.35))] select-none"
           />
         </div>
       </motion.div>
@@ -134,8 +137,6 @@ export function ContactClouds({
       aria-hidden
       className="pointer-events-none absolute inset-0 z-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_86%,transparent)]"
     >
-      {/* Warm glow behind the statement so the clouds read as lit from it. */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_50%,rgba(230,58,38,0.22),transparent_70%)]" />
       <Cloud layer={LEFT} progress={scrollYProgress} mx={mx} my={my} still={reduce} />
       {/* The column stands just behind the right-hand cloud. */}
       <CloudPillar progress={scrollYProgress} mx={mx} my={my} still={reduce} />

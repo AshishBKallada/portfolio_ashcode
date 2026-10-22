@@ -11,9 +11,12 @@ const variants = {
 export function RevealItem({
   children,
   className,
+  delay = 0,
 }: {
   children: React.ReactNode;
   className?: string;
+  /** Seconds to wait once in view, for staggering a row of items. */
+  delay?: number;
 }) {
   return (
     <motion.div
@@ -22,7 +25,7 @@ export function RevealItem({
       whileInView="show"
       viewport={{ once: true, amount: 0.35 }}
       variants={variants}
-      transition={{ duration: 0.65, ease: introEase }}
+      transition={{ duration: 0.65, delay, ease: introEase }}
     >
       {children}
     </motion.div>

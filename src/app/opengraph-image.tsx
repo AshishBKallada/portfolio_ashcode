@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/data/site";
+import { theme } from "@/theme";
 
 // Social card for every page that doesn't set its own: the wordmark and
 // tagline in cream on the brand oxblood. Rendered once at build time.
@@ -18,8 +19,8 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "#6b1414",
-          color: "#f4f1ea",
+          background: theme.page.bg,
+          color: theme.page.fg,
         }}
       >
         <div style={{ fontSize: 28, letterSpacing: 6, textTransform: "uppercase", opacity: 0.75 }}>

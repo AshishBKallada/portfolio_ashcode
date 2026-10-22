@@ -1,4 +1,4 @@
-// Site-wide copy and links. Brand colours live in globals.css (@theme).
+// Site-wide copy and links. Colours: src/theme/tokens.css (+ theme/colors.ts).
 export const site = {
   name: "AshCode",
   role: "Developer",
@@ -26,7 +26,7 @@ export const site = {
     ],
   },
   hero: {
-    cta: { label: "Get in Touch", href: "/#contact" },
+    cta: { label: "Get in touch", href: "/#contact" },
     /** Big two-line serif statement at the bottom left of the hero. */
     statementLineOne: "I forge products",
     statementLineTwoBefore: "that feel",
@@ -35,6 +35,13 @@ export const site = {
     statementLineTwoAfter: ".",
     /** Bulleted tags beside the CTA. */
     tags: ["Full-stack", "Interfaces", "Motion"],
+    /** Underlined link under the statement, top left. */
+    link: { label: "Start a project", href: "/#contact" },
+    /** Bordered card, bottom right: a globe cell and a claim cell. */
+    card: { place: "Remote", claim: "Full-stack, from interface to infrastructure." },
+    blurb: "Products, interfaces and motion work, built end to end and made to last.",
+    /** Two-line hint, bottom centre (pointer devices only). */
+    hint: ["Move to stir the cloud", "Scroll to meet the work"],
   },
   projects: {
     lead: "Not here",
@@ -47,8 +54,12 @@ export const site = {
   },
   aboutPoster: {
     heading: "About me",
-    /** Cut-out portrait standing in front of the heading. */
-    photo: "/images/about-figure.png",
+    /** Cut-out from the shared reference (chair figure), on the red poster. */
+    photo: "/images/about-chair-cutout.png",
+    photoWidth: 661,
+    photoHeight: 711,
+    /** Small avatar elsewhere on the site (not the poster cutout). */
+    avatar: "/images/about-figure.png",
     /** Signature set in the script face across the portrait. */
     signature: "Ashish B Kallada",
     bio: "I'm Ashish, a full-stack developer building products remotely. I care about how things feel, not only how they work, and I build them to stay standing long after launch.",
@@ -58,6 +69,40 @@ export const site = {
     script: "Immortal",
     sub: ["and ship work that performs", "because it was built by hand."],
     cta: "I'm ready when you are",
+  },
+  /** Signal-red redesign: the home page sections, top to bottom. */
+  signal: {
+    fullName: "Ashish B Kallada",
+    availability: "Open to new work",
+    meta: ["Developer", "Full-stack", "Remote"],
+    approach: {
+      columns: [
+        "I work across interfaces, APIs and the infrastructure behind them. Typed end to end, tested where it matters, and shipped in small, steady steps.",
+        "A studio of one, with a direct line from the first sketch to the last deploy.",
+      ],
+    },
+    toolkit: ["Languages", "Frameworks", "Data & infra", "Motion & 3D"],
+    notes: {
+      quote: "I'd rather ship one thing that lasts than ten that trend.",
+      stats: [
+        { value: "03", label: "Products shipped end to end, interface to infrastructure." },
+        { value: "04", label: "Stacks covered, from interface to infrastructure." },
+        { value: "01", label: "Point of contact, from the first sketch to the last deploy." },
+        { value: "Craft", label: "Code that still reads well a year after launch." },
+      ],
+    },
+    contact: "Products, interfaces and motion work. Remote, across time zones.",
+    linkedin: {
+      cta: "Follow on LinkedIn",
+      /** Panels in the liquid-glass carousel, in order. */
+      posts: [
+        { title: "Shipping the new intro", src: "/images/linkedin/intro.avif" },
+        { title: "Designing for every screen", src: "/images/linkedin/mockup-responsive.avif" },
+        { title: "A dashboard that stays calm", src: "/images/linkedin/mockup.avif" },
+        { title: "From sketch to laptop", src: "/images/linkedin/mockup-laptop.avif" },
+        { title: "Details that last", src: "/images/linkedin/mockup-2.avif" },
+      ],
+    },
   },
   socials: [
     { label: "GitHub", href: "https://github.com/ashishbkallada" },

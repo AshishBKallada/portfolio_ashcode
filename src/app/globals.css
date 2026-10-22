@@ -1,14 +1,5 @@
 @import "tailwindcss";
-
-:root {
-  --background: #fafafa;
-  --foreground: #111111;
-  --muted: #525252;
-  --subtle: #a3a3a3;
-  --surface: #f5f5f5;
-  --border: #e5e5e5;
-  --accent: #6b7280;
-}
+@import "../theme/tokens.css";
 
 @theme inline {
   --color-background: var(--background);
@@ -18,30 +9,32 @@
   --color-surface: var(--surface);
   --color-border: var(--border);
   --color-accent: var(--accent);
-  /* Brand: oxblood ground, cream ink, flame accent, and the warm paper the
-     résumé is printed on. The single source for these colours. */
-  --color-brand: #6b1414;
-  --color-cream: #f4f1ea;
-  --color-flame: #e63a26;
-  --color-paper: #f7f5f2;
+  --color-brand: var(--theme-brand);
+  --color-oxblood: var(--theme-oxblood);
+  --color-ink: var(--theme-ink);
+  --color-panel: var(--theme-panel);
+  --color-ash: var(--theme-ash);
+  --color-cream: var(--theme-cream);
+  --color-bone: var(--theme-bone);
+  --color-flame: var(--theme-flame);
+  --color-script: var(--theme-script);
+  --color-signal: var(--theme-flame);
+  --color-gold: var(--theme-gold);
+  --color-paper: var(--theme-paper);
+  --color-page: var(--theme-page-bg);
+  --color-page-fg: var(--theme-page-fg);
+  --color-about: var(--theme-about-bg);
+  --color-about-fg: var(--theme-about-fg);
+  --color-about-muted: var(--theme-about-muted);
+  --color-about-accent: var(--theme-about-accent);
   --font-sans: var(--font-general-sans);
   --font-serif: var(--font-editorial);
   --font-display: var(--font-anton);
   --font-script: var(--font-pinyon);
+  --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --muted: #a3a3a3;
-    --subtle: #737373;
-    --surface: #171717;
-    --border: #262626;
-  }
-}
-
-/* Forces light tokens on a section regardless of the OS color scheme. */
+/* Forces light tokens on a section (the résumé's paper). */
 .theme-light {
   --background: #ffffff;
   --foreground: #111111;
@@ -51,37 +44,46 @@
   --border: #e5e5e5;
 }
 
-body {
+html {
+  overflow-x: clip;
   background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  font-weight: 400;
+  /* No native scrollbar: StoryProgress draws a thin bar across the top. */
+  scrollbar-width: none;
 }
 
-/* Lock scroll while the initial loader is mounted. The loader renders in SSR,
-   so this kicks in on the very first paint — no flash, no JS class-attach race. */
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* Lock scroll while the intro loader is mounted. The loader renders in SSR,
+   so this applies from the first paint. */
 html:has(.site-loader),
 body:has(.site-loader) {
   overflow: hidden;
 }
 
-/* Editorial grain — very subtle, fixed to viewport, ignored by pointer/reader. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+body {
+  overflow-x: clip;
+  background: var(--theme-page-bg);
+  color: var(--theme-page-fg);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
 }
 
-/* No blend mode on the grain: blending a fixed full-screen layer makes the
-   browser recomposite the whole page under it on every scroll frame. */
-@media (prefers-color-scheme: dark) {
-  body::before {
-    opacity: 0.06;
-  }
+/** Default section shell — use on page wrappers when you want theme page colours. */
+.app-section {
+  background: var(--theme-page-bg);
+  color: var(--theme-page-fg);
+}
+
+.about-headline-outline {
+  color: transparent;
+  -webkit-text-stroke: clamp(1px, 0.065vw, 1.75px) var(--theme-ink);
+}
+
+.about-headline-outline-cream {
+  color: transparent;
+  -webkit-text-stroke: clamp(1px, 0.065vw, 1.75px) var(--theme-cream);
 }
 
 h1,
@@ -89,11 +91,12 @@ h2,
 h3 {
   font-family: var(--font-serif), ui-serif, Georgia, serif;
   font-weight: 200;
+  letter-spacing: -0.02em;
 }
 
 ::selection {
-  background: var(--foreground);
-  color: var(--background);
+  background: var(--color-ink);
+  color: var(--color-bone);
 }
 
 :focus-visible {
@@ -102,7 +105,7 @@ h3 {
   border-radius: 4px;
 }
 
-/* Underline draws in from the left on hover — used by primary nav links. */
+/* Underline draws in from the left on hover — used by text links. */
 .nav-link {
   position: relative;
 }
@@ -110,7 +113,7 @@ h3 {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -4px;
+  bottom: -3px;
   height: 1px;
   width: 100%;
   background: currentColor;
@@ -123,8 +126,14 @@ h3 {
   transform: scaleX(1);
 }
 
-/* Route change: the new page wipes up over the old one like the loader's
-   curtain in reverse; project images morph on their own named group. */
+/* Keep the head-turn frames sharp under motion/parallax transforms. */
+.hero-figure img {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Route change: the new page wipes up over the old one; project images
+   morph on their own named group. */
 @keyframes page-wipe-in {
   from { clip-path: inset(100% 0 0 0); }
   to { clip-path: inset(0 0 0 0); }

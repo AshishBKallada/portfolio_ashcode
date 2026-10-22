@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Dot } from "@/components/signal/primitives";
 import { buttonOutline, buttonSolid } from "@/components/ui/buttonStyles";
 
 const variants = {
@@ -20,6 +21,12 @@ export function Button({
   variant = "primary",
 }: ButtonProps) {
   const className = variants[variant];
+  const content = (
+    <>
+      <Dot className={variant === "primary" ? "bg-flame" : "bg-current"} />
+      {children}
+    </>
+  );
 
   if (external) {
     return (
@@ -29,14 +36,14 @@ export function Button({
         rel="noopener noreferrer"
         className={className}
       >
-        {children}
+        {content}
       </a>
     );
   }
 
   return (
     <Link href={href} className={className}>
-      {children}
+      {content}
     </Link>
   );
 }
