@@ -25,7 +25,7 @@ export function LinkedInSection() {
   const stageRef = useRef<HTMLDivElement>(null);
   const near = useInView(sectionRef, { once: true, margin: "0px 0px 25% 0px" });
   // The WebGL clear colour can't read CSS, so it follows the page mode here.
-  const background = usePageMode() === "red" ? theme.page.bgRed : theme.page.bg;
+  const background = usePageMode() === "white" ? theme.page.bgWhite : theme.page.bg;
 
   return (
     <section ref={sectionRef} id="linkedin" aria-label="LinkedIn" className="relative mt-10 h-[340svh]">

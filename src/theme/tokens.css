@@ -5,10 +5,11 @@
 
 :root {
   /* Page shell (sections, hero, about, footer flow) */
-  /* White by default; the navbar switch flips to red (see below). */
-  --theme-page-bg: #ffffff;
-  /* Script accents ("immortal", <em> in headings, dots): flame on white. */
-  --theme-script: #ec4726;
+  /* Red by default; the navbar switch flips to white (see below). */
+  --theme-page-bg: #ec4726;
+  /* Script accents (<em> in headings, "Immortal", dots): cream on red, since
+     flame would vanish on flame. */
+  --theme-script: #f4f1ea;
   --theme-page-fg: #1a0505;
   --theme-page-fg-muted: rgba(26, 5, 5, 0.8);
   --theme-page-fg-subtle: rgba(26, 5, 5, 0.6);
@@ -47,9 +48,8 @@
   --accent: var(--theme-brand);
 }
 
-/* Red page, chosen with the navbar switch. Flame accents would vanish on
-   flame, so script and dots turn cream, as in the original red design. */
-:root[data-theme="red"] {
-  --theme-page-bg: #ec4726;
-  --theme-script: var(--theme-cream);
+/* White page, chosen with the navbar switch: accents go back to flame. */
+:root[data-theme="white"] {
+  --theme-page-bg: #ffffff;
+  --theme-script: var(--theme-flame);
 }
