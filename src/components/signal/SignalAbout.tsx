@@ -20,14 +20,14 @@ export function HeroStage({ hero, children }: { hero: ReactNode; children: React
 
 const creed = site.signal.notes;
 const stack = site.signal.toolkit.map((name, i) => ({ name, tools: site.skills.rows[i] ?? [] }));
-/** Shared borders for a cell in the four-column grid (two columns on phones). */
-const cell = (i: number) =>
-  `border-border px-3 ${i > 0 ? "md:border-l" : ""} ${i % 2 === 1 ? "max-md:border-l" : ""} ${i > 1 ? "max-md:border-t" : ""}`;
+/** A ticket's notches: a half circle bitten out of each side, just below the middle. */
+const TICKET_MASK =
+  "radial-gradient(circle 17px at 0 55%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 17px at 100% 55%, #0000 97%, #000) right / 51% 100% no-repeat";
 
 
 /**
  * [01] About — who, and what he holds to: the creed beside the intro, the
- * LinkedIn carousel, then the stack in one bordered row.
+ * LinkedIn carousel, then the stack as four ticket cards.
  */
 export function SignalAbout() {
   return (
@@ -91,15 +91,18 @@ export function SignalAbout() {
 
         <LinkedInSection />
 
-        {/* The stack (the old Arsenal): one bordered row of four cells. */}
-        <div id="toolkit" className="scroll-mt-20 border-y border-border">
-          <ul aria-label="Stack" className={`${frame} grid grid-cols-2 md:grid-cols-4`}>
+        {/* The stack (the old Arsenal): four ticket cards in a row, two on phones. */}
+        <div id="toolkit" className="scroll-mt-20 py-10 md:py-14">
+          <ul aria-label="Stack" className={`${frame} grid grid-cols-2 gap-3 md:grid-cols-4`}>
             {stack.map((group, i) => (
-              <RevealItem key={group.name} delay={0.2 + i * 0.05} className={`${cell(i)} flex`}>
-                <li className="flex min-h-[10rem] w-full flex-col justify-between gap-6 py-6 md:min-h-[clamp(10rem,19vh,12rem)] md:py-[clamp(1.25rem,3vh,2.25rem)]">
-                  <p className={`${metaLabel} flex items-center justify-between text-subtle`}>
+              <RevealItem key={group.name} delay={0.2 + i * 0.08} className="flex">
+                <li
+                  style={{ mask: TICKET_MASK, WebkitMask: TICKET_MASK }}
+                  className="flex min-h-[10.5rem] w-full flex-col justify-between gap-6 rounded-[22px] bg-cream px-[22px] py-[18px] text-ink md:min-h-[clamp(10.5rem,20vh,12.5rem)]"
+                >
+                  <p className={`${metaLabel} flex items-center justify-between`}>
                     <span>{group.name}</span>
-                    <span className="tabular-nums">[{String(i + 1).padStart(2, "0")}]</span>
+                    <span className="tabular-nums text-ink/50">[{String(i + 1).padStart(2, "0")}]</span>
                   </p>
                   <ul className="flex flex-wrap gap-x-3 gap-y-1">
                     {group.tools.map((tool) => (
@@ -112,6 +115,11 @@ export function SignalAbout() {
               </RevealItem>
             ))}
           </ul>
+          {/* The cards' shadow on the page. */}
+          <div
+            aria-hidden
+            className={`${frame} mt-[-6px] h-[10px] rounded-[50%] bg-[radial-gradient(closest-side,rgba(0,0,0,0.1),transparent)]`}
+          />
         </div>
       </div>
     </section>
