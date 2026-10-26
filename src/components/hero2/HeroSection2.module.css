@@ -1,0 +1,262 @@
+.hero {
+  --paper: #e3e4e9;
+  --paper-edge: #cfd1d9;
+  --ink: #000000;
+  --ink-soft: rgba(0, 0, 0, 0.5);
+  --violet: #5b07fb;
+  --violet-deep: #4a00d6;
+  --white: #ffffff;
+  --gutter: clamp(20px, 3.2vw, 46px);
+  --display: clamp(44px, min(7.65vw, 13.6vh), 168px);
+  position: relative;
+  height: 100%;
+  min-height: 480px;
+  overflow: hidden;
+  isolation: isolate;
+  /* The site's theme colour (the navbar's red/white switch), lit like a studio wall. */
+  background: radial-gradient(
+    120% 95% at 58% 38%,
+    color-mix(in srgb, var(--background) 92%, #fff) 0%,
+    var(--background) 46%,
+    color-mix(in srgb, var(--background) 90%, #000) 100%
+  );
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.hero *,
+.hero *::before,
+.hero *::after {
+  box-sizing: border-box;
+}
+
+.cloth {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+.over {
+  cursor: grab;
+}
+.held {
+  cursor: grabbing;
+}
+.cloth:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: -6px;
+}
+
+.still {
+  position: absolute;
+  left: 40%;
+  top: 48.5%;
+  width: min(64vw, 84vh);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  transform: translate(-50%, -50%) rotate(5deg);
+  box-shadow: -18px 40px 70px rgba(20, 20, 40, 0.22);
+  display: none;
+}
+.noCloth .still {
+  display: block;
+}
+.noCloth .cloth {
+  display: none;
+}
+
+.nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px var(--gutter) 0;
+  pointer-events: none;
+}
+.nav > * {
+  pointer-events: auto;
+}
+.logo {
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 36px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 36px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  color: var(--white);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 0.2s;
+}
+.pill:hover {
+  transform: translateY(-1px);
+}
+.pill:active {
+  transform: scale(0.98);
+}
+.menu {
+  background: var(--ink);
+  padding-left: 16px;
+}
+.menu:hover {
+  background: #1b1b1f;
+}
+.start {
+  background: var(--violet);
+}
+.start:hover {
+  background: var(--violet-deep);
+}
+.burger {
+  display: grid;
+  gap: 4px;
+  width: 24px;
+}
+.burger i {
+  display: block;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--white);
+  transition: transform 0.25s;
+}
+.menu:hover .burger i:first-child {
+  transform: translateX(-2px);
+}
+.menu:hover .burger i:last-child {
+  transform: translateX(2px);
+}
+.logo:focus-visible,
+.pill:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 3px;
+}
+.start:focus-visible {
+  outline-color: var(--ink);
+}
+
+/* The words around the cloth. Stacked: the statement under the cloth, bottom left. */
+.copy {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.copy > * {
+  pointer-events: auto;
+}
+.statement {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: clamp(72px, 9vh, 96px);
+}
+.card,
+.hint {
+  display: none;
+}
+.scroll {
+  position: absolute;
+  left: var(--gutter);
+  bottom: clamp(20px, 3vh, 32px);
+}
+/* Wide: the statement beside the cloth with the dare under it, the card bottom right. */
+@media (min-width: 1100px) and (min-aspect-ratio: 5/4) {
+  .statement {
+    left: 66%;
+    right: var(--gutter);
+    top: 34%;
+    bottom: auto;
+  }
+  .card {
+    display: block;
+    position: absolute;
+    right: var(--gutter);
+    bottom: 40px;
+    width: 19.5rem;
+  }
+  .scroll {
+    bottom: 40px;
+  }
+}
+@media (min-width: 1100px) and (min-aspect-ratio: 5/4) and (pointer: fine) {
+  .hint {
+    display: block;
+    margin-top: 28px;
+  }
+}
+
+/* The entrance waits for the site loader to lift. */
+.rise {
+  animation: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both paused;
+}
+.ready .rise {
+  animation-play-state: running;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@media (max-width: 1099px), (max-aspect-ratio: 5/4) {
+  .hero {
+    --display: clamp(44px, min(12.4vw, 11vh), 120px);
+  }
+  .still {
+    left: 50%;
+    top: 44%;
+    width: min(78vw, 60vh);
+  }
+}
+@media (max-width: 520px) {
+  .start {
+    display: none;
+  }
+  .logo {
+    font-size: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+  .pill,
+  .burger i {
+    transition: none;
+  }
+}

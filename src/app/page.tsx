@@ -16,6 +16,7 @@ export default function Home() {
     <>
       <StoryProgress />
       <SignalNav />
+      {/* A second hero, HeroSection2 (components/hero2: the holographic cloth), is kept but not shown. */}
       <HeroStage hero={<SkyHero />}>
         <SignalAbout />
         <div className="relative bg-background text-foreground">
