@@ -1,10 +1,10 @@
 import { RevealItem } from "@/components/motion/Reveal";
 import { projects } from "@/data/projects";
 import { RestingCloud } from "./Ornaments";
-import { ArchiveList } from "./ArchiveList";
+import { ArchiveAccordion } from "./ArchiveAccordion";
 import { Display, SectionLabel, cols, frame, lede } from "./primitives";
 
-/** [02] Archive — every project as a row in an index. */
+/** [02] Archive — every project as a panel; the earlier index list (ArchiveList) is kept but not shown. */
 export function ProjectIndex() {
   return (
     <section id="index" className={`${frame} relative pt-28 pb-8`}>
@@ -23,7 +23,7 @@ export function ProjectIndex() {
       </div>
       <div className="relative">
       <RestingCloud />
-      <ArchiveList projects={projects} />
+      <ArchiveAccordion projects={projects} />
       </div>
     </section>
   );
