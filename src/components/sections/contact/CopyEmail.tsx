@@ -6,7 +6,16 @@ import { useEffect, useRef, useState } from "react";
  * The address in plain sight with a copy chip beside it, for visitors whose
  * mailto: opens nothing. Confirms in place and announces it to screen readers.
  */
-export function CopyEmail({ email, tone = "light" }: { email: string; tone?: "light" | "dark" }) {
+export function CopyEmail({
+  email,
+  tone = "light",
+  chip = false,
+}: {
+  email: string;
+  tone?: "light" | "dark";
+  /** Just the copy chip, for where the address is already set large beside it. */
+  chip?: boolean;
+}) {
   const dark = tone === "dark";
   const [copied, setCopied] = useState(false);
   const timer = useRef(0);
@@ -24,6 +33,31 @@ export function CopyEmail({ email, tone = "light" }: { email: string; tone?: "li
     }
   };
 
+  const button = (
+    <button
+      type="button"
+      onClick={copy}
+      className={`inline-flex min-h-9 items-center rounded-[3px] border px-3 font-headline text-[13px] tracking-[-0.01em] transition-colors ${
+        dark ? "border-cream/40 text-cream hover:bg-cream hover:text-ink" : "border-ink/25 text-ink hover:bg-ink hover:text-cream"
+      }`}
+    >
+      {copied ? "Copied ✓" : "Copy"}
+    </button>
+  );
+  const status = (
+    <span role="status" className="sr-only">
+      {copied ? "Email address copied" : ""}
+    </span>
+  );
+
+  if (chip)
+    return (
+      <>
+        {button}
+        {status}
+      </>
+    );
+
   return (
     <div className="flex flex-col items-center justify-center gap-3 font-sans text-[13px] sm:flex-row">
       <span>
@@ -32,18 +66,8 @@ export function CopyEmail({ email, tone = "light" }: { email: string; tone?: "li
           {email}
         </a>
       </span>
-      <button
-        type="button"
-        onClick={copy}
-        className={`inline-flex min-h-9 items-center rounded-[3px] border px-3 font-headline text-[13px] tracking-[-0.01em] transition-colors ${
-          dark ? "border-cream/40 text-cream hover:bg-cream hover:text-ink" : "border-ink/25 text-ink hover:bg-ink hover:text-cream"
-        }`}
-      >
-        {copied ? "Copied ✓" : "Copy"}
-      </button>
-      <span role="status" className="sr-only">
-        {copied ? "Email address copied" : ""}
-      </span>
+      {button}
+      {status}
     </div>
   );
 }
