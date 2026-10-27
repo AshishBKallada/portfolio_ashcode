@@ -4,12 +4,11 @@
  */
 
 :root {
-  /* Page shell (sections, hero, about, footer flow) */
-  /* Red by default; the navbar switch flips to white (see below). */
-  --theme-page-bg: #ec4726;
-  /* Script accents (<em> in headings, "Immortal", dots): cream on red, since
-     flame would vanish on flame. */
-  --theme-script: #f4f1ea;
+  /* Post-hero sections (hero keeps its own art + scrim). */
+  --theme-section-bg: #ddddd1;
+  --theme-page-bg: var(--theme-section-bg);
+  /* Script accents on light section grounds. */
+  --theme-script: var(--theme-flame);
   --theme-page-fg: #1a0505;
   --theme-page-fg-muted: rgba(26, 5, 5, 0.8);
   --theme-page-fg-subtle: rgba(26, 5, 5, 0.6);
@@ -21,6 +20,9 @@
 
   /* Supporting palette */
   --theme-ink: #1a0505;
+  /* Large dark fields (footer, section intros, scrims): a warm neutral charcoal
+     from the paintings' shadows, so they don't read as maroon the way ink does. */
+  --theme-night: #15130f;
   --theme-cream: #f4f1ea;
   --theme-bone: #f4f1ea;
   --theme-panel: #220707;
@@ -29,12 +31,18 @@
   --theme-flame: #ec4726;
   --theme-gold: #d4a94e;
   --theme-paper: #f7f5f2;
+  --theme-editions: var(--theme-section-bg);
+
+  /* Fixed left rail width (home, post-hero content gutter) */
+  --nav-sidebar-w: clamp(12rem, 16vw, 15.5rem);
+  /* How far left of centre the hero nav card sits (HeroLines mirrors this as NAV_CARD_SHIFT). */
+  --nav-card-shift: 12vw;
   --theme-surface: #220707;
 
-  /* About block (light panel — reference-style hero) */
-  --theme-about-bg: #f9f9f9;
-  --theme-about-fg: #0a0a0a;
-  --theme-about-muted: #5c5c5c;
+  /* About block — same section grey as the rest of the page */
+  --theme-about-bg: var(--theme-section-bg);
+  --theme-about-fg: var(--theme-page-fg);
+  --theme-about-muted: var(--theme-page-fg-muted);
   --theme-about-accent: var(--theme-brand);
   --theme-about-outline: #0a0a0a;
 

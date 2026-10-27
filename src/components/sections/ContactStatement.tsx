@@ -42,48 +42,46 @@ export function ContactStatement() {
         {copy.lines.join(" ")} {copy.script}
       </h2>
 
-      <div aria-hidden className="relative z-10">
-        <Parallax speed={40}>
-          {copy.lines.map((line, i) => (
-            <SectionReveal key={line} delay={i * 0.08}>
-              <p className={display}>{line}</p>
-            </SectionReveal>
-          ))}
-        </Parallax>
-        <Parallax speed={110} className="relative z-10">
-          <SectionReveal
-            delay={0.3}
-            className="relative z-10 -mt-[0.08em] text-[clamp(3.25rem,10vw,9.5rem)]"
-          >
-            <p
-              className="text-script -rotate-[4deg] whitespace-nowrap px-[0.25em] font-script leading-[1.1]"
+      {/* Offset by half the left rail so copy sits on the viewport centre (md+). */}
+      <div className="relative z-10 flex w-full max-w-[44rem] flex-col items-center md:max-w-none md:-translate-x-[calc(var(--nav-sidebar-w)/2)]">
+        <div aria-hidden className="flex w-full flex-col items-center text-center">
+          <Parallax speed={40} className="w-full">
+            {copy.lines.map((line, i) => (
+              <SectionReveal key={line} delay={i * 0.08}>
+                <p className={display}>{line}</p>
+              </SectionReveal>
+            ))}
+          </Parallax>
+          <Parallax speed={110} className="relative z-10 flex w-full justify-center">
+            <SectionReveal
+              delay={0.3}
+              className="relative z-10 -mt-[0.08em] text-[clamp(3.25rem,10vw,9.5rem)]"
             >
-              {copy.script}
-            </p>
-          </SectionReveal>
+              <p className="text-script -rotate-[4deg] whitespace-nowrap px-[0.25em] font-script leading-[1.1]">
+                {copy.script}
+              </p>
+            </SectionReveal>
+          </Parallax>
+        </div>
+
+        <Parallax speed={20} className="relative z-10 flex w-full flex-col items-center text-center">
+          <p className="mt-[clamp(1.5rem,4vw,3.5rem)] font-sans text-[clamp(1.15rem,1.7vw,1.5rem)] leading-[1.3] tracking-[-0.015em]">
+            {copy.sub[0]}
+            <br />
+            {copy.sub[1]}
+          </p>
+
+          <Magnetic className="mt-10">
+            <a href={`mailto:${site.email}`} className={buttonSolid}>
+              <Dot />
+              {copy.cta}
+            </a>
+          </Magnetic>
+          <div className="mt-6 flex justify-center">
+            <CopyEmail email={site.email} />
+          </div>
         </Parallax>
       </div>
-
-      <Parallax speed={20} className="relative z-10 flex flex-col items-center">
-        <p className="mt-[clamp(1.5rem,4vw,3.5rem)] font-sans text-[clamp(1.15rem,1.7vw,1.5rem)] leading-[1.3] tracking-[-0.015em]">
-          {copy.sub[0]}
-          <br />
-          {copy.sub[1]}
-        </p>
-
-        <Magnetic className="mt-10">
-        <a
-          href={`mailto:${site.email}`}
-          className={buttonSolid}
-        >
-          <Dot />
-          {copy.cta}
-        </a>
-        </Magnetic>
-        <div className="mt-6">
-          <CopyEmail email={site.email} />
-        </div>
-      </Parallax>
     </section>
   );
 }

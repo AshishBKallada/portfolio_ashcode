@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { pageModeScript } from "@/theme/mode";
 import { Anton, Geist_Mono, Pinyon_Script } from "next/font/google";
 import localFont from "next/font/local";
@@ -6,6 +7,7 @@ import { SiteLoader } from "@/components/layout/SiteLoader";
 import { HeroIntroProvider } from "@/components/motion/HeroIntroProvider";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
+import { NavChromeProvider } from "@/components/signal/nav-chrome";
 import { site } from "@/data/site";
 import "./globals.css";
 
@@ -25,6 +27,28 @@ const editorial = localFont({
     { path: "./fonts/PPEditorialNew-UltralightItalic.woff2", weight: "200", style: "italic" },
   ],
   variable: "--font-editorial",
+  display: "swap",
+});
+
+// Editions faces: Neue Montreal Bold (headlines, nav), HW Cigars (narrative), Imperial Script.
+const neueMontreal = localFont({
+  src: "./fonts/editions/NeueMontreal-Bold.woff2",
+  weight: "700",
+  variable: "--font-neue-montreal",
+  display: "swap",
+});
+
+const cigars = localFont({
+  src: "./fonts/editions/HWCigars-Regular.woff2",
+  weight: "400",
+  variable: "--font-cigars",
+  display: "swap",
+});
+
+const imperial = localFont({
+  src: "./fonts/editions/ImperialScript-Regular.woff2",
+  weight: "400",
+  variable: "--font-imperial",
   display: "swap",
 });
 
@@ -91,17 +115,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} ${geistMono.variable} ${neueMontreal.variable} ${cigars.variable} ${imperial.variable} h-full antialiased`}
       // The page-mode script may set data-theme before React hydrates.
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: pageModeScript }} />
-      </head>
       <body className="min-h-full flex flex-col font-sans">
-        <script
+        <Script id="page-mode-init" strategy="beforeInteractive">
+          {pageModeScript}
+        </Script>
+        <Script
+          id="person-jsonld"
           type="application/ld+json"
-          // Escape "<" so the JSON can never close the script tag early.
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c"),
           }}
@@ -116,9 +141,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteLoader />
           <MotionProvider>
             <SmoothScroll>
-              <main id="main" className="relative flex-1">
-                {children}
-              </main>
+              <NavChromeProvider>
+                <main id="main" className="relative flex-1">
+                  {children}
+                </main>
+              </NavChromeProvider>
             </SmoothScroll>
           </MotionProvider>
         </HeroIntroProvider>

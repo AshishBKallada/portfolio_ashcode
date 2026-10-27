@@ -1,5 +1,9 @@
 @import "tailwindcss";
 @import "../theme/tokens.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -12,6 +16,7 @@
   --color-brand: var(--theme-brand);
   --color-oxblood: var(--theme-oxblood);
   --color-ink: var(--theme-ink);
+  --color-night: var(--theme-night);
   --color-panel: var(--theme-panel);
   --color-ash: var(--theme-ash);
   --color-cream: var(--theme-cream);
@@ -21,6 +26,7 @@
   --color-signal: var(--theme-flame);
   --color-gold: var(--theme-gold);
   --color-paper: var(--theme-paper);
+  --color-editions: var(--theme-editions);
   --color-page: var(--theme-page-bg);
   --color-page-fg: var(--theme-page-fg);
   --color-about: var(--theme-about-bg);
@@ -31,7 +37,45 @@
   --font-serif: var(--font-editorial);
   --font-display: var(--font-anton);
   --font-script: var(--font-pinyon);
+  --color-section: var(--theme-section-bg);
   --font-mono: var(--font-geist-mono);
+  --font-headline: var(--font-neue-montreal), Helvetica, Arial, sans-serif;
+  --font-narrative: var(--font-cigars), Georgia, "Times New Roman", serif;
+  --font-flourish: var(--font-imperial), cursive;
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 /* Forces light tokens on a section (the résumé's paper). */
@@ -86,12 +130,15 @@ body {
   -webkit-text-stroke: clamp(1px, 0.065vw, 1.75px) var(--theme-cream);
 }
 
-h1,
-h2,
-h3 {
-  font-family: var(--font-serif), ui-serif, Georgia, serif;
-  font-weight: 200;
-  letter-spacing: -0.02em;
+/* Base heading face; in the base layer so a heading's own font utilities win. */
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-weight: 200;
+    letter-spacing: -0.02em;
+  }
 }
 
 ::selection {
@@ -124,6 +171,19 @@ h3 {
 .nav-link:hover::after,
 .nav-link:focus-visible::after {
   transform: scaleX(1);
+}
+
+/* Home: sections run full width; the left nav rail overlays them (no gutter). */
+/* …except the footer's text, which steps clear of the rail once it's showing. */
+@media (min-width: 768px) {
+  html[data-nav-rail="true"] .footer-inner {
+    padding-left: calc(var(--nav-sidebar-w) + 1.5rem);
+  }
+}
+
+/* Once a section fully covers the pinned hero, stop painting it. */
+.hero-stage[data-covered="true"] > .hero-pin {
+  visibility: hidden;
 }
 
 /* Keep the head-turn frames sharp under motion/parallax transforms. */
@@ -162,5 +222,266 @@ h3 {
   ::view-transition-new(root),
   ::view-transition-group(.morph) {
     animation: none;
+  }
+}
+
+:root {
+  /* Shadcn tokens — follow site section grey (#ddddd1), not default white. */
+  --background: var(--theme-page-bg);
+  --foreground: var(--theme-page-fg);
+  --card: var(--theme-page-bg);
+  --card-foreground: var(--theme-page-fg);
+  --popover: var(--theme-page-bg);
+  --popover-foreground: var(--theme-page-fg);
+  --primary: var(--theme-ink);
+  --primary-foreground: var(--theme-cream);
+  --secondary: color-mix(in oklch, var(--theme-page-bg) 88%, var(--theme-ink));
+  --secondary-foreground: var(--theme-page-fg);
+  --muted: color-mix(in oklch, var(--theme-page-bg) 92%, var(--theme-ink));
+  --muted-foreground: var(--theme-page-fg-muted);
+  --accent: color-mix(in oklch, var(--theme-page-bg) 90%, var(--theme-ink));
+  --accent-foreground: var(--theme-page-fg);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: var(--theme-page-border);
+  --input: var(--theme-page-border);
+  --ring: color-mix(in oklch, var(--theme-ink) 35%, transparent);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+/* Editions side nav (desktop home). One fixed aside the width of the rail;
+   in the hero its pieces are translated out to a 340×464 card centred on
+   the viewport, and on scroll they translate back into the rail. Only
+   translate, scale and opacity animate. */
+.edition-nav {
+  --card-w: 340px;
+  --card-h: 464px;
+  --card-pad: 20px;
+  --rail-pad: 24px;
+  --foot-h: 112px;
+  --nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nav-dur: 620ms;
+  /* Card origin relative to the aside (which sits at the viewport's left edge),
+     set a little left of centre by --nav-card-shift. */
+  --card-x: calc(50vw - var(--nav-card-shift) - var(--card-w) / 2);
+  --card-y: calc(50svh - var(--card-h) / 2);
+  color: var(--theme-cream);
+  transition: color var(--nav-dur) var(--nav-ease);
+}
+/* Fires the transitionend that ends the morph; the parts set their own tone. */
+.edition-nav[data-state="rail"] {
+  color: var(--theme-bone);
+}
+.edition-nav__title,
+.edition-nav__list,
+.edition-nav__foot {
+  color: var(--theme-cream);
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+}
+.edition-nav[data-title-tone="ink"] .edition-nav__title,
+.edition-nav[data-list-tone="ink"] .edition-nav__list,
+.edition-nav[data-foot-tone="ink"] .edition-nav__foot {
+  color: var(--theme-ink);
+  text-shadow: none;
+}
+
+.edition-nav__frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  border: 1px solid rgb(255 255 255 / 0.35);
+  /* Dark enough that the cream tagline holds 4.5:1 over the bright cloud. */
+  background: rgb(21 19 15 / 0.56);
+  backdrop-filter: blur(8px);
+  translate: var(--card-x) var(--card-y);
+  transition: opacity calc(var(--nav-dur) * 0.5) var(--nav-ease);
+}
+.edition-nav[data-state="rail"] .edition-nav__frame {
+  opacity: 0;
+  /* Invisible in the rail, so drop the blur rather than keep paying for it. */
+  backdrop-filter: none;
+}
+
+.edition-nav__title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  translate: calc(var(--card-x) + var(--card-pad)) calc(var(--card-y) + var(--card-pad));
+  transition:
+    translate var(--nav-dur) var(--nav-ease),
+    scale var(--nav-dur) var(--nav-ease),
+    color 0.3s ease;
+}
+.edition-nav[data-state="rail"] .edition-nav__title {
+  translate: var(--rail-pad) 32px;
+  scale: 0.75;
+}
+
+.edition-nav__subtitle {
+  transition: opacity calc(var(--nav-dur) * 0.5) var(--nav-ease);
+}
+.edition-nav[data-state="rail"] .edition-nav__subtitle {
+  opacity: 0;
+}
+
+/* The list keeps the rail's width in both states; only its position moves. */
+.edition-nav__list {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: calc(var(--nav-sidebar-w) - var(--rail-pad) * 2);
+  translate: 0 calc(-1 * (var(--card-y) + var(--card-pad)));
+  transition:
+    translate var(--nav-dur) var(--nav-ease),
+    color 0.3s ease;
+}
+.edition-nav[data-state="rail"] .edition-nav__list {
+  translate: 0 calc(-1 * var(--foot-h));
+}
+.edition-nav__list li {
+  translate: calc(var(--card-x) + var(--card-pad)) 0;
+  transition: translate var(--nav-dur) var(--nav-ease) calc(var(--i) * 28ms);
+}
+.edition-nav[data-state="rail"] .edition-nav__list li {
+  translate: var(--rail-pad) 0;
+}
+.edition-nav[data-state="rail"] .edition-nav__link {
+  opacity: 0.6;
+  transition: opacity 0.25s ease;
+}
+.edition-nav[data-state="rail"] .edition-nav__link:hover,
+.edition-nav[data-state="rail"] .edition-nav__link:focus-visible {
+  opacity: 1;
+}
+
+.edition-nav__foot {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px var(--rail-pad);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s var(--nav-ease),
+    visibility 0s linear 0.3s,
+    color 0.3s ease;
+}
+.edition-nav[data-state="rail"] .edition-nav__foot {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.4s var(--nav-ease) calc(var(--nav-dur) * 0.6),
+    visibility 0s,
+    color 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edition-nav,
+  .edition-nav * {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
+
+/* Torn-paper seam: a soft shadow under the tear lifts the sheet off the section behind. */
+.torn-edge {
+  filter: drop-shadow(0 -5px 10px rgb(0 0 0 / 0.28));
+  overflow: visible;
+}
+
+/* Hero construction lines: drawn in bright, then settled to a faint hairline
+   (stroke 75% → 15% white), each group a beat after the last. */
+.hero-lines :is(line, circle) {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.15);
+  stroke-width: 0.6px;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  vector-effect: non-scaling-stroke;
+}
+.hero-lines[data-active="true"] :is(line, circle) {
+  animation:
+    hero-lines-draw 3s cubic-bezier(0.34, 0.22, 0.47, 0.84) calc(var(--i) * 0.12s) forwards,
+    hero-lines-fade 4s ease-out calc(var(--i) * 0.12s) forwards;
+}
+/* After the intro, scroll owns the stroke: --erase 0 → 1 winds each line back off. */
+.hero-lines[data-drawn="true"] :is(line, circle) {
+  animation: none;
+  stroke: rgb(255 255 255 / 0.15);
+  stroke-dashoffset: var(--erase, 0);
+}
+@keyframes hero-lines-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes hero-lines-fade {
+  from { stroke: rgb(255 255 255 / 0.75); }
+  to { stroke: rgb(255 255 255 / 0.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-lines :is(line, circle) {
+    stroke-dashoffset: 0;
+    animation: none !important;
   }
 }

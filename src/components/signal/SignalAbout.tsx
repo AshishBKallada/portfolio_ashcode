@@ -1,24 +1,55 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import { RevealItem } from "@/components/motion/Reveal";
 import { site } from "@/data/site";
+import { AboutMeStage } from "./AboutMeStage";
+import { HERO_PIN_VH } from "./SkyHero";
 import { LinkedInSection } from "./LinkedInSection";
-import { SectionLabel, cols, frame, metaLabel, metaText, monoLabel } from "./primitives";
+import { frame, metaLabel, metaText } from "./primitives";
 
-/** Hero, then the rest of the page — one continuous scroll. */
+/** Hero pins through its reveal, then the sections below scroll up and stack over it. */
 export function HeroStage({ hero, children }: { hero: ReactNode; children: ReactNode }) {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Mark the hero covered once it's fully hidden, so it stops painting
+  // (globals.css). The first section sits beside the rail with the hero still
+  // showing in the rail's column, until the next chapter's pinned painting is
+  // behind it: when its foot reaches the viewport's. A data attribute, not state.
+  useEffect(() => {
+    const stage = stageRef.current;
+    const content = contentRef.current;
+    if (!stage || !content) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const first = content.firstElementChild ?? content;
+      stage.dataset.covered = first.getBoundingClientRect().bottom <= window.innerHeight ? "true" : "false";
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
   return (
-    <div className="relative bg-background text-foreground">
-      <div className="relative h-[100svh] min-h-[640px] overflow-hidden">{hero}</div>
-      {children}
+    <div ref={stageRef} className="hero-stage relative bg-background text-foreground">
+      <div className="hero-pin sticky top-0 z-0 h-[100svh] min-h-[640px] overflow-hidden">{hero}</div>
+      {/* Holds the hero pinned through its reveal, the camera push and About (SkyHero). */}
+      <div aria-hidden style={{ height: `${HERO_PIN_VH * 100}svh` }} />
+      <div ref={contentRef} className="signal-main-gutter relative z-10">
+        {children}
+      </div>
     </div>
   );
 }
 
-const creed = site.signal.notes;
 const stack = site.signal.toolkit.map((name, i) => ({ name, tools: site.skills.rows[i] ?? [] }));
 /** A ticket's notches: a half circle bitten out of each side, just below the middle. */
 const TICKET_MASK =
@@ -26,69 +57,18 @@ const TICKET_MASK =
 
 
 /**
- * [01] About — who, and what he holds to: the creed beside the intro, the
- * LinkedIn carousel, then the stack as four ticket cards.
+ * [01] About — full-viewport intro, then the LinkedIn carousel and stack tickets.
  */
 export function SignalAbout() {
   return (
     <section
       id="about"
       aria-label="About"
-      className="relative isolate overflow-x-clip bg-background"
+      className="signal-rail-bleed relative isolate overflow-x-clip bg-background shadow-[0_-12px_48px_rgba(0,0,0,0.08)]"
     >
-      <div className="relative z-[1] pt-20 md:pt-[clamp(4.5rem,9vh,6rem)]">
-        <div className={frame}>
-          <SectionLabel index="01">About</SectionLabel>
-        </div>
+      <AboutMeStage />
 
-        <div className={`${frame} ${cols} mt-8 gap-y-10 md:mt-[clamp(1.5rem,4vh,3rem)]`}>
-          {/* The creed, with whose it is. */}
-          <RevealItem delay={0.06} className="px-3 md:col-span-2">
-            <blockquote className="max-w-[18ch] font-serif text-[clamp(2rem,3.6vw,3.6rem)] leading-[1] tracking-[-0.03em] text-balance">
-              &ldquo;{creed.quote}&rdquo;
-            </blockquote>
-            <div className="mt-8 flex items-center gap-3">
-              <span className="relative size-14 shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-ink/10">
-                <Image
-                  src={site.aboutPoster.avatar}
-                  alt=""
-                  width={478}
-                  height={1086}
-                  sizes="96px"
-                  className="absolute top-0 left-1/2 w-[140%] max-w-none -translate-x-1/2"
-                />
-              </span>
-              <span>
-                <span className="block text-[16px] font-medium">{site.signal.fullName}</span>
-                <span className={`${monoLabel} text-subtle`}>Full-stack developer</span>
-              </span>
-            </div>
-          </RevealItem>
-
-          {/* The intro. */}
-          <RevealItem delay={0.12} className="px-3 md:col-span-2 md:col-start-3">
-            <p className={`${metaLabel} text-subtle`}>[About]</p>
-            <p className="mt-5 max-w-md font-sans text-[clamp(1rem,1.3vw,1.2rem)] leading-[1.5] tracking-[-0.01em] text-ink">
-              For full-stack products, based in {site.location.toLowerCase()} and working worldwide.
-            </p>
-            <p className="mt-4 max-w-md text-[15px] leading-[1.55] text-muted">{site.aboutPoster.bio}</p>
-            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link
-                href="/resume"
-                className={`${metaLabel} nav-link text-ink hover:text-oxblood`}
-              >
-                Read the résumé ↗
-              </Link>
-              <Link
-                href={`mailto:${site.email}`}
-                className={`${metaLabel} nav-link text-subtle hover:text-ink`}
-              >
-                Email
-              </Link>
-            </div>
-          </RevealItem>
-        </div>
-
+      <div className="relative z-[1]">
         <LinkedInSection />
 
         {/* The stack (the old Arsenal): four ticket cards in a row, two on phones. */}

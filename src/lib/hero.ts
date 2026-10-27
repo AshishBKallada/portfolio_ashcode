@@ -2,8 +2,15 @@ import { optimizedSrc } from "@/lib/images";
 
 // Hero art and the scroll timeline shared by the hero, navbar and loader.
 
-/** Transparent cutout of the hero figure: a modern Hermes floating cross-legged with a laptop. */
-export const HERO_FIGURE = { src: "/images/hero/hero-figure-v2.png", width: 1254, height: 1254 };
+/** Full-bleed photograph behind the home hero (SkyHero). */
+export const HERO_BG = { src: "/images/hero/hero-bg.png", width: 1376, height: 768 };
+
+/** Transparent cutout above the cumulus — Winged Courier (latest Photoroom export). */
+export const HERO_FIGURE = {
+  src: "/images/hero/hero-figure-winged-courier.png",
+  width: 1303,
+  height: 1207,
+};
 
 /** Marble twin of the figure, revealed under the cursor (same size). */
 export const HERO_MARBLE = { src: "/images/hero/hero-marble.png", width: 1445, height: 1089 };
@@ -37,7 +44,8 @@ export const HERO_HEAD_FRAME_URLS = Array.from({ length: HERO_HEAD_COUNT }, (_, 
  * Optimized URLs for the hero art drawn outside <Image> (plain img, canvas).
  * The loader preloads these same URLs, so the hero paints from cache.
  */
-export const HERO_FIGURE_URL = optimizedSrc(HERO_FIGURE);
+/** Raw PNG keeps alpha clean on the hero cutout (no optimizer cache). */
+export const HERO_FIGURE_URL = HERO_FIGURE.src;
 export const HERO_MARBLE_URL = optimizedSrc(HERO_MARBLE);
 export const HERO_SEAT_CLOUD_URL = optimizedSrc(HERO_SEAT_CLOUD, CLOUD_QUALITY);
 

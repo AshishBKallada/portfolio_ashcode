@@ -56,8 +56,8 @@ function SkyLayer({
   // Nearer clouds rush past faster; each moves away from its cut edge.
   const sign = layer.drift === "up" ? -1 : 1;
   const y = useTransform(scroll, (v) => v * sign * (0.15 + depth * 0.9));
-  const px = useTransform(mx, (v) => v * (6 + depth * 40));
-  const py = useTransform(my, (v) => v * (4 + depth * 22));
+  const px = useTransform(mx, (v) => v * (14 + depth * 58));
+  const py = useTransform(my, (v) => v * (10 + depth * 34));
 
   return (
     <motion.div style={still ? undefined : { y }} className={`absolute ${layer.box}`}>
@@ -86,27 +86,29 @@ function SkyLayer({
 }
 
 /** Layered parallax sky behind the hero figure; decorative. */
-export function HeroSky() {
+export function HeroSky({ mx: mxProp, my: myProp }: { mx?: MotionValue<number>; my?: MotionValue<number> } = {}) {
   const reduce = useReducedMotion() ?? false;
   const { scrollY } = useScroll();
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
-  const spring = { stiffness: 50, damping: 18, mass: 0.7 };
-  const mx = useSpring(rawX, spring);
-  const my = useSpring(rawY, spring);
+  const spring = { stiffness: 62, damping: 16, mass: 0.55 };
+  const localMx = useSpring(rawX, spring);
+  const localMy = useSpring(rawY, spring);
+  const mx = mxProp ?? localMx;
+  const my = myProp ?? localMy;
 
   useEffect(() => {
-    if (reduce || !window.matchMedia("(pointer: fine)").matches) return;
+    if (mxProp || myProp || reduce || !window.matchMedia("(pointer: fine)").matches) return;
     const onMove = (e: PointerEvent) => {
       rawX.set((e.clientX / window.innerWidth) * 2 - 1);
       rawY.set((e.clientY / window.innerHeight) * 2 - 1);
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
-  }, [reduce, rawX, rawY]);
+  }, [mxProp, myProp, reduce, rawX, rawY]);
 
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-[3] overflow-hidden">
       {LAYERS.map((layer, i) => (
         <SkyLayer key={i} layer={layer} scroll={scrollY} mx={mx} my={my} still={reduce} />
       ))}

@@ -11,7 +11,8 @@ const KEY = "page-mode";
  * Runs inline in <head> before first paint, so a saved white page never
  * flashes red. Keep it in sync with `setPageMode`.
  */
-export const pageModeScript = `try{if(localStorage.getItem("${KEY}")==="white")document.documentElement.dataset.theme="white"}catch(e){}`;
+// The navbar switch is gone, so clear any saved white choice rather than restore it.
+export const pageModeScript = `try{localStorage.removeItem("${KEY}")}catch(e){}`;
 
 const read = (): PageMode =>
   document.documentElement.dataset.theme === "white" ? "white" : "red";

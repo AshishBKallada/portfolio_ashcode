@@ -5,27 +5,27 @@ import { useReducedMotion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
-import { metaLabel } from "@/components/signal/primitives";
+import { site } from "@/data/site";
 import { HERO_FIGURE_URL, HERO_SEAT_CLOUD_URL } from "@/lib/hero";
 
 /**
- * Boot sequence, all on one screen:
- *   1. a percentage counter in the centre ramps 0 → 92 while the page, fonts
- *      and hero images load, then snaps to 100, a hairline under it filling in
- *      step and the wordmark and status label framing it;
- *   2. the counter lifts out through its mask, the hairline draws back to its
- *      centre, and "Obsession beats talent" rises in, one line at a time;
- *   3. the lines leave the way they came and the red curtain lifts off the
- *      hero, which starts its own intro underneath.
- * Off the home page, or with reduced motion, only the counter runs and the
- * screen fades out.
+ * Boot sequence, Editions-style, all on one black screen:
+ *   1. a hairline frame, the size and place of the nav card, draws itself
+ *      round to about 80% while the page, fonts and hero images load;
+ *   2. once they're in, it closes the last stretch and the wordmark fades in
+ *      where the nav card's title sits;
+ *   3. the screen lifts off, leaving the nav card in the same spot over the
+ *      hero, whose construction lines then draw in.
+ * Off the home page, or with reduced motion, the screen just fades out.
  */
 
-// The counter will not pass this until the assets are confirmed.
-const RAMP_TO = 92;
-const RAMP_S = 1.8;
-const FINISH_S = 0.35;
-const PHRASE_HOLD_S = 0.7;
+// Timings from the reference: a slow load stroke, a quick close, a short fade.
+const LOAD_S = 6;
+const COMPLETE_S = 1;
+const FADE_S = 0.52;
+const LOAD_EASE = "cubic-bezier(.45,.28,.34,.84)";
+const COMPLETE_EASE = "cubic-bezier(.72,.16,.19,.96)";
+const FADE_EASE = "cubic-bezier(.25,.46,.45,.94)";
 // Dismiss even if `load` or `fonts.ready` never resolve (a stalled asset).
 const MAX_WAIT_MS = 8000;
 
@@ -39,12 +39,9 @@ export function SiteLoader() {
   const [mounted, setMounted] = useState(true);
 
   const rootRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLDivElement>(null);
-  const digitsRef = useRef<HTMLSpanElement>(null);
-  const barRef = useRef<HTMLSpanElement>(null);
-  const chromeRef = useRef<HTMLDivElement>(null);
-  const lineRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  // Read at outro time, so a late reduced-motion value never restarts the ramp.
+  const rectRef = useRef<SVGRectElement>(null);
+  const titleRef = useRef<HTMLParagraphElement>(null);
+  // Read at outro time, so a late reduced-motion value never restarts the draw.
   const reduceRef = useRef(reduce);
   useEffect(() => {
     reduceRef.current = reduce;
@@ -52,31 +49,27 @@ export function SiteLoader() {
 
   useEffect(() => {
     const root = rootRef.current;
-    const counter = counterRef.current;
-    const digits = digitsRef.current;
-    const bar = barRef.current;
-    const chrome = chromeRef.current;
-    const lines = lineRefs.current.filter(Boolean) as HTMLSpanElement[];
-    if (!root || !counter || !digits || !bar || !chrome) return;
+    const rect = rectRef.current;
+    const title = titleRef.current;
+    if (!root || !rect || !title) return;
 
     let cancelled = false;
-    let assetsReady = false;
-    let rampDone = false;
     let finishing = false;
     let cap = 0;
-    const value = { v: 0 };
-    const render = () => {
-      digits.textContent = String(Math.round(value.v)).padStart(2, "0");
-      bar.style.transform = `scaleX(${value.v / 100})`;
-    };
 
     const ctx = gsap.context(() => {
-      gsap.set(lines, { yPercent: 135, skewY: 6, visibility: "visible" });
+      const load = gsap.fromTo(
+        rect,
+        { strokeDashoffset: 1 },
+        { strokeDashoffset: 0.2, duration: LOAD_S, ease: LOAD_EASE },
+      );
 
-      const outro = () => {
-        if (cancelled) return;
-        const quick = reduceRef.current || !isHome;
-        if (quick) {
+      const finish = () => {
+        if (cancelled || finishing) return;
+        finishing = true;
+        load.kill();
+
+        if (reduceRef.current || !isHome) {
           markLoaded();
           gsap.to(root, {
             autoAlpha: 0,
@@ -89,64 +82,12 @@ export function SiteLoader() {
 
         gsap
           .timeline({ onComplete: () => setMounted(false) })
-          // Counter lifts out through its mask; the hairline and its labels
-          // draw back to the centre.
-          .to(counter, { yPercent: -110, duration: 0.55, ease: "power3.in" })
-          .to(bar, { scaleX: 0, transformOrigin: "50% 50%", duration: 0.5, ease: "power3.inOut" }, "<")
-          .to(chrome, { autoAlpha: 0, duration: 0.3, ease: "power2.out" }, "<")
-          // Phrase rises through its masks, one line after another.
-          .fromTo(
-            lines,
-            { yPercent: 135, skewY: 6 },
-            {
-              yPercent: 0,
-              skewY: 0,
-              duration: 1,
-              ease: "power4.out",
-              stagger: 0.12,
-            },
-            "-=0.15",
-          )
-          // Second beat: the lines leave upward, last in first out.
-          .to(
-            lines,
-            {
-              yPercent: -135,
-              skewY: -6,
-              duration: 0.7,
-              ease: "power4.in",
-              stagger: { each: 0.1, from: "end" },
-            },
-            `+=${PHRASE_HOLD_S}`,
-          )
-          // The loader steps aside and the hero opens from a window in the
-          // centre of its own red, the same move About me opens with.
-          .add(() => markLoaded())
-          .to(root, { autoAlpha: 0, duration: 0.35, ease: "power2.out" }, "-=0.1");
+          .to(rect, { strokeDashoffset: 0, duration: COMPLETE_S, ease: COMPLETE_EASE })
+          .to(title, { autoAlpha: 1, duration: FADE_S, ease: FADE_EASE }, "-=0.2")
+          // The screen lifts; the nav card underneath sits in the same place.
+          .add(() => markLoaded(), "+=0.15")
+          .to(root, { autoAlpha: 0, duration: 0.6, ease: FADE_EASE }, "<");
       };
-
-      const maybeFinish = () => {
-        if (cancelled || finishing || !assetsReady || !rampDone) return;
-        finishing = true;
-        gsap.to(value, {
-          v: 100,
-          duration: FINISH_S,
-          ease: "power1.out",
-          onUpdate: render,
-          onComplete: outro,
-        });
-      };
-
-      gsap.to(value, {
-        v: RAMP_TO,
-        duration: RAMP_S,
-        ease: "power2.inOut",
-        onUpdate: render,
-        onComplete: () => {
-          rampDone = true;
-          maybeFinish();
-        },
-      });
 
       const waitForLoad = () =>
         new Promise<void>((resolve) => {
@@ -154,9 +95,7 @@ export function SiteLoader() {
           window.addEventListener("load", () => resolve(), { once: true });
         });
       const waitForFonts = () =>
-        document.fonts?.ready
-          ? document.fonts.ready.then(() => undefined)
-          : Promise.resolve();
+        document.fonts?.ready ? document.fonts.ready.then(() => undefined) : Promise.resolve();
       const waitForImage = (src: string) =>
         new Promise<void>((resolve) => {
           const img = new Image();
@@ -164,20 +103,11 @@ export function SiteLoader() {
           img.src = src;
         });
 
-      Promise.all([
-        waitForLoad(),
-        waitForFonts(),
-        ...PRELOAD.map(waitForImage),
-      ]).then(() => {
-        assetsReady = true;
-        maybeFinish();
-      });
+      // Give the frame a moment to start drawing even on a warm cache.
+      const minimum = new Promise<void>((resolve) => window.setTimeout(resolve, 1200));
 
-      cap = window.setTimeout(() => {
-        assetsReady = true;
-        rampDone = true;
-        maybeFinish();
-      }, MAX_WAIT_MS);
+      Promise.all([minimum, waitForLoad(), waitForFonts(), ...PRELOAD.map(waitForImage)]).then(finish);
+      cap = window.setTimeout(finish, MAX_WAIT_MS);
     });
 
     return () => {
@@ -192,80 +122,38 @@ export function SiteLoader() {
   return (
     <div
       ref={rootRef}
-      className="site-loader fixed inset-0 z-[999] overflow-hidden bg-bone text-brand"
+      className="site-loader fixed inset-0 z-[999] overflow-hidden bg-black text-cream"
       role="status"
       aria-label="Loading"
     >
-      {/* The counter, dead centre, with a hairline under it that fills as
-          the page loads. */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="overflow-hidden">
-          <div
-            ref={counterRef}
-            className="flex items-start font-display leading-[0.86] tabular-nums will-change-transform"
-          >
-            <span ref={digitsRef} className="text-[clamp(7rem,22vw,19rem)] tracking-[-0.01em]">
-              00
-            </span>
-            <span className="mt-[0.35em] ml-2 text-[clamp(1.5rem,4vw,3.5rem)]">%</span>
-          </div>
-        </div>
-        <span className="relative mt-6 block h-px w-[min(26rem,62vw)] bg-brand/20">
-          <span
-            ref={barRef}
-            style={{ transform: "scaleX(0)" }}
-            className="absolute inset-0 origin-left bg-brand will-change-transform"
+      {/* Same box as the nav card: 340×464, a little left of centre from md up. */}
+      <div className="absolute top-1/2 left-1/2 aspect-[340/464] md:left-[calc(50%-var(--nav-card-shift))] w-[min(340px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 p-5">
+        <svg aria-hidden viewBox="0 0 340 464" className="absolute inset-0 h-full w-full overflow-visible">
+          <rect
+            ref={rectRef}
+            x="0.5"
+            y="0.5"
+            width="339"
+            height="463"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            pathLength={1}
+            strokeDasharray="1"
+            strokeDashoffset="1"
+            strokeLinecap="square"
+            vectorEffect="non-scaling-stroke"
           />
-        </span>
+        </svg>
+        <p
+          ref={titleRef}
+          aria-hidden
+          style={{ visibility: "hidden", opacity: 0 }}
+          className="relative font-headline text-[32px] leading-[0.95] tracking-[-0.03em]"
+        >
+          {site.name}
+        </p>
       </div>
-
-      {/* Wordmark and status, top left and bottom centre. */}
-      <div ref={chromeRef} aria-hidden className={`pointer-events-none absolute inset-0 ${metaLabel}`}>
-        <span className="absolute top-6 left-6 font-display text-[22px] tracking-[0.02em] sm:top-8 sm:left-8">AshCode</span>
-        <span className="absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap">Loading the sky</span>
-      </div>
-
-      {isHome && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          {/* Each line sits in a mask. Inline visibility covers the first
-              paint; the effect then parks each line below its mask and
-              reveals it, so GSAP alone owns the transform (an inline CSS
-              transform would be read as the line's resting position). */}
-          <div className="overflow-hidden px-[0.08em]">
-            <span
-              ref={(el) => {
-                lineRefs.current[0] = el;
-              }}
-              style={{ visibility: "hidden" }}
-              className="block font-display text-[clamp(3.5rem,14vw,15rem)] leading-[0.92] tracking-[-0.01em] uppercase will-change-transform"
-            >
-              Obsession
-            </span>
-          </div>
-          <div className="overflow-hidden px-[0.2em]">
-            <span
-              ref={(el) => {
-                lineRefs.current[1] = el;
-              }}
-              style={{ visibility: "hidden" }}
-              className="block font-serif text-[clamp(2.5rem,9vw,9rem)] leading-[1] italic will-change-transform"
-            >
-              beats
-            </span>
-          </div>
-          <div className="overflow-hidden px-[0.08em]">
-            <span
-              ref={(el) => {
-                lineRefs.current[2] = el;
-              }}
-              style={{ visibility: "hidden" }}
-              className="block font-display text-[clamp(3.5rem,14vw,15rem)] leading-[0.92] tracking-[-0.01em] uppercase will-change-transform"
-            >
-              Talent
-            </span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -26,15 +26,16 @@ export const site = {
     ],
   },
   hero: {
-    cta: { label: "Get in touch", href: "/#contact" },
-    /** Big two-line serif statement at the bottom left of the hero. */
-    statementLineOne: "I forge products",
-    statementLineTwoBefore: "that feel",
-    /** Set in the cursive script face. */
-    statementScript: "immortal",
-    statementLineTwoAfter: ".",
+    cta: { label: "Get in Touch", href: "/#contact" },
+    /** Hero headline — eyebrow + main word + subline (SkyHero). */
+    statementEyebrow: "Full stack",
+    statementMain: "developer",
+    statementLineTwoPrefix: "Building web products",
+    statementAccent: "end to end.",
+    statementLineTwo: "Building web products end to end.",
+    statementLineOne: "Full-stack developer",
     /** Bulleted tags beside the CTA. */
-    tags: ["Full-stack", "Interfaces", "Motion"],
+    tags: ["TypeScript", "React & Next.js", "APIs & infra"],
     /** Underlined link under the statement, top left. */
     link: { label: "Start a project", href: "/#contact" },
     /** Bordered card, bottom right: a globe cell and a claim cell. */
@@ -51,6 +52,23 @@ export const site = {
     closing: "Who prefer weight\nover noise.",
     closingBody:
       "A short run of products built end to end, for people who would rather ship something that lasts than something that trends.",
+  },
+  /** About panel — editorial headline, kicker, and floating prompt cards. */
+  aboutEdition: {
+    dropCap: "W",
+    headline: "ork that feels carved, not assembled.",
+    kicker: "Full-stack development",
+    body: "I'm Ashish, a full-stack developer building products remotely. I care about how things feel, not only how they work, and I build them to stay standing long after launch.",
+    cta: { label: "Read the résumé", href: "/resume" },
+    cards: [
+      { text: "Design an interface that still reads well a year after launch.", featured: false },
+      {
+        text: "Ship typed APIs, tested deploys, and motion that respects reduced-motion.",
+        featured: true,
+      },
+      { text: "Own the line from first sketch to last production deploy.", featured: false },
+      { text: "Keep one point of contact across design, code, and infra.", featured: false },
+    ],
   },
   aboutPoster: {
     heading: "About me",
@@ -103,6 +121,11 @@ export const site = {
         { title: "Details that last", src: "/images/linkedin/mockup-2.avif" },
       ],
     },
+  },
+  /** Corner record player: the track lives in public/audio (a YouTube URL also works). */
+  music: {
+    src: "/audio/edamame.mp3",
+    coverArt: "/images/hero/hero-figure-winged-courier.png",
   },
   socials: [
     { label: "GitHub", href: "https://github.com/ashishbkallada" },

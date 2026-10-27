@@ -4,7 +4,7 @@
  */
 export const theme = {
   page: {
-    bg: "#ec4726",
+    bg: "#ddddd1",
     /** The page with the navbar switch on white. */
     bgWhite: "#ffffff",
     fg: "#1a0505",
@@ -25,9 +25,9 @@ export const theme = {
   gold: "#d4a94e",
   paper: "#f7f5f2",
   about: {
-    bg: "#f9f9f9",
-    fg: "#0a0a0a",
-    muted: "#5c5c5c",
+    bg: "#ddddd1",
+    fg: "#1a0505",
+    muted: "rgba(26, 5, 5, 0.8)",
     accent: "#ec4726",
   },
 } as const;

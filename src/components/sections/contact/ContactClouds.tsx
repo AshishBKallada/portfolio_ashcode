@@ -32,12 +32,6 @@ type Layer = {
 
 // --h is the cloud's visual height; its visual width is --h × 0.542 and
 // --peek is how much of that width sits off-screen at rest.
-const LEFT: Layer = {
-  side: "left",
-  place: "-top-[4%] lg:top-1/2 lg:-translate-y-1/2",
-  size: "[--h:36svh] [--peek:0.42] lg:[--h:100svh] lg:[--peek:0.36]",
-  drift: ["-70%", "0%", "-30%"],
-};
 const RIGHT: Layer = {
   side: "right",
   place: "-bottom-[12%] lg:top-1/2 lg:bottom-auto lg:-translate-y-1/2",
@@ -99,10 +93,8 @@ function Cloud({
 }
 
 /**
- * A cloud on each side of the contact statement. They drift in from the
- * edges as the section arrives, frame the copy while it fills the screen and
- * roll back out as it leaves, leaning a little toward the cursor. Phones keep
- * them in the empty top-left and bottom-right corners, clear of the copy.
+ * Right-hand cloud beside the contact statement; drifts in on scroll and
+ * responds slightly to the cursor. The marble pillar sits behind it.
  */
 export function ContactClouds({
   target,
@@ -137,7 +129,6 @@ export function ContactClouds({
       aria-hidden
       className="pointer-events-none absolute inset-0 z-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_86%,transparent)]"
     >
-      <Cloud layer={LEFT} progress={scrollYProgress} mx={mx} my={my} still={reduce} />
       {/* The column stands just behind the right-hand cloud. */}
       <CloudPillar progress={scrollYProgress} mx={mx} my={my} still={reduce} />
       <Cloud layer={RIGHT} progress={scrollYProgress} mx={mx} my={my} still={reduce} />

@@ -147,11 +147,7 @@ export function Hero() {
             </span>
             <span className="block overflow-hidden pb-[0.18em]">
               <motion.span {...line(1)} className="block">
-                {site.hero.statementLineTwoBefore}{" "}
-                <span className="font-script text-[1.18em] leading-none text-flame">
-                  {site.hero.statementScript}
-                </span>
-                {site.hero.statementLineTwoAfter}
+                {site.hero.statementLineTwo}
               </motion.span>
             </span>
           </p>
