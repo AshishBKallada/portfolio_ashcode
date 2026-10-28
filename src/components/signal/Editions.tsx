@@ -108,9 +108,9 @@ export function Chapter({
                 width={painting.width}
                 height={painting.height}
                 loading="lazy"
-                className="paint-fallback absolute inset-0 h-full w-full object-cover opacity-70 select-none"
+                className="paint-fallback absolute inset-0 h-full w-full object-cover select-none"
               />
-              <div className="paint-fallback absolute inset-0 bg-[linear-gradient(180deg,rgba(21,19,15,0.55)_0%,rgba(21,19,15,0.35)_45%,rgba(21,19,15,0.7)_100%)]" />
+              <div className="paint-fallback absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]" />
               {/* Erodes in from the bottom over the chapter before, as this chapter's intro rises. */}
               <DissolvePainting src={painting.src} track={`${id}-intro`} className="absolute inset-0 h-full w-full" />
             </ScrollZoom>

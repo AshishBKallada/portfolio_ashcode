@@ -1,8 +1,10 @@
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
+import { WORK_PAINTING } from "@/lib/hero";
 import { AboutScene } from "./AboutScene";
 import { Card, CardGrid, Chapter, DropCap } from "./Editions";
 import { PinnedCourier } from "./LeapingFigure";
+import { SwirlClouds } from "./SwirlClouds";
 
 const about = site.aboutEdition;
 
@@ -48,8 +50,9 @@ export function EditionAbout() {
 }
 
 /**
- * [02] Work, Editions-style: the leaping courier pinned over About's nebula,
- * then every project as a card in the cream panel sliding over them. The panel archive
+ * [02] Work, Editions-style: the leaping courier pinned over the marble city,
+ * with watercolour clouds (SwirlClouds) drifting through its sky, then every
+ * project as a card in the cream panel sliding over them. The panel archive
  * (ProjectIndex + ArchiveAccordion) is kept but not shown.
  */
 export function EditionWork() {
@@ -59,12 +62,16 @@ export function EditionWork() {
       label="Work"
       title="Work"
       lede="Dashboards, marketing sites and apps, built end to end and made to last."
-      painting={{ src: "/images/about/about-nebula.webp", width: 1586, height: 992 }}
+      painting={WORK_PAINTING}
       backdrop={
-        // The courier mid-leap, large and right of centre, pinned with the painting and drifting on scroll.
-        <div className="absolute inset-y-0 right-[3%] hidden items-center md:flex">
-          <PinnedCourier className="h-[82svh] w-auto [filter:drop-shadow(0_30px_50px_rgba(0,0,0,0.35))]" />
-        </div>
+        <>
+          {/* Watercolour clouds drifting through the painting's sky, behind the courier. */}
+          <SwirlClouds />
+          {/* The courier mid-leap, large and right of centre, pinned with the painting and drifting on scroll. */}
+          <div className="absolute inset-y-0 right-[3%] hidden items-center md:flex">
+            <PinnedCourier className="h-[82svh] w-auto [filter:drop-shadow(0_30px_50px_rgba(0,0,0,0.35))]" />
+          </div>
+        </>
       }
     >
       <CardGrid>

@@ -5,6 +5,9 @@ import { optimizedSrc } from "@/lib/images";
 /** Full-bleed photograph behind the home hero (SkyHero). */
 export const HERO_BG = { src: "/images/hero/hero-bg.webp", width: 1376, height: 768 };
 
+/** Work's painting (EditionWork), shared with the Index list (ListTransition) that rises over it. */
+export const WORK_PAINTING = { src: "/images/work/work-marble-city.jpg", width: 736, height: 1104 };
+
 /** Transparent cutout above the cumulus — Winged Courier (latest Photoroom export), as a WebP with lossless alpha. */
 export const HERO_FIGURE = {
   src: "/images/hero/hero-figure-winged-courier.webp",

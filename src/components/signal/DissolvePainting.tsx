@@ -61,10 +61,10 @@ void main() {
   vec2 s = aspect > uImgAspect ? vec2(1.0, uImgAspect / aspect) : vec2(aspect / uImgAspect, 1.0);
   vec3 img = texture(uImage, (uv - 0.5) * s + 0.5).rgb;
 
-  // The painting at 70% over night, under a scrim deepest top and bottom (as the CSS fallback).
-  float scrim = uv.y > 0.55 ? mix(0.35, 0.55, (uv.y - 0.55) / 0.45) : mix(0.7, 0.35, uv.y / 0.55);
-  vec3 painted = mix(mix(uNight, img, 0.7), uNight, scrim);
-
+  // The painting at full strength, as the hero's: night only in a band at the top (42%, gone
+  // by 22% down) and at the foot (28%, gone by 30% up), as the CSS fallback.
+  float scrim = max(0.42 * (1.0 - (1.0 - uv.y) / 0.22), 0.28 * (1.0 - uv.y / 0.30));
+  vec3 painted = mix(img, uNight, clamp(scrim, 0.0, 1.0));
 
   // Etched outlines: the strong luminance edges only (not the canvas weave), while the painting arrives.
   float luma = dot(img, vec3(0.299, 0.587, 0.114));

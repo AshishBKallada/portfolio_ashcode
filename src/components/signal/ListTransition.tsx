@@ -13,7 +13,10 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
+import { WORK_PAINTING } from "@/lib/hero";
 import { frame } from "./primitives";
+import { ScrollZoom } from "./ScrollZoom";
+import { SwirlClouds } from "./SwirlClouds";
 
 type Row = { title: string; meta: string; date: string; image: string; href: string; external?: boolean };
 
@@ -96,26 +99,30 @@ export function ListTransition() {
     <section
       id="index-list"
       aria-label="Index"
-      // The rail's column shows the nebula behind the panel, so the rail reads cream.
+      // The rail's column shows Work's painting behind the panel, so the rail reads cream.
       data-nav-theme="dark"
       className="signal-rail-bleed relative z-[1] h-[320svh] text-ink"
     >
       <div ref={ref} aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[320svh]" />
-      {/* About's nebula behind the panel, fixed to the viewport and clipped to the section, so it
-          lines up exactly with Work's pinned nebula (same treatment) as this section rises over it. */}
+      {/* Work's painting and drifting clouds behind the panel, fixed to the viewport and clipped to the
+          section, so it lines up with Work's pinned painting (same treatment) as this section rises over it. */}
       {/* Runs a screen past the section, with the panel, while Studio erodes in over them. */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -bottom-[100svh] [clip-path:inset(0)]">
         <div className="fixed inset-0 bg-night">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/about/about-nebula.webp"
-            alt=""
-            width={1586}
-            height={992}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover opacity-70 select-none"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,19,15,0.55)_0%,rgba(21,19,15,0.35)_45%,rgba(21,19,15,0.7)_100%)]" />
+          {/* Zoomed with Work's own pass (ScrollZoom on #index), so the two copies meet without a seam. */}
+          <ScrollZoom section="index">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={WORK_PAINTING.src}
+              alt=""
+              width={WORK_PAINTING.width}
+              height={WORK_PAINTING.height}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover select-none"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]" />
+          </ScrollZoom>
+          <SwirlClouds />
         </div>
       </div>
       {/* The panel starts at the rail's edge, leaving the rail's column open. */}

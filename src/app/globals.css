@@ -493,3 +493,33 @@ html[data-site-loading] .edition-nav__list li {
     animation: none !important;
   }
 }
+
+/* Work's watercolour clouds (SwirlClouds): a slow drift and bob, each on its own loop. */
+@keyframes swirl-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translate3d(4vw, -2.5vh, 0) rotate(2deg) scale(1.03);
+  }
+  50% {
+    transform: translate3d(7vw, 1vh, 0) rotate(-1deg) scale(1.06);
+  }
+  75% {
+    transform: translate3d(3vw, 3vh, 0) rotate(-3deg) scale(1.02);
+  }
+}
+.swirl-cloud {
+  animation: swirl-drift 44s ease-in-out infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+.swirl-clouds[data-running="true"] .swirl-cloud {
+  animation-play-state: running;
+}
+@media (prefers-reduced-motion: reduce) {
+  .swirl-cloud {
+    animation: none;
+  }
+}
