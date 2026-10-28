@@ -2,14 +2,15 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { RevealItem } from "@/components/motion/Reveal";
 import { HERO_BG } from "@/lib/hero";
-import { frame } from "./primitives";
 import { DissolvePainting } from "./DissolvePainting";
-import { TornEdge } from "./TornEdge";
+import { frame } from "./primitives";
+import { ScrollZoom } from "./ScrollZoom";
+import { TrackFade } from "./TrackFade";
 
 /*
  * Editions building blocks, after the reference's section anatomy:
  *   Chapter — a dark intro over the painting: a huge bold title and a
- *             drop-cap lede, then a cream panel torn across its top edge;
+ *             drop-cap lede, then a cream panel;
  *   DropCap — narrative serif with a swash script capital;
  *   Card    — 16:9 media, a small bold title, serif body, bordered button.
  */
@@ -38,19 +39,29 @@ export function Chapter({
   lede,
   heading,
   children,
-  seed,
   intro = true,
   besideRail = intro,
   backdrop,
+  pinned,
+  painting = HERO_BG,
 }: {
+  /** The painting pinned behind the intro; the hero's by default. */
+  painting?: { src: string; width: number; height: number };
   /**
    * The panel starts at the rail's edge with a straight top, leaving the rail's
    * column on what's behind it (the painting, or the pinned hero for About).
-   * Otherwise it runs full width, torn across the top. Defaults to `intro`.
+   * Otherwise it runs full width. Defaults to `intro`.
    */
   besideRail?: boolean;
   /** Set into the pinned painting layer, so the panel scrolls over it too. */
   backdrop?: ReactNode;
+  /**
+   * A scene pinned behind the whole section, full width under the rail, in
+   * place of the panel's cream: the title and lede (when there's no intro) and
+   * the panel's content, in cream, scroll over it. Give anything that needs a
+   * ground its own box (About's cards sit in a cream one).
+   */
+  pinned?: ReactNode;
   /** False when the intro is staged elsewhere (About's runs inside the hero). */
   intro?: boolean;
   id: string;
@@ -60,41 +71,54 @@ export function Chapter({
   /** The drop-cap heading that opens the cream panel, if any. */
   heading?: string;
   children: ReactNode;
-  seed: number;
 }) {
+  // A pinned scene spans the whole section, under the rail too, so the panel runs full width over it.
+  const beside = besideRail && !pinned;
   return (
-    // With an intro, the section tucks a screen up under the one before (z-0 under its z-[1]), so its
-    // painting is already pinned behind that panel and is uncovered as the panel scrolls away.
+    // With an intro, the section tucks a screen up over the end of the one before (z-[2] over its
+    // z-[1]), its painting pinned there and eroding in from the bottom, so the chapter before
+    // dissolves away under it. Clipped, so its own pinned painting doesn't hold past its end.
     <section
       id={id}
       aria-label={label}
-      className={`signal-rail-bleed relative isolate ${intro ? "z-0 -mt-[100svh]" : "z-[1]"}`}
+      className={`signal-rail-bleed relative isolate ${intro ? "z-[2] -mt-[100svh] overflow-clip" : "z-[1]"}`}
     >
+      {/* A sticky layer with a negative margin holds a screen past the section's end: the
+          next chapter's painting erodes in over it there. */}
+      {pinned ? (
+        <div aria-hidden className="pointer-events-none sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden">
+          {pinned}
+        </div>
+      ) : null}
       {intro ? (
         <>
           {/* The painting, pinned for the whole chapter; the cream panel below rises over it.
               Once the shader is drawing, the plain painting and night under it step aside: the
-              canvas is clear where it hasn't eroded in yet, and what's behind shows through. */}
+              canvas is clear where it hasn't eroded in yet, and the chapter before shows through. */}
           <div
             aria-hidden
-            className="pointer-events-none sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden bg-night has-[canvas[data-ready=true]]:bg-transparent [&:has(canvas[data-ready=true])>.paint-fallback]:invisible"
+            className="pointer-events-none sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden bg-night has-[canvas[data-ready=true]]:bg-transparent [&:has(canvas[data-ready=true])_.paint-fallback]:invisible"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={HERO_BG.src}
-              alt=""
-              width={HERO_BG.width}
-              height={HERO_BG.height}
-              loading="lazy"
-              className="paint-fallback absolute inset-0 h-full w-full object-cover opacity-70 select-none"
-            />
-            <div className="paint-fallback absolute inset-0 bg-[linear-gradient(180deg,rgba(21,19,15,0.55)_0%,rgba(21,19,15,0.35)_45%,rgba(21,19,15,0.7)_100%)]" />
-            {/* Erodes in from the bottom, behind the panel above as it lifts. */}
-            <DissolvePainting src={HERO_BG.src} track={`${id}-intro`} className="absolute inset-0 h-full w-full" />
-            {backdrop}
+            {/* Pushes in and drifts up across the chapter, under the content scrolling over it. */}
+            <ScrollZoom>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={painting.src}
+                alt=""
+                width={painting.width}
+                height={painting.height}
+                loading="lazy"
+                className="paint-fallback absolute inset-0 h-full w-full object-cover opacity-70 select-none"
+              />
+              <div className="paint-fallback absolute inset-0 bg-[linear-gradient(180deg,rgba(21,19,15,0.55)_0%,rgba(21,19,15,0.35)_45%,rgba(21,19,15,0.7)_100%)]" />
+              {/* Erodes in from the bottom over the chapter before, as this chapter's intro rises. */}
+              <DissolvePainting src={painting.src} track={`${id}-intro`} className="absolute inset-0 h-full w-full" />
+            </ScrollZoom>
+            {backdrop ? <TrackFade track={`${id}-intro`}>{backdrop}</TrackFade> : null}
           </div>
-          {/* The screen spent under the panel before. Unmarked, so that panel keeps the nav's tone. */}
-          <div aria-hidden className="h-[100svh]" />
+          {/* The screen spent over the end of the chapter before, as the painting erodes in.
+              Unmarked and click-through, so that chapter keeps the nav's tone and its links. */}
+          <div aria-hidden className="pointer-events-none h-[100svh]" />
           {/* Intro over the painting, entering from the bottom once the panel above has lifted. */}
           <div id={`${id}-intro`} data-nav-theme="dark" className="relative text-cream">
             <div className={`${frame} ${railInset} relative flex min-h-[100svh] flex-col justify-end pb-[clamp(2.5rem,6vh,4rem)]`}>
@@ -115,14 +139,32 @@ export function Chapter({
 
       {/* Cream panel. Beside the rail it starts at the rail's edge with a straight top and scrolls
           over what's pinned behind, which stays showing in the rail's column, so the rail keeps
-          its tone over that (dark) rather than the panel. Otherwise it's torn across the top. */}
+          its tone over that (dark) rather than the panel. Otherwise it runs full width. */}
       <div
-        data-nav-theme={besideRail ? "dark" : "light"}
-        // Beside the rail, at least a screen tall: the next chapter tucks a screen up under it.
-        className={`relative bg-background text-ink ${besideRail ? "min-h-[100svh] md:ml-[var(--nav-sidebar-w)]" : ""}`}
+        data-nav-theme={beside || pinned ? "dark" : "light"}
+        // Beside the rail, at least a screen tall: the next chapter tucks a screen up over its end.
+        // Over a pinned scene the panel is clear, its text cream; boxes within it carry their own ground.
+        className={`relative ${pinned ? "text-cream" : "bg-background text-ink"} ${beside ? "min-h-[100svh] md:ml-[var(--nav-sidebar-w)]" : ""}`}
       >
-        {besideRail ? null : <TornEdge seed={seed} />}
-        <div className={`${frame} ${besideRail ? "md:px-10" : railInset} relative ${heading ? "pt-[clamp(3.5rem,8vh,5.5rem)]" : "pt-[clamp(1.5rem,4vh,2.5rem)]"} pb-[clamp(4rem,10vh,7.5rem)]`}>
+        {/* Over a pinned scene: first a clear screen, while the scene (clear where it hasn't
+            arrived) erodes in from the bottom over what's behind; then the chapter's title and
+            lede, a screen tall, rising with it. Its top drives the erosion (`${id}-reveal`). */}
+        {pinned && !intro ? <div aria-hidden className="h-[100svh]" /> : null}
+        {pinned && !intro ? (
+          <div id={`${id}-reveal`} className={`${frame} ${railInset} relative flex min-h-[100svh] flex-col justify-end pb-[clamp(2.5rem,6vh,4rem)]`}>
+            <RevealItem>
+              <h2 className="py-10 font-headline text-[clamp(4.5rem,13vw,13rem)] leading-[0.88] tracking-[-0.045em] [text-shadow:0_6px_60px_rgba(0,0,0,0.35)] md:py-8">
+                {title}
+              </h2>
+            </RevealItem>
+            <RevealItem delay={0.1}>
+              <p className="max-w-[44rem] text-[clamp(1.6rem,2.8vw,2.6rem)] leading-[1.02] text-pretty [text-shadow:0_2px_24px_rgba(0,0,0,0.4)]">
+                <DropCap>{lede}</DropCap>
+              </p>
+            </RevealItem>
+          </div>
+        ) : null}
+        <div className={`${frame} ${beside ? "md:px-10" : railInset} relative ${pinned ? "[text-shadow:0_2px_18px_rgba(0,0,0,0.55)]" : ""} ${heading ? "pt-[clamp(3.5rem,8vh,5.5rem)]" : "pt-[clamp(1.5rem,4vh,2.5rem)]"} pb-[clamp(4rem,10vh,7.5rem)]`}>
           {heading ? (
             <h3 className="max-w-[60rem] py-6 text-[clamp(2.4rem,5vw,4.5rem)] leading-[0.98] text-balance md:py-10">
               <DropCap>{heading}</DropCap>

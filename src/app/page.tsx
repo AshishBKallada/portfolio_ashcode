@@ -23,9 +23,9 @@ export default function Home() {
         <EditionAbout />
         <EditionWork />
         <ListTransition />
-        {/* Studio, tucked a screen up under the end of the Index (z-0 under its z-[1]) so the Index lifts away off its painting, which is then held behind the close and the contact + footer card.
+        {/* Studio, tucked a screen up over the end of the Index (z-[2] over its z-[1]) so its painting erodes in over the held Index, and is then held behind the close and the contact + footer card.
             The painted ContactEdition and the cream ContactStatement are kept but not shown. */}
-        <div className="signal-rail-bleed relative z-0 -mt-[100svh]">
+        <div className="signal-rail-bleed relative z-[2] -mt-[100svh]">
           <StudioEdition>
             <ClosingEdition />
           </StudioEdition>

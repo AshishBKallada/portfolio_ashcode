@@ -96,12 +96,32 @@ export function ListTransition() {
     <section
       id="index-list"
       aria-label="Index"
-      data-nav-theme="light"
-      className="signal-rail-bleed relative z-[1] h-[320svh] bg-background text-ink"
+      // The rail's column shows the nebula behind the panel, so the rail reads cream.
+      data-nav-theme="dark"
+      className="signal-rail-bleed relative z-[1] h-[320svh] text-ink"
     >
       <div ref={ref} aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[320svh]" />
-      <div className="sticky top-0 h-[100svh] overflow-hidden">
-        <div className={`${frame} relative flex h-full flex-col py-8 md:pl-[calc(var(--nav-sidebar-w)+1.5rem)]`}>
+      {/* About's nebula behind the panel, fixed to the viewport and clipped to the section, so it
+          lines up exactly with Work's pinned nebula (same treatment) as this section rises over it. */}
+      {/* Runs a screen past the section, with the panel, while Studio erodes in over them. */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -bottom-[100svh] [clip-path:inset(0)]">
+        <div className="fixed inset-0 bg-night">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/about/about-nebula.webp"
+            alt=""
+            width={1586}
+            height={992}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover opacity-70 select-none"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,19,15,0.55)_0%,rgba(21,19,15,0.35)_45%,rgba(21,19,15,0.7)_100%)]" />
+        </div>
+      </div>
+      {/* The panel starts at the rail's edge, leaving the rail's column open. */}
+      {/* Holds a screen past the section's end (the negative margin), as Studio's painting erodes in over it. */}
+      <div className="sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden bg-background md:ml-[var(--nav-sidebar-w)]">
+        <div className={`${frame} relative flex h-full flex-col py-8 md:px-10`}>
           {/* Header: label, view switch. */}
           <div className="relative z-20 flex items-start justify-between gap-6">
             <p className="font-headline text-[18px] leading-[1.1] tracking-[-0.02em]">
@@ -183,7 +203,7 @@ export function ListTransition() {
           <motion.p
             aria-label={site.name}
             style={reduce ? undefined : { scale: nameScale, y: nameY }}
-            className="pointer-events-none absolute inset-x-0 top-20 z-0 flex origin-top items-baseline justify-between px-4 text-[clamp(4rem,15vw,15rem)] leading-[0.8] will-change-transform sm:px-8 md:pl-[calc(var(--nav-sidebar-w)+1.5rem)]"
+            className="pointer-events-none absolute inset-x-0 top-20 z-0 flex origin-top items-baseline justify-between px-4 text-[clamp(4rem,15vw,15rem)] leading-[0.8] will-change-transform sm:px-8 md:px-10"
           >
             <span className="font-headline tracking-[-0.05em]">{nameA}</span>
             <span className="font-narrative tracking-[-0.04em]">

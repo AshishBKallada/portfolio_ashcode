@@ -400,7 +400,14 @@ body {
 }
 .edition-nav__list li {
   translate: calc(var(--card-x) + var(--card-pad)) 0;
-  transition: translate var(--nav-dur) var(--nav-ease) calc(var(--i) * 28ms);
+  transition:
+    translate var(--nav-dur) var(--nav-ease) calc(var(--i) * 28ms),
+    opacity 0.6s cubic-bezier(0.41, 0.19, 0.13, 0.95) calc(0.075s + var(--i) * 75ms);
+}
+/* Held back under the boot screen (SiteLoader), then staggered in as it lifts. */
+html[data-site-loading] .edition-nav__subtitle,
+html[data-site-loading] .edition-nav__list li {
+  opacity: 0;
 }
 .edition-nav[data-state="rail"] .edition-nav__list li {
   translate: var(--rail-pad) 0;
@@ -453,21 +460,22 @@ body {
 
 /* Hero construction lines: drawn in bright, then settled to a faint hairline
    (stroke 75% → 15% white), each group a beat after the last. */
-.hero-lines :is(line, circle) {
+.hero-lines :is(path, circle) {
   fill: none;
   stroke: rgb(255 255 255 / 0.15);
-  stroke-width: 0.6px;
+  stroke-width: 0.4px;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   vector-effect: non-scaling-stroke;
 }
-.hero-lines[data-active="true"] :is(line, circle) {
+/* As the reference: every line draws at once over 3s, bright, then fades to a hairline over 4s. */
+.hero-lines[data-active="true"] :is(path, circle) {
   animation:
-    hero-lines-draw 3s cubic-bezier(0.34, 0.22, 0.47, 0.84) calc(var(--i) * 0.12s) forwards,
-    hero-lines-fade 4s ease-out calc(var(--i) * 0.12s) forwards;
+    hero-lines-draw 3s cubic-bezier(0.34, 0.22, 0.47, 0.84) forwards,
+    hero-lines-fade 4s ease-out forwards;
 }
 /* After the intro, scroll owns the stroke: --erase 0 → 1 winds each line back off. */
-.hero-lines[data-drawn="true"] :is(line, circle) {
+.hero-lines[data-drawn="true"] :is(path, circle) {
   animation: none;
   stroke: rgb(255 255 255 / 0.15);
   stroke-dashoffset: var(--erase, 0);
@@ -480,7 +488,7 @@ body {
   to { stroke: rgb(255 255 255 / 0.15); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-lines :is(line, circle) {
+  .hero-lines :is(path, circle) {
     stroke-dashoffset: 0;
     animation: none !important;
   }

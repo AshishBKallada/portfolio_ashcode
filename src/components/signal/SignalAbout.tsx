@@ -41,7 +41,7 @@ export function HeroStage({ hero, children }: { hero: ReactNode; children: React
   return (
     <div ref={stageRef} className="hero-stage relative bg-background text-foreground">
       <div className="hero-pin sticky top-0 z-0 h-[100svh] min-h-[640px] overflow-hidden">{hero}</div>
-      {/* Holds the hero pinned through its reveal, the camera push and About (SkyHero). */}
+      {/* Holds the hero pinned through its reveal and a beat on the phrase (SkyHero). */}
       <div aria-hidden style={{ height: `${HERO_PIN_VH * 100}svh` }} />
       <div ref={contentRef} className="signal-main-gutter relative z-10">
         {children}

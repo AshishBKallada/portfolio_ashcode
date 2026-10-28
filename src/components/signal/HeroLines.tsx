@@ -4,7 +4,6 @@ import { motion, useMotionValueEvent, type MotionValue } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 const CARD_W = 340;
-const CARD_H = 464;
 /** Fraction of the viewport width the card sits left of centre (--nav-card-shift). */
 export const NAV_CARD_SHIFT = 0.12;
 
@@ -14,11 +13,13 @@ type Size = { w: number; h: number };
 const DRAWN_MS = 5200;
 
 /**
- * Construction lines laid out around the hero nav card, in real pixels so
- * they stay locked to it at any viewport size: the card's circumcircle, two
- * vesica arcs through its centre, wide arcs grazing its top and bottom, the
- * viewport diagonals, and the card's edges run out to the screen. They draw
- * in bright once `active` flips, then settle to a faint hairline. Once drawn,
+ * Construction lines round the hero nav card, after Shopify Editions' "da Vinci"
+ * lines: golden-section verticals and horizontals, the centre vertical, the
+ * two diagonals, a golden spiral off two opposite corners and two wide arcs
+ * above and below. Shapes are in the reference's own space (a 1440×880 frame
+ * with the 340×464 card at 550,208), placed on the card in real pixels so they
+ * stay locked to it at any viewport size. They all draw in at once when
+ * `active` flips, bright, then settle to a faint hairline. Once drawn,
  * `erase` (0 → 1, from scroll) winds them back off the way they came.
  */
 export function HeroLines({ active, erase }: { active: boolean; erase: MotionValue<number> }) {
@@ -48,8 +49,6 @@ export function HeroLines({ active, erase }: { active: boolean; erase: MotionVal
     return () => ro.disconnect();
   }, []);
 
-  const shapes = size ? geometry(size) : [];
-
   return (
     <motion.svg
       ref={ref}
@@ -58,58 +57,65 @@ export function HeroLines({ active, erase }: { active: boolean; erase: MotionVal
       data-active={active ? "true" : "false"}
       data-drawn={drawn ? "true" : "false"}
       viewBox={size ? `0 0 ${size.w} ${size.h}` : undefined}
-      className="hero-lines pointer-events-none absolute inset-0 h-full w-full"
+      className="hero-lines pointer-events-none absolute inset-0 h-full w-full overflow-visible"
     >
-      {shapes.map((s, i) =>
-        s.kind === "circle" ? (
-          <circle key={i} cx={s.cx} cy={s.cy} r={s.r} pathLength={1} style={{ "--i": s.order } as React.CSSProperties} />
-        ) : (
-          <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} pathLength={1} style={{ "--i": s.order } as React.CSSProperties} />
-        ),
-      )}
+      {size ? (
+        <g transform={placeOnCard(size)}>
+          {PATHS.map((d) => (
+            <path key={d} d={d} pathLength={1} />
+          ))}
+          {CIRCLES.map(({ cx, cy, r, turn }) => (
+            <circle key={`${cx},${cy}`} cx={cx} cy={cy} r={r} transform={`rotate(${turn} ${cx} ${cy})`} pathLength={1} />
+          ))}
+        </g>
+      ) : null}
     </motion.svg>
   );
 }
 
-type Shape =
-  | { kind: "circle"; cx: number; cy: number; r: number; order: number }
-  | { kind: "line"; x1: number; y1: number; x2: number; y2: number; order: number };
+/** The reference's card centre, in its own space. */
+const REF_CX = 720;
+const REF_CY = 440;
 
-function geometry({ w, h }: Size): Shape[] {
+/** Maps the reference's space onto the card: centred on it, scaled with it on narrow phones. */
+function placeOnCard({ w, h }: Size) {
   // Phones keep the card dead centre; the shift only applies from md up.
   const cx = w / 2 - (w >= 768 ? w * NAV_CARD_SHIFT : 0);
   const cy = h / 2;
-  const cw = Math.min(CARD_W, w - 24);
-  const ch = (cw / CARD_W) * CARD_H;
-  const left = cx - cw / 2;
-  const right = cx + cw / 2;
-  const top = cy - ch / 2;
-  const bottom = cy + ch / 2;
-  const diag = Math.hypot(cw, ch) / 2;
-  const far = Math.hypot(w, h);
-
-  return [
-    // The card's edges, run out to the screen.
-    { kind: "line", x1: left, y1: 0, x2: left, y2: h, order: 0 },
-    { kind: "line", x1: right, y1: 0, x2: right, y2: h, order: 0 },
-    { kind: "line", x1: 0, y1: top, x2: w, y2: top, order: 1 },
-    { kind: "line", x1: 0, y1: bottom, x2: w, y2: bottom, order: 1 },
-    // Diagonals crossing at the card's centre, run out to the screen's edges.
-    { kind: "line", x1: cx - h / 2, y1: 0, x2: cx + h / 2, y2: h, order: 2 },
-    { kind: "line", x1: cx + h / 2, y1: 0, x2: cx - h / 2, y2: h, order: 2 },
-    // Circumcircle through the card's corners, and a ring twice as wide.
-    { kind: "circle", cx, cy, r: diag, order: 3 },
-    { kind: "circle", cx, cy, r: diag * 1.62, order: 4 },
-    // Vesica: two circles the card's height, each through the other's centre.
-    { kind: "circle", cx, cy: top, r: ch / 2, order: 5 },
-    { kind: "circle", cx, cy: bottom, r: ch / 2, order: 5 },
-    // Wide arcs grazing the card's top and bottom from far above and below.
-    { kind: "circle", cx, cy: top - far * 0.5, r: far * 0.5, order: 6 },
-    { kind: "circle", cx, cy: bottom + far * 0.5, r: far * 0.5, order: 6 },
-    // Corner circles reaching in to touch the card's corners.
-    { kind: "circle", cx: 0, cy: 0, r: Math.hypot(left, top), order: 7 },
-    { kind: "circle", cx: w, cy: h, r: Math.hypot(w - right, h - bottom), order: 7 },
-    { kind: "circle", cx: w, cy: 0, r: Math.hypot(w - right, top), order: 7 },
-    { kind: "circle", cx: 0, cy: h, r: Math.hypot(left, h - bottom), order: 7 },
-  ];
+  const k = Math.min(CARD_W, w - 24) / CARD_W;
+  return `translate(${cx} ${cy}) scale(${k}) translate(${-REF_CX} ${-REF_CY})`;
 }
+
+// Each path runs the way the reference draws it.
+const PATHS = [
+  // Golden-section horizontals: one out to the left at the upper section, one out to the right at the lower.
+  "M-1840 336.13h2390.03",
+  "M889.97 543.87h2390.03",
+  // The centre vertical and the golden-section verticals (the card's sides).
+  "M720 -1000v2880",
+  "M550.03 -1000v2880",
+  "M889.97 -1000v2880",
+  // The diagonals through the card's centre.
+  "M-1636.36 -1000L3076.36 1880",
+  "M3076.36 -1000L-1636.36 1880",
+  // Golden spiral off the top-left corner, squaring in.
+  "M339.94 -1000v1336.13",
+  "M339.94 207.74h210.09",
+  "M420.19 207.74v128.39",
+  "M339.94 256.78h80.25",
+  "M389.53 256.78v-49.04",
+  "M389.53 238.05h30.65",
+  // And off the bottom-right corner.
+  "M1100.06 543.87v1336.13",
+  "M889.97 672.26h210.09",
+  "M1019.81 672.26v-128.39",
+  "M1019.81 623.22h80.25",
+  "M1050.47 623.22v49.04",
+  "M1050.47 641.95h-30.65",
+];
+
+// Arcs grazing the card from above and below; the turn sets where each starts drawing.
+const CIRCLES = [
+  { cx: 720, cy: 15, r: 425, turn: -45 },
+  { cx: 720, cy: 865, r: 425, turn: 45 },
+];

@@ -22,9 +22,7 @@ import {
   HERO_SEAT_CLOUD_URL,
 } from "@/lib/hero";
 import { introEase } from "@/lib/motion";
-import { DropCap } from "./Editions";
 import { HeroLines } from "./HeroLines";
-import { frame } from "./primitives";
 import { HeroCarpet } from "./HeroCarpet";
 import { HeroWireDecor } from "./HeroWireDecor";
 
@@ -33,14 +31,14 @@ const CLOUD_RIPPLE: RippleImageItem[] = [
 ];
 
 const START = 0.15;
+/** How long the painting waits after the loader, while the construction lines draw over the dark. */
+const SCENE_DELAY = 1;
 const settle = [0.16, 1, 0.3, 1] as const;
 /** Scroll distance of the cloud/figure reveal, in viewport heights (HeroStage pins the hero for it). */
 export const REVEAL_VH = 1.1;
-/** Then a beat's hold, the camera push into the painting, and About over it. */
-const CAM_START_VH = 1.35;
-const CAM_VH = 1.15;
-/** Total pinned scroll for the hero, in viewport heights (HeroStage's spacer). */
-export const HERO_PIN_VH = CAM_START_VH + CAM_VH + 0.75;
+/** Total pinned scroll for the hero, in viewport heights (HeroStage's spacer). About's scene
+ *  starts eroding in over it just as the reveal ends, so scrolling never stalls on the phrase. */
+export const HERO_PIN_VH = REVEAL_VH - 0.1;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 /** The carpet's entry: it waits out the loader's fade, then takes its time crossing the sky. */
@@ -73,30 +71,14 @@ export function SkyHero() {
     return Math.min(1, Math.max(0, y / (vh * REVEAL_VH)));
   });
   const vw = () => (typeof window !== "undefined" ? window.innerWidth : 1280);
-  // The camera push: the painting swells and slides left (the camera moving
-  // right and in), the line, cloud and figure fly past the lens, and About
-  // rises over the pushed-in painting. Function transforms throughout.
-  const cam = useTransform(scrollY, (y) => {
-    const vh = typeof window !== "undefined" ? window.innerHeight : 800;
-    return clamp01((y - vh * CAM_START_VH) / (vh * CAM_VH));
-  });
-  const ease = (v: number) => v * v * (3 - 2 * v);
-  const camBgScale = useTransform(cam, (c) => 1 + ease(c) * 0.55);
-  const camBgX = useTransform(cam, (c) => -ease(c) * 0.16 * vw());
-  const flyOut = useTransform(cam, (c) => 1 - clamp01(c / 0.45));
-  const aboutIn = useTransform(cam, (c) => ease(clamp01((c - 0.5) / 0.4)));
-  const aboutY = useTransform(aboutIn, (a) => (1 - a) * 48);
-  const aboutScrim = useTransform(aboutIn, (a) => a * 0.4);
-
-  const cloudRevealX = useTransform([reveal, cam], ([r, c]: number[]) => (r * -0.62 - ease(c) * 0.5) * vw());
-  const cloudRevealScale = useTransform([reveal, cam], ([r, c]: number[]) => (1 + r * 0.35) * (1 + ease(c) * 1.2));
-  const figureRevealX = useTransform([reveal, cam], ([r, c]: number[]) => (r * 0.42 + ease(c) * 0.5) * vw());
-  const figureRevealScale = useTransform([reveal, cam], ([r, c]: number[]) => (1 + r * 0.1) * (1 + ease(c) * 0.9));
-  const lineOpacity = useTransform([reveal, cam], ([r, c]: number[]) => clamp01((r - 0.12) / 0.48) * (1 - clamp01(c / 0.4)));
+  const cloudRevealX = useTransform(reveal, (r) => r * -0.62 * vw());
+  const cloudRevealScale = useTransform(reveal, (r) => 1 + r * 0.35);
+  const figureRevealX = useTransform(reveal, (r) => r * 0.42 * vw());
+  const figureRevealScale = useTransform(reveal, (r) => 1 + r * 0.1);
+  const lineOpacity = useTransform(reveal, (r) => clamp01((r - 0.12) / 0.48));
   // The construction lines wind back off over the first stretch of the reveal.
   const linesErase = useTransform(reveal, [0, 0.35], [0, 1]);
-  const lineScale = useTransform([reveal, cam], ([r, c]: number[]) => (0.92 + r * 0.08) * (1 + ease(c) * 1.4));
-  const lineX = useTransform(cam, (c) => -ease(c) * 0.25 * vw());
+  const lineScale = useTransform(reveal, (r) => 0.92 + r * 0.08);
   const decorScrollY = useTransform(scrollT, [0, 1], [0, -36]);
 
   const rawX = useMotionValue(0);
@@ -144,16 +126,13 @@ export function SkyHero() {
             ? { opacity: 1, scale: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } }
             : { opacity: 0, scale: 1.06, filter: "blur(14px)" }
         }
-        transition={{ duration: 1.6, ease: settle }}
+        // Held back a beat so the construction lines draw over the dark before the painting arrives.
+        transition={{ duration: 1.6, ease: settle, delay: reduce ? 0 : SCENE_DELAY }}
         className="absolute inset-0 bg-night"
       >
         <div aria-hidden className="pointer-events-none absolute inset-0 z-0 bg-night" />
 
-        <motion.div
-          aria-hidden
-          style={reduce ? undefined : { x: camBgX, scale: camBgScale }}
-          className="pointer-events-none absolute inset-0 z-[1] will-change-transform"
-        >
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-[1]">
         <motion.div
           aria-hidden
           style={reduce ? undefined : { x: bgX, y: bgY, scale: bgScrollScale }}
@@ -169,9 +148,9 @@ export function SkyHero() {
             className="h-full w-full select-none object-cover object-center"
           />
         </motion.div>
-        </motion.div>
+        </div>
 
-        {/* Scrims only where text sits: the top-right tags and the seam at the bottom. */}
+        {/* Scrims only where text sits: the top-right actions and the seam at the bottom. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]"
@@ -182,7 +161,7 @@ export function SkyHero() {
         {/* Revealed as the cloud and figure part. */}
         <motion.p
           aria-hidden
-          style={reduce ? undefined : { opacity: lineOpacity, scale: lineScale, x: lineX }}
+          style={reduce ? undefined : { opacity: lineOpacity, scale: lineScale }}
           className="pointer-events-none absolute inset-0 z-[2] flex flex-col items-center justify-center text-center leading-[0.86] text-cream will-change-transform [text-shadow:0_6px_60px_rgba(0,0,0,0.35)]"
         >
           {/* Editions heading style: a swash script capital, the rest in the narrative serif. */}
@@ -198,11 +177,11 @@ export function SkyHero() {
         </motion.p>
 
         {/* The carpet under the courier's feet, in a layer of its own that moves as the
-            figure's does (reveal, camera push, pointer), over the cloud and under the
+            figure's does (reveal, pointer), over the cloud and under the
             figure. Once the loader has gone and the model is in, it sweeps in from the
             top left over the cloud, turning (HeroCarpet spins it), and settles under the feet. */}
         <motion.div
-          style={reduce ? undefined : { x: figureRevealX, scale: figureRevealScale, opacity: flyOut }}
+          style={reduce ? undefined : { x: figureRevealX, scale: figureRevealScale }}
           className="pointer-events-none absolute inset-0 z-[4] will-change-transform max-md:hidden"
         >
           <motion.div style={reduce ? undefined : { x: figureX, y: figureY, rotate: figureRotate }} className="absolute inset-0">
@@ -223,7 +202,7 @@ export function SkyHero() {
           </motion.div>
         </motion.div>
 
-        <motion.div style={reduce ? undefined : { x: cloudRevealX, scale: cloudRevealScale, opacity: flyOut }} className="pointer-events-none absolute inset-0 z-[3] will-change-transform">
+        <motion.div style={reduce ? undefined : { x: cloudRevealX, scale: cloudRevealScale }} className="pointer-events-none absolute inset-0 z-[3] will-change-transform">
           <motion.div style={reduce ? undefined : { x: cloudX, y: cloudY }} className="pointer-events-none absolute inset-0">
             <motion.div
               aria-hidden
@@ -259,7 +238,7 @@ export function SkyHero() {
         </motion.div>
 
         <motion.div
-          style={reduce ? undefined : { x: figureRevealX, scale: figureRevealScale, opacity: flyOut }}
+          style={reduce ? undefined : { x: figureRevealX, scale: figureRevealScale }}
           className="absolute inset-0 z-[4] will-change-transform"
         >
           <motion.div
@@ -298,36 +277,18 @@ export function SkyHero() {
           </motion.div>
         </motion.div>
 
-        {/* Construction lines round the nav card; they draw in as the loader lifts and erase on scroll. */}
-        <div className="pointer-events-none absolute inset-0 z-[5] max-md:hidden">
-          <HeroLines active={ready} erase={linesErase} />
+        <div className="pointer-events-none absolute inset-0 z-[6]">
+          <HeroWireDecor mx={mx} my={my} scrollY={decorScrollY} still={reduce} ready={ready} />
         </div>
 
-        <motion.div style={reduce ? undefined : { opacity: flyOut }} className="pointer-events-none absolute inset-0 z-[6]">
-          <HeroWireDecor mx={mx} my={my} scrollY={decorScrollY} still={reduce} ready={ready} />
-        </motion.div>
-
-        {/* About, over the pushed-in painting. */}
-        <motion.div
-          aria-hidden
-          style={{ opacity: reduce ? 0 : aboutScrim }}
-          className="pointer-events-none absolute inset-0 z-[7] bg-night"
-        />
-        <motion.div
-          style={reduce ? { opacity: 0 } : { opacity: aboutIn, y: aboutY }}
-          className="pointer-events-none absolute inset-0 z-[8] text-cream"
-        >
-          <div className={`${frame} flex h-full flex-col justify-end pb-[clamp(5rem,14vh,9rem)] md:justify-center md:pl-[calc(var(--nav-sidebar-w)+1.5rem)]`}>
-            <h2 className="py-8 font-headline text-[clamp(4.5rem,13vw,13rem)] leading-[0.88] tracking-[-0.045em] [text-shadow:0_6px_60px_rgba(0,0,0,0.35)] md:py-16">
-              About
-            </h2>
-            <p className="max-w-[44rem] text-[clamp(1.6rem,2.8vw,2.6rem)] leading-[1.02] text-pretty [text-shadow:0_2px_24px_rgba(0,0,0,0.4)]">
-              <DropCap>{site.aboutEdition.body}</DropCap>
-            </p>
-          </div>
-        </motion.div>
-
       </motion.div>
+
+      {/* Construction lines round the nav card, outside the scene's fade: as the loader lifts they
+          draw in bright over the dark, and the painting comes up under them a beat later. They
+          erase on scroll. */}
+      <div className="pointer-events-none absolute inset-0 z-[5] max-md:hidden">
+        <HeroLines active={ready} erase={linesErase} />
+      </div>
     </section>
   );
 }

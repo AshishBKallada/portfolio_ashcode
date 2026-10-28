@@ -9,13 +9,15 @@ import { site } from "@/data/site";
 import { HERO_FIGURE_URL, HERO_SEAT_CLOUD_URL } from "@/lib/hero";
 
 /**
- * Boot sequence, Editions-style, all on one black screen:
+ * Boot sequence, after Shopify Editions, all on one black screen:
  *   1. a hairline frame, the size and place of the nav card, draws itself
- *      round to about 80% while the page, fonts and hero images load;
- *   2. once they're in, it closes the last stretch and the wordmark fades in
- *      where the nav card's title sits;
+ *      round to about 80% while the page, fonts and hero images load, and the
+ *      wordmark fades in at the frame's vertical centre;
+ *   2. once they're in, the frame closes the last stretch and the wordmark
+ *      slides up to where the nav card's title sits;
  *   3. the screen lifts off, leaving the nav card in the same spot over the
- *      hero, whose construction lines then draw in.
+ *      hero; its tagline and links fade in one after another (globals.css:
+ *      html[data-site-loading]), and the hero's construction lines draw in.
  * Off the home page, or with reduced motion, the screen just fades out.
  */
 
@@ -26,6 +28,9 @@ const FADE_S = 0.52;
 const LOAD_EASE = "cubic-bezier(.45,.28,.34,.84)";
 const COMPLETE_EASE = "cubic-bezier(.72,.16,.19,.96)";
 const FADE_EASE = "cubic-bezier(.25,.46,.45,.94)";
+const FADE_DELAY_S = 0.2;
+const SLIDE_S = 0.6;
+const SLIDE_EASE = "cubic-bezier(.41,.19,.13,.95)";
 // Dismiss even if `load` or `fonts.ready` never resolve (a stalled asset).
 const MAX_WAIT_MS = 8000;
 
@@ -56,6 +61,10 @@ export function SiteLoader() {
     let cancelled = false;
     let finishing = false;
     let cap = 0;
+    // Holds the nav card's tagline and links back until the screen lifts.
+    const html = document.documentElement;
+    if (isHome && !reduceRef.current) html.dataset.siteLoading = "";
+    const release = () => delete html.dataset.siteLoading;
 
     const ctx = gsap.context(() => {
       const load = gsap.fromTo(
@@ -63,6 +72,17 @@ export function SiteLoader() {
         { strokeDashoffset: 1 },
         { strokeDashoffset: 0.2, duration: LOAD_S, ease: LOAD_EASE },
       );
+      // The wordmark starts at the frame's vertical centre, where it fades in while loading.
+      const box = title.parentElement!;
+      const centre = box.clientHeight / 2 - title.offsetTop - title.offsetHeight / 2;
+      const intro =
+        isHome && !reduceRef.current
+          ? gsap.fromTo(
+              title,
+              { autoAlpha: 0, y: centre },
+              { autoAlpha: 1, duration: FADE_S, delay: FADE_DELAY_S, ease: FADE_EASE },
+            )
+          : null;
 
       const finish = () => {
         if (cancelled || finishing) return;
@@ -70,6 +90,8 @@ export function SiteLoader() {
         load.kill();
 
         if (reduceRef.current || !isHome) {
+          intro?.kill();
+          release();
           markLoaded();
           gsap.to(root, {
             autoAlpha: 0,
@@ -80,13 +102,18 @@ export function SiteLoader() {
           return;
         }
 
+        intro?.progress(1);
         gsap
           .timeline({ onComplete: () => setMounted(false) })
           .to(rect, { strokeDashoffset: 0, duration: COMPLETE_S, ease: COMPLETE_EASE })
-          .to(title, { autoAlpha: 1, duration: FADE_S, ease: FADE_EASE }, "-=0.2")
-          // The screen lifts; the nav card underneath sits in the same place.
-          .add(() => markLoaded(), "+=0.15")
-          .to(root, { autoAlpha: 0, duration: 0.6, ease: FADE_EASE }, "<");
+          // The wordmark rises to the nav card's title as the frame closes.
+          .to(title, { y: 0, duration: SLIDE_S, ease: SLIDE_EASE }, `-=${SLIDE_S * 0.5}`)
+          // The screen lifts; the nav card underneath sits in the same place and its links stagger in.
+          .add(() => {
+            release();
+            markLoaded();
+          })
+          .to(root, { autoAlpha: 0, duration: FADE_S, ease: FADE_EASE }, "<");
       };
 
       const waitForLoad = () =>
@@ -113,6 +140,7 @@ export function SiteLoader() {
     return () => {
       cancelled = true;
       window.clearTimeout(cap);
+      release();
       ctx.revert();
     };
   }, [isHome, markLoaded]);

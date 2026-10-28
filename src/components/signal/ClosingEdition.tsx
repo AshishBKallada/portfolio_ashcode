@@ -14,7 +14,7 @@ const copy = site.contactStatement;
 export function ClosingEdition() {
   return (
     <div data-nav-theme="dark" className="relative">
-      <div className={`${frame} relative flex min-h-[85svh] flex-col justify-end pb-[clamp(4rem,10vh,7rem)] text-cream md:pl-[calc(var(--nav-sidebar-w)+1.5rem)]`}>
+      <div className={`${frame} relative flex min-h-[45svh] flex-col justify-end pb-[clamp(4rem,10vh,7rem)] text-cream md:pl-[calc(var(--nav-sidebar-w)+1.5rem)]`}>
         <h2 className="sr-only">
           {copy.lines.join(" ")} {copy.script}
         </h2>

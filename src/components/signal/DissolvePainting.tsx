@@ -30,6 +30,7 @@ uniform float uHeight;
 uniform float uDepth;
 // 1 when the canvas is pinned and uncovered from below: the erosion then runs bottom first.
 uniform float uPinned;
+uniform float uClear;
 uniform float uTime;
 uniform vec3 uGround;
 uniform vec3 uNight;
@@ -90,7 +91,7 @@ void main() {
   col += (hash(uv * uRes + fract(uTime * 7.0) * 100.0) - 0.5) * 0.035;
   // Pinned, the uneroded ground is clear rather than ground-coloured, so whatever is
   // pinned behind (the hero, in the rail's column) shows until the painting arrives.
-  float alpha = mix(1.0, clamp(reveal + glow, 0.0, 1.0), uPinned);
+  float alpha = mix(1.0, clamp(reveal + glow, 0.0, 1.0), max(uPinned, uClear));
   outColor = vec4(col, alpha);
 }`;
 
@@ -105,8 +106,11 @@ export function DissolvePainting({
   src,
   ground = "--background",
   track,
+  clear = false,
   className = "",
 }: {
+  /** The uneroded part is clear rather than ground-coloured, so whatever is behind shows until the painting arrives. */
+  clear?: boolean;
   src: string;
   /** The CSS variable for the colour it erodes away: the page ground, or night after another painting. */
   ground?: string;
@@ -146,7 +150,7 @@ export function DissolvePainting({
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     const u = (name: string) => gl.getUniformLocation(prog, name);
-    const [uRes, uImgAspect, uProgress, uHeight, uDepth, uPinned, uTime, uGround, uNight] = [
+    const [uRes, uImgAspect, uProgress, uHeight, uDepth, uPinned, uTime, uGround, uNight, uClear] = [
       "uRes",
       "uImgAspect",
       "uProgress",
@@ -156,6 +160,7 @@ export function DissolvePainting({
       "uTime",
       "uGround",
       "uNight",
+      "uClear",
     ].map(u);
 
     let raf = 0;
@@ -192,11 +197,17 @@ export function DissolvePainting({
       gl.uniform1f(uHeight, height / vh);
       gl.uniform1f(uDepth, depth);
       gl.uniform1f(uPinned, trackEl ? 1 : 0);
+      gl.uniform1f(uClear, clear ? 1 : 0);
       gl.uniform1f(uTime, (performance.now() - start) / 1000);
       gl.uniform3fv(uGround, hexToRgb(css.getPropertyValue(ground), [0.867, 0.867, 0.82]));
       gl.uniform3fv(uNight, hexToRgb(css.getPropertyValue("--theme-night"), [0.082, 0.075, 0.059]));
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      raf = requestAnimationFrame(frame);
+      // Keep animating (the noise drifts along the edge) only while the reveal is under way;
+      // fully in or not yet started, the frame holds still until the next scroll or resize.
+      if (p > 0 && p < 1) raf = requestAnimationFrame(frame);
+    };
+    const wake = () => {
+      if (!raf) raf = requestAnimationFrame(frame);
     };
 
     let tex: WebGLTexture | null = null;
@@ -225,7 +236,12 @@ export function DissolvePainting({
     });
     io.observe(canvas);
 
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("resize", wake);
+
     return () => {
+      window.removeEventListener("scroll", wake);
+      window.removeEventListener("resize", wake);
       io.disconnect();
       cancelAnimationFrame(raf);
       img.onload = null;
@@ -234,7 +250,7 @@ export function DissolvePainting({
       gl.deleteBuffer(buf);
       if (tex) gl.deleteTexture(tex);
     };
-  }, [src, ground, track]);
+  }, [src, ground, track, clear]);
 
   return (
     <canvas

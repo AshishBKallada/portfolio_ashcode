@@ -152,24 +152,28 @@ export function SignalNav() {
         transition={{ duration: 0.35, ease: introEase }}
         className={`pointer-events-none fixed inset-x-0 top-0 z-50 flex items-start justify-end gap-3 p-3 sm:p-4 ${morphRail ? "md:pointer-events-none" : ""}`}
       >
-        {/* Styled like the hero's old bottom-left block: bare cream text, bullet tags, outlined CTA. */}
+        {/* Availability beside one CTA; the stack lives in the work, not the chrome. */}
         <div
-          className={`pointer-events-auto flex items-center gap-x-6 text-cream [text-shadow:0_2px_16px_rgba(0,0,0,0.45)] ${morphRail ? "md:pointer-events-none md:opacity-0" : ""}`}
+          className={`pointer-events-auto flex items-center gap-x-5 text-cream [text-shadow:0_2px_16px_rgba(0,0,0,0.45)] ${morphRail ? "md:pointer-events-none md:opacity-0" : ""}`}
         >
-          <p className="hidden font-sans text-[13px] leading-snug tracking-[-0.01em] text-cream/80 lg:block">
-            {site.hero.tags.map((tag, i) => (
-              <span key={tag}>
-                {i > 0 ? <span className="mx-2 text-cream/45">•</span> : null}
-                {tag}
-              </span>
-            ))}
+          <p className="hidden items-center gap-2 font-sans text-[13px] leading-none tracking-[-0.01em] text-cream/85 lg:inline-flex">
+            <span aria-hidden className="relative inline-flex size-[7px]">
+              <span className="absolute inset-0 animate-ping rounded-full bg-gold/70 motion-reduce:hidden" />
+              <span className="relative size-[7px] rounded-full bg-gold" />
+            </span>
+            {site.signal.availability}
           </p>
           <a
             href={`mailto:${site.email}`}
-            className="inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-cream/75 px-5 font-sans text-[14px] font-medium tracking-[-0.01em] text-cream transition-colors hover:bg-cream/10"
+            className="group inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-cream px-5 font-sans text-[14px] font-medium tracking-[-0.01em] text-ink [text-shadow:none] shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-colors hover:bg-bone"
           >
             Get in Touch
-            <span aria-hidden>↗</span>
+            <span
+              aria-hidden
+              className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            >
+              ↗
+            </span>
           </a>
         </div>
       </motion.header>
