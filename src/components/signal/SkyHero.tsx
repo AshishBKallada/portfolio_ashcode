@@ -8,7 +8,7 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { ImageRippleEffect, type RippleImageItem } from "@/components/ui/image-ripple-effect";
 import { HeroSky } from "@/components/sections/hero/HeroSky";
@@ -25,6 +25,7 @@ import { introEase } from "@/lib/motion";
 import { HeroLines } from "./HeroLines";
 import { HeroCarpet } from "./HeroCarpet";
 import { HeroWireDecor } from "./HeroWireDecor";
+import { useHeroCovered } from "./useHeroCovered";
 
 const CLOUD_RIPPLE: RippleImageItem[] = [
   { src: HERO_SEAT_CLOUD_URL, x: 0, y: 0, widthScale: 1, heightScale: HERO_SEAT_CLOUD.height / HERO_SEAT_CLOUD.width },
@@ -53,6 +54,9 @@ export function SkyHero() {
   const reduce = useReducedMotion() ?? false;
   const { phase } = useHeroIntro();
   const ready = reduce || phase !== "loading";
+  // Once the page covers the pinned hero, its idle bob stops.
+  const sectionRef = useRef<HTMLElement>(null);
+  const covered = useHeroCovered(sectionRef);
 
   const { scrollY } = useScroll();
   const scrollT = useTransform(scrollY, (y) => {
@@ -113,9 +117,18 @@ export function SkyHero() {
   const onCarpetLoad = useCallback(() => setCarpetLoaded(true), []);
   const carpetIn = ready && carpetLoaded;
   const [carpetLanded, setCarpetLanded] = useState(false);
+  // The carpet is hidden below md: don't mount its canvas there, or fetch its model.
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setWide(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   return (
-    <section aria-label="Introduction" data-nav-theme="dark" className="relative h-full w-full overflow-hidden bg-night text-cream">
+    <section ref={sectionRef} aria-label="Introduction" data-nav-theme="dark" className="relative h-full w-full overflow-hidden bg-night text-cream">
       <h1 className="sr-only">
         {site.name}: {site.hero.statementMain}
       </h1>
@@ -150,7 +163,8 @@ export function SkyHero() {
         </motion.div>
         </div>
 
-        {/* Scrims only where text sits: the top-right actions and the seam at the bottom. */}
+        {/* Scrims only where text sits: the top-right actions and the seam at the bottom.
+            The chapters' paintings take the same (DissolvePainting), so every section shares one exposure. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]"
@@ -197,7 +211,9 @@ export function SkyHero() {
               onAnimationComplete={() => setCarpetLanded(true)}
               className="pointer-events-none absolute right-[10%] bottom-[-7%] left-[30%] h-[34%] lg:translate-x-[9%]"
             >
-              <HeroCarpet still={reduce} reveal={reveal} ready={carpetIn} active={carpetIn && !carpetLanded} onLoad={onCarpetLoad} />
+              {wide ? (
+                <HeroCarpet still={reduce} reveal={reveal} ready={carpetIn} active={carpetIn && !carpetLanded} onLoad={onCarpetLoad} />
+              ) : null}
             </motion.div>
           </motion.div>
         </motion.div>
@@ -247,8 +263,8 @@ export function SkyHero() {
           >
             <motion.div
               className="absolute inset-0"
-              animate={reduce ? undefined : { y: [0, -12, 0], rotate: [0, -0.6, 0] }}
-              transition={{ duration: 6, ease: "easeInOut", repeat: Infinity, delay: at(1.6) }}
+              animate={reduce ? undefined : covered ? { y: 0, rotate: 0 } : { y: [0, -12, 0], rotate: [0, -0.6, 0] }}
+              transition={covered ? { duration: 0 } : { duration: 6, ease: "easeInOut", repeat: Infinity, delay: at(1.6) }}
             >
               <div className={`absolute inset-0 lg:translate-x-[9%] ${HERO_FIGURE_LIFT_CLASS}`}>
                 <motion.div

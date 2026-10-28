@@ -125,7 +125,7 @@ export const site = {
   /** Corner record player: the track lives in public/audio (a YouTube URL also works). */
   music: {
     src: "/audio/edamame.mp3",
-    coverArt: "/images/hero/hero-figure-winged-courier.png",
+    coverArt: "/images/hero/hero-figure-winged-courier-cover.webp",
   },
   socials: [
     { label: "GitHub", href: "https://github.com/ashishbkallada" },

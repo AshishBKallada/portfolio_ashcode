@@ -5,6 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import type { MotionValue } from "motion/react";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { useHeroCovered } from "./useHeroCovered";
 
 /*
  * The magic carpet under the courier, so the leap reads as a ride: billowing
@@ -135,8 +136,10 @@ export function HeroCarpet({
 }) {
   const wrap = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  // Pinned under the whole page, the hero stays "on screen" to the observer; stop once it's covered.
+  const covered = useHeroCovered(wrap);
 
-  // Only render while the hero is on screen.
+  // Only render while the hero is on screen (and not covered, above).
   useEffect(() => {
     const el = wrap.current;
     if (!el) return;
@@ -148,10 +151,10 @@ export function HeroCarpet({
   return (
     <div ref={wrap} className="h-full w-full">
       <Canvas
-        frameloop={visible || active ? "always" : "never"}
+        frameloop={(visible && !covered) || active ? "always" : "never"}
         // Measured untransformed: SkyHero flies the canvas in scaled down, and a transform alone never resizes it.
         resize={{ offsetSize: true }}
-        dpr={[1, 1.5]}
+        dpr={[1, 1.25]}
         gl={{ alpha: true, antialias: true, powerPreference: "low-power" }}
         camera={{ fov: 30, position: [0, 4.2, 11], near: 0.1, far: 60 }}
         onCreated={({ camera }) => camera.lookAt(0, -0.3, 0)}
@@ -167,5 +170,3 @@ export function HeroCarpet({
     </div>
   );
 }
-
-useGLTF.preload(MODEL);

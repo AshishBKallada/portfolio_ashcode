@@ -3,11 +3,11 @@ import { optimizedSrc } from "@/lib/images";
 // Hero art and the scroll timeline shared by the hero, navbar and loader.
 
 /** Full-bleed photograph behind the home hero (SkyHero). */
-export const HERO_BG = { src: "/images/hero/hero-bg.png", width: 1376, height: 768 };
+export const HERO_BG = { src: "/images/hero/hero-bg.webp", width: 1376, height: 768 };
 
-/** Transparent cutout above the cumulus — Winged Courier (latest Photoroom export). */
+/** Transparent cutout above the cumulus — Winged Courier (latest Photoroom export), as a WebP with lossless alpha. */
 export const HERO_FIGURE = {
-  src: "/images/hero/hero-figure-winged-courier.png",
+  src: "/images/hero/hero-figure-winged-courier.webp",
   width: 1303,
   height: 1207,
 };
@@ -44,7 +44,7 @@ export const HERO_HEAD_FRAME_URLS = Array.from({ length: HERO_HEAD_COUNT }, (_, 
  * Optimized URLs for the hero art drawn outside <Image> (plain img, canvas).
  * The loader preloads these same URLs, so the hero paints from cache.
  */
-/** Raw PNG keeps alpha clean on the hero cutout (no optimizer cache). */
+/** The pre-encoded WebP as is: its alpha is lossless, so the cutout's edge stays clean. */
 export const HERO_FIGURE_URL = HERO_FIGURE.src;
 export const HERO_MARBLE_URL = optimizedSrc(HERO_MARBLE);
 export const HERO_SEAT_CLOUD_URL = optimizedSrc(HERO_SEAT_CLOUD, CLOUD_QUALITY);

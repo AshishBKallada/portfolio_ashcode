@@ -65,6 +65,7 @@ void main() {
   float scrim = uv.y > 0.55 ? mix(0.35, 0.55, (uv.y - 0.55) / 0.45) : mix(0.7, 0.35, uv.y / 0.55);
   vec3 painted = mix(mix(uNight, img, 0.7), uNight, scrim);
 
+
   // Etched outlines: the strong luminance edges only (not the canvas weave), while the painting arrives.
   float luma = dot(img, vec3(0.299, 0.587, 0.114));
   vec3 etched = mix(painted * 0.6, vec3(0.96, 0.94, 0.9), smoothstep(0.06, 0.25, fwidth(luma)));
@@ -167,18 +168,27 @@ export function DissolvePainting({
     let visible = false;
     let ready = false;
     const start = performance.now();
-    const root = document.documentElement;
+    // Read once: the theme's colours don't change under a running canvas.
+    const css = getComputedStyle(document.documentElement);
+    gl.uniform3fv(uGround, hexToRgb(css.getPropertyValue(ground), [0.867, 0.867, 0.82]));
+    gl.uniform3fv(uNight, hexToRgb(css.getPropertyValue("--theme-night"), [0.082, 0.075, 0.059]));
+    gl.uniform1f(uClear, clear ? 1 : 0);
+    // The last frame drawn, so a scroll that leaves the reveal where it was draws nothing.
+    let drawnP = -1;
+    let drawnH = 0;
 
     const frame = () => {
       raf = 0;
       if (!visible || !ready) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      const { width, height } = canvas.getBoundingClientRect();
+      // Layout size, not getBoundingClientRect: the canvas sits in a layer that scales on scroll
+      // (ScrollZoom and friends), and sizing to the scaled box reallocated the canvas every frame.
+      // 1× is plenty for a grained painting, and the shader runs on a quarter of the pixels of 2×.
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
       const trackEl = track ? document.getElementById(track) : null;
       const top = (trackEl ?? canvas).getBoundingClientRect().top;
-      const w = Math.round(width * dpr);
-      const h = Math.round(height * dpr);
-      if (canvas.width !== w || canvas.height !== h) {
+      const resized = canvas.width !== w || canvas.height !== h;
+      if (resized) {
         canvas.width = w;
         canvas.height = h;
         gl.viewport(0, 0, w, h);
@@ -188,26 +198,32 @@ export function DissolvePainting({
       // until the end, then runs past the canvas's foot.
       const vh = window.innerHeight;
       const p = Math.min(1, Math.max(0, (vh - top) / vh));
+      const settled = p === 0 || p === 1;
+      // Fully in (or not started) and already drawn so: the frame on screen is the same one.
+      if (settled && p === drawnP && vh === drawnH && !resized) return;
+      drawnP = p;
+      drawnH = vh;
       // Pinned, the uncovered part runs up from the bottom to height p; the eroded edge
       // trails it a little, so the noise shows just under the lifting panel.
-      const depth = trackEl ? p * 1.15 - 0.1 + Math.max(0, p - 0.85) * 2 : p * p * 1.3 + Math.max(0, p - 0.85) * (height / vh) * 6;
-      const css = getComputedStyle(root);
+      const depth = trackEl ? p * 1.15 - 0.1 + Math.max(0, p - 0.85) * 2 : p * p * 1.3 + Math.max(0, p - 0.85) * (h / vh) * 6;
       gl.uniform2f(uRes, w, h);
       gl.uniform1f(uProgress, p);
-      gl.uniform1f(uHeight, height / vh);
+      gl.uniform1f(uHeight, h / vh);
       gl.uniform1f(uDepth, depth);
       gl.uniform1f(uPinned, trackEl ? 1 : 0);
-      gl.uniform1f(uClear, clear ? 1 : 0);
       gl.uniform1f(uTime, (performance.now() - start) / 1000);
-      gl.uniform3fv(uGround, hexToRgb(css.getPropertyValue(ground), [0.867, 0.867, 0.82]));
-      gl.uniform3fv(uNight, hexToRgb(css.getPropertyValue("--theme-night"), [0.082, 0.075, 0.059]));
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       // Keep animating (the noise drifts along the edge) only while the reveal is under way;
       // fully in or not yet started, the frame holds still until the next scroll or resize.
-      if (p > 0 && p < 1) raf = requestAnimationFrame(frame);
+      if (!settled) raf = requestAnimationFrame(frame);
     };
     const wake = () => {
       if (!raf) raf = requestAnimationFrame(frame);
+    };
+    // A fresh texture or a resize: draw the next frame whatever it shows.
+    const redraw = () => {
+      drawnP = -1;
+      wake();
     };
 
     let tex: WebGLTexture | null = null;
@@ -224,9 +240,13 @@ export function DissolvePainting({
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.uniform1f(uImgAspect, img.naturalWidth / img.naturalHeight);
+      // ANGLE compiles the program on its first draw: do that now, while the page loads, rather
+      // than as the section scrolls into view, where it stalled the scroll. Cleared straight after.
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      gl.clear(gl.COLOR_BUFFER_BIT);
       ready = true;
       canvas.dataset.ready = "true";
-      if (!raf) raf = requestAnimationFrame(frame);
+      redraw();
     };
 
     // Only draw while the section is on screen.
@@ -237,11 +257,11 @@ export function DissolvePainting({
     io.observe(canvas);
 
     window.addEventListener("scroll", wake, { passive: true });
-    window.addEventListener("resize", wake);
+    window.addEventListener("resize", redraw);
 
     return () => {
       window.removeEventListener("scroll", wake);
-      window.removeEventListener("resize", wake);
+      window.removeEventListener("resize", redraw);
       io.disconnect();
       cancelAnimationFrame(raf);
       img.onload = null;

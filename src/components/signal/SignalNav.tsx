@@ -218,12 +218,16 @@ function EditionsNav({
         rect: el.getBoundingClientRect(),
         theme: el.dataset.navTheme,
       }));
-      for (const [key, el] of Object.entries(parts)) {
-        if (!el) continue;
+      // Every read before any write, so a write never forces a fresh layout for the next read.
+      const tones = Object.entries(parts).map(([key, el]) => {
+        if (!el) return null;
         const r = el.getBoundingClientRect();
         const y = r.top + r.height / 2;
         const under = regions.findLast((region) => region.rect.top <= y && region.rect.bottom >= y);
-        aside.dataset[`${key}Tone`] = under?.theme === "dark" ? "cream" : "ink";
+        return [`${key}Tone`, under?.theme === "dark" ? "cream" : "ink"] as const;
+      });
+      for (const tone of tones) {
+        if (tone && aside.dataset[tone[0]] !== tone[1]) aside.dataset[tone[0]] = tone[1];
       }
     };
     const onScroll = () => {

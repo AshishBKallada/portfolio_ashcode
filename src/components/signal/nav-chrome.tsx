@@ -24,13 +24,13 @@ const NavChromeContext = createContext<NavChromeContextValue | null>(null);
 const DESKTOP_MQ = "(min-width: 768px)";
 export const NAV_MORPH_MS = 620;
 
-/** Mobile: rail when About has scrolled over the hero (unchanged). */
-function useAboutOverHero() {
+/** Mobile: rail when About has scrolled over the hero (unchanged). Not tracked on desktop. */
+function useAboutOverHero(enabled: boolean) {
   const pathname = usePathname();
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    if (pathname !== "/") {
+    if (!enabled || pathname !== "/") {
       setActive(false);
       return;
     }
@@ -38,19 +38,24 @@ function useAboutOverHero() {
     const about = document.getElementById("about");
     if (!about) return;
 
+    let raf = 0;
     const update = () => {
-      const top = about.getBoundingClientRect().top;
-      setActive(top <= 72);
+      raf = 0;
+      setActive(about.getBoundingClientRect().top <= 72);
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
     };
 
     update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
     };
-  }, [pathname]);
+  }, [enabled, pathname]);
 
   return active;
 }
@@ -70,7 +75,7 @@ function useDesktop() {
 export function NavChromeProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const desktop = useDesktop();
-  const mobileRail = useAboutOverHero();
+  const mobileRail = useAboutOverHero(!desktop);
   const home = pathname === "/";
 
   const [phase, setPhase] = useState<NavChromePhase>("hero");

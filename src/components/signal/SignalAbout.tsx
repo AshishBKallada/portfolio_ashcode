@@ -14,9 +14,11 @@ export function HeroStage({ hero, children }: { hero: ReactNode; children: React
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Mark the hero covered once it's fully hidden, so it stops painting
-  // (globals.css). The first section sits beside the rail with the hero still
-  // showing in the rail's column, until the next chapter's pinned painting is
-  // behind it: when its foot reaches the viewport's. A data attribute, not state.
+  // (globals.css) and its carpet stops rendering (HeroCarpet). A first section
+  // with a pinned scene (About) covers it once that scene has fully eroded in:
+  // when the screen that drives the erosion (`[id$=-reveal]`) reaches the top.
+  // Otherwise the hero shows beside the rail until the section's foot reaches
+  // the viewport's. A data attribute, not state.
   useEffect(() => {
     const stage = stageRef.current;
     const content = contentRef.current;
@@ -25,7 +27,12 @@ export function HeroStage({ hero, children }: { hero: ReactNode; children: React
     const update = () => {
       raf = 0;
       const first = content.firstElementChild ?? content;
-      stage.dataset.covered = first.getBoundingClientRect().bottom <= window.innerHeight ? "true" : "false";
+      const reveal = first.querySelector("[id$='-reveal']");
+      const covered =
+        (reveal !== null && reveal.getBoundingClientRect().top <= 0) ||
+        first.getBoundingClientRect().bottom <= window.innerHeight;
+      const value = covered ? "true" : "false";
+      if (stage.dataset.covered !== value) stage.dataset.covered = value;
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);

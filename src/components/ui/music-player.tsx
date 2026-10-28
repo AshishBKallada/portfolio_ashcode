@@ -78,6 +78,8 @@ export function MusicPlayer({
         <audio
           ref={audioRef}
           src={src}
+          // Nothing is fetched until play is pressed.
+          preload="none"
           onEnded={() => setIsPlaying(false)}
           className="hidden"
         />
