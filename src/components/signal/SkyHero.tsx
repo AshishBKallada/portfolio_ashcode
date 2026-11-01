@@ -37,9 +37,9 @@ const SCENE_DELAY = 1;
 const settle = [0.16, 1, 0.3, 1] as const;
 /** Scroll distance of the cloud/figure reveal, in viewport heights (HeroStage pins the hero for it). */
 export const REVEAL_VH = 1.1;
-/** Total pinned scroll for the hero, in viewport heights (HeroStage's spacer). About's scene
- *  starts eroding in over it just as the reveal ends, so scrolling never stalls on the phrase. */
-export const HERO_PIN_VH = REVEAL_VH - 0.1;
+/** Total pinned scroll for the hero, in viewport heights (HeroStage's spacer). Matches the
+ * reveal so the phrase and the About handoff stay on one continuous scroll beat. */
+export const HERO_PIN_VH = REVEAL_VH;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 /** The carpet's entry: it waits out the loader's fade, then takes its time crossing the sky. */
@@ -97,7 +97,12 @@ export function SkyHero() {
   const cloudY = useTransform([cloudYPointer, cloudScrollY], ([p, s]: number[]) => p + s);
   const figureX = useTransform(mx, (v) => v * 64);
   const figureYPointer = useTransform(my, (v) => v * 38);
-  const figureY = useTransform([figureYPointer, figureScrollY], ([p, s]: number[]) => p + s);
+  // A small bob as the page scrolls: up and down 10px, twice a screen, over its own drift.
+  const figureBob = useTransform(scrollY, (y) => {
+    const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+    return Math.sin((y / vh) * Math.PI * 4) * 10;
+  });
+  const figureY = useTransform([figureYPointer, figureScrollY, figureBob], ([p, s, b]: number[]) => p + s + b);
   const figureRotate = useTransform(mx, (v) => v * 2.8);
 
   useEffect(() => {

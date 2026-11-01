@@ -34,3 +34,47 @@ export function TrackFade({ track, children }: { track: string; children: ReactN
     </motion.div>
   );
 }
+
+/**
+ * One stage of a chapter's entrance, scroll-linked to the same tracked intro as
+ * TrackFade: across `from`–`to` of the intro's rise (0 as its top meets the
+ * viewport's bottom, 1 as it reaches the top, 2 a screen past) its children rise `y` into place,
+ * fading in too with `fade`. Stages with later ranges arrive one after another.
+ */
+export function TrackRise({
+  track,
+  from,
+  to,
+  y,
+  fade = false,
+  className = "absolute inset-0",
+  children,
+}: {
+  track: string;
+  from: number;
+  to: number;
+  /** How far below its place it starts, as a CSS length. */
+  y: string;
+  fade?: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  const reduce = useReducedMotion() ?? false;
+  const { scrollY } = useScroll();
+  const t = useTransform(scrollY, () => {
+    if (typeof document === "undefined") return 0;
+    const el = document.getElementById(track);
+    if (!el) return 1;
+    const vh = window.innerHeight;
+    const v = clamp01(((vh - el.getBoundingClientRect().top) / vh - from) / (to - from));
+    return v * v * (3 - 2 * v);
+  });
+  const ty = useTransform(t, (v) => `calc(${1 - v} * ${y})`);
+  // A function transform, so the fade isn't handed to the browser's scroll timeline.
+  const opacity = useTransform(t, (v) => (fade ? v : 1));
+  return (
+    <motion.div style={reduce ? undefined : { y: ty, opacity }} className={`will-change-transform ${className}`}>
+      {children}
+    </motion.div>
+  );
+}

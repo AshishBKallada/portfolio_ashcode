@@ -120,6 +120,23 @@ export const site = {
         { title: "From sketch to laptop", src: "/images/linkedin/mockup-laptop.avif" },
         { title: "Details that last", src: "/images/linkedin/mockup-2.avif" },
       ],
+      /**
+       * Kind words from LinkedIn comments and DMs (KindWords, in the Index).
+       * PLACEHOLDERS: replace each `text` with a real comment or message, word for word,
+       * and `via` with where it came from. Add or remove entries freely (six fill the scatter).
+       */
+      kindWords: {
+        heading: "Kind words",
+        lede: "What people leave under the posts, and in my DMs.",
+        items: [
+          { text: "Placeholder: paste a real LinkedIn comment here.", via: "comment" },
+          { text: "Placeholder: paste a real message from your DMs here.", via: "dm" },
+          { text: "Placeholder: another comment, word for word.", via: "comment" },
+          { text: "Placeholder: another DM, word for word.", via: "dm" },
+          { text: "Placeholder: a comment on one of the posts above.", via: "comment" },
+          { text: "Placeholder: a note someone sent after a launch.", via: "dm" },
+        ],
+      },
     },
   },
   /** Corner record player: the track lives in public/audio (a YouTube URL also works). */

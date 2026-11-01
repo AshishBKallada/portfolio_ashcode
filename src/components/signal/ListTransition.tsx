@@ -14,9 +14,12 @@ import { useRef, useState } from "react";
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
 import { WORK_PAINTING } from "@/lib/hero";
+import { DissolvePainting } from "./DissolvePainting";
+import { DropCap } from "./Editions";
+import { KindWords } from "./KindWords";
+import { PointerParallax } from "./PointerParallax";
 import { frame } from "./primitives";
 import { ScrollZoom } from "./ScrollZoom";
-import { SwirlClouds } from "./SwirlClouds";
 
 type Row = { title: string; meta: string; date: string; image: string; href: string; external?: boolean };
 
@@ -99,125 +102,151 @@ export function ListTransition() {
     <section
       id="index-list"
       aria-label="Index"
-      // The rail's column shows Work's painting behind the panel, so the rail reads cream.
+      // Over the painting the rail reads cream; the cream title screen and panel mark themselves light.
       data-nav-theme="dark"
-      className="signal-rail-bleed relative z-[1] h-[320svh] text-ink"
+      className="signal-rail-bleed relative z-[1] text-ink"
     >
-      <div ref={ref} aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[320svh]" />
-      {/* Work's painting and drifting clouds behind the panel, fixed to the viewport and clipped to the
+      {/* Work's painting behind the panel, fixed to the viewport and clipped to the
           section, so it lines up with Work's pinned painting (same treatment) as this section rises over it. */}
       {/* Runs a screen past the section, with the panel, while Studio erodes in over them. */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -bottom-[100svh] [clip-path:inset(0)]">
         <div className="fixed inset-0 bg-night">
           {/* Zoomed with Work's own pass (ScrollZoom on #index), so the two copies meet without a seam. */}
           <ScrollZoom section="index">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={WORK_PAINTING.src}
-              alt=""
-              width={WORK_PAINTING.width}
-              height={WORK_PAINTING.height}
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover select-none"
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]" />
+            {/* Work's cursor parallax, at its depth: the painting against the pointer (oversized,
+                so its edges never show). No clouds here: they're Work's alone. */}
+            <PointerParallax x={-36} y={-24} className="absolute -inset-12">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={WORK_PAINTING.src}
+                alt=""
+                width={WORK_PAINTING.width}
+                height={WORK_PAINTING.height}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover select-none"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]" />
+            </PointerParallax>
           </ScrollZoom>
-          <SwirlClouds />
+          {/* Cream ripples in over the painting from the bottom, as Work's painting did over About:
+              the torn, lit edge rising with the title screen (index-list-title), then the panel's
+              cream carries on from it. */}
+          <DissolvePainting solid="--background" track="index-list-title" className="absolute inset-0 h-full w-full" />
         </div>
       </div>
-      {/* The panel starts at the rail's edge, leaving the rail's column open. */}
-      {/* Holds a screen past the section's end (the negative margin), as Studio's painting erodes in over it. */}
-      <div className="sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden bg-background md:ml-[var(--nav-sidebar-w)]">
-        <div className={`${frame} relative flex h-full flex-col py-8 md:px-10`}>
-          {/* Header: label, view switch. */}
-          <div className="relative z-20 flex items-start justify-between gap-6">
-            <p className="font-headline text-[18px] leading-[1.1] tracking-[-0.02em]">
-              Index
-              <br />
-              <span className="font-narrative text-[16px] tracking-[-0.03em] text-ink/50">{N} entries</span>
-            </p>
-            <div role="tablist" aria-label="View" className="flex gap-4">
-              {(["list", "about"] as const).map((v) => (
-                <button
-                  key={v}
-                  role="tab"
-                  type="button"
-                  aria-selected={view === v}
-                  onClick={() => jump(v)}
-                  className={`min-h-8 font-headline text-[15px] tracking-[-0.02em] capitalize transition-colors ${view === v ? "text-ink" : "text-ink/35 hover:text-ink/70"}`}
-                >
-                  {v}
-                </button>
-              ))}
+      {/* A short glimpse of the painting after Work's cards, then the title and lede on the cream
+          that ripples in under them, before the panel rises over it. */}
+      <div aria-hidden className="pointer-events-none h-[20svh]" />
+      <div
+        id="index-list-title"
+        data-nav-theme="light"
+        className={`${frame} relative flex h-[80svh] flex-col justify-end pb-[clamp(2.5rem,6vh,4rem)] md:pl-[calc(var(--nav-sidebar-w)+2.5rem)]`}
+      >
+        <h2 className="py-10 font-headline text-[clamp(4.5rem,13vw,13rem)] leading-[0.88] tracking-[-0.045em] md:py-8">Index</h2>
+        <p className="max-w-[44rem] text-[clamp(1.6rem,2.8vw,2.6rem)] leading-[1.02] text-pretty">
+          <DropCap>Every project, then the latest from LinkedIn, in one running list.</DropCap>
+        </p>
+      </div>
+      {/* Kind words from the comments and DMs, on the cream, before the list. */}
+      <KindWords />
+      {/* The pinned stretch: the panel's list → about transition runs across it. */}
+      <div className="relative h-[320svh]">
+        <div ref={ref} aria-hidden className="pointer-events-none absolute inset-0" />
+        {/* The panel runs full width, cream under the rail too (the rail reads ink over it); its
+            content clears the rail. */}
+        {/* Holds a screen past the section's end (the negative margin), as Studio's painting erodes in over it. */}
+        <div data-nav-theme="light" className="sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden bg-background">
+          <div className={`${frame} relative flex h-full flex-col py-8 md:pr-10 md:pl-[calc(var(--nav-sidebar-w)+2.5rem)]`}>
+            {/* Header: label, view switch. */}
+            <div className="relative z-20 flex items-start justify-between gap-6">
+              <p className="font-headline text-[18px] leading-[1.1] tracking-[-0.02em]">
+                Index
+                <br />
+                <span className="font-narrative text-[16px] tracking-[-0.03em] text-ink/50">{N} entries</span>
+              </p>
+              <div role="tablist" aria-label="View" className="flex gap-4">
+                {(["list", "about"] as const).map((v) => (
+                  <button
+                    key={v}
+                    role="tab"
+                    type="button"
+                    aria-selected={view === v}
+                    onClick={() => jump(v)}
+                    className={`min-h-8 font-headline text-[15px] tracking-[-0.02em] capitalize transition-colors ${view === v ? "text-ink" : "text-ink/35 hover:text-ink/70"}`}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            <div className="relative mt-10 flex-1">
+              {/* List rows, left and right of the filmstrip. */}
+              <ol
+                aria-hidden={about}
+                className="relative z-10 grid grid-cols-[2.5rem_1fr] gap-x-2 gap-y-1 md:grid-cols-[2.5rem_1fr_minmax(6rem,9rem)_1fr_auto] md:gap-x-6"
+              >
+                {rows.map((row, i) => (
+                  <li
+                    key={row.title}
+                    className="contents"
+                    onPointerEnter={() => setHover(i)}
+                    onPointerLeave={() => setHover(null)}
+                  >
+                    {[
+                      <span key="n" className="font-narrative text-ink/50 tabular-nums">{String(i).padStart(2, "0")}</span>,
+                      <RowLink key="t" row={row} tabIndex={about ? -1 : 0}>
+                        {row.title}
+                      </RowLink>,
+                      <span key="gap" />,
+                      <span key="m" className="block truncate font-narrative text-ink/65">{row.meta}</span>,
+                      <span key="d" className="block text-right font-narrative text-ink/65 tabular-nums">{row.date}</span>,
+                    ].map((cell, c) => (
+                      <span key={c} className={`overflow-hidden py-[3px] ${c >= 2 ? "hidden md:block" : ""}`}>
+                        <RollCell p={p} i={i} still={reduce} dim={hover !== null && hover !== i}>
+                          {cell}
+                        </RollCell>
+                      </span>
+                    ))}
+                  </li>
+                ))}
+              </ol>
+
+              {/* Filmstrip down the middle: drifts, then sweeps off frame by frame. */}
+              <motion.div
+                aria-hidden
+                style={reduce ? undefined : { y: stripY }}
+                className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-[clamp(6rem,9vw,9rem)] -translate-x-1/2 flex-col gap-2 md:flex"
+              >
+                {rows.map((row, i) => (
+                  <Frame key={row.image + i} p={p} i={i} src={row.image} still={reduce} dim={hover !== null && hover !== i} />
+                ))}
+              </motion.div>
+
+              {/* The bio, under the grown name. */}
+              <motion.div
+                aria-hidden={!about}
+                style={reduce ? { opacity: about ? 1 : 0 } : { opacity: bioOpacity, y: bioY }}
+                className="pointer-events-none absolute inset-x-0 top-[clamp(9rem,24vw,21rem)] z-10 mx-auto max-w-[30rem] px-4 font-narrative text-[clamp(1.25rem,1.7vw,1.6rem)] leading-[1.08] tracking-[-0.03em] text-pretty"
+              >
+                <p>{site.signal.approach.columns[0]}</p>
+                <p className="mt-5">{site.signal.approach.columns[1]}</p>
+              </motion.div>
+            </div>
+
+            {/* The name, set at full size and scaled: small along the bottom, full across the top. */}
+            <motion.p
+              aria-label={site.name}
+              style={reduce ? undefined : { scale: nameScale, y: nameY }}
+              className="pointer-events-none absolute inset-x-0 top-20 z-0 flex origin-top items-baseline justify-between px-4 text-[clamp(4rem,15vw,15rem)] leading-[0.8] will-change-transform sm:px-8 md:pr-10 md:pl-[calc(var(--nav-sidebar-w)+2.5rem)]"
+            >
+              <span className="font-headline tracking-[-0.05em]">{nameA}</span>
+              <span className="font-narrative tracking-[-0.04em]">
+                <span className="mr-[-0.06em] font-flourish text-[1.35em] leading-none tracking-normal">{nameB[0]}</span>
+                {nameB.slice(1)}
+              </span>
+            </motion.p>
           </div>
-
-          <div className="relative mt-10 flex-1">
-            {/* List rows, left and right of the filmstrip. */}
-            <ol
-              aria-hidden={about}
-              className="relative z-10 grid grid-cols-[2.5rem_1fr] gap-x-2 gap-y-1 md:grid-cols-[2.5rem_1fr_minmax(6rem,9rem)_1fr_auto] md:gap-x-6"
-            >
-              {rows.map((row, i) => (
-                <li
-                  key={row.title}
-                  className="contents"
-                  onPointerEnter={() => setHover(i)}
-                  onPointerLeave={() => setHover(null)}
-                >
-                  {[
-                    <span key="n" className="font-narrative text-ink/50 tabular-nums">{String(i).padStart(2, "0")}</span>,
-                    <RowLink key="t" row={row} tabIndex={about ? -1 : 0}>
-                      {row.title}
-                    </RowLink>,
-                    <span key="gap" />,
-                    <span key="m" className="block truncate font-narrative text-ink/65">{row.meta}</span>,
-                    <span key="d" className="block text-right font-narrative text-ink/65 tabular-nums">{row.date}</span>,
-                  ].map((cell, c) => (
-                    <span key={c} className={`overflow-hidden py-[3px] ${c >= 2 ? "hidden md:block" : ""}`}>
-                      <RollCell p={p} i={i} still={reduce} dim={hover !== null && hover !== i}>
-                        {cell}
-                      </RollCell>
-                    </span>
-                  ))}
-                </li>
-              ))}
-            </ol>
-
-            {/* Filmstrip down the middle: drifts, then sweeps off frame by frame. */}
-            <motion.div
-              aria-hidden
-              style={reduce ? undefined : { y: stripY }}
-              className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-[clamp(6rem,9vw,9rem)] -translate-x-1/2 flex-col gap-2 md:flex"
-            >
-              {rows.map((row, i) => (
-                <Frame key={row.image + i} p={p} i={i} src={row.image} still={reduce} dim={hover !== null && hover !== i} />
-              ))}
-            </motion.div>
-
-            {/* The bio, under the grown name. */}
-            <motion.div
-              aria-hidden={!about}
-              style={reduce ? { opacity: about ? 1 : 0 } : { opacity: bioOpacity, y: bioY }}
-              className="pointer-events-none absolute inset-x-0 top-[clamp(9rem,24vw,21rem)] z-10 mx-auto max-w-[30rem] px-4 font-narrative text-[clamp(1.25rem,1.7vw,1.6rem)] leading-[1.08] tracking-[-0.03em] text-pretty"
-            >
-              <p>{site.signal.approach.columns[0]}</p>
-              <p className="mt-5">{site.signal.approach.columns[1]}</p>
-            </motion.div>
-          </div>
-
-          {/* The name, set at full size and scaled: small along the bottom, full across the top. */}
-          <motion.p
-            aria-label={site.name}
-            style={reduce ? undefined : { scale: nameScale, y: nameY }}
-            className="pointer-events-none absolute inset-x-0 top-20 z-0 flex origin-top items-baseline justify-between px-4 text-[clamp(4rem,15vw,15rem)] leading-[0.8] will-change-transform sm:px-8 md:px-10"
-          >
-            <span className="font-headline tracking-[-0.05em]">{nameA}</span>
-            <span className="font-narrative tracking-[-0.04em]">
-              <span className="mr-[-0.06em] font-flourish text-[1.35em] leading-none tracking-normal">{nameB[0]}</span>
-              {nameB.slice(1)}
-            </span>
-          </motion.p>
         </div>
       </div>
     </section>

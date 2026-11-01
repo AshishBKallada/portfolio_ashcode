@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { useLayoutEffect, useRef } from "react";
+import { motion, useMotionValue, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 const SRC = "/images/about/courier-leap.webp";
 const W = 944;
@@ -53,9 +53,12 @@ export function LeapingFigure({ className = "" }: { className?: string }) {
  * The same courier, still and large, for a pinned backdrop (Chapter's
  * `backdrop`): across its section's scroll it drifts up and turns a little,
  * slower than the panel rising over it, so it reads as a layer of its own.
+ * Given `rise` (the id of the chapter's intro), it first rises small from
+ * below the bottom centre to its place as that intro scrolls up the screen.
  */
-export function PinnedCourier({ className = "" }: { className?: string }) {
+export function PinnedCourier({ className = "", rise }: { className?: string; rise?: string }) {
   const ref = useRef<HTMLImageElement>(null);
+  const box = useRef<HTMLDivElement>(null);
   const section = useRef<HTMLElement | null>(null);
   const reduce = useReducedMotion() ?? false;
   // The image is pinned, so the section it's pinned in drives the scroll; found before useScroll subscribes.
@@ -63,11 +66,41 @@ export function PinnedCourier({ className = "" }: { className?: string }) {
     section.current = ref.current?.closest("section") ?? null;
   }, []);
   const { scrollYProgress: p } = useScroll({ target: section, offset: ["start start", "end end"] });
-  const y = useTransform(p, [0, 1], ["10svh", "-6svh"]);
+  // Starts level and drifts up, never down: below its place the winged feet ran off the foot of the screen.
+  const y = useTransform(p, [0, 1], ["0svh", "-8svh"]);
   const rotate = useTransform(p, [0, 1], [-3, 3]);
   const scale = useTransform(p, [0, 1], [1.04, 0.98]);
 
-  return (
+  // The rise, in screens of the intro's climb (1 as its top reaches the viewport's): after the
+  // painting has torn in and the clouds have come up, and before the title arrives.
+  const { scrollY } = useScroll();
+  const riseT = useTransform(scrollY, () => {
+    if (!rise || typeof document === "undefined") return 1;
+    const el = document.getElementById(rise);
+    if (!el) return 1;
+    const vh = window.innerHeight;
+    return ease(clamp01(((vh - el.getBoundingClientRect().top) / vh - 1.3) / 0.5));
+  });
+  // From its resting place to the viewport's centre line, measured off the untransformed layout.
+  const toCentre = useMotionValue(0);
+  useEffect(() => {
+    if (!rise) return;
+    const measure = () => {
+      const el = box.current;
+      if (!el) return;
+      const left = el.offsetParent ? el.offsetParent.getBoundingClientRect().left + el.offsetLeft : 0;
+      toCentre.set(window.innerWidth / 2 - (left + el.offsetWidth / 2));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [rise, toCentre]);
+  const riseX = useTransform([riseT, toCentre], ([t, d]: number[]) => (1 - t) * d);
+  // From just below the screen, so it doesn't wait in view for its turn.
+  const riseY = useTransform(riseT, (t) => `${(1 - t) * 100}svh`);
+  const riseScale = useTransform(riseT, (t) => 0.45 + t * 0.55);
+
+  const img = (
     <motion.img
       ref={ref}
       src={SRC}
@@ -79,5 +112,11 @@ export function PinnedCourier({ className = "" }: { className?: string }) {
       style={reduce ? undefined : { y, rotate, scale }}
       className={`select-none will-change-transform ${className}`}
     />
+  );
+  if (!rise) return img;
+  return (
+    <motion.div ref={box} style={reduce ? undefined : { x: riseX, y: riseY, scale: riseScale }} className="origin-bottom will-change-transform">
+      {img}
+    </motion.div>
   );
 }

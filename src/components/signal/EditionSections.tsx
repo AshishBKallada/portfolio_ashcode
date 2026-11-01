@@ -4,6 +4,7 @@ import { WORK_PAINTING } from "@/lib/hero";
 import { AboutScene } from "./AboutScene";
 import { Card, CardGrid, Chapter, DropCap } from "./Editions";
 import { PinnedCourier } from "./LeapingFigure";
+import { PointerParallax } from "./PointerParallax";
 import { SwirlClouds } from "./SwirlClouds";
 
 const about = site.aboutEdition;
@@ -16,7 +17,7 @@ const notes = [
 
 /**
  * [01] About, Editions-style: after the hero's reveal (SkyHero), its scene
- * (AboutScene: the nebula and figure) pins over the hero and erodes in from the
+ * (AboutScene: nebula and visor figure) pins over the hero and dissolves in from the
  * bottom, dissolving "Obsession beats Talent" away; then the title and lede
  * scroll over it in cream, and the heading, who I am and the principles, as
  * text cards, in one cream box. The annotated meditating courier
@@ -62,19 +63,36 @@ export function EditionWork() {
       label="Work"
       title="Work"
       lede="Dashboards, marketing sites and apps, built end to end and made to last."
+      panelTone="white"
       painting={WORK_PAINTING}
+      pointerParallax
+      // The courier mid-leap, large and right of centre, pinned with the painting and drifting on scroll;
+      // it rises from the bottom centre to there over About as the intro comes up, under the cards.
+      // Two of the clouds in front of the cards panel too, at its sides; the same throw and parallax.
+      front={
+        <PointerParallax x={36} y={22} scroll={220}>
+          <SwirlClouds layer="front" rise={{ track: "index-intro", from: 1, to: 1.45 }} />
+        </PointerParallax>
+      }
+      foreground={
+        <PointerParallax x={64} y={38} rotate={2.8} className="absolute inset-y-0 right-[3%] hidden items-start pt-[5svh] md:flex">
+          <PinnedCourier rise="index-intro" className="h-[78svh] w-auto [filter:drop-shadow(0_30px_50px_rgba(0,0,0,0.35))]" />
+        </PointerParallax>
+      }
       backdrop={
         <>
-          {/* Watercolour clouds drifting through the painting's sky, behind the courier. */}
-          <SwirlClouds />
-          {/* The courier mid-leap, large and right of centre, pinned with the painting and drifting on scroll. */}
-          <div className="absolute inset-y-0 right-[3%] hidden items-center md:flex">
-            <PinnedCourier className="h-[82svh] w-auto [filter:drop-shadow(0_30px_50px_rgba(0,0,0,0.35))]" />
-          </div>
+          {/* The hero's cursor parallax in depth: the painting drifts against the pointer,
+              the clouds with it, the courier (foreground) with it most and tilting. On scroll alone the
+              clouds slide up past the painting faster than it drifts (ScrollZoom). */}
+          {/* Watercolour clouds drifting through the painting's sky, behind the courier: first of the
+              entrance once the painting has torn in, each thrown up from below on its own beat. */}
+          <PointerParallax x={36} y={22} scroll={220}>
+            <SwirlClouds layer="back" rise={{ track: "index-intro", from: 1, to: 1.45 }} />
+          </PointerParallax>
         </>
       }
     >
-      <CardGrid>
+      <CardGrid columns={2}>
         {projects.map((project, i) => (
           <Card
             key={project.slug}

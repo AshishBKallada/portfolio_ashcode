@@ -7,7 +7,9 @@ import { useEffect, useRef } from "react";
  * after the reference's chapter change: a noise threshold eats the ground away
  * top first, the boundary flecked with light, and the painting arrives as
  * etched outlines (edge detection on its luminance) before it fills in. It is
- * graded and grained in the shader, so the scrim lives here too.
+ * graded and grained in the shader, so the scrim lives here too. Given `solid`
+ * (a CSS colour variable) in place of a painting, that flat colour erodes in
+ * instead, with no scrim or etching.
  * WebGL2; without it (or with reduced motion) the plain <img> under it shows.
  */
 
@@ -31,6 +33,9 @@ uniform float uDepth;
 // 1 when the canvas is pinned and uncovered from below: the erosion then runs bottom first.
 uniform float uPinned;
 uniform float uClear;
+// 0 for a flat colour: no scrim bands and no etched arrival.
+uniform float uScrim;
+uniform float uEtch;
 uniform float uTime;
 uniform vec3 uGround;
 uniform vec3 uNight;
@@ -63,13 +68,13 @@ void main() {
 
   // The painting at full strength, as the hero's: night only in a band at the top (42%, gone
   // by 22% down) and at the foot (28%, gone by 30% up), as the CSS fallback.
-  float scrim = max(0.42 * (1.0 - (1.0 - uv.y) / 0.22), 0.28 * (1.0 - uv.y / 0.30));
+  float scrim = uScrim * max(0.42 * (1.0 - (1.0 - uv.y) / 0.22), 0.28 * (1.0 - uv.y / 0.30));
   vec3 painted = mix(img, uNight, clamp(scrim, 0.0, 1.0));
 
   // Etched outlines: the strong luminance edges only (not the canvas weave), while the painting arrives.
   float luma = dot(img, vec3(0.299, 0.587, 0.114));
   vec3 etched = mix(painted * 0.6, vec3(0.96, 0.94, 0.9), smoothstep(0.06, 0.25, fwidth(luma)));
-  painted = mix(etched, painted, smoothstep(0.2, 0.75, uProgress));
+  painted = mix(etched, painted, max(smoothstep(0.2, 0.75, uProgress), 1.0 - uEtch));
 
   // The eroding threshold: top first, bowed a little at the centre, broken by noise.
   vec2 nuv = vec2(uv.x * aspect, uv.y);
@@ -82,17 +87,21 @@ void main() {
   float aa = fwidth(edge) * 4.0;
   float reveal = smoothstep(-aa, aa, edge);
 
-  vec3 col = mix(uGround, painted, reveal);
-
   // Light caught along the torn boundary, flecked by the fine noise.
-  float glow = 1.0 - smoothstep(0.0, 0.012, abs(edge));
-  col += glow * (0.35 + 0.65 * max(speck, 0.0)) * 0.7 * (1.0 - smoothstep(0.9, 1.0, uProgress));
+  float glow = (1.0 - smoothstep(0.0, 0.012, abs(edge))) * (0.35 + 0.65 * max(speck, 0.0)) * 0.7
+    * (1.0 - smoothstep(0.9, 1.0, uProgress));
+  float grain = (hash(uv * uRes + fract(uTime * 7.0) * 100.0) - 0.5) * 0.035;
 
-  // Film grain over everything, so the ground and painting read as one print.
-  col += (hash(uv * uRes + fract(uTime * 7.0) * 100.0) - 0.5) * 0.035;
-  // Pinned, the uneroded ground is clear rather than ground-coloured, so whatever is
-  // pinned behind (the hero, in the rail's column) shows until the painting arrives.
-  float alpha = mix(1.0, clamp(reveal + glow, 0.0, 1.0), max(uPinned, uClear));
+  // Over the page ground: the ground erodes away to the painting.
+  vec3 opaque = mix(uGround, painted, reveal) + glow + grain;
+  // Pinned (or clear), the uneroded part is see-through, so the chapter behind shows until the
+  // painting arrives. The edge must not carry the ground colour: it fades from clear straight to
+  // the painting, and the glow ahead of it is a warm light of its own rather than a band of ground.
+  vec3 light = vec3(1.0, 0.95, 0.86);
+  vec3 seeThrough = mix(light, painted + glow, reveal) + grain;
+  float clearMode = max(uPinned, uClear);
+  vec3 col = mix(opaque, seeThrough, clearMode);
+  float alpha = mix(1.0, clamp(reveal + glow, 0.0, 1.0), clearMode);
   outColor = vec4(col, alpha);
 }`;
 
@@ -104,7 +113,8 @@ function hexToRgb(value: string, fallback: [number, number, number]): [number, n
 }
 
 export function DissolvePainting({
-  src,
+  src = "",
+  solid,
   ground = "--background",
   track,
   clear = false,
@@ -112,7 +122,9 @@ export function DissolvePainting({
 }: {
   /** The uneroded part is clear rather than ground-coloured, so whatever is behind shows until the painting arrives. */
   clear?: boolean;
-  src: string;
+  src?: string;
+  /** A CSS colour variable to erode in, flat, in place of a painting. */
+  solid?: string;
   /** The CSS variable for the colour it erodes away: the page ground, or night after another painting. */
   ground?: string;
   /**
@@ -151,7 +163,7 @@ export function DissolvePainting({
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     const u = (name: string) => gl.getUniformLocation(prog, name);
-    const [uRes, uImgAspect, uProgress, uHeight, uDepth, uPinned, uTime, uGround, uNight, uClear] = [
+    const [uRes, uImgAspect, uProgress, uHeight, uDepth, uPinned, uTime, uGround, uNight, uClear, uScrim, uEtch] = [
       "uRes",
       "uImgAspect",
       "uProgress",
@@ -162,6 +174,8 @@ export function DissolvePainting({
       "uGround",
       "uNight",
       "uClear",
+      "uScrim",
+      "uEtch",
     ].map(u);
 
     let raf = 0;
@@ -173,6 +187,8 @@ export function DissolvePainting({
     gl.uniform3fv(uGround, hexToRgb(css.getPropertyValue(ground), [0.867, 0.867, 0.82]));
     gl.uniform3fv(uNight, hexToRgb(css.getPropertyValue("--theme-night"), [0.082, 0.075, 0.059]));
     gl.uniform1f(uClear, clear ? 1 : 0);
+    gl.uniform1f(uScrim, solid ? 0 : 1);
+    gl.uniform1f(uEtch, solid ? 0 : 1);
     // The last frame drawn, so a scroll that leaves the reveal where it was draws nothing.
     let drawnP = -1;
     let drawnH = 0;
@@ -228,18 +244,22 @@ export function DissolvePainting({
 
     let tex: WebGLTexture | null = null;
     const img = new Image();
-    img.decoding = "async";
-    img.src = src;
-    img.onload = () => {
+    const upload = (source: HTMLImageElement | null, aspect: number) => {
       tex = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      if (source) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+      else {
+        // A flat colour: one pixel of it.
+        const [r, g, b] = hexToRgb(css.getPropertyValue(solid ?? ""), [0.867, 0.867, 0.82]);
+        const px = new Uint8Array([r * 255, g * 255, b * 255, 255]);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      }
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.uniform1f(uImgAspect, img.naturalWidth / img.naturalHeight);
+      gl.uniform1f(uImgAspect, aspect);
       // ANGLE compiles the program on its first draw: do that now, while the page loads, rather
       // than as the section scrolls into view, where it stalled the scroll. Cleared straight after.
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -248,6 +268,12 @@ export function DissolvePainting({
       canvas.dataset.ready = "true";
       redraw();
     };
+    if (solid) upload(null, 1);
+    else {
+      img.decoding = "async";
+      img.src = src;
+      img.onload = () => upload(img, img.naturalWidth / img.naturalHeight);
+    }
 
     // Only draw while the section is on screen.
     const io = new IntersectionObserver(([entry]) => {
@@ -270,7 +296,7 @@ export function DissolvePainting({
       gl.deleteBuffer(buf);
       if (tex) gl.deleteTexture(tex);
     };
-  }, [src, ground, track, clear]);
+  }, [src, solid, ground, track, clear]);
 
   return (
     <canvas
