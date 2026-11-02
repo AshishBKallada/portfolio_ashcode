@@ -13,13 +13,11 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
-import { WORK_PAINTING } from "@/lib/hero";
+import { WORK_SCROLL } from "@/lib/hero";
 import { DissolvePainting } from "./DissolvePainting";
 import { DropCap } from "./Editions";
 import { KindWords } from "./KindWords";
-import { PointerParallax } from "./PointerParallax";
 import { frame } from "./primitives";
-import { ScrollZoom } from "./ScrollZoom";
 
 type Row = { title: string; meta: string; date: string; image: string; href: string; external?: boolean };
 
@@ -102,32 +100,25 @@ export function ListTransition() {
     <section
       id="index-list"
       aria-label="Index"
-      // Over the painting the rail reads cream; the cream title screen and panel mark themselves light.
-      data-nav-theme="dark"
+      // Over Work's white scroll the rail reads ink, as over the cream title screen and panel.
+      data-nav-theme="light"
       className="signal-rail-bleed relative z-[1] text-ink"
     >
       {/* Work's painting behind the panel, fixed to the viewport and clipped to the
           section, so it lines up with Work's pinned painting (same treatment) as this section rises over it. */}
       {/* Runs a screen past the section, with the panel, while Studio erodes in over them. */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -bottom-[100svh] [clip-path:inset(0)]">
-        <div className="fixed inset-0 bg-night">
-          {/* Zoomed with Work's own pass (ScrollZoom on #index), so the two copies meet without a seam. */}
-          <ScrollZoom section="index">
-            {/* Work's cursor parallax, at its depth: the painting against the pointer (oversized,
-                so its edges never show). No clouds here: they're Work's alone. */}
-            <PointerParallax x={-36} y={-24} className="absolute -inset-12">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={WORK_PAINTING.src}
-                alt=""
-                width={WORK_PAINTING.width}
-                height={WORK_PAINTING.height}
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover select-none"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]" />
-            </PointerParallax>
-          </ScrollZoom>
+        <div className="fixed inset-0 bg-white">
+          {/* Held still and centred, as Work holds it. No clouds here: they're Work's alone. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={WORK_SCROLL.src}
+            alt=""
+            width={WORK_SCROLL.width}
+            height={WORK_SCROLL.height}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover select-none"
+          />
           {/* Cream ripples in over the painting from the bottom, as Work's painting did over About:
               the torn, lit edge rising with the title screen (index-list-title), then the panel's
               cream carries on from it. */}
