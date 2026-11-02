@@ -46,6 +46,10 @@ function bendMaterial(source: THREE.Material, bend: Bend) {
 /** The entry spin, matched to SkyHero's flight (CARPET_DELAY, CARPET_S). */
 const ENTRY_DELAY = 0.7;
 const ENTRY_S = 2.8;
+/** Left unscrolled this long after landing (or its last turn), it turns once more, over IDLE_SPIN_S. */
+const IDLE_S = 6;
+const IDLE_SPIN_S = 2.4;
+const easeInOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
 function Carpet({
   still,
@@ -87,6 +91,18 @@ function Carpet({
   }, [onLoad]);
   const group = useRef<THREE.Group>(null);
   const entryStart = useRef<number | null>(null);
+  // The idle turn: the clock time the wait last restarted (landing, a scroll, a turn's end),
+  // and when the current turn began. A scroll only flags itself; the frame reads the clock.
+  const idleFrom = useRef<number | null>(null);
+  const spinStart = useRef<number | null>(null);
+  const scrolled = useRef(false);
+  useEffect(() => {
+    const onScroll = () => {
+      scrolled.current = true;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useFrame((state) => {
     const t = still ? 1.2 : state.clock.elapsedTime;
@@ -98,9 +114,26 @@ function Carpet({
       if (ready && entryStart.current === null) entryStart.current = t;
       const e = entryStart.current === null ? 0 : Math.min(1, Math.max(0, (t - entryStart.current - ENTRY_DELAY) / ENTRY_S));
       const left = 1 - (1 - Math.pow(1 - e, 3));
-      g.rotation.y = -left * Math.PI * 2;
-      // Rolls and dips a little under the rider.
-      g.rotation.z = Math.sin(t * 0.8) * 0.05 + left * 0.5;
+      // Landed: wait out IDLE_S unscrolled, then one more full turn; a scroll restarts the wait
+      // (a turn under way finishes).
+      let spin = 0;
+      if (e >= 1) {
+        if (idleFrom.current === null || scrolled.current) idleFrom.current = t;
+        scrolled.current = false;
+        if (spinStart.current === null && t - idleFrom.current > IDLE_S) spinStart.current = t;
+        if (spinStart.current !== null) {
+          const s = Math.min(1, (t - spinStart.current) / IDLE_SPIN_S);
+          spin = easeInOut(s);
+          if (s >= 1) {
+            spinStart.current = null;
+            idleFrom.current = t;
+            spin = 0;
+          }
+        }
+      }
+      g.rotation.y = -(left + spin) * Math.PI * 2;
+      // Rolls and dips a little under the rider, banking into a turn.
+      g.rotation.z = Math.sin(t * 0.8) * 0.05 + left * 0.5 + Math.sin(spin * Math.PI) * 0.3;
       g.position.y = Math.sin(t * 1.3) * 0.12;
     }
   });
