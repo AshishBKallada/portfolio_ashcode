@@ -96,7 +96,7 @@ export function Chapter({
   heading?: string;
   /** Panel surface behind the chapter content (Work uses white). */
   panelTone?: "cream" | "white";
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   // A pinned scene spans the whole section, under the rail too, so the panel runs full width over it.
   const beside = besideRail && !pinned;
@@ -236,14 +236,17 @@ export function Chapter({
             </RevealItem>
           </div>
         ) : null}
-        <div className={`${frame} ${beside ? "md:px-10" : railInset} relative ${pinned && !light ? "[text-shadow:0_2px_18px_rgba(0,0,0,0.55)]" : ""} ${heading ? "pt-[clamp(3.5rem,8vh,5.5rem)]" : "pt-[clamp(1.5rem,4vh,2.5rem)]"} pb-[clamp(4rem,10vh,7.5rem)]`}>
-          {heading ? (
-            <h3 className="max-w-[60rem] py-6 text-[clamp(2.4rem,5vw,4.5rem)] leading-[0.98] text-balance md:py-10">
-              <DropCap>{heading}</DropCap>
-            </h3>
-          ) : null}
-          {children}
-        </div>
+        {/* The panel's content, if any: the heading, then the chapter's own. */}
+        {heading || children ? (
+          <div className={`${frame} ${beside ? "md:px-10" : railInset} relative ${pinned && !light ? "[text-shadow:0_2px_18px_rgba(0,0,0,0.55)]" : ""} ${heading ? "pt-[clamp(3.5rem,8vh,5.5rem)]" : "pt-[clamp(1.5rem,4vh,2.5rem)]"} pb-[clamp(4rem,10vh,7.5rem)]`}>
+            {heading ? (
+              <h3 className="max-w-[60rem] py-6 text-[clamp(2.4rem,5vw,4.5rem)] leading-[0.98] text-balance md:py-10">
+                <DropCap>{heading}</DropCap>
+              </h3>
+            ) : null}
+            {children}
+          </div>
+        ) : null}
       </div>
       {front ? (
         <div aria-hidden className="pointer-events-none absolute inset-0 hidden md:block">

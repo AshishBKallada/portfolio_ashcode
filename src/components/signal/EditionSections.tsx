@@ -1,25 +1,18 @@
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
 import { AboutScene } from "./AboutScene";
-import { Card, CardGrid, Chapter, DropCap } from "./Editions";
+import { Card, CardGrid, Chapter } from "./Editions";
 import { PinnedCourier } from "./LeapingFigure";
 import { PointerParallax } from "./PointerParallax";
 import { SwirlClouds } from "./SwirlClouds";
 
 const about = site.aboutEdition;
 
-/** Who, then the principles, as text cards in the panel's own style. */
-const notes = [
-  { title: about.kicker, body: site.bio, actions: [about.cta] },
-  ...about.cards.map((card, i) => ({ title: `Principle ${String(i + 1).padStart(2, "0")}`, body: card.text, actions: [] })),
-];
-
 /**
  * [01] About, Editions-style: after the hero's reveal (SkyHero), its scene
- * (AboutScene: nebula and visor figure) pins over the hero and dissolves in from the
+ * (AboutScene: cream and the visor figure) pins over the hero and dissolves in from the
  * bottom, dissolving "Obsession beats Talent" away; then the title and lede
- * scroll over it in cream, and the heading, who I am and the principles, as
- * text cards, in one cream box. The annotated meditating courier
+ * scroll over it in ink. The annotated meditating courier
  * (AnnotatedFigure) and the earlier About (SignalAbout: AboutMeStage,
  * LinkedInSection, ticket cards) are kept but not shown.
  */
@@ -34,19 +27,7 @@ export function EditionAbout() {
       besideRail
       light
       pinned={<AboutScene track="about-reveal" />}
-    >
-      {/* The heading and the cards in one cream box over the scene, in the page ground as Work's panel. */}
-      <div className="bg-background p-6 text-ink [text-shadow:none] md:p-10">
-        <h3 className="max-w-[60rem] pb-8 text-[clamp(2.4rem,5vw,4.5rem)] leading-[0.98] text-balance md:pb-12">
-          <DropCap>{`${about.dropCap}${about.headline}`}</DropCap>
-        </h3>
-        <CardGrid>
-          {notes.map((note, i) => (
-            <Card key={note.title} title={note.title} body={note.body} actions={note.actions} delay={i * 0.06} />
-          ))}
-        </CardGrid>
-      </div>
-    </Chapter>
+    />
   );
 }
 
