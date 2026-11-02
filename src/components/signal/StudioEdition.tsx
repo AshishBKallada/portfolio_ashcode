@@ -27,13 +27,6 @@ const FIGURE = {
   height: 883,
 };
 
-/** The courier at his desk, code on one side, a drawing board on the other: behind the contact close. */
-const CLOSE_PAINTING = {
-  src: "/images/studio/studio-courier.jpg",
-  width: 1040,
-  height: 740,
-};
-
 const copy = {
   title: "Studio",
   lede: "Sketched by hand, shipped in code. Every product starts on paper and ends in production.",
@@ -110,13 +103,10 @@ function Guitarist({ still }: { still: boolean }) {
  * it. The painting is pinned beneath the end of the Index and erodes in over it
  * from the bottom, the Index holding; the text then travels up from the bottom
  * of the frame and out of the top as you scroll. Then the close (children: the
- * closing line and the footer card) tucks a screen up over Studio's held end,
- * on its own painting, the courier at his desk, which erodes in over the
- * gallery in turn and stays pinned under the close.
+ * closing line and the contact + footer card) scrolls up over the same painting.
  */
 export function StudioEdition({ children }: { children?: ReactNode }) {
   const textRef = useRef<HTMLDivElement>(null);
-  const closeRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion() ?? false;
   // Across the text's whole pass through the viewport, it rises a little faster than the page.
   const { scrollYProgress: p } = useScroll({
@@ -124,18 +114,10 @@ export function StudioEdition({ children }: { children?: ReactNode }) {
     offset: ["start end", "end start"],
   });
   const y = useTransform(p, [0, 1], ["25svh", "-25svh"]);
-  // As the close and the footer card rise over it, the close's painting pushes in, drifts up and dims.
-  const { scrollYProgress: close } = useScroll({
-    target: closeRef,
-    offset: ["start end", "end end"],
-  });
-  const bgScale = useTransform(close, [0, 1], [1, 1.18]);
-  const bgY = useTransform(close, [0, 1], ["0%", "-6%"]);
-  const bgDim = useTransform(close, [0.3, 1], [0, 0.55]);
 
   return (
     <section id="studio" aria-label={copy.title} className="relative text-cream">
-      {/* Studio's own stretch: its painting is pinned across it and holds a screen past its end. */}
+      {/* Studio's stretch, the close in it: its painting is pinned across it all. */}
       <div className="relative">
         <div aria-hidden className="pointer-events-none sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden">
           {/* Erodes in from the bottom over the end of the Index, as the Studio text rises. */}
@@ -158,22 +140,8 @@ export function StudioEdition({ children }: { children?: ReactNode }) {
             </p>
           </motion.div>
         </div>
-      </div>
-
-      {/* The close, tucked a screen up over Studio's held end (z-[1] over it), on its own painting. */}
-      <div className="relative z-[1] -mt-[100svh]">
-        <div aria-hidden className="pointer-events-none sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden">
-          <motion.div style={reduce ? undefined : { scale: bgScale, y: bgY }} className="absolute inset-0 will-change-transform">
-            {/* Erodes in from the bottom over the gallery, as the close rises. */}
-            <PinnedPainting painting={CLOSE_PAINTING} track="studio-close" position="60% 30%" />
-          </motion.div>
-          <motion.div style={reduce ? undefined : { opacity: bgDim }} className="absolute inset-0 bg-night opacity-0" />
-        </div>
-        {/* The screen spent over Studio's end as the close's painting erodes in; both are dark under the rail. */}
-        <div aria-hidden data-nav-theme="dark" className="pointer-events-none h-[100svh]" />
-        <div id="studio-close" ref={closeRef} className="relative">
-          {children}
-        </div>
+        {/* The close: the closing line and the contact + footer card, over the gallery. */}
+        <div className="relative">{children}</div>
       </div>
     </section>
   );
