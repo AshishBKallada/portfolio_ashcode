@@ -3,7 +3,7 @@ import { optimizedSrc } from "@/lib/images";
 // Hero art and the scroll timeline shared by the hero, navbar and loader.
 
 /** Full-bleed photograph behind the home hero (SkyHero). */
-export const HERO_BG = { src: "/images/hero/hero-bg.webp", width: 1376, height: 768 };
+export const HERO_BG = { src: "/images/hero/hero-dunes.webp", width: 1352, height: 784 };
 
 /**
  * Work's background (EditionWork), shared with the Index list (ListTransition) that rises over
