@@ -14,7 +14,6 @@ import { useRef, useState } from "react";
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
 import { DissolvePainting } from "./DissolvePainting";
-import { DropCap } from "./Editions";
 import { KindWords } from "./KindWords";
 import { frame } from "./primitives";
 
@@ -114,18 +113,15 @@ export function ListTransition() {
           <DissolvePainting solid="--background" track="index-list-title" className="absolute inset-0 h-full w-full" />
         </div>
       </div>
-      {/* A short glimpse of the painting after Work's cards, then the title and lede on the cream
-          that ripples in under them, before the panel rises over it. */}
+      {/* A short glimpse of the painting after Work's cards, then the title on the cream
+          that ripples in under it, before the panel rises over it. */}
       <div aria-hidden className="pointer-events-none h-[20svh]" />
       <div
         id="index-list-title"
         data-nav-theme="light"
-        className={`${frame} relative flex h-[80svh] flex-col justify-end pb-[clamp(2.5rem,6vh,4rem)] md:pl-[calc(var(--nav-sidebar-w)+2.5rem)]`}
+        className={`${frame} relative flex h-[80svh] flex-col justify-end md:pl-[calc(var(--nav-sidebar-w)+2.5rem)]`}
       >
-        <h2 className="py-10 font-headline text-[clamp(4.5rem,13vw,13rem)] leading-[0.88] tracking-[-0.045em] md:py-8">Index</h2>
-        <p className="max-w-[44rem] text-[clamp(1.6rem,2.8vw,2.6rem)] leading-[1.02] text-pretty">
-          <DropCap>Every project, then the latest from LinkedIn, in one running list.</DropCap>
-        </p>
+        <h2 className="pt-10 font-headline text-[clamp(4.5rem,13vw,13rem)] leading-[0.88] tracking-[-0.045em] md:pt-8">Index</h2>
       </div>
       {/* Kind words from the comments and DMs, on the cream, before the list. */}
       <KindWords />

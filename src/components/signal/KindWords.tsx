@@ -66,7 +66,7 @@ export function KindWords() {
   }, [reduce, hovering, onScreen]);
 
   return (
-    <div data-nav-theme="light" className="relative py-[clamp(2.5rem,6vh,4rem)] text-ink">
+    <div data-nav-theme="light" className="relative pt-4 pb-[clamp(2.5rem,6vh,4rem)] text-ink">
       <div className="mx-auto w-full max-w-[1480px] px-4 sm:px-8 md:pr-10 md:pl-[calc(var(--nav-sidebar-w)+2.5rem)]">
         <h3 className="font-headline text-[18px] leading-[1.1] tracking-[-0.02em]">{words.heading}</h3>
         <p className="mt-2 max-w-[34rem] text-[clamp(1.6rem,2.8vw,2.4rem)] leading-[1] text-balance">
