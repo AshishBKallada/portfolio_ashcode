@@ -10,8 +10,17 @@ const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
  * in, it pushes in slowly and drifts up, so the content scrolling over it
  * reads as nearer. Given `section` (an id), it follows that section's pass
  * instead, so a copy of its background elsewhere holds the same framing.
+ * `still` holds it in place (a background that must keep its framing, e.g. Work's centred scroll).
  */
-export function ScrollZoom({ children, section: sectionId }: { children: ReactNode; section?: string }) {
+export function ScrollZoom({
+  children,
+  section: sectionId,
+  still = false,
+}: {
+  children: ReactNode;
+  section?: string;
+  still?: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const section = useRef<HTMLElement | null>(null);
   const reduce = useReducedMotion() ?? false;
@@ -30,7 +39,7 @@ export function ScrollZoom({ children, section: sectionId }: { children: ReactNo
   const scale = useTransform(p, [0, 1], [1.02, 1.3]);
   const y = useTransform(p, [0, 1], ["3%", "-7%"]);
   return (
-    <motion.div ref={ref} style={reduce ? undefined : { scale, y }} className="absolute inset-0 will-change-transform">
+    <motion.div ref={ref} style={reduce || still ? undefined : { scale, y }} className="absolute inset-0 will-change-transform">
       {children}
     </motion.div>
   );

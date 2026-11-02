@@ -53,7 +53,7 @@ export function Chapter({
   /** The painting drifts against the cursor, as the hero's does (the backdrop sets its own layers). */
   pointerParallax?: boolean;
   /** The painting pinned behind the intro; the hero's by default. */
-  painting?: { src: string; width: number; height: number };
+  painting?: { src: string; width: number; height: number; light?: boolean };
   /**
    * The panel starts at the rail's edge with a straight top, leaving the rail's
    * column on what's behind it (the painting, or the pinned hero for About).
@@ -97,6 +97,8 @@ export function Chapter({
   // Pinned-over-previous (About over the hero) tucks up like an intro chapter so scroll
   // doesn't stall on a blank screen after the hero reveal.
   const tuckOverPrevious = intro || (pinned && !intro);
+  // A painting on a light ground: held still with no scrim or shader, the rail reading ink over it.
+  const light = painting.light ?? false;
   const panelSurface = pinned
     ? "text-cream"
     : panelTone === "white"
@@ -128,12 +130,17 @@ export function Chapter({
               canvas is clear where it hasn't eroded in yet, and the chapter before shows through. */}
           <div
             aria-hidden
-            className="pointer-events-none sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden bg-night has-[canvas[data-ready=true]]:bg-transparent [&:has(canvas[data-ready=true])_.paint-fallback]:invisible"
+            className={`pointer-events-none sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden ${light ? "bg-background" : "bg-night"} has-[canvas[data-ready=true]]:bg-transparent [&:has(canvas[data-ready=true])_.paint-fallback]:invisible`}
           >
-            {/* Pushes in and drifts up across the chapter, under the content scrolling over it. */}
-            <ScrollZoom>
+            {/* Pushes in and drifts up across the chapter, under the content scrolling over it;
+                a light painting holds still and centred, its framing fixed. */}
+            <ScrollZoom still={light}>
               {/* Oversized by more than its pointer travel, so its edges never show as it drifts. */}
-              <PointerParallax x={pointerParallax ? -36 : 0} y={pointerParallax ? -24 : 0} className="absolute -inset-12">
+              <PointerParallax
+                x={pointerParallax && !light ? -36 : 0}
+                y={pointerParallax && !light ? -24 : 0}
+                className={`absolute ${light ? "inset-0" : "-inset-12"}`}
+              >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={painting.src}
@@ -143,9 +150,14 @@ export function Chapter({
                 loading="lazy"
                 className="paint-fallback absolute inset-0 h-full w-full object-cover select-none"
               />
-              <div className="paint-fallback absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]" />
-              {/* Erodes in from the bottom over the chapter before, as this chapter's intro rises. */}
-              <DissolvePainting src={painting.src} track={`${id}-intro`} className="absolute inset-0 h-full w-full" />
+              {light ? null : (
+                <div className="paint-fallback absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]" />
+              )}
+              {/* Erodes in from the bottom over the chapter before, as this chapter's intro rises. A light
+                  painting skips it: the shader's scrim and grade would dull its ground off the page cream. */}
+              {light ? null : (
+                <DissolvePainting src={painting.src} track={`${id}-intro`} className="absolute inset-0 h-full w-full" />
+              )}
               </PointerParallax>
             </ScrollZoom>
             {backdrop ? <TrackFade track={`${id}-intro`}>{backdrop}</TrackFade> : null}
@@ -156,7 +168,7 @@ export function Chapter({
           {/* Intro over the painting, entering from the bottom once the panel above has lifted. Two
               screens: over the first the painting erodes in; then its title screen holds for one more,
               while the backdrop's stages (clouds, then the courier) and last the title arrive. */}
-          <div id={`${id}-intro`} data-nav-theme="dark" className="relative h-[200svh] text-cream">
+          <div id={`${id}-intro`} data-nav-theme={light ? "light" : "dark"} className="relative h-[200svh] text-cream">
             <div className={`${frame} ${railInset} sticky top-0 flex h-[100svh] flex-col justify-end pb-[clamp(2.5rem,6vh,4rem)]`}>
               {/* Last of the entrance: after the clouds and the courier. */}
               <TrackRise track={`${id}-intro`} from={1.65} to={2} y="3.5rem" fade className="relative">
@@ -186,7 +198,7 @@ export function Chapter({
           over what's pinned behind, which stays showing in the rail's column, so the rail keeps
           its tone over that (dark) rather than the panel. Otherwise it runs full width. */}
       <div
-        data-nav-theme={beside || pinned ? "dark" : "light"}
+        data-nav-theme={(beside && !light) || pinned ? "dark" : "light"}
         // Beside the rail, at least a screen tall: the next chapter tucks a screen up over its end.
         // Over a pinned scene the panel is clear, its text cream; boxes within it carry their own ground.
         className={`relative ${panelSurface} ${beside ? "min-h-[100svh] md:ml-[var(--nav-sidebar-w)]" : ""}`}

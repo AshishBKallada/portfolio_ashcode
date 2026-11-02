@@ -8,6 +8,17 @@ export const HERO_BG = { src: "/images/hero/hero-bg.webp", width: 1376, height: 
 /** Work's painting (EditionWork), shared with the Index list (ListTransition) that rises over it. */
 export const WORK_PAINTING = { src: "/images/work/work-marble-city.jpg", width: 736, height: 1104 };
 
+/**
+ * Work's own background (EditionWork): the torn palace scroll centred on the section cream,
+ * held still with no scrim; `light` reads the rail in ink over it. The Index keeps WORK_PAINTING.
+ */
+export const WORK_SCROLL = {
+  src: "/images/work/work-palace-scroll.webp",
+  width: 2400,
+  height: 1350,
+  light: true,
+};
+
 /** Transparent cutout above the cumulus — Winged Courier (latest Photoroom export), as a WebP with lossless alpha. */
 export const HERO_FIGURE = {
   src: "/images/hero/hero-figure-winged-courier.webp",

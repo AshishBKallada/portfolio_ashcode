@@ -1,6 +1,6 @@
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
-import { WORK_PAINTING } from "@/lib/hero";
+import { WORK_SCROLL } from "@/lib/hero";
 import { AboutScene } from "./AboutScene";
 import { Card, CardGrid, Chapter, DropCap } from "./Editions";
 import { PinnedCourier } from "./LeapingFigure";
@@ -63,8 +63,7 @@ export function EditionWork() {
       label="Work"
       title="Work"
       lede="Dashboards, marketing sites and apps, built end to end and made to last."
-      panelTone="white"
-      painting={WORK_PAINTING}
+      painting={WORK_SCROLL}
       pointerParallax
       // The courier mid-leap, large and right of centre, pinned with the painting and drifting on scroll;
       // it rises from the bottom centre to there over About as the intro comes up, under the cards.
