@@ -13,7 +13,6 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
-import { WORK_SCROLL } from "@/lib/hero";
 import { DissolvePainting } from "./DissolvePainting";
 import { DropCap } from "./Editions";
 import { KindWords } from "./KindWords";
@@ -100,25 +99,15 @@ export function ListTransition() {
     <section
       id="index-list"
       aria-label="Index"
-      // Over Work's scroll on cream the rail reads ink, as over the cream title screen and panel.
+      // Over Work's cream the rail reads ink, as over the cream title screen and panel.
       data-nav-theme="light"
       className="signal-rail-bleed relative z-[1] text-ink"
     >
-      {/* Work's painting behind the panel, fixed to the viewport and clipped to the
-          section, so it lines up with Work's pinned painting (same treatment) as this section rises over it. */}
+      {/* Work's cream behind the panel, fixed to the viewport and clipped to the section, as this
+          section rises over Work. */}
       {/* Runs a screen past the section, with the panel, while Studio erodes in over them. */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -bottom-[100svh] [clip-path:inset(0)]">
         <div className="fixed inset-0 bg-background">
-          {/* Held still and centred, as Work holds it. No clouds here: they're Work's alone. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={WORK_SCROLL.src}
-            alt=""
-            width={WORK_SCROLL.width}
-            height={WORK_SCROLL.height}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover select-none"
-          />
           {/* Cream ripples in over the painting from the bottom, as Work's painting did over About:
               the torn, lit edge rising with the title screen (index-list-title), then the panel's
               cream carries on from it. */}

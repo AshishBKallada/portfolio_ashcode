@@ -5,18 +5,6 @@ import { optimizedSrc } from "@/lib/images";
 /** Full-bleed photograph behind the home hero (SkyHero). */
 export const HERO_BG = { src: "/images/hero/hero-dunes.webp", width: 1352, height: 784 };
 
-/**
- * Work's background (EditionWork), shared with the Index list (ListTransition) that rises over
- * it: the torn palace scroll centred on the section cream, held still with no scrim; `light` sets its title
- * and the rail in ink.
- */
-export const WORK_SCROLL = {
-  src: "/images/work/work-palace-scroll.webp",
-  width: 2400,
-  height: 1350,
-  light: true,
-};
-
 /** Transparent cutout above the cumulus — Winged Courier (latest Photoroom export), as a WebP with lossless alpha. */
 export const HERO_FIGURE = {
   src: "/images/hero/hero-figure-winged-courier.webp",

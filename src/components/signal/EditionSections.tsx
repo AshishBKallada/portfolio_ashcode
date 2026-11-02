@@ -1,6 +1,5 @@
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
-import { WORK_SCROLL } from "@/lib/hero";
 import { AboutScene } from "./AboutScene";
 import { Card, CardGrid, Chapter, DropCap } from "./Editions";
 import { PinnedCourier } from "./LeapingFigure";
@@ -33,6 +32,7 @@ export function EditionAbout() {
       lede={about.body}
       intro={false}
       besideRail
+      light
       pinned={<AboutScene track="about-reveal" />}
     >
       {/* The heading and the cards in one cream box over the scene, in the page ground as Work's panel. */}
@@ -51,7 +51,7 @@ export function EditionAbout() {
 }
 
 /**
- * [02] Work, Editions-style: the leaping courier pinned over the marble city,
+ * [02] Work, Editions-style: the leaping courier pinned over the page cream,
  * with watercolour clouds (SwirlClouds) drifting through its sky, then every
  * project as a card in the cream panel sliding over them. The panel archive
  * (ProjectIndex + ArchiveAccordion) is kept but not shown.
@@ -64,7 +64,8 @@ export function EditionWork() {
       title="Work"
       lede="Dashboards, marketing sites and apps, built end to end and made to last."
       panelTone="white"
-      painting={WORK_SCROLL}
+      painting={null}
+      light
       pointerParallax
       // The courier mid-leap, large and right of centre, pinned with the painting and drifting on scroll;
       // it rises from the bottom centre to there over About as the intro comes up, under the cards.
