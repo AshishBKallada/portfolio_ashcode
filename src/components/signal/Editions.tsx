@@ -97,7 +97,7 @@ export function Chapter({
   // Pinned-over-previous (About over the hero) tucks up like an intro chapter so scroll
   // doesn't stall on a blank screen after the hero reveal.
   const tuckOverPrevious = intro || (pinned && !intro);
-  // A painting on a white ground: held still with no scrim, its title and the rail in ink.
+  // A painting on the section cream: held still with no scrim, its title and the rail in ink.
   const light = painting.light ?? false;
   const panelSurface = pinned
     ? "text-cream"
@@ -130,7 +130,7 @@ export function Chapter({
               canvas is clear where it hasn't eroded in yet, and the chapter before shows through. */}
           <div
             aria-hidden
-            className={`pointer-events-none sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden ${light ? "bg-white" : "bg-night"} has-[canvas[data-ready=true]]:bg-transparent [&:has(canvas[data-ready=true])_.paint-fallback]:invisible`}
+            className={`pointer-events-none sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden ${light ? "bg-background" : "bg-night"} has-[canvas[data-ready=true]]:bg-transparent [&:has(canvas[data-ready=true])_.paint-fallback]:invisible`}
           >
             {/* Pushes in and drifts up across the chapter, under the content scrolling over it;
                 a light painting holds still and centred, its framing fixed. */}

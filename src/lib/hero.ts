@@ -7,7 +7,7 @@ export const HERO_BG = { src: "/images/hero/hero-bg.webp", width: 1376, height: 
 
 /**
  * Work's background (EditionWork), shared with the Index list (ListTransition) that rises over
- * it: the torn palace scroll centred on white, held still with no scrim; `light` sets its title
+ * it: the torn palace scroll centred on the section cream, held still with no scrim; `light` sets its title
  * and the rail in ink.
  */
 export const WORK_SCROLL = {
