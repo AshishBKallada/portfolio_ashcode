@@ -13,9 +13,9 @@ const about = site.aboutEdition;
 
 /**
  * [01] About, Editions-style: after the hero's reveal (SkyHero), its scene
- * (AboutScene: the portrait painting and visor figure) pins over the hero and dissolves in from the
+ * (AboutScene: cream and the visor figure) pins over the hero and dissolves in from the
  * bottom, dissolving "Obsession beats Talent" away; then the title and lede
- * scroll over it in cream. The annotated meditating courier
+ * scroll over it in ink. The annotated meditating courier
  * (AnnotatedFigure) and the earlier About (SignalAbout: AboutMeStage,
  * LinkedInSection, ticket cards) are kept but not shown.
  */
@@ -28,6 +28,7 @@ export function EditionAbout() {
       lede={about.body}
       intro={false}
       besideRail
+      light
       pinned={<AboutScene track="about-reveal" />}
     />
   );
