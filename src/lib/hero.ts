@@ -98,3 +98,22 @@ export const FEED = { hold: 0.35, rise: 1, spill: 0.6 } as const;
 /** Scroll position (px) `t` of the way through the hero's exit. */
 export const exitAt = (t: number) =>
   window.innerHeight * (HERO_EXIT_START + t * HERO_EXIT_SCREENS);
+
+/**
+ * Scroll flip of the hero figure (HeroFlip): a front somersault over the
+ * reveal. Each pose is drawn on one square canvas, the figure's centre of mass
+ * at its centre and at the cutout's scale; `angle` is how far round the flip
+ * the pose is, in degrees. The first pose is HERO_FIGURE itself. Built by
+ * scripts/hero-flip-frames.py from art/hero-flip/, which prints these.
+ */
+export const HERO_FLIP_POSES = [
+  { src: "/images/hero/flip/flip-01.webp", angle: 40 },
+  { src: "/images/hero/flip/flip-02.webp", angle: 125 },
+  { src: "/images/hero/flip/flip-03.webp", angle: 270 },
+  { src: "/images/hero/flip/flip-04.webp", angle: 330 },
+] as const;
+
+/** Where the flip canvas sits over HERO_FIGURE's box, as fractions of that box. */
+export const HERO_FLIP_CANVAS = { left: -0.1917, top: -0.2413, width: 1.3331, height: 1.4391 };
+/** The figure's centre of mass in HERO_FIGURE's box: the flip turns about it. */
+export const HERO_FLIP_ORIGIN = { x: 0.4749, y: 0.4783 };
