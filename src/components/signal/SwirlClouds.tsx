@@ -75,8 +75,6 @@ export function SwirlClouds({
 
   return (
     <div ref={ref} data-running="false" className="swirl-clouds absolute inset-0">
-      {/* Dims the painting under them a touch, so the pale clouds stand off it. */}
-      {layer !== "front" ? <div className="absolute inset-0 bg-night/30" /> : null}
       {(CLOUDS as CloudSpec[]).map((c, i) =>
         layer === "front" && !c.front ? null : (
         <Cloud key={i} cloud={c} stage={stage} still={reduce || !rise} className={layer === "back" && c.front ? "md:hidden" : ""}>
