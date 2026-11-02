@@ -7,6 +7,7 @@ import {
   useTransform,
 } from "motion/react";
 import { useRef, type ReactNode } from "react";
+import { site } from "@/data/site";
 import { DissolvePainting } from "./DissolvePainting";
 import { DropCap } from "./Editions";
 import { PointerParallax } from "./PointerParallax";
@@ -27,9 +28,12 @@ const FIGURE = {
   height: 883,
 };
 
+const contact = site.contactStatement;
+
+/** The contact card's opener, over the gallery in Studio's place. */
 const copy = {
-  title: "Studio",
-  lede: "Sketched by hand, shipped in code. Every product starts on paper and ends in production.",
+  title: "Contact",
+  lede: `${contact.lines.join(" ")} ${contact.script}.`,
 };
 
 /** A pinned painting that erodes in over what's held behind it, as the element `track` rises. */
