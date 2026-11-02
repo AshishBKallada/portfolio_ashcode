@@ -9,8 +9,8 @@ export const HERO_BG = { src: "/images/hero/hero-bg.webp", width: 1376, height: 
 export const WORK_PAINTING = { src: "/images/work/work-marble-city.jpg", width: 736, height: 1104 };
 
 /**
- * Work's own background (EditionWork): the torn palace scroll centred on the section cream,
- * held still with no scrim; `light` reads the rail in ink over it. The Index keeps WORK_PAINTING.
+ * Work's own background (EditionWork): the torn palace scroll centred on white,
+ * held still with no scrim; `light` sets its title and the rail in ink. The Index keeps WORK_PAINTING.
  */
 export const WORK_SCROLL = {
   src: "/images/work/work-palace-scroll.webp",

@@ -118,8 +118,11 @@ export function DissolvePainting({
   ground = "--background",
   track,
   clear = false,
+  plain = false,
   className = "",
 }: {
+  /** The painting as it is: no scrim bands and no etched arrival, only the erosion (Work's white scroll). */
+  plain?: boolean;
   /** The uneroded part is clear rather than ground-coloured, so whatever is behind shows until the painting arrives. */
   clear?: boolean;
   src?: string;
@@ -187,8 +190,8 @@ export function DissolvePainting({
     gl.uniform3fv(uGround, hexToRgb(css.getPropertyValue(ground), [0.867, 0.867, 0.82]));
     gl.uniform3fv(uNight, hexToRgb(css.getPropertyValue("--theme-night"), [0.082, 0.075, 0.059]));
     gl.uniform1f(uClear, clear ? 1 : 0);
-    gl.uniform1f(uScrim, solid ? 0 : 1);
-    gl.uniform1f(uEtch, solid ? 0 : 1);
+    gl.uniform1f(uScrim, solid || plain ? 0 : 1);
+    gl.uniform1f(uEtch, solid || plain ? 0 : 1);
     // The last frame drawn, so a scroll that leaves the reveal where it was draws nothing.
     let drawnP = -1;
     let drawnH = 0;
@@ -296,7 +299,7 @@ export function DissolvePainting({
       gl.deleteBuffer(buf);
       if (tex) gl.deleteTexture(tex);
     };
-  }, [src, solid, ground, track, clear]);
+  }, [src, solid, ground, track, clear, plain]);
 
   return (
     <canvas

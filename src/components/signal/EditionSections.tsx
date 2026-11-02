@@ -63,6 +63,7 @@ export function EditionWork() {
       label="Work"
       title="Work"
       lede="Dashboards, marketing sites and apps, built end to end and made to last."
+      panelTone="white"
       painting={WORK_SCROLL}
       pointerParallax
       // The courier mid-leap, large and right of centre, pinned with the painting and drifting on scroll;
