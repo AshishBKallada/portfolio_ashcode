@@ -37,8 +37,8 @@ const item = "font-headline text-[17px] leading-[1.35] tracking-[-0.015em]";
  * the email set large as the thing to do, with copy and the call beside it;
  * a hairline, then the index in three labelled columns (Elsewhere, Pages,
  * Based); the wordmark across the foot; one credit row. On the home page it
- * rises over Studio's held painting beside the rail (besideRail), its closing
- * line set over the painting above (ClosingEdition); elsewhere it runs full
+ * rises over Studio's held painting beside the rail (besideRail), with no
+ * closing line (ClosingEdition); elsewhere it runs full
  * width with the line in it, its text clearing the rail (globals.css:
  * .footer-inner). The earlier dark footer and the painted ContactEdition are
  * folded into this.
@@ -54,7 +54,7 @@ export function SiteFooter({ besideRail = false }: { besideRail?: boolean }) {
       className={`relative overflow-hidden bg-background text-ink ${besideRail ? "md:ml-[var(--nav-sidebar-w)]" : ""}`}
     >
       <div className={`${frame} ${inner} pt-[clamp(3.5rem,9vh,6rem)]`}>
-        {/* Beside the rail the closing line is set over the painting above (ClosingEdition). */}
+        {/* Beside the rail (the home page's close) there's no closing line. */}
         {besideRail ? null : (
           <>
             <h2 className="sr-only">

@@ -102,8 +102,8 @@ function Guitarist({ still }: { still: boolean }) {
  * the guitarist falling through it, and a huge title and a drop-cap line over
  * it. The painting is pinned beneath the end of the Index and erodes in over it
  * from the bottom, the Index holding; the text then travels up from the bottom
- * of the frame and out of the top as you scroll. Then the close (children: the
- * closing line and the contact + footer card) scrolls up over the same painting.
+ * of the frame as you scroll. Then the close (children: the contact + footer
+ * card) scrolls up over the same painting, just below the text.
  */
 export function StudioEdition({ children }: { children?: ReactNode }) {
   const textRef = useRef<HTMLDivElement>(null);
@@ -113,7 +113,7 @@ export function StudioEdition({ children }: { children?: ReactNode }) {
     target: textRef,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(p, [0, 1], ["25svh", "-25svh"]);
+  const y = useTransform(p, [0, 1], ["10svh", "-10svh"]);
 
   return (
     <section id="studio" aria-label={copy.title} className="relative text-cream">
@@ -129,8 +129,9 @@ export function StudioEdition({ children }: { children?: ReactNode }) {
             and unmarked: the rail's column is still the Index's cream panel until the painting arrives,
             which the text below (marked dark) tracks as it rises. */}
         <div aria-hidden className="pointer-events-none h-[100svh]" />
-        {/* Starts a screen down and runs a screen past, so it enters near the bottom and rises toward the close. */}
-        <div id="studio-text" ref={textRef} data-nav-theme="dark" className="relative flex min-h-[140svh] items-center">
+        {/* A screen tall, the text at its foot so the contact card follows just below it; it rises
+            toward the card as it scrolls. */}
+        <div id="studio-text" ref={textRef} data-nav-theme="dark" className="relative flex min-h-[100svh] items-end pb-[clamp(4rem,12vh,8rem)]">
           <motion.div style={reduce ? undefined : { y }} className={`${frame} md:pl-[calc(var(--nav-sidebar-w)+1.5rem)]`}>
             <h2 className="font-headline text-[clamp(4.5rem,15vw,15rem)] leading-[0.88] tracking-[-0.05em] [text-shadow:0_6px_60px_rgba(0,0,0,0.35)]">
               {copy.title}
@@ -140,7 +141,7 @@ export function StudioEdition({ children }: { children?: ReactNode }) {
             </p>
           </motion.div>
         </div>
-        {/* The close: the closing line and the contact + footer card, over the gallery. */}
+        {/* The close: the contact + footer card, over the gallery. */}
         <div className="relative">{children}</div>
       </div>
     </section>
