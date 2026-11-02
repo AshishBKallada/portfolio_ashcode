@@ -6,6 +6,9 @@ import { PinnedCourier } from "./LeapingFigure";
 import { PointerParallax } from "./PointerParallax";
 import { SwirlClouds } from "./SwirlClouds";
 
+/** Work's figure: the courier on horseback, a transparent cutout. */
+const RIDER = { src: "/images/work/work-rider.webp", width: 1376, height: 768 };
+
 const about = site.aboutEdition;
 
 /**
@@ -32,7 +35,7 @@ export function EditionAbout() {
 }
 
 /**
- * [02] Work, Editions-style: the leaping courier pinned over the page cream,
+ * [02] Work, Editions-style: the courier on horseback pinned over the page cream,
  * with watercolour clouds (SwirlClouds) drifting through its sky, then every
  * project as a card in the cream panel sliding over them. The panel archive
  * (ProjectIndex + ArchiveAccordion) is kept but not shown.
@@ -48,7 +51,7 @@ export function EditionWork() {
       painting={null}
       light
       pointerParallax
-      // The courier mid-leap, large and right of centre, pinned with the painting and drifting on scroll;
+      // The courier on horseback, large and right of centre, pinned with the painting and drifting on scroll;
       // it rises from the bottom centre to there over About as the intro comes up, under the cards.
       // Two of the clouds in front of the cards panel too, at its sides; the same throw and parallax.
       front={
@@ -58,7 +61,11 @@ export function EditionWork() {
       }
       foreground={
         <PointerParallax x={64} y={38} rotate={2.8} className="absolute inset-y-0 right-[3%] hidden items-start pt-[5svh] md:flex">
-          <PinnedCourier rise="index-intro" className="h-[78svh] w-auto [filter:drop-shadow(0_30px_50px_rgba(0,0,0,0.35))]" />
+          <PinnedCourier
+            rise="index-intro"
+            figure={RIDER}
+            className="h-auto w-[min(62vw,110svh)] [filter:drop-shadow(0_30px_50px_rgba(0,0,0,0.35))]"
+          />
         </PointerParallax>
       }
       backdrop={

@@ -7,8 +7,8 @@ import { DissolvePainting } from "./DissolvePainting";
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 /**
- * About's pinned scene: the page cream filling the screen and the courier on
- * horseback set large in the bottom-right corner, the text in ink
+ * About's pinned scene: the page cream filling the screen and the visor-clad
+ * figure at the laptop set large in the bottom-right corner, the text in ink
  * over it. Pinned over the hero, the cream erodes in from the bottom up along a
  * torn, glowing edge (DissolvePainting, clear where it hasn't arrived), so
  * "Obsession beats Talent" dissolves away above it; `track` is the element
@@ -59,10 +59,10 @@ export function AboutScene({ track }: { track: string }) {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/about/about-rider.webp"
+          src="/images/about/about-visor-figure.webp"
           alt=""
-          width={1376}
-          height={768}
+          width={1586}
+          height={992}
           loading="lazy"
           className="block h-auto w-[min(150vw,1500px)] max-w-none select-none [filter:drop-shadow(0_30px_60px_rgba(0,0,0,0.22))] md:w-[min(82vw,1500px)]"
         />

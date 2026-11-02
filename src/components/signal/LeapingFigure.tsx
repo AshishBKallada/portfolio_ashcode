@@ -55,8 +55,17 @@ export function LeapingFigure({ className = "" }: { className?: string }) {
  * slower than the panel rising over it, so it reads as a layer of its own.
  * Given `rise` (the id of the chapter's intro), it first rises small from
  * below the bottom centre to its place as that intro scrolls up the screen.
+ * `figure` swaps in another cutout of him (Work's rider).
  */
-export function PinnedCourier({ className = "", rise }: { className?: string; rise?: string }) {
+export function PinnedCourier({
+  className = "",
+  rise,
+  figure = { src: SRC, width: W, height: H },
+}: {
+  className?: string;
+  rise?: string;
+  figure?: { src: string; width: number; height: number };
+}) {
   const ref = useRef<HTMLImageElement>(null);
   const box = useRef<HTMLDivElement>(null);
   const section = useRef<HTMLElement | null>(null);
@@ -103,10 +112,10 @@ export function PinnedCourier({ className = "", rise }: { className?: string; ri
   const img = (
     <motion.img
       ref={ref}
-      src={SRC}
+      src={figure.src}
       alt=""
-      width={W}
-      height={H}
+      width={figure.width}
+      height={figure.height}
       loading="lazy"
       draggable={false}
       style={reduce ? undefined : { y, rotate, scale }}
