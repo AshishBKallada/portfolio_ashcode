@@ -11,12 +11,15 @@ type Props = {
 };
 
 /**
- * Top-right wireframe cluster — square outline with a dotted circle through it
- * (see yogindersuria.live hero).
+ * Top-right wireframe cluster, sized and placed after the reference
+ * (yogindersuria.live hero): two concentric circles centred near the top-right
+ * corner, one thin solid and one dashed just outside it, and a square outline
+ * whose top-left sits inside the circles' sweep. Everything in viewport units,
+ * so it holds its framing at any size.
  */
 export function HeroWireDecor({ mx, my, scrollY, still, ready }: Props) {
-  const x = useTransform(mx, (v) => v * 26);
-  const yPointer = useTransform(my, (v) => v * 16);
+  const x = useTransform(mx, (v) => v * 52);
+  const yPointer = useTransform(my, (v) => v * 32);
   const y = useTransform([yPointer, scrollY], ([p, s]: number[]) => p + s);
 
   return (
@@ -26,19 +29,19 @@ export function HeroWireDecor({ mx, my, scrollY, still, ready }: Props) {
         animate={ready ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 1.1, delay: still ? 0 : 0.55 }}
         style={still ? undefined : { x, y }}
-        className="absolute top-[11%] right-[4%] h-[clamp(8.5rem,24vw,15rem)] w-[clamp(8.5rem,24vw,15rem)] sm:right-[6%] max-md:top-[9%] max-md:right-[2%] max-md:h-[6.5rem] max-md:w-[6.5rem]"
+        className="absolute inset-0"
       >
-        {/* Square — thin solid outline */}
-        <div className="absolute inset-0 border border-cream/55" />
-
-        {/* Dotted circle — larger, offset so the arc cuts through the square */}
+        {/* Circles: centred at 85vw across, 15.2vh down; radii 26.4vw (solid) and 27.75vw (dashed). */}
         <svg
-          viewBox="0 0 240 240"
-          className="absolute -top-[32%] -right-[28%] h-[165%] w-[165%] text-cream/45"
+          viewBox="0 0 100 100"
+          className="absolute top-[15.2vh] left-[85vw] h-[55.5vw] w-[55.5vw] -translate-x-1/2 -translate-y-1/2 overflow-visible text-cream"
           fill="none"
         >
-          <circle cx="120" cy="120" r="104" stroke="currentColor" strokeWidth="1" strokeDasharray="2.5 7" />
+          <circle cx="50" cy="50" r={(26.4 / 55.5) * 100} stroke="currentColor" strokeOpacity="0.5" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <circle cx="50" cy="50" r="50" stroke="currentColor" strokeOpacity="0.65" strokeWidth="1" strokeDasharray="5 5" vectorEffect="non-scaling-stroke" />
         </svg>
+        {/* Square: 25vw on a side, its top-left at 65vw across and 30vh down. */}
+        <div className="absolute top-[30vh] left-[65vw] size-[25vw] border border-cream/60" />
       </motion.div>
     </div>
   );

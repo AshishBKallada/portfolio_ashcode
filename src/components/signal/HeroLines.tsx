@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 const CARD_W = 340;
 /** Fraction of the viewport width the card sits left of centre (--nav-card-shift). */
-export const NAV_CARD_SHIFT = 0.12;
+const NAV_CARD_SHIFT = 0.12;
 
 type Size = { w: number; h: number };
 

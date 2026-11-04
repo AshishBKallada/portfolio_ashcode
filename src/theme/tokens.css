@@ -6,6 +6,8 @@
 :root {
   /* Post-hero sections (hero keeps its own art + scrim). */
   --theme-section-bg: #ddddd1;
+  /* The LinkedIn hall painting's top edge, for the ripple that tears it in. */
+  --theme-linkedin-edge: #896c50;
   --theme-page-bg: var(--theme-section-bg);
   /* Script accents on light section grounds. */
   --theme-script: var(--theme-flame);
@@ -56,8 +58,31 @@
   --accent: var(--theme-brand);
 }
 
-/* White page, chosen with the navbar switch: accents go back to flame. */
-:root[data-theme="white"] {
-  --theme-page-bg: #ffffff;
-  --theme-script: var(--theme-flame);
+/* Red page, chosen with the navbar switch (theme/mode.ts). */
+:root[data-theme="red"] {
+  --theme-section-bg: #ec4726;
+  --theme-page-fg: #ffffff;
+  --theme-page-fg-muted: rgba(255, 255, 255, 0.8);
+  --theme-page-fg-subtle: rgba(255, 255, 255, 0.6);
+  --theme-page-border: rgba(255, 255, 255, 0.22);
+}
+
+/* On the red ground every text reads white: ink and cream trade places, so ink
+   text turns white and ink buttons turn white with dark labels. Flame accents
+   would vanish on flame, so they go white too. Surfaces that keep their own
+   light ground (cards, chips) opt back out with .keep-ink. The hero is dark and
+   isn't a light region, so it's untouched. */
+:root[data-theme="red"] :is([data-nav-theme="light"], .bg-background) {
+  --theme-ink: #ffffff;
+  --theme-cream: #1a0505;
+  --theme-bone: #1a0505;
+  --theme-flame: #ffffff;
+  --theme-script: #ffffff;
+}
+:root[data-theme="red"] .keep-ink {
+  --theme-ink: #1a0505;
+  --theme-cream: #f4f1ea;
+  --theme-bone: #f4f1ea;
+  --theme-flame: #ec4726;
+  --theme-script: #ec4726;
 }

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { TextReveal } from "@/components/motion/TextReveal";
 import Image from "next/image";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
+import { ScrollWords } from "@/components/motion/ScrollWords";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
@@ -71,16 +74,18 @@ export default async function ProjectPage({
           </p>
           {/* Span carries the face: the global h1 rule would otherwise win. */}
           <h1 className="mt-5">
-            <span className="block font-serif text-[clamp(4.5rem,14vw,12rem)] leading-[0.88] tracking-[-0.04em]">
-              {project.title}
-            </span>
+            <TextReveal text={project.title} className="block font-headline text-[clamp(4.5rem,14vw,12rem)] leading-[0.88] tracking-[-0.045em]" />
           </h1>
-          <p className="mt-6 max-w-xl text-[clamp(1.15rem,1.7vw,1.5rem)] leading-[1.3] tracking-[-0.015em] text-pretty">
-            {project.summary}
+          <p className="mt-6 max-w-xl font-narrative text-[clamp(1.3rem,2vw,1.75rem)] leading-[1.15] tracking-[-0.03em] text-pretty">
+            <ScrollWords text={project.summary} />
           </p>
         </header>
 
-        <div className="mx-auto mt-12 max-w-5xl overflow-hidden rounded-[4px] bg-ink">
+        <ParallaxImage
+          amount={6}
+          style={{ aspectRatio: `${project.imageWidth} / ${project.imageHeight}` }}
+          className="mx-auto mt-12 max-w-5xl rounded-[4px] bg-ink"
+        >
           <ViewTransition name={`project-${project.slug}`} share="morph" default="none">
             <Image
               src={project.image}
@@ -88,14 +93,14 @@ export default async function ProjectPage({
               width={project.imageWidth}
               height={project.imageHeight}
               sizes="(max-width: 1024px) 100vw, 1024px"
-              className="block h-auto w-full"
+              className="block h-full w-full object-cover"
               preload
             />
           </ViewTransition>
-        </div>
+        </ParallaxImage>
 
         <div className="mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-[1fr_auto] md:items-start">
-          <p className="max-w-[65ch] text-[17px] leading-8 text-pretty">
+          <p className="max-w-[65ch] font-narrative text-[19px] leading-[1.5] tracking-[-0.015em] text-pretty">
             {project.description}
           </p>
           <div className="flex flex-wrap gap-3">
@@ -121,7 +126,7 @@ export default async function ProjectPage({
             <span className={`${monoLabel} block`}>
               Next project
             </span>
-            <span className="mt-3 block font-serif text-[clamp(3rem,9vw,7.5rem)] leading-[0.88] tracking-[-0.035em] transition-colors group-hover:text-cream">
+            <span className="mt-3 block font-headline text-[clamp(3rem,9vw,7.5rem)] leading-[0.88] tracking-[-0.045em] transition-colors group-hover:text-ink/60">
               {next.title}
             </span>
           </span>

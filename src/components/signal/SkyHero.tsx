@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  animate,
+  cubicBezier,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -14,16 +16,17 @@ import { ImageRippleEffect, type RippleImageItem } from "@/components/ui/image-r
 import { HeroSky } from "@/components/sections/hero/HeroSky";
 import { site } from "@/data/site";
 import {
-  HERO_BG,
   HERO_FIGURE,
+  HERO_BG,
   HERO_FIGURE_HEIGHT,
   HERO_FIGURE_LIFT_CLASS,
   HERO_SEAT_CLOUD,
   HERO_SEAT_CLOUD_URL,
 } from "@/lib/hero";
+import { heroPinPhases } from "@/lib/heroPinScroll";
 import { introEase } from "@/lib/motion";
 import { HeroLines } from "./HeroLines";
-import { HeroCarpet } from "./HeroCarpet";
+import { CARPET_FLY_DOWN_S, CARPET_FLY_IN_S, CARPET_PERCH_S, HeroCarpet } from "./HeroCarpet";
 import { HeroWireDecor } from "./HeroWireDecor";
 import { useHeroCovered } from "./useHeroCovered";
 
@@ -35,16 +38,12 @@ const START = 0.15;
 /** How long the painting waits after the loader, while the construction lines draw over the dark. */
 const SCENE_DELAY = 1;
 const settle = [0.16, 1, 0.3, 1] as const;
-/** Scroll distance of the cloud/figure reveal, in viewport heights (HeroStage pins the hero for it). */
-export const REVEAL_VH = 1.1;
-/** Total pinned scroll for the hero, in viewport heights (HeroStage's spacer). Matches the
- * reveal so the phrase and the About handoff stay on one continuous scroll beat. */
-export const HERO_PIN_VH = REVEAL_VH;
-
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 /** The carpet's entry: it waits out the loader's fade, then takes its time crossing the sky. */
 const CARPET_DELAY = 0.7;
-const CARPET_S = 2.8;
+const CARPET_S = CARPET_FLY_IN_S + CARPET_PERCH_S + CARPET_FLY_DOWN_S;
+/** The carpet's three beats, in seconds of its entry clock: fly in, perch (held), fly down. */
+const CARPET_BEATS = [0, CARPET_FLY_IN_S, CARPET_FLY_IN_S + CARPET_PERCH_S, CARPET_S];
+const CARPET_EASE = [cubicBezier(0.3, 0, 0.2, 1), (v: number) => v, cubicBezier(0.45, 0, 0.2, 1)];
 
 /**
  * The opener: hero photograph, cumulus with ripples, floating figure cutout,
@@ -67,43 +66,36 @@ export function SkyHero() {
   const bgScrollScale = useTransform(scrollT, [0, 1], [1, 1.07]);
   const cloudScrollY = useTransform(scrollT, [0, 1], [0, -48]);
   const figureScrollY = useTransform(scrollT, [0, 1], [0, -72]);
-  // The reveal: over the first REVEAL_VH of scroll (the hero is pinned for
-  // it), the cloud parts left and swells, the figure steps right and swells
-  // less, and the line behind them shows through.
-  const reveal = useTransform(scrollY, (y) => {
-    const vh = typeof window !== "undefined" ? window.innerHeight : 800;
-    return Math.min(1, Math.max(0, y / (vh * REVEAL_VH)));
-  });
+  // After the nav card flips to About, the cloud parts left and the figure steps right.
+  const reveal = useTransform(scrollY, (y) => heroPinPhases(y).reveal);
   const vw = () => (typeof window !== "undefined" ? window.innerWidth : 1280);
   const cloudRevealX = useTransform(reveal, (r) => r * -0.62 * vw());
   const cloudRevealScale = useTransform(reveal, (r) => 1 + r * 0.35);
   const figureRevealX = useTransform(reveal, (r) => r * 0.42 * vw());
   const figureRevealScale = useTransform(reveal, (r) => 1 + r * 0.1);
-  const lineOpacity = useTransform(reveal, (r) => clamp01((r - 0.12) / 0.48));
   // The construction lines wind back off over the first stretch of the reveal.
   const linesErase = useTransform(reveal, [0, 0.35], [0, 1]);
-  const lineScale = useTransform(reveal, (r) => 0.92 + r * 0.08);
   const decorScrollY = useTransform(scrollT, [0, 1], [0, -36]);
 
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
   const mx = useSpring(rawX, { stiffness: 62, damping: 16, mass: 0.55 });
   const my = useSpring(rawY, { stiffness: 62, damping: 16, mass: 0.55 });
-  const bgX = useTransform(mx, (v) => v * -36);
-  const bgYPointer = useTransform(my, (v) => v * -24);
+  const bgX = useTransform(mx, (v) => v * -80);
+  const bgYPointer = useTransform(my, (v) => v * -50);
   const bgY = useTransform([bgYPointer, bgScrollY], ([p, s]: number[]) => p + s);
-  const cloudX = useTransform(mx, (v) => v * 36);
-  const cloudYPointer = useTransform(my, (v) => v * 22);
+  const cloudX = useTransform(mx, (v) => v * 80);
+  const cloudYPointer = useTransform(my, (v) => v * 48);
   const cloudY = useTransform([cloudYPointer, cloudScrollY], ([p, s]: number[]) => p + s);
-  const figureX = useTransform(mx, (v) => v * 64);
-  const figureYPointer = useTransform(my, (v) => v * 38);
+  const figureX = useTransform(mx, (v) => v * 130);
+  const figureYPointer = useTransform(my, (v) => v * 76);
   // A small bob as the page scrolls: up and down 10px, twice a screen, over its own drift.
   const figureBob = useTransform(scrollY, (y) => {
     const vh = typeof window !== "undefined" ? window.innerHeight : 800;
     return Math.sin((y / vh) * Math.PI * 4) * 10;
   });
   const figureY = useTransform([figureYPointer, figureScrollY, figureBob], ([p, s, b]: number[]) => p + s + b);
-  const figureRotate = useTransform(mx, (v) => v * 2.8);
+  const figureRotate = useTransform(mx, (v) => v * 4.5);
 
   useEffect(() => {
     if (reduce || !window.matchMedia("(pointer: fine)").matches) return;
@@ -122,6 +114,28 @@ export function SkyHero() {
   const onCarpetLoad = useCallback(() => setCarpetLoaded(true), []);
   const carpetIn = ready && carpetLoaded;
   const [carpetLanded, setCarpetLanded] = useState(false);
+  // One clock for the whole entry, in seconds: it moves the box here and poses
+  // the model in HeroCarpet, so the stand-up always plays at the perch.
+  const carpetT = useMotionValue(0);
+  const carpetX = useTransform(carpetT, CARPET_BEATS, ["-52vw", "16vw", "16vw", "0vw"], { ease: CARPET_EASE });
+  const carpetY = useTransform(carpetT, CARPET_BEATS, ["-46vh", "-40vh", "-40vh", "0vh"], { ease: CARPET_EASE });
+  const carpetScale = useTransform(carpetT, CARPET_BEATS, [0.5, 1.55, 1.55, 1], { ease: CARPET_EASE });
+  const carpetRotate = useTransform(carpetT, CARPET_BEATS, [-14, 0, 0, 0], { ease: CARPET_EASE });
+  const carpetOpacity = useTransform(carpetT, [0, 0.35], [0, 1]);
+  // The mat's line: in once it has stood up at the perch, out before it lies back down.
+  const BUBBLE_BEATS = [CARPET_FLY_IN_S + 0.3, CARPET_FLY_IN_S + 0.7, CARPET_FLY_IN_S + CARPET_PERCH_S - 0.5, CARPET_FLY_IN_S + CARPET_PERCH_S - 0.1];
+  const bubbleOpacity = useTransform(carpetT, BUBBLE_BEATS, [0, 1, 1, 0]);
+  const bubbleScale = useTransform(carpetT, BUBBLE_BEATS, [0.6, 1, 1, 0.85]);
+  useEffect(() => {
+    if (!carpetIn || reduce) return;
+    const run = animate(carpetT, CARPET_S, {
+      duration: CARPET_S,
+      delay: CARPET_DELAY,
+      ease: "linear",
+      onComplete: () => setCarpetLanded(true),
+    });
+    return () => run.stop();
+  }, [carpetIn, reduce, carpetT]);
   // The carpet is hidden below md: don't mount its canvas there, or fetch its model.
   const [wide, setWide] = useState(false);
   useEffect(() => {
@@ -177,24 +191,6 @@ export function SkyHero() {
 
         <HeroSky mx={mx} my={my} />
 
-        {/* Revealed as the cloud and figure part. */}
-        <motion.p
-          aria-hidden
-          style={reduce ? undefined : { opacity: lineOpacity, scale: lineScale }}
-          className="pointer-events-none absolute inset-0 z-[2] flex flex-col items-center justify-center text-center leading-[0.86] text-cream will-change-transform [text-shadow:0_6px_60px_rgba(0,0,0,0.35)]"
-        >
-          {/* Editions heading style: a swash script capital, the rest in the narrative serif. */}
-          <span className="font-narrative text-[clamp(4.5rem,13vw,13.5rem)] tracking-[-0.045em]">
-            <span className="mr-[-0.08em] font-flourish text-[1.3em] leading-none tracking-normal">O</span>bsession
-          </span>
-          <span className="my-[0.04em] font-narrative text-[clamp(2rem,5vw,5rem)] tracking-[-0.03em] text-gold">
-            beats
-          </span>
-          <span className="font-narrative text-[clamp(4.5rem,13vw,13.5rem)] tracking-[-0.045em]">
-            <span className="mr-[-0.06em] font-flourish text-[1.3em] leading-none tracking-normal">T</span>alent
-          </span>
-        </motion.p>
-
         {/* The carpet under the courier's feet, in a layer of its own that moves as the
             figure's does (reveal, pointer), over the cloud and under the
             figure. Once the loader has gone and the model is in, it sweeps in from the
@@ -204,20 +200,31 @@ export function SkyHero() {
           className="pointer-events-none absolute inset-0 z-[4] will-change-transform max-md:hidden"
         >
           <motion.div style={reduce ? undefined : { x: figureX, y: figureY, rotate: figureRotate }} className="absolute inset-0">
+            {/* In from the top left to a perch behind the courier, right of his reaching
+                hand, where it stands up and talks (HeroCarpet); then down under his feet. */}
             <motion.div
-              initial={reduce ? false : { x: "-52vw", y: "-46vh", scale: 0.5, rotate: -14, opacity: 0 }}
-              animate={carpetIn ? { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 } : undefined}
-              transition={{
-                default: { duration: CARPET_S, delay: CARPET_DELAY, ease: [0.45, 0, 0.2, 1] },
-                // Drops in a long arc rather than a straight line.
-                y: { duration: CARPET_S, delay: CARPET_DELAY, ease: [0.3, 0, 0.15, 1] },
-                opacity: { duration: 0.35, delay: CARPET_DELAY, ease: "easeOut" },
-              }}
-              onAnimationComplete={() => setCarpetLanded(true)}
-              className="pointer-events-none absolute right-[10%] bottom-[-7%] left-[30%] h-[34%] lg:translate-x-[9%]"
+              style={
+                reduce
+                  ? undefined
+                  : { x: carpetX, y: carpetY, scale: carpetScale, rotate: carpetRotate, opacity: carpetOpacity }
+              }
+              className="pointer-events-auto absolute right-[10%] bottom-[-7%] left-[30%] h-[34%] lg:translate-x-[9%]"
             >
               {wide ? (
-                <HeroCarpet still={reduce} reveal={reveal} ready={carpetIn} active={carpetIn && !carpetLanded} onLoad={onCarpetLoad} />
+                <HeroCarpet still={reduce} reveal={reveal} entry={carpetT} active={carpetIn && !carpetLanded} onLoad={onCarpetLoad} />
+              ) : null}
+              {/* What the mat says while it stands and talks: the words alone in white, no box,
+                  just above its top left. */}
+              {wide && !reduce ? (
+                <motion.div
+                  aria-hidden
+                  style={{ opacity: bubbleOpacity, scale: bubbleScale }}
+                  className="pointer-events-none absolute right-[59%] bottom-[80%] w-[8.5rem] origin-bottom-right"
+                >
+                  <p className="relative font-headline text-[9px] leading-[1.25] tracking-[-0.01em] text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.45)]">
+                    Yo Boss, so what are we cookin&rsquo; today?
+                  </p>
+                </motion.div>
               ) : null}
             </motion.div>
           </motion.div>
@@ -260,7 +267,7 @@ export function SkyHero() {
 
         <motion.div
           style={reduce ? undefined : { x: figureRevealX, scale: figureRevealScale }}
-          className="absolute inset-0 z-[4] will-change-transform"
+          className="pointer-events-none absolute inset-0 z-[4] will-change-transform"
         >
           <motion.div
             style={reduce ? undefined : { x: figureX, y: figureY, rotate: figureRotate }}

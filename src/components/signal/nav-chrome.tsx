@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { navMorphScrollY } from "@/lib/heroPinScroll";
 
 export type NavChromePhase = "hero" | "morphing" | "rail";
 
@@ -22,26 +23,24 @@ type NavChromeContextValue = {
 const NavChromeContext = createContext<NavChromeContextValue | null>(null);
 
 const DESKTOP_MQ = "(min-width: 768px)";
-export const NAV_MORPH_MS = 620;
+const NAV_MORPH_MS = 620;
 
 /** Mobile: rail when About has scrolled over the hero (unchanged). Not tracked on desktop. */
 function useAboutOverHero(enabled: boolean) {
   const pathname = usePathname();
+  const track = enabled && pathname === "/";
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    if (!enabled || pathname !== "/") {
-      setActive(false);
-      return;
-    }
+    if (!track) return;
 
-    const about = document.getElementById("about");
-    if (!about) return;
+    const marker = document.getElementById("about") ?? document.getElementById("index");
+    if (!marker) return;
 
     let raf = 0;
     const update = () => {
       raf = 0;
-      setActive(about.getBoundingClientRect().top <= 72);
+      setActive(marker.getBoundingClientRect().top <= 72);
     };
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -55,9 +54,9 @@ function useAboutOverHero(enabled: boolean) {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, [enabled, pathname]);
+  }, [track]);
 
-  return active;
+  return track ? active : false;
 }
 
 function useDesktop() {
@@ -85,12 +84,11 @@ export function NavChromeProvider({ children }: { children: ReactNode }) {
   const completeMorph = useCallback(() => setPhase("rail"), []);
 
   useEffect(() => {
-    if (!home) {
-      setPhase("hero");
-      return;
-    }
-    if (desktop && window.scrollY > 96) setPhase("rail");
-    else if (desktop) setPhase("hero");
+    if (!home || !desktop) return;
+    const id = requestAnimationFrame(() => {
+      setPhase(window.scrollY > 96 ? "rail" : "hero");
+    });
+    return () => cancelAnimationFrame(id);
   }, [home, desktop]);
 
   // Desktop home: the first scroll down morphs the nav into the rail.
@@ -105,7 +103,7 @@ export function NavChromeProvider({ children }: { children: ReactNode }) {
       const y = window.scrollY;
       const down = y > last;
       last = y;
-      if (phase !== "hero" || !down || y <= 8) return;
+      if (phase !== "hero" || !down || y < navMorphScrollY() * 0.98) return;
       if (reduced) setPhase("rail");
       else beginMorph();
     };
@@ -134,19 +132,6 @@ export function NavChromeProvider({ children }: { children: ReactNode }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [home, desktop, phase]);
-
-  // Reserve content gutter only once the rail is active (desktop home).
-  useEffect(() => {
-    const rail = home && desktop && phase === "rail";
-    document.documentElement.dataset.navRail = rail ? "true" : "false";
-    return () => {
-      document.documentElement.dataset.navRail = "false";
-    };
-  }, [home, desktop, phase]);
-
-  useEffect(() => {
-    if (!home) document.documentElement.dataset.navRail = "false";
-  }, [home]);
 
   const morphRail = home && (desktop ? phase !== "hero" : mobileRail);
 

@@ -1,85 +1,37 @@
+"use client";
+
 import { projects } from "@/data/projects";
-import { site } from "@/data/site";
-import { AboutScene } from "./AboutScene";
-import { Card, CardGrid, Chapter } from "./Editions";
-import { PinnedCourier } from "./LeapingFigure";
-import { PointerParallax } from "./PointerParallax";
-import { SwirlClouds } from "./SwirlClouds";
-
-/** Work's figure: the courier on horseback, a transparent cutout. */
-const RIDER = { src: "/images/work/work-rider.webp", width: 1376, height: 768 };
-
-const about = site.aboutEdition;
+import { TextReveal } from "@/components/motion/TextReveal";
+import { RevealItem } from "@/components/motion/Reveal";
+import { DissolvePainting } from "./DissolvePainting";
+import { Card, CardGrid, DropCap } from "./Editions";
+import { frame } from "./primitives";
 
 /**
- * [01] About, Editions-style: after the hero's reveal (SkyHero), its scene
- * (AboutScene: the lake painting and visor figure) pins over the hero and dissolves in from the
- * bottom, dissolving "Obsession beats Talent" away; then the title and lede
- * scroll over it in cream. The annotated meditating courier
- * (AnnotatedFigure) and the earlier About (SignalAbout: AboutMeStage,
- * LinkedInSection, ticket cards) are kept but not shown.
- */
-export function EditionAbout() {
-  return (
-    <Chapter
-      id="about"
-      label="About"
-      title="About"
-      lede={about.body}
-      intro={false}
-      besideRail
-      pinned={<AboutScene track="about-reveal" />}
-    />
-  );
-}
-
-/**
- * [02] Work, Editions-style: the courier on horseback pinned over the page cream,
- * with watercolour clouds (SwirlClouds) drifting through its sky, then every
- * project as a card in the cream panel sliding over them. The panel archive
- * (ProjectIndex + ArchiveAccordion) is kept but not shown.
+ * [01] Work on the plain page cream: the title and lede, then every project
+ * as a card. The panel archive (ProjectIndex +
+ * ArchiveAccordion) is kept but not shown.
  */
 export function EditionWork() {
   return (
-    <Chapter
-      id="index"
-      label="Work"
-      title="Work"
-      lede="Dashboards, marketing sites and apps, built end to end and made to last."
-      panelTone="white"
-      painting={null}
-      light
-      pointerParallax
-      // The courier on horseback, large and right of centre, pinned with the painting and drifting on scroll;
-      // it rises from the bottom centre to there over About as the intro comes up, under the cards.
-      // Two of the clouds in front of the cards panel too, at its sides; the same throw and parallax.
-      front={
-        <PointerParallax x={36} y={22} scroll={220}>
-          <SwirlClouds layer="front" rise={{ track: "index-intro", from: 1, to: 1.45 }} />
-        </PointerParallax>
-      }
-      foreground={
-        <PointerParallax x={64} y={38} rotate={2.8} className="absolute inset-y-0 right-[3%] hidden items-start pt-[5svh] md:flex">
-          <PinnedCourier
-            rise="index-intro"
-            figure={RIDER}
-            className="h-auto w-[min(62vw,110svh)] [filter:drop-shadow(0_30px_50px_rgba(0,0,0,0.35))]"
-          />
-        </PointerParallax>
-      }
-      backdrop={
-        <>
-          {/* The hero's cursor parallax in depth: the painting drifts against the pointer,
-              the clouds with it, the courier (foreground) with it most and tilting. On scroll alone the
-              clouds slide up past the painting faster than it drifts (ScrollZoom). */}
-          {/* Watercolour clouds drifting through the painting's sky, behind the courier: first of the
-              entrance once the painting has torn in, each thrown up from below on its own beat. */}
-          <PointerParallax x={36} y={22} scroll={220}>
-            <SwirlClouds layer="back" rise={{ track: "index-intro", from: 1, to: 1.45 }} />
-          </PointerParallax>
-        </>
-      }
-    >
+    // A plain section on the page cream, following the hero: nothing pinned or stacked.
+    <section id="index" aria-label="Work" data-nav-theme="light" className="signal-rail-bleed relative bg-background text-ink">
+      {/* Over the hero as Work rises: its cream ripples in from the bottom, a torn edge
+          lit along the boundary, climbing with the section's top until it meets it. Clear
+          ahead of the edge, so the hero shows until the cream arrives. */}
+      <DissolvePainting
+        solid="--background"
+        track="index"
+        clear
+        className="absolute inset-x-0 bottom-full h-[60svh] w-full"
+      />
+      <div className={`${frame} py-16 md:py-24`}>
+        <TextReveal as="h2" text="Work" className="block pb-6 font-headline text-[clamp(4.5rem,13vw,13rem)] leading-[0.88] tracking-[-0.045em]" />
+        <RevealItem delay={0.1}>
+          <p className="mb-10 max-w-[44rem] text-[clamp(1.6rem,2.8vw,2.6rem)] leading-[1.02] text-pretty">
+            <DropCap scrub>Dashboards, marketing sites and apps, built end to end and made to last.</DropCap>
+          </p>
+        </RevealItem>
       <CardGrid columns={2}>
         {projects.map((project, i) => (
           <Card
@@ -99,6 +51,7 @@ export function EditionWork() {
           </Card>
         ))}
       </CardGrid>
-    </Chapter>
+      </div>
+    </section>
   );
 }

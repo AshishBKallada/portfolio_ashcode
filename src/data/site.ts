@@ -15,43 +15,9 @@ export const site = {
       ["THREE.JS", "R3F", "GSAP", "MOTION", "LENIS", "WEBGL", "GIT", "#FULL_STACK"],
     ],
   },
-  about: {
-    headlineBefore: "Work that feels",
-    headlineItalic: "carved",
-    headlineAfter: ", not assembled.",
-    gallery: [
-      "/images/linkedin/intro.avif",
-      "/images/linkedin/mockup-2.avif",
-      "/images/linkedin/mockup-responsive.avif",
-    ],
-  },
   hero: {
-    cta: { label: "Get in Touch", href: "/#contact" },
-    /** Hero headline — eyebrow + main word + subline (SkyHero). */
-    statementEyebrow: "Full stack",
+    /** The hero statement for screen readers (SkyHero). */
     statementMain: "developer",
-    statementLineTwoPrefix: "Building web products",
-    statementAccent: "end to end.",
-    statementLineTwo: "Building web products end to end.",
-    statementLineOne: "Full-stack developer",
-    /** Bulleted tags beside the CTA. */
-    tags: ["TypeScript", "React & Next.js", "APIs & infra"],
-    /** Underlined link under the statement, top left. */
-    link: { label: "Start a project", href: "/#contact" },
-    /** Bordered card, bottom right: a globe cell and a claim cell. */
-    card: { place: "Remote", claim: "Full-stack, from interface to infrastructure." },
-    blurb: "Products, interfaces and motion work, built end to end and made to last.",
-    /** Two-line hint, bottom centre (pointer devices only). */
-    hint: ["Move to stir the cloud", "Scroll to meet the work"],
-  },
-  projects: {
-    lead: "Not here",
-    wordOne: "To",
-    wordTwo: "Follow",
-    trail: "the hype.",
-    closing: "Who prefer weight\nover noise.",
-    closingBody:
-      "A short run of products built end to end, for people who would rather ship something that lasts than something that trends.",
   },
   /** About panel — editorial headline, kicker, and floating prompt cards. */
   aboutEdition: {
@@ -69,18 +35,6 @@ export const site = {
       { text: "Own the line from first sketch to last production deploy.", featured: false },
       { text: "Keep one point of contact across design, code, and infra.", featured: false },
     ],
-  },
-  aboutPoster: {
-    heading: "About me",
-    /** Cut-out from the shared reference (chair figure), on the red poster. */
-    photo: "/images/about-chair-cutout.png",
-    photoWidth: 661,
-    photoHeight: 711,
-    /** Small avatar elsewhere on the site (not the poster cutout). */
-    avatar: "/images/about-figure.png",
-    /** Signature set in the script face across the portrait. */
-    signature: "Ashish B Kallada",
-    bio: "I'm Ashish, a full-stack developer building products remotely. I care about how things feel, not only how they work, and I build them to stay standing long after launch.",
   },
   contactStatement: {
     lines: ["Let's build", "something that", "feels"],
@@ -114,27 +68,33 @@ export const site = {
       cta: "Follow on LinkedIn",
       /** Panels in the liquid-glass carousel, in order. */
       posts: [
-        { title: "Shipping the new intro", src: "/images/linkedin/intro.avif" },
-        { title: "Designing for every screen", src: "/images/linkedin/mockup-responsive.avif" },
-        { title: "A dashboard that stays calm", src: "/images/linkedin/mockup.avif" },
-        { title: "From sketch to laptop", src: "/images/linkedin/mockup-laptop.avif" },
-        { title: "Details that last", src: "/images/linkedin/mockup-2.avif" },
+        { title: "Time is running out", src: "/images/linkedin/posts/post-01.jpg" },
+        { title: "A jewellery app, in the making", src: "/images/linkedin/posts/post-02.jpg" },
+        { title: "Discipline", src: "/images/linkedin/posts/post-03.jpg" },
+        { title: "SQL injection", src: "/images/linkedin/posts/post-04.jpg" },
+        { title: "Why PWAs", src: "/images/linkedin/posts/post-05.jpg" },
+        { title: "On stage", src: "/images/linkedin/posts/post-06.jpg" },
+        { title: "A plan builder, step by step", src: "/images/linkedin/posts/post-07.jpg" },
+        { title: "Heads down", src: "/images/linkedin/posts/post-08.jpg" },
       ],
-      /**
-       * Kind words from LinkedIn comments and DMs (KindWords, in the Index).
-       * PLACEHOLDERS: replace each `text` with a real comment or message, word for word,
-       * and `via` with where it came from. Add or remove entries freely (six fill the scatter).
-       */
+      /** Real comments left under the posts above (KindWords, in the Index), word for word. */
       kindWords: {
         heading: "Kind words",
-        lede: "What people leave under the posts, and in my DMs.",
+        lede: "What people leave under the posts.",
         items: [
-          { text: "Placeholder: paste a real LinkedIn comment here.", via: "comment" },
-          { text: "Placeholder: paste a real message from your DMs here.", via: "dm" },
-          { text: "Placeholder: another comment, word for word.", via: "comment" },
-          { text: "Placeholder: another DM, word for word.", via: "dm" },
-          { text: "Placeholder: a comment on one of the posts above.", via: "comment" },
-          { text: "Placeholder: a note someone sent after a launch.", via: "dm" },
+          { text: "Nice one, Ashish! Keep the tips coming! ⚡️", name: "Jishad Ali", via: "comment" },
+          {
+            text: "Welcome to BeyondScale Ashish B Kallada! Looking forward to working with you.",
+            name: "Shashank Punuru",
+            via: "comment",
+          },
+          { text: "Great advice Ashish B Kallada", name: "Justin Ram", via: "comment" },
+          { text: "Thanks for sharing mahn!!!", name: "KRISHNADAS N", via: "comment" },
+          { text: "You should Thank your Relatives for the motivation...🙃", name: "Anurag Band", via: "comment" },
+          { text: "Don't lose focus bro", name: "Dinil Krishna A S", via: "comment" },
+          { text: "Inspiring 👏", name: "Anandu R Nair", via: "comment" },
+          { text: "Very informative", name: "Najil Parakkal", via: "comment" },
+          { text: "Interesting 🤝", name: "Kiran Biju P", via: "comment" },
         ],
       },
     },
@@ -142,10 +102,9 @@ export const site = {
   /** Corner record player: the track lives in public/audio (a YouTube URL also works). */
   music: {
     src: "/audio/edamame.mp3",
-    coverArt: "/images/hero/hero-figure-winged-courier-cover.webp",
   },
   socials: [
     { label: "GitHub", href: "https://github.com/ashishbkallada" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/ashishbkallada" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/ashish-b-kallada" },
   ],
 } as const;

@@ -1,21 +1,12 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { PAGE_MODE_KEY as KEY } from "./mode-script";
 
-/** Page background: the default red, or white from the navbar switch. */
-export type PageMode = "white" | "red";
+/** Page background: the default cream, or red from the navbar switch. */
+export type PageMode = "cream" | "red";
 
-const KEY = "page-mode";
-
-/**
- * Runs inline in <head> before first paint, so a saved white page never
- * flashes red. Keep it in sync with `setPageMode`.
- */
-// The navbar switch is gone, so clear any saved white choice rather than restore it.
-export const pageModeScript = `try{localStorage.removeItem("${KEY}")}catch(e){}`;
-
-const read = (): PageMode =>
-  document.documentElement.dataset.theme === "white" ? "white" : "red";
+const read = (): PageMode => (document.documentElement.dataset.theme === "red" ? "red" : "cream");
 
 const subscribe = (onChange: () => void) => {
   const observer = new MutationObserver(onChange);
@@ -25,7 +16,7 @@ const subscribe = (onChange: () => void) => {
 
 export function setPageMode(mode: PageMode) {
   const root = document.documentElement;
-  if (mode === "white") root.dataset.theme = "white";
+  if (mode === "red") root.dataset.theme = "red";
   else delete root.dataset.theme;
   try {
     localStorage.setItem(KEY, mode);
@@ -34,7 +25,7 @@ export function setPageMode(mode: PageMode) {
   }
 }
 
-/** The current page mode, kept live as the switch flips it. Red on the server. */
+/** The current page mode, kept live as the switch flips it. Cream on the server. */
 export function usePageMode(): PageMode {
-  return useSyncExternalStore(subscribe, read, () => "red");
+  return useSyncExternalStore(subscribe, read, () => "cream");
 }

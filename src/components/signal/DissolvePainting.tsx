@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePageMode } from "@/theme/mode";
 
 /*
  * A painting that erodes in over the section ground as it scrolls into view,
@@ -9,7 +10,8 @@ import { useEffect, useRef } from "react";
  * etched outlines (edge detection on its luminance) before it fills in. It is
  * graded and grained in the shader, so the scrim lives here too. Given `solid`
  * (a CSS colour variable) in place of a painting, that flat colour erodes in
- * instead, with no scrim or etching.
+ * instead, with no scrim or etching. With `shadow`, a soft night shadow runs ahead of
+ * the torn edge, so a sheet of the same colour still reads as tearing over the last.
  * WebGL2; without it (or with reduced motion) the plain <img> under it shows.
  */
 
@@ -36,6 +38,7 @@ uniform float uClear;
 // 0 for a flat colour: no scrim bands and no etched arrival.
 uniform float uScrim;
 uniform float uEtch;
+uniform float uShadow;
 uniform float uTime;
 uniform vec3 uGround;
 uniform vec3 uNight;
@@ -102,14 +105,27 @@ void main() {
   float clearMode = max(uPinned, uClear);
   vec3 col = mix(opaque, seeThrough, clearMode);
   float alpha = mix(1.0, clamp(reveal + glow, 0.0, 1.0), clearMode);
+  // The shadow the arriving sheet casts just ahead of its edge, gone as it settles.
+  float shade = uShadow * (1.0 - reveal) * (1.0 - smoothstep(0.0, 0.07, -edge)) * 0.22
+    * (1.0 - smoothstep(0.9, 1.0, uProgress));
+  col = mix(col, uNight, shade / max(alpha + shade, 1e-4));
+  alpha = clamp(alpha + shade, 0.0, 1.0);
   outColor = vec4(col, alpha);
 }`;
 
-function hexToRgb(value: string, fallback: [number, number, number]): [number, number, number] {
-  const m = value.trim().match(/^#([0-9a-f]{6})$/i);
-  if (!m) return fallback;
-  const n = parseInt(m[1], 16);
-  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+/**
+ * A CSS colour variable as 0–1 RGB, resolved by the browser (so a variable that points
+ * at another variable, or at any colour syntax, still lands on its final colour).
+ */
+function cssColor(name: string, fallback: [number, number, number]): [number, number, number] {
+  if (!name) return fallback;
+  const probe = document.createElement("span");
+  probe.style.color = `var(${name})`;
+  probe.style.display = "none";
+  document.body.appendChild(probe);
+  const m = getComputedStyle(probe).color.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)/);
+  probe.remove();
+  return m ? [+m[1] / 255, +m[2] / 255, +m[3] / 255] : fallback;
 }
 
 export function DissolvePainting({
@@ -119,10 +135,13 @@ export function DissolvePainting({
   track,
   clear = false,
   plain = false,
+  shadow = false,
   className = "",
 }: {
   /** The painting as it is: no scrim bands and no etched arrival, only the erosion (Work's white scroll). */
   plain?: boolean;
+  /** A soft shadow ahead of the torn edge, for a sheet the same colour as what it covers. */
+  shadow?: boolean;
   /** The uneroded part is clear rather than ground-coloured, so whatever is behind shows until the painting arrives. */
   clear?: boolean;
   src?: string;
@@ -138,6 +157,7 @@ export function DissolvePainting({
   className?: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const mode = usePageMode();
 
   useEffect(() => {
     const canvas = ref.current;
@@ -166,7 +186,7 @@ export function DissolvePainting({
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     const u = (name: string) => gl.getUniformLocation(prog, name);
-    const [uRes, uImgAspect, uProgress, uHeight, uDepth, uPinned, uTime, uGround, uNight, uClear, uScrim, uEtch] = [
+    const [uRes, uImgAspect, uProgress, uHeight, uDepth, uPinned, uTime, uGround, uNight, uClear, uScrim, uEtch, uShadow] = [
       "uRes",
       "uImgAspect",
       "uProgress",
@@ -179,19 +199,20 @@ export function DissolvePainting({
       "uClear",
       "uScrim",
       "uEtch",
+      "uShadow",
     ].map(u);
 
     let raf = 0;
     let visible = false;
     let ready = false;
     const start = performance.now();
-    // Read once: the theme's colours don't change under a running canvas.
-    const css = getComputedStyle(document.documentElement);
-    gl.uniform3fv(uGround, hexToRgb(css.getPropertyValue(ground), [0.867, 0.867, 0.82]));
-    gl.uniform3fv(uNight, hexToRgb(css.getPropertyValue("--theme-night"), [0.082, 0.075, 0.059]));
+    // Read once per page mode: the switch remounts the run to pick up the new ground.
+    gl.uniform3fv(uGround, cssColor(ground, [0.867, 0.867, 0.82]));
+    gl.uniform3fv(uNight, cssColor("--theme-night", [0.082, 0.075, 0.059]));
     gl.uniform1f(uClear, clear ? 1 : 0);
     gl.uniform1f(uScrim, solid || plain ? 0 : 1);
     gl.uniform1f(uEtch, solid || plain ? 0 : 1);
+    gl.uniform1f(uShadow, shadow ? 1 : 0);
     // The last frame drawn, so a scroll that leaves the reveal where it was draws nothing.
     let drawnP = -1;
     let drawnH = 0;
@@ -254,7 +275,7 @@ export function DissolvePainting({
       if (source) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
       else {
         // A flat colour: one pixel of it.
-        const [r, g, b] = hexToRgb(css.getPropertyValue(solid ?? ""), [0.867, 0.867, 0.82]);
+        const [r, g, b] = cssColor(solid ?? "", [0.867, 0.867, 0.82]);
         const px = new Uint8Array([r * 255, g * 255, b * 255, 255]);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, px);
       }
@@ -299,7 +320,7 @@ export function DissolvePainting({
       gl.deleteBuffer(buf);
       if (tex) gl.deleteTexture(tex);
     };
-  }, [src, solid, ground, track, clear, plain]);
+  }, [src, solid, ground, track, clear, plain, shadow, mode]);
 
   return (
     <canvas
@@ -308,4 +329,14 @@ export function DissolvePainting({
       className={`pointer-events-none opacity-0 transition-opacity duration-300 data-[ready=true]:opacity-100 ${className}`}
     />
   );
+}
+
+/**
+ * The hand-off between two sections: set at the top of the arriving one (whose id is
+ * `track`, positioned and stacked over the last), its ground (`color`, the page cream
+ * by default) tears up over the section before it as it rises, a shadow running ahead
+ * of the edge.
+ */
+export function RippleEdge({ track, color = "--background" }: { track: string; /** The arriving section's ground, a CSS variable. */ color?: string }) {
+  return <DissolvePainting solid={color} track={track} clear shadow className="absolute inset-x-0 bottom-full h-[40svh] w-full" />;
 }

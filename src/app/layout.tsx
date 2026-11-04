@@ -1,6 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
-import { pageModeScript } from "@/theme/mode";
 import { Anton, Geist_Mono, Pinyon_Script } from "next/font/google";
 import localFont from "next/font/local";
 import { SiteLoader } from "@/components/layout/SiteLoader";
@@ -9,6 +7,7 @@ import { MotionProvider } from "@/components/motion/MotionProvider";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { NavChromeProvider } from "@/components/signal/nav-chrome";
 import { site } from "@/data/site";
+import { pageModeScript } from "@/theme/mode-script";
 import "./globals.css";
 
 const generalSans = localFont({
@@ -116,17 +115,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} ${geistMono.variable} ${neueMontreal.variable} ${cigars.variable} ${imperial.variable} h-full antialiased`}
-      // The page-mode script may set data-theme before React hydrates.
+      // Browser extensions often add attributes to <html> before React hydrates.
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans">
-        <Script id="page-mode-init" strategy="beforeInteractive">
-          {pageModeScript}
-        </Script>
-        <Script
+        {/* Before anything paints: a saved red page (the navbar switch) never flashes cream. */}
+        <script dangerouslySetInnerHTML={{ __html: pageModeScript }} />
+        {/* Structured data as a plain script tag, as the Next.js docs recommend for JSON-LD. */}
+        <script
           id="person-jsonld"
           type="application/ld+json"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c"),
           }}

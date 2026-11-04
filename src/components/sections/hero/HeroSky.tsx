@@ -56,8 +56,8 @@ function SkyLayer({
   // Nearer clouds rush past faster; each moves away from its cut edge.
   const sign = layer.drift === "up" ? -1 : 1;
   const y = useTransform(scroll, (v) => v * sign * (0.15 + depth * 0.9));
-  const px = useTransform(mx, (v) => v * (14 + depth * 58));
-  const py = useTransform(my, (v) => v * (10 + depth * 34));
+  const px = useTransform(mx, (v) => v * (28 + depth * 116));
+  const py = useTransform(my, (v) => v * (20 + depth * 68));
 
   return (
     <motion.div style={still ? undefined : { y }} className={`absolute ${layer.box}`}>
@@ -73,7 +73,8 @@ function SkyLayer({
           draggable={false}
           style={{
             opacity: 0.35 + depth * 0.6,
-            filter: `blur(${(1 - depth) * 5}px) sepia(0.12) saturate(1.15)`,
+            // No blur: a filtered layer that moves repaints every frame.
+            filter: "sepia(0.12) saturate(1.15)",
             rotate: `${layer.rotate ?? 0}deg`,
             scale:
               layer.flip === "x" ? "-1 1" : layer.flip === "y" ? "1 -1" : layer.flip === "xy" ? "-1 -1" : undefined,

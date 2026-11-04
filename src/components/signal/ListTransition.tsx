@@ -1,98 +1,92 @@
 "use client";
 
-import {
-  motion,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from "motion/react";
-import { useLenis } from "lenis/react";
-import Link from "next/link";
-import { useRef, useState } from "react";
-import { projects } from "@/data/projects";
+import { motion, useMotionValue, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
+import { RevealItem } from "@/components/motion/Reveal";
+import { TextReveal } from "@/components/motion/TextReveal";
+import { ImageTrail } from "@/components/ui/image-trail";
+import { optimizedSrc } from "@/lib/images";
+import Image from "next/image";
+import { useRef, useState, type CSSProperties } from "react";
 import { site } from "@/data/site";
-import { DissolvePainting } from "./DissolvePainting";
-import { KindWords } from "./KindWords";
+import { DropCap } from "./Editions";
+import { RippleEdge } from "./DissolvePainting";
+import { SectionLines } from "./SectionLines";
 import { frame } from "./primitives";
 
-type Row = { title: string; meta: string; date: string; image: string; href: string; external?: boolean };
-
 const linkedinUrl = site.socials.find((s) => s.label === "LinkedIn")?.href ?? "";
-
-/** Projects first, then recent posts: one running index. */
-const rows: Row[] = [
-  ...projects.map((p) => ({
-    title: p.title,
-    meta: p.tags.join(" · "),
-    date: String(p.year),
-    image: p.image,
-    href: `/projects/${p.slug}`,
-  })),
-  ...site.signal.linkedin.posts.map((post) => ({
-    title: post.title,
-    meta: "LinkedIn",
-    date: "Post",
-    image: post.src,
-    href: linkedinUrl,
-    external: true,
-  })),
-];
-
+// Shown small (180×232 in the trail, a quarter of the width in the grid), so served resized, not as the full JPEGs.
+const posts = site.signal.linkedin.posts.map((post) => ({
+  ...post,
+  src: optimizedSrc({ src: post.src, width: 180, height: 232 }, 70),
+}));
+const contact = site.contactStatement;
+/** The courier as a marble statue, cut out on transparency. */
+const COURIER_MARBLE = "/images/linkedin/courier-marble.png";
+/** The section's ground: a sunlit classical hall. */
+const HALL = "/images/linkedin/hall.png";
 const [nameA, nameB] = ["Ash", "Code"];
-const N = rows.length;
 
 /*
- * Scroll timeline (0 → 1 over the pinned section):
- *   0    – 0.30  List: the filmstrip drifts up past the rows.
- *   0.30 – 0.62  The rows roll down out of their masks, top first, and each
- *                frame sweeps off to the left on a diagonal, one after another.
- *   0.40 – 0.78  The name grows from the bottom to fill the top.
- *   0.70 – 0.86  The bio fades up under it. Then it holds.
+ * Scroll timeline (0 → 1 over the pinned section, after the posts):
+ *   0    – 0.45  The name grows from low on the screen to fill the top.
+ *   0.42 – 0.65  Contact fades up under it as it lands. Then a short hold.
+ * Kept short, with something always moving, so the pin never reads as the page sticking.
  */
-const ROLL = [0.3, 0.46] as const;
-const SWEEP = [0.32, 0.58] as const;
-const GROW = [0.4, 0.78] as const;
-const BIO = [0.7, 0.86] as const;
-const STEP = 0.022;
+const GROW = [0, 0.45] as const;
+const BIO = [0.42, 0.65] as const;
 
 /**
- * Index with a scroll-driven list → about transition. List: numbered titles
- * left, a filmstrip of thumbnails down the middle, tags and dates right, the
- * name along the bottom. Scrolling on, the filmstrip sweeps off diagonally
- * frame by frame, the rows roll away, and the name grows across the top over
- * a short bio. Scrolling back reverses it. Same page background as the site.
+ * Index: the LinkedIn posts as an image trail, each post dropping in under the pointer
+ * as it moves (a grid on touch screens), with a link to the profile, in a classical hall;
+ * then a pinned stretch where the name grows from the bottom across the top over the
+ * contact line and email. Scrolling back reverses it.
  */
 export function ListTransition() {
-  /** The animated stretch, the whole section: at its end the list lifts away off Studio, pinned beneath (page.tsx). */
+  /** The animated stretch, the whole pinned run of the list → about transition. */
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion() ?? false;
-  const lenis = useLenis();
-  const [hover, setHover] = useState<number | null>(null);
   const [view, setView] = useState<"list" | "about">("list");
 
-  const { scrollYProgress: p } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  useMotionValueEvent(p, "change", (v) => setView(v > 0.5 ? "about" : "list"));
+  // Starts as the panel's top passes mid-screen, so the name is already growing as it
+  // arrives under the comments, with no empty beat.
+  const { scrollYProgress: p } = useScroll({
+    target: ref,
+    offset: ["start 0.5", "end end"],
+  });
+  useMotionValueEvent(p, "change", (v) => setView(v > 0.42 ? "about" : "list"));
 
-  const stripY = useTransform(p, [0, ROLL[0]], ["0%", "-18%"]);
   const nameScale = useTransform(p, [...GROW], [0.32, 1]);
-  const nameY = useTransform(p, [...GROW], ["58svh", "0svh"]);
+  const nameY = useTransform(p, [...GROW], ["40svh", "0svh"]);
+  // Small, the name sits together as one word; it spreads to the edges as it grows.
+  const nameSpread = useTransform(p, [...GROW], [0, 1]);
+  // A function transform: a plain scroll-linked opacity gets handed to the browser's
+  // scroll timeline, which ignores this section's offsets.
   const bioOpacity = useTransform(p, (v) => Math.min(1, Math.max(0, (v - BIO[0]) / (BIO[1] - BIO[0]))));
   const bioY = useTransform(p, [...BIO], [24, 0]);
 
-  // The tabs jump to either end of the pinned stretch.
-  const jump = (to: "list" | "about") => {
-    const el = ref.current;
-    if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY;
-    const end = top + el.offsetHeight - window.innerHeight;
-    const y = to === "list" ? top : end;
-    if (lenis) lenis.scrollTo(y, { duration: 1.6 });
-    else window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
-  };
-
   const about = view === "about";
+
+  // The LinkedIn stage's depth: scroll carries the lines slowest, the statue a little
+  // faster (and a touch nearer), the text fastest; the pointer pushes the statue and
+  // the lines the other way, the statue further.
+  const stageRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: stage } = useScroll({ target: stageRef, offset: ["start end", "end start"] });
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  // Hero-matched hover parallax: full -1…1 pointer range, spring, and depth-separated travel.
+  const pointerSpring = { stiffness: 62, damping: 16, mass: 0.55 } as const;
+  const sx = useSpring(px, pointerSpring);
+  const sy = useSpring(py, pointerSpring);
+  const linesX = useTransform(sx, (v) => v * -72);
+  const linesY = useTransform([stage, sy], ([s, v]: number[]) => (0.5 - s) * 40 + v * -52);
+  const statueX = useTransform(sx, (v) => v * -165);
+  const statueY = useTransform([stage, sy], ([s, v]: number[]) => (0.5 - s) * 110 + v * -105);
+  const statueRotate = useTransform(sx, (v) => v * -5);
+  const statueScale = useTransform(stage, [0, 1], [0.94, 1.04]);
+  const textX = useTransform(sx, (v) => v * 85);
+  const textY = useTransform([stage, sy], ([s, v]: number[]) => (0.5 - s) * 140 + v * 55);
+  const hallX = useTransform(sx, (v) => v * -100);
+  const hallY = useTransform([stage, sy], ([s, v]: number[]) => (s - 0.5) * 70 + v * -62);
 
   return (
     <section
@@ -100,191 +94,183 @@ export function ListTransition() {
       aria-label="Index"
       // Over Work's cream the rail reads ink, as over the cream title screen and panel.
       data-nav-theme="light"
-      className="signal-rail-bleed relative z-[1] text-ink"
+      className="signal-rail-bleed relative bg-background text-ink"
     >
-      {/* Work's cream behind the panel, fixed to the viewport and clipped to the section, as this
-          section rises over Work. */}
-      {/* Runs a screen past the section, with the panel, while Studio erodes in over them. */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -bottom-[100svh] [clip-path:inset(0)]">
-        <div className="fixed inset-0 bg-background">
-          {/* Cream ripples in over the painting from the bottom, as Work's painting did over About:
-              the torn, lit edge rising with the title screen (index-list-title), then the panel's
-              cream carries on from it. */}
-          <DissolvePainting solid="--background" track="index-list-title" className="absolute inset-0 h-full w-full" />
-        </div>
-      </div>
-      {/* A short glimpse of the painting after Work's cards, then the title on the cream
-          that ripples in under it, before the panel rises over it. */}
-      <div aria-hidden className="pointer-events-none h-[20svh]" />
+      {/* The LinkedIn section in a sunlit classical hall. The hall's top-edge tone tears up
+          over Work as it arrives and fades into the painting. */}
       <div
-        id="index-list-title"
+        id="linkedin"
         data-nav-theme="light"
-        className={`${frame} relative flex h-[80svh] flex-col justify-end md:pl-[calc(var(--nav-sidebar-w)+2.5rem)]`}
+        // The whole section is the pointer's stage: every layer shifts against it, by depth.
+        onPointerMove={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          px.set((e.clientX - r.left) / r.width * 2 - 1);
+          py.set((e.clientY - r.top) / r.height * 2 - 1);
+        }}
+        onPointerLeave={() => {
+          px.set(0);
+          py.set(0);
+        }}
+        className="relative z-10 bg-[var(--theme-linkedin-edge)] text-ink"
       >
-        <h2 className="pt-10 font-headline text-[clamp(4.5rem,13vw,13rem)] leading-[0.88] tracking-[-0.045em] md:pt-8">Index</h2>
-      </div>
-      {/* Kind words from the comments and DMs, on the cream, before the list. */}
-      <KindWords />
-      {/* The pinned stretch: the panel's list → about transition runs across it. */}
-      <div className="relative h-[320svh]">
-        <div ref={ref} aria-hidden className="pointer-events-none absolute inset-0" />
-        {/* The panel runs full width, cream under the rail too (the rail reads ink over it); its
-            content clears the rail. */}
-        {/* Holds a screen past the section's end (the negative margin), as Studio's painting erodes in over it. */}
-        <div data-nav-theme="light" className="sticky top-0 -mb-[100svh] h-[100svh] overflow-hidden bg-background">
-          <div className={`${frame} relative flex h-full flex-col py-8 md:pr-10 md:pl-[calc(var(--nav-sidebar-w)+2.5rem)]`}>
-            {/* Header: label, view switch. */}
-            <div className="relative z-20 flex items-start justify-between gap-6">
-              <p className="font-headline text-[18px] leading-[1.1] tracking-[-0.02em]">
-                Index
-                <br />
-                <span className="font-narrative text-[16px] tracking-[-0.03em] text-ink/50">{N} entries</span>
-              </p>
-              <div role="tablist" aria-label="View" className="flex gap-4">
-                {(["list", "about"] as const).map((v) => (
-                  <button
-                    key={v}
-                    role="tab"
-                    type="button"
-                    aria-selected={view === v}
-                    onClick={() => jump(v)}
-                    className={`min-h-8 font-headline text-[15px] tracking-[-0.02em] capitalize transition-colors ${view === v ? "text-ink" : "text-ink/35 hover:text-ink/70"}`}
-                  >
-                    {v}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="relative mt-10 flex-1">
-              {/* List rows, left and right of the filmstrip. */}
-              <ol
-                aria-hidden={about}
-                className="relative z-10 grid grid-cols-[2.5rem_1fr] gap-x-2 gap-y-1 md:grid-cols-[2.5rem_1fr_minmax(6rem,9rem)_1fr_auto] md:gap-x-6"
+        <RippleEdge track="linkedin" color="--theme-linkedin-edge" />
+        {/* Clipped on its own, so the ripple above the section stays visible. */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          {/* The hall: the deepest layer, drifting slowest with the scroll and the pointer. */}
+          <motion.div style={reduce ? undefined : { x: hallX, y: hallY }} className="absolute -inset-[8%]">
+            <Image src={HALL} alt="" fill sizes="100vw" className="object-cover" />
+          </motion.div>
+          {/* Out of the ripple's tone at the top, and a warm vignette so the marble stands off the stone. */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,var(--theme-linkedin-edge)_0%,transparent_14%),radial-gradient(ellipse_at_center,transparent_42%,rgba(60,36,18,0.45)_100%)]" />
+        </div>
+        <div ref={stageRef} className="relative md:h-[min(72svh,42rem)]">
+          {/* Faint construction lines behind it all, after the hero's: the deepest layer. */}
+          <motion.div style={reduce ? undefined : { x: linesX, y: linesY }} className="pointer-events-none absolute inset-0 hidden md:block">
+            <SectionLines />
+          </motion.div>
+          {/* The courier in marble, centred under the line and bobbing slowly, lifted off the
+              red by a warm shadow; the posts fly across in front of him. Rises in as the
+              section arrives, then drifts with the scroll and against the pointer. */}
+          <div aria-hidden className="pointer-events-none absolute bottom-[-6%] left-1/2 z-0 hidden aspect-square h-[108%] -translate-x-1/2 md:block">
+            <motion.div
+              style={reduce ? undefined : { x: statueX, y: statueY, scale: statueScale, rotate: statueRotate }}
+              className="h-full w-full"
+            >
+              <motion.div
+                initial={reduce ? false : { opacity: 0, y: 80 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full w-full"
               >
-                {rows.map((row, i) => (
-                  <li
-                    key={row.title}
-                    className="contents"
-                    onPointerEnter={() => setHover(i)}
-                    onPointerLeave={() => setHover(null)}
-                  >
-                    {[
-                      <span key="n" className="font-narrative text-ink/50 tabular-nums">{String(i).padStart(2, "0")}</span>,
-                      <RowLink key="t" row={row} tabIndex={about ? -1 : 0}>
-                        {row.title}
-                      </RowLink>,
-                      <span key="gap" />,
-                      <span key="m" className="block truncate font-narrative text-ink/65">{row.meta}</span>,
-                      <span key="d" className="block text-right font-narrative text-ink/65 tabular-nums">{row.date}</span>,
-                    ].map((cell, c) => (
-                      <span key={c} className={`overflow-hidden py-[3px] ${c >= 2 ? "hidden md:block" : ""}`}>
-                        <RollCell p={p} i={i} still={reduce} dim={hover !== null && hover !== i}>
-                          {cell}
-                        </RollCell>
-                      </span>
-                    ))}
+                <div style={{ "--dur": "7s", "--delay": "0s" } as CSSProperties} className="kw-float relative h-full w-full">
+                  <Image
+                    src={COURIER_MARBLE}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 48rem, 0px"
+                    className="object-contain drop-shadow-[0_32px_40px_rgba(80,14,0,0.38)]"
+                  />
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+          <div className={`${frame} relative h-full py-8 md:pt-24`}>
+            {/* The posts: an image trail on a pointer, a grid on touch screens. */}
+            <div className="flex flex-col gap-6 md:absolute md:inset-0 md:block">
+              <div className="absolute inset-0 z-10 hidden md:block">
+                <ImageTrail images={posts.map((post) => post.src)} imageWidth={180} imageHeight={232} threshold={70} intro />
+              </div>
+              <ul className="grid grid-cols-4 gap-2 md:hidden">
+                {posts.map((post) => (
+                  <li key={post.src} className="relative aspect-[4/5] overflow-hidden bg-ink/5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={post.src} alt={post.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
                   </li>
                 ))}
-              </ol>
-
-              {/* Filmstrip down the middle: drifts, then sweeps off frame by frame. */}
+              </ul>
+              {/* The line and link, centred over the statue, in ink so they read on the red and the marble alike. */}
+              {/* The nearest layer: it rises fastest with the scroll. */}
               <motion.div
-                aria-hidden
-                style={reduce ? undefined : { y: stripY }}
-                className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-[clamp(6rem,9vw,9rem)] -translate-x-1/2 flex-col gap-2 md:flex"
+                style={reduce ? undefined : { x: textX, y: textY }}
+                className="pointer-events-none relative z-20 flex flex-col items-start gap-5 md:absolute md:inset-x-0 md:top-[28svh] md:items-center md:text-center md:text-ink"
               >
-                {rows.map((row, i) => (
-                  <Frame key={row.image + i} p={p} i={i} src={row.image} still={reduce} dim={hover !== null && hover !== i} />
-                ))}
+                {/* The hint, for a pointer only. */}
+                <RevealItem delay={0.5} className="hidden md:block">
+                  <p className="inline-flex items-center gap-2 font-headline text-[12px] tracking-[0.14em] text-ink/60 uppercase">
+                    <span aria-hidden>↔</span> Move your cursor
+                  </p>
+                </RevealItem>
+                <p className="font-headline text-[clamp(2.2rem,4.4vw,4rem)] leading-[0.92] tracking-[-0.045em]">
+                  <TextReveal text="Notes from the build," className="block" />
+                  <TextReveal text="shipped in public." delay={0.2} className="block font-narrative tracking-[-0.04em]" />
+                </p>
+                <RevealItem delay={0.4}>
+                <a
+                  href={linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pointer-events-auto inline-flex min-h-11 items-center gap-2 rounded-full bg-ink px-5 font-headline text-[15px] tracking-[-0.02em] text-cream transition-colors hover:bg-ink/85"
+                >
+                  {site.signal.linkedin.cta}
+                  <span aria-hidden>↗</span>
+                </a>
+                </RevealItem>
               </motion.div>
-
-              {/* The bio, under the grown name. */}
+              {/* Phones: the statue under the line, smaller. */}
+              <div aria-hidden className="relative mx-auto aspect-square w-[78%] md:hidden">
+                <Image
+                  src={COURIER_MARBLE}
+                  alt=""
+                  fill
+                  sizes="78vw"
+                  className="object-contain drop-shadow-[0_24px_30px_rgba(80,14,0,0.38)]"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* The comments (KindWords) are left out for now; they go back in here, under the posts. */}
+      </div>
+      {/* The pinned stretch: the name grows over the contact line. */}
+      <div id="contact-pin" className="relative z-10 h-[150svh]">
+        <RippleEdge track="contact-pin" />
+        <div ref={ref} aria-hidden className="pointer-events-none absolute inset-0" />
+        {/* The panel runs full width; its content clears the top bar. */}
+        <div data-nav-theme="light" className="sticky top-0 h-[100svh] overflow-hidden bg-background">
+          <div className={`${frame} relative flex h-full flex-col py-8 md:pt-24`}>
+            <div className="relative flex-1">
+              {/* Contact, under the grown name. */}
               <motion.div
+                id="contact-card"
                 aria-hidden={!about}
                 style={reduce ? { opacity: about ? 1 : 0 } : { opacity: bioOpacity, y: bioY }}
-                className="pointer-events-none absolute inset-x-0 top-[clamp(9rem,24vw,21rem)] z-10 mx-auto max-w-[30rem] px-4 font-narrative text-[clamp(1.25rem,1.7vw,1.6rem)] leading-[1.08] tracking-[-0.03em] text-pretty"
+                className={`absolute inset-x-0 top-[clamp(9rem,24vw,21rem)] z-30 mx-auto max-w-[36rem] px-4 ${about ? "pointer-events-auto" : "pointer-events-none"}`}
               >
-                <p>{site.signal.approach.columns[0]}</p>
-                <p className="mt-5">{site.signal.approach.columns[1]}</p>
+                <p className="font-headline text-[13px] uppercase tracking-[0.12em] text-ink/50">Contact</p>
+                <p className="mt-3 text-[clamp(1.6rem,2.6vw,2.4rem)] leading-[1.02] tracking-[-0.03em] text-pretty">
+                  <DropCap>{`${contact.lines.join(" ")} ${contact.script}.`}</DropCap>
+                </p>
+                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+                  <a
+                    href={`mailto:${site.email}`}
+                    tabIndex={about ? 0 : -1}
+                    className="font-narrative text-[clamp(1.2rem,1.6vw,1.5rem)] tracking-[-0.03em] underline decoration-ink/25 underline-offset-[0.18em] transition-colors hover:decoration-ink"
+                  >
+                    {site.email}
+                  </a>
+                  <a
+                    href={`mailto:${site.email}`}
+                    tabIndex={about ? 0 : -1}
+                    className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink px-5 font-headline text-[15px] tracking-[-0.02em] text-cream transition-colors hover:bg-ink/85"
+                  >
+                    {contact.cta}
+                    <span aria-hidden>↗</span>
+                  </a>
+                </div>
               </motion.div>
             </div>
 
-            {/* The name, set at full size and scaled: small along the bottom, full across the top. */}
-            <motion.p
-              aria-label={site.name}
-              style={reduce ? undefined : { scale: nameScale, y: nameY }}
-              className="pointer-events-none absolute inset-x-0 top-20 z-0 flex origin-top items-baseline justify-between px-4 text-[clamp(4rem,15vw,15rem)] leading-[0.8] will-change-transform sm:px-8 md:pr-10 md:pl-[calc(var(--nav-sidebar-w)+2.5rem)]"
-            >
-              <span className="font-headline tracking-[-0.05em]">{nameA}</span>
-              <span className="font-narrative tracking-[-0.04em]">
-                <span className="mr-[-0.06em] font-flourish text-[1.35em] leading-none tracking-normal">{nameB[0]}</span>
-                {nameB.slice(1)}
-              </span>
-            </motion.p>
+            {/* The name, set at full size and scaled: small along the bottom, full across the top.
+                The padding sits outside the scale, so it shrinks toward the content's centre. */}
+            <div className="pointer-events-none absolute inset-x-0 top-20 z-0 px-5 sm:px-10 md:top-36">
+              <motion.div
+                role="img"
+                aria-label={site.name}
+                style={reduce ? undefined : { scale: nameScale, y: nameY }}
+                className="flex origin-top items-baseline justify-center text-[clamp(4rem,15vw,15rem)] leading-[0.8] will-change-transform"
+              >
+                <span className="font-headline tracking-[-0.05em]">{nameA}</span>
+                <motion.span aria-hidden style={reduce ? { flexGrow: 1 } : { flexGrow: nameSpread }} />
+                <span className="font-narrative tracking-[-0.04em]">
+                  <span className="mr-[-0.06em] font-flourish text-[1.35em] leading-none tracking-normal">{nameB[0]}</span>
+                  {nameB.slice(1)}
+                </span>
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-/** A row's cell rolls down out of its mask, top row first. */
-function RollCell({
-  p,
-  i,
-  still,
-  dim,
-  children,
-}: {
-  p: MotionValue<number>;
-  i: number;
-  still: boolean;
-  dim: boolean;
-  children: React.ReactNode;
-}) {
-  const y = useTransform(p, [ROLL[0] + i * STEP * 0.5, ROLL[1] + i * STEP * 0.5], ["0%", "160%"]);
-  return (
-    <motion.span
-      style={still ? undefined : { y }}
-      className={`block text-[clamp(1rem,1.25vw,1.2rem)] leading-[1.15] tracking-[-0.02em] transition-opacity ${dim ? "opacity-30" : "opacity-100"}`}
-    >
-      {children}
-    </motion.span>
-  );
-}
-
-/** One filmstrip frame: sweeps off left on a diagonal, each a beat after the last. */
-function Frame({ p, i, src, still, dim }: { p: MotionValue<number>; i: number; src: string; still: boolean; dim: boolean }) {
-  const range = [SWEEP[0] + i * STEP, SWEEP[1] + i * STEP];
-  // Off past the left edge, fanned on a diagonal: lower frames lift, upper ones drop.
-  const x = useTransform(p, range, ["0vw", `${-62 - i * 4}vw`]);
-  const y = useTransform(p, range, ["0vh", `${(N / 2 - i) * 6}vh`]);
-  const rotate = useTransform(p, range, [0, -8]);
-  // A function transform: a plain scroll-linked opacity gets handed to the
-  // browser's scroll timeline, which ignores this section's offsets.
-  const fadeFrom = range[0] + (range[1] - range[0]) * 0.55;
-  const opacity = useTransform(p, (v) => 1 - Math.min(1, Math.max(0, (v - fadeFrom) / (range[1] - fadeFrom))));
-  return (
-    <motion.div
-      style={still ? undefined : { x, y, rotate, opacity }}
-      className={`relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-ink/5 transition-[filter] duration-300 will-change-transform ${dim ? "[filter:grayscale(1)_opacity(0.4)]" : ""}`}
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-    </motion.div>
-  );
-}
-
-function RowLink({ row, children, tabIndex }: { row: Row; children: React.ReactNode; tabIndex: number }) {
-  const className = "block truncate font-headline tracking-[-0.02em] hover:underline focus-visible:underline";
-  return row.external ? (
-    <a href={row.href} target="_blank" rel="noopener noreferrer" tabIndex={tabIndex} className={className}>
-      {children}
-    </a>
-  ) : (
-    <Link href={row.href} tabIndex={tabIndex} className={className}>
-      {children}
-    </Link>
   );
 }

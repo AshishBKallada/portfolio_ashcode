@@ -7,8 +7,6 @@ import { motion } from "framer-motion";
 export interface MusicPlayerProps extends React.HTMLAttributes<HTMLDivElement> {
   /** The source URL of the audio file or YouTube video */
   src: string;
-  /** The URL of the album cover image */
-  coverArt: string;
   /** Whether to auto-play the audio when loaded */
   autoPlay?: boolean;
 }
@@ -16,7 +14,6 @@ export interface MusicPlayerProps extends React.HTMLAttributes<HTMLDivElement> {
 export function MusicPlayer({
   className,
   src,
-  coverArt,
   autoPlay = false,
   ...props
 }: MusicPlayerProps) {
@@ -116,11 +113,8 @@ export function MusicPlayer({
             animationPlayState: isPlaying ? "running" : "paused",
           }}
         >
-          {/* Album Cover Background */}
-          <div
-            className="absolute inset-0 bg-cover bg-center opacity-90 transition-opacity"
-            style={{ backgroundImage: `url(${coverArt})` }}
-          />
+          {/* Plain black vinyl — no cover art (matches site night / ink). */}
+          <div className="absolute inset-0 bg-black" />
 
           {/* Grooves Overlay (Multiple dark gradient rings) */}
           <div

@@ -88,7 +88,7 @@ export interface RippleImageItem {
  * material drawn each frame. `update` runs first with that material, the
  * elapsed time and the frame size in pixels.
  */
-export interface RippleSource {
+interface RippleSource {
   material: THREE.Material;
   update?: (material: THREE.Material, time: number, width: number, height: number) => void;
 }

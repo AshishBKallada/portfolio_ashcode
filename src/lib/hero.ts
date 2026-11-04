@@ -12,14 +12,8 @@ export const HERO_FIGURE = {
   height: 1207,
 };
 
-/** Marble twin of the figure, revealed under the cursor (same size). */
-export const HERO_MARBLE = { src: "/images/hero/hero-marble.png", width: 1445, height: 1089 };
-
 /** Harp cutout, used in the résumé page's header. */
 export const HERO_HARP = { src: "/images/hero/float-harp.png", width: 941, height: 1672 };
-
-/** Sunset cloud cutout, used in the hero's drifting sky. */
-export const HERO_CLOUD = { src: "/images/hero/cloud.png", width: 1024, height: 1024 };
 
 /** Image quality for cloud art; must be listed in next.config `qualities`. */
 export const CLOUD_QUALITY = 90;
@@ -27,18 +21,22 @@ export const CLOUD_QUALITY = 90;
 /** White cumulus the figure floats above, drawn behind its feet. */
 export const HERO_SEAT_CLOUD = { src: "/images/clouds/cumulus.png", width: 1000, height: 563 };
 
-/** Cursor-driven head-turn sequence on the home hero (SkyHero / HeadFollow). */
-export const HERO_HEAD_COUNT = 25;
-export const HEAD_FRAME_SIZE = { width: 3840, height: 3344 };
-/** Bump when replacing public/images/hero/head/*.webp so browsers skip stale cache. */
-export const HERO_HEAD_ASSET_VERSION = "4k-2026-10-18";
-
-export const heroHeadFrameSrc = (index: number) =>
-  `/images/hero/head/head-${String(index).padStart(2, "0")}.webp?v=${HERO_HEAD_ASSET_VERSION}`;
-
-export const HERO_HEAD_FRAME_URLS = Array.from({ length: HERO_HEAD_COUNT }, (_, i) =>
-  heroHeadFrameSrc(i),
-);
+/** Viewport heights while the hero is pinned: flip, hold on About, then cloud/figure reveal. */
+export const CARD_FLIP_VH = 0.42;
+/** Centred card stays on About before the rail morph and reveal begin. */
+export const CARD_ABOUT_HOLD_VH = 0.45;
+export const REVEAL_VH = 1.1;
+export const HERO_PIN_VH = CARD_FLIP_VH + CARD_ABOUT_HOLD_VH + REVEAL_VH;
+/**
+ * The exit to Work starts halfway through the reveal, not after it: the hero is
+ * let go there and, over the next HERO_EXIT_VH as it scrolls away, drifts slower
+ * than the page and dims (the reveal finishing as it goes), while Work rises
+ * under a curved edge (EditionWork).
+ */
+export const HERO_EXIT_AT = CARD_FLIP_VH + CARD_ABOUT_HOLD_VH + REVEAL_VH * 0.5;
+export const HERO_EXIT_VH = 1;
+/** How long HeroStage holds the hero pinned, in viewport heights. */
+export const HERO_STAGE_PIN_VH = HERO_EXIT_AT;
 
 /**
  * Optimized URLs for the hero art drawn outside <Image> (plain img, canvas).
@@ -46,7 +44,6 @@ export const HERO_HEAD_FRAME_URLS = Array.from({ length: HERO_HEAD_COUNT }, (_, 
  */
 /** The pre-encoded WebP as is: its alpha is lossless, so the cutout's edge stays clean. */
 export const HERO_FIGURE_URL = HERO_FIGURE.src;
-export const HERO_MARBLE_URL = optimizedSrc(HERO_MARBLE);
 export const HERO_SEAT_CLOUD_URL = optimizedSrc(HERO_SEAT_CLOUD, CLOUD_QUALITY);
 
 /**
@@ -61,59 +58,3 @@ export const HERO_FIGURE_HEIGHT = 0.6;
  * phones lift the figure clear of the headline and CTA below it.
  */
 export const HERO_FIGURE_LIFT_CLASS = "[--hero-lift:0.07] max-md:[--hero-lift:0.32]";
-
-/**
- * Viewport-heights of scroll the hero holds still before its figures start
- * sliding away. Zero: the exit begins with the first scroll.
- */
-export const HERO_HOLD_SCREENS = 0;
-
-/**
- * Scroll timeline (in viewport heights) after the hold: the hero's exit runs
- * over HERO_EXIT_SCREENS, and only then does the next section stack up over
- * the hero.
- */
-export const HERO_EXIT_START = HERO_HOLD_SCREENS;
-export const HERO_EXIT_SCREENS = 1.1;
-export const INTRO_STACK_START = HERO_EXIT_START + HERO_EXIT_SCREENS;
-
-/**
- * Beats of the exit, as shares of it: one camera push into the laptop. The
- * laptop turns to face the viewer and glides in until it is framed large in
- * the centre, its screen showing the About-me poster, while the figure eases
- * back a little behind it and his cloud drifts aside.
- */
-export const EXIT_FIGURES = [0.04, 0.7] as const;
-export const EXIT_LAPTOP = [0.04, 1] as const;
-
-/**
- * After the exit the laptop holds its frame while the screen plays the
- * About pages, in viewport heights of scroll: a beat on the poster, the
- * screen scrolling up to the About section, then (for as many px as the
- * gallery travels) its photos sliding by, and finally the display zooming
- * out to fill the stage before the page carries on into Projects.
- */
-export const FEED = { hold: 0.35, rise: 1, spill: 0.6 } as const;
-
-/** Scroll position (px) `t` of the way through the hero's exit. */
-export const exitAt = (t: number) =>
-  window.innerHeight * (HERO_EXIT_START + t * HERO_EXIT_SCREENS);
-
-/**
- * Scroll flip of the hero figure (HeroFlip): a front somersault over the
- * reveal. Each pose is drawn on one square canvas, the figure's centre of mass
- * at its centre and at the cutout's scale; `angle` is how far round the flip
- * the pose is, in degrees. The first pose is HERO_FIGURE itself. Built by
- * scripts/hero-flip-frames.py from art/hero-flip/, which prints these.
- */
-export const HERO_FLIP_POSES = [
-  { src: "/images/hero/flip/flip-01.webp", angle: 40 },
-  { src: "/images/hero/flip/flip-02.webp", angle: 125 },
-  { src: "/images/hero/flip/flip-03.webp", angle: 270 },
-  { src: "/images/hero/flip/flip-04.webp", angle: 330 },
-] as const;
-
-/** Where the flip canvas sits over HERO_FIGURE's box, as fractions of that box. */
-export const HERO_FLIP_CANVAS = { left: -0.1917, top: -0.2413, width: 1.3331, height: 1.4391 };
-/** The figure's centre of mass in HERO_FIGURE's box: the flip turns about it. */
-export const HERO_FLIP_ORIGIN = { x: 0.4749, y: 0.4783 };

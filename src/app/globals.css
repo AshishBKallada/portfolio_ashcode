@@ -78,16 +78,6 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Forces light tokens on a section (the résumé's paper). */
-.theme-light {
-  --background: #ffffff;
-  --foreground: #111111;
-  --muted: #525252;
-  --subtle: #a3a3a3;
-  --surface: #f5f5f5;
-  --border: #e5e5e5;
-}
-
 html {
   overflow-x: clip;
   background: var(--background);
@@ -112,22 +102,6 @@ body {
   color: var(--theme-page-fg);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 400;
-}
-
-/** Default section shell — use on page wrappers when you want theme page colours. */
-.app-section {
-  background: var(--theme-page-bg);
-  color: var(--theme-page-fg);
-}
-
-.about-headline-outline {
-  color: transparent;
-  -webkit-text-stroke: clamp(1px, 0.065vw, 1.75px) var(--theme-ink);
-}
-
-.about-headline-outline-cream {
-  color: transparent;
-  -webkit-text-stroke: clamp(1px, 0.065vw, 1.75px) var(--theme-cream);
 }
 
 /* Base heading face; in the base layer so a heading's own font utilities win. */
@@ -173,16 +147,8 @@ body {
   transform: scaleX(1);
 }
 
-/* Home: sections run full width; the left nav rail overlays them (no gutter). */
-/* …except the footer's text, which steps clear of the rail once it's showing. */
-@media (min-width: 768px) {
-  html[data-nav-rail="true"] .footer-inner {
-    padding-left: calc(var(--nav-sidebar-w) + 1.5rem);
-  }
-}
-
-/* Once a section fully covers the pinned hero, stop painting it. */
-.hero-stage[data-covered="true"] > .hero-pin {
+/* Once the hero has scrolled fully away, stop painting it. */
+.hero-stage[data-covered="true"] .hero-pin {
   visibility: hidden;
 }
 
@@ -325,9 +291,18 @@ body {
   color: var(--theme-cream);
   transition: color var(--nav-dur) var(--nav-ease);
 }
-/* Fires the transitionend that ends the morph; the parts set their own tone. */
+/* Fires the transitionend that ends the morph; the parts set their own tone. Past
+   the hero there is no rail: the card fades away and the top bar takes over. */
 .edition-nav[data-state="rail"] {
   color: var(--theme-bone);
+  transition: color var(--nav-dur) var(--nav-ease);
+}
+/* Past the morph the card stays put until Work's torn edge rises and sucks it
+   down (HeroNavFlipCard); the rail's own pieces stay hidden, the top bar is the nav. */
+.edition-nav[data-state="rail"] .edition-nav__title,
+.edition-nav[data-state="rail"] .edition-nav__list,
+.edition-nav[data-state="rail"] .edition-nav__foot {
+  visibility: hidden;
 }
 .edition-nav__title,
 .edition-nav__list,
@@ -358,6 +333,51 @@ body {
 .edition-nav[data-state="rail"] .edition-nav__frame {
   opacity: 0;
   /* Invisible in the rail, so drop the blur rather than keep paying for it. */
+  backdrop-filter: none;
+}
+
+/* Hero card flip: front nav, back About, before the cloud/figure reveal. */
+.edition-nav__flip-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  translate: var(--card-x) var(--card-y);
+  perspective: 1400px;
+  z-index: 2;
+}
+.edition-nav__flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.edition-nav__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--card-pad);
+  border: 1px solid rgb(255 255 255 / 0.35);
+  background: rgb(21 19 15 / 0.56);
+  backdrop-filter: blur(8px);
+  backface-visibility: hidden;
+  color: var(--theme-cream);
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+  overflow: hidden;
+}
+.edition-nav__face--back {
+  transform: rotateY(-180deg);
+}
+.edition-nav[data-state="hero"] .edition-nav__title,
+.edition-nav[data-state="hero"] .edition-nav__list {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.edition-nav[data-state="hero"] .edition-nav__frame {
+  opacity: 0;
   backdrop-filter: none;
 }
 
@@ -406,7 +426,8 @@ body {
 }
 /* Held back under the boot screen (SiteLoader), then staggered in as it lifts. */
 html[data-site-loading] .edition-nav__subtitle,
-html[data-site-loading] .edition-nav__list li {
+html[data-site-loading] .edition-nav__list li,
+html[data-site-loading] .edition-nav__flip-scene {
   opacity: 0;
 }
 .edition-nav[data-state="rail"] .edition-nav__list li {
@@ -434,15 +455,7 @@ html[data-site-loading] .edition-nav__list li {
     visibility 0s linear 0.3s,
     color 0.3s ease;
 }
-.edition-nav[data-state="rail"] .edition-nav__foot {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transition:
-    opacity 0.4s var(--nav-ease) calc(var(--nav-dur) * 0.6),
-    visibility 0s,
-    color 0.3s ease;
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   .edition-nav,
@@ -450,12 +463,6 @@ html[data-site-loading] .edition-nav__list li {
     transition-duration: 0s !important;
     transition-delay: 0s !important;
   }
-}
-
-/* Torn-paper seam: a soft shadow under the tear lifts the sheet off the section behind. */
-.torn-edge {
-  filter: drop-shadow(0 -5px 10px rgb(0 0 0 / 0.28));
-  overflow: visible;
 }
 
 /* Hero construction lines: drawn in bright, then settled to a faint hairline
@@ -494,32 +501,19 @@ html[data-site-loading] .edition-nav__list li {
   }
 }
 
-/* Work's watercolour clouds (SwirlClouds): a slow drift and bob, each on its own loop. */
-@keyframes swirl-drift {
+/* A slow bob: Kind words' cloud cards (paused off screen) and the LinkedIn statue. */
+@keyframes kw-float {
   0%,
   100% {
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-  }
-  25% {
-    transform: translate3d(4vw, -2.5vh, 0) rotate(2deg) scale(1.03);
+    transform: translateY(0);
   }
   50% {
-    transform: translate3d(7vw, 1vh, 0) rotate(-1deg) scale(1.06);
-  }
-  75% {
-    transform: translate3d(3vw, 3vh, 0) rotate(-3deg) scale(1.02);
+    transform: translateY(-10px);
   }
 }
-.swirl-cloud {
-  animation: swirl-drift 44s ease-in-out infinite;
+.kw-float {
+  animation: kw-float var(--dur) ease-in-out var(--delay) infinite;
+}
+.kw-cloud[data-paused="true"] .kw-float {
   animation-play-state: paused;
-  will-change: transform;
-}
-.swirl-clouds[data-running="true"] .swirl-cloud {
-  animation-play-state: running;
-}
-@media (prefers-reduced-motion: reduce) {
-  .swirl-cloud {
-    animation: none;
-  }
 }
