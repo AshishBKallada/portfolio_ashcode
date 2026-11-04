@@ -89,7 +89,10 @@ function bendMaterial(source: THREE.Material, bend: Bend) {
  * his feet.
  */
 export const CARPET_FLY_IN_S = 1.9;
-export const CARPET_PERCH_S = 3.6;
+/** Long enough for both lines: the mat's, then the courier's answer (CourierTalk). */
+export const CARPET_PERCH_S = 5.4;
+/** The mat stops talking here, on the entry clock, and the courier answers. */
+export const CARPET_MAT_LINE_END = CARPET_FLY_IN_S + 2.0;
 export const CARPET_FLY_DOWN_S = 1.8;
 const ENTRY_S = CARPET_FLY_IN_S + CARPET_PERCH_S + CARPET_FLY_DOWN_S;
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
@@ -182,7 +185,8 @@ function Carpet({
       // bobbing on its tassels as it speaks.
       const phrase = smooth(clamp01((Math.sin(k * 1.9) + 0.2) / 0.8));
       const syllable = Math.sin(k * 9.5) * 0.5 + Math.sin(k * 6.1) * 0.25;
-      const talk = phrase * stand;
+      // Quiet once it has said its line, while the courier answers.
+      const talk = phrase * stand * (1 - smooth(clamp01((k - CARPET_MAT_LINE_END) / 0.3)));
       const sway = (Math.sin(k * 2.6) * 0.12 + Math.sin(k * 4.3) * 0.05 * phrase) * stand;
       const hop = (Math.abs(Math.sin(k * 3.2)) * 0.12 + Math.max(syllable, 0) * 0.12 * phrase) * stand;
       bend.current.uStand.value = stand;

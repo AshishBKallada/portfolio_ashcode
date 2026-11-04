@@ -16,7 +16,6 @@ import { ImageRippleEffect, type RippleImageItem } from "@/components/ui/image-r
 import { HeroSky } from "@/components/sections/hero/HeroSky";
 import { site } from "@/data/site";
 import {
-  HERO_FIGURE,
   HERO_BG,
   HERO_FIGURE_HEIGHT,
   HERO_FIGURE_LIFT_CLASS,
@@ -26,7 +25,8 @@ import {
 import { heroPinPhases } from "@/lib/heroPinScroll";
 import { introEase } from "@/lib/motion";
 import { HeroLines } from "./HeroLines";
-import { CARPET_FLY_DOWN_S, CARPET_FLY_IN_S, CARPET_PERCH_S, HeroCarpet } from "./HeroCarpet";
+import { CourierTalk } from "./CourierTalk";
+import { CARPET_FLY_DOWN_S, CARPET_FLY_IN_S, CARPET_MAT_LINE_END, CARPET_PERCH_S, HeroCarpet } from "./HeroCarpet";
 import { HeroWireDecor } from "./HeroWireDecor";
 import { useHeroCovered } from "./useHeroCovered";
 
@@ -123,7 +123,7 @@ export function SkyHero() {
   const carpetRotate = useTransform(carpetT, CARPET_BEATS, [-14, 0, 0, 0], { ease: CARPET_EASE });
   const carpetOpacity = useTransform(carpetT, [0, 0.35], [0, 1]);
   // The mat's line: in once it has stood up at the perch, out before it lies back down.
-  const BUBBLE_BEATS = [CARPET_FLY_IN_S + 0.3, CARPET_FLY_IN_S + 0.7, CARPET_FLY_IN_S + CARPET_PERCH_S - 0.5, CARPET_FLY_IN_S + CARPET_PERCH_S - 0.1];
+  const BUBBLE_BEATS = [CARPET_FLY_IN_S + 0.3, CARPET_FLY_IN_S + 0.7, CARPET_MAT_LINE_END - 0.3, CARPET_MAT_LINE_END];
   const bubbleOpacity = useTransform(carpetT, BUBBLE_BEATS, [0, 1, 1, 0]);
   const bubbleScale = useTransform(carpetT, BUBBLE_BEATS, [0.6, 1, 1, 0.85]);
   useEffect(() => {
@@ -290,15 +290,8 @@ export function SkyHero() {
                   style={{ height: `${HERO_FIGURE_HEIGHT * 100}%`, bottom: "calc(var(--hero-lift) * 100%)" }}
                   className="absolute inset-x-0 w-full"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={HERO_FIGURE.src}
-                    alt=""
-                    draggable={false}
-                    width={HERO_FIGURE.width}
-                    height={HERO_FIGURE.height}
-                    className="absolute inset-0 h-full w-full object-contain object-bottom select-none [backface-visibility:hidden] [transform:translateZ(0)]"
-                  />
+                  {/* The leap; while the mat perches, he floats cross-legged, answers it, and unfolds into the leap (CourierTalk). */}
+                  <CourierTalk entry={carpetT} active={wide && !reduce} />
                 </motion.div>
               </div>
             </motion.div>
