@@ -6,8 +6,6 @@
 :root {
   /* Post-hero sections (hero keeps its own art + scrim). */
   --theme-section-bg: #ddddd1;
-  /* The LinkedIn hall painting's top edge, for the ripple that tears it in. */
-  --theme-linkedin-edge: #896c50;
   --theme-page-bg: var(--theme-section-bg);
   /* Script accents on light section grounds. */
   --theme-script: var(--theme-flame);

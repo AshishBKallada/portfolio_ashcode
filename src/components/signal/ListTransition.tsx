@@ -6,10 +6,9 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { ImageTrail } from "@/components/ui/image-trail";
 import { optimizedSrc } from "@/lib/images";
 import Image from "next/image";
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { site } from "@/data/site";
 import { DropCap } from "./Editions";
-import { RippleEdge } from "./DissolvePainting";
 import { SectionLines } from "./SectionLines";
 import { frame } from "./primitives";
 
@@ -50,9 +49,16 @@ function Flight({ sizes, shadow, laptop = true }: { sizes: string; shadow: strin
     </div>
   );
 }
-/** The section's ground: a sunlit classical hall. */
-const HALL = "/images/linkedin/hall.png";
 const [nameA, nameB] = ["Ash", "Code"];
+/**
+ * The fingertip in the flight frame (1376×680): the figure fills its right 86% and
+ * bottom 97%, the tip 15.3% across it and 52% down.
+ */
+const FINGERTIP = { x: 0.14 + 0.86 * 0.153, y: 0.029 + 0.971 * 0.52 };
+/** The near-touch gap left between fingertip and laptop, in px. */
+const TOUCH_GAP = 18;
+/** Scroll through the stage over which he flies in from the right and reaches the laptop. */
+const REACH = [0.08, 0.5] as const;
 
 /*
  * Scroll timeline (0 → 1 over the pinned section, after the posts):
@@ -107,14 +113,46 @@ export function ListTransition() {
   const sy = useSpring(py, pointerSpring);
   const linesX = useTransform(sx, (v) => v * -72);
   const linesY = useTransform([stage, sy], ([s, v]: number[]) => (0.5 - s) * 40 + v * -52);
-  const statueX = useTransform(sx, (v) => v * -165);
-  const statueY = useTransform([stage, sy], ([s, v]: number[]) => (0.5 - s) * 110 + v * -105);
-  const statueRotate = useTransform(sx, (v) => v * -5);
+  const statueRotate = useTransform(sx, (v) => v * -3);
   const statueScale = useTransform(stage, [0, 1], [0.94, 1.04]);
   const textX = useTransform(sx, (v) => v * 85);
   const textY = useTransform([stage, sy], ([s, v]: number[]) => (0.5 - s) * 140 + v * 55);
-  const hallX = useTransform(sx, (v) => v * -100);
-  const hallY = useTransform([stage, sy], ([s, v]: number[]) => (s - 0.5) * 70 + v * -62);
+  // The flight: from high off to the right, he dives on the diagonal toward the laptop
+  // as the stage scrolls in, easing out so the last stretch slows to a near-touch.
+  // `reach` is the measured shift that sets the fingertip TOUCH_GAP off the laptop's
+  // keyboard edge; `fly` the run-in on top of it.
+  const flightRef = useRef<HTMLDivElement>(null);
+  const laptopRef = useRef<HTMLSpanElement>(null);
+  const reachX = useMotionValue(0);
+  const reachY = useMotionValue(0);
+  const fly = useMotionValue(600);
+  useEffect(() => {
+    const measure = () => {
+      const flight = flightRef.current;
+      const laptop = laptopRef.current;
+      if (!flight || !laptop) return;
+      // Layout boxes, with the text layer's parallax shift taken back out.
+      const f = flight.getBoundingClientRect();
+      const l = laptop.getBoundingClientRect();
+      reachX.set(l.left - textX.get() + l.width * 0.93 + TOUCH_GAP - (f.left + f.width * FINGERTIP.x));
+      reachY.set(l.top - textY.get() + l.height * 0.55 - (f.top + f.height * FINGERTIP.y));
+      fly.set(window.innerWidth * 0.45);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (flightRef.current) ro.observe(flightRef.current);
+    if (laptopRef.current) ro.observe(laptopRef.current);
+    return () => ro.disconnect();
+  }, [reachX, reachY, fly, textX, textY]);
+  const run = (s: number) => {
+    const t = Math.min(1, Math.max(0, (s - REACH[0]) / (REACH[1] - REACH[0])));
+    return 1 - (1 - t) ** 3;
+  };
+  // Both ride the text layer's scroll and pointer shift, so the gap holds wherever the cursor is.
+  const statueX = useTransform([sx, stage, reachX, fly], ([v, s, r, f]: number[]) => r + f * (1 - run(s)) + v * 85);
+  const statueY = useTransform([sy, stage, reachY, fly], ([v, s, r, f]: number[]) =>
+    r - f * 0.5 * (1 - run(s)) + (0.5 - s) * 140 + v * 55,
+  );
 
   return (
     <section
@@ -124,8 +162,7 @@ export function ListTransition() {
       data-nav-theme="light"
       className="signal-rail-bleed relative bg-background text-ink"
     >
-      {/* The LinkedIn section in a sunlit classical hall. The hall's top-edge tone tears up
-          over Work as it arrives and fades into the painting. */}
+      {/* The LinkedIn section on plain brand red, cut straight in: no painting, no ripple. */}
       <div
         id="linkedin"
         data-nav-theme="light"
@@ -139,30 +176,26 @@ export function ListTransition() {
           px.set(0);
           py.set(0);
         }}
-        className="relative z-10 bg-[var(--theme-linkedin-edge)] text-ink"
+        className="relative z-10 bg-brand text-ink"
       >
-        <RippleEdge track="linkedin" color="--theme-linkedin-edge" />
-        {/* Clipped on its own, so the ripple above the section stays visible. */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          {/* The hall: the deepest layer, drifting slowest with the scroll and the pointer. */}
-          <motion.div style={reduce ? undefined : { x: hallX, y: hallY }} className="absolute -inset-[8%]">
-            <Image src={HALL} alt="" fill sizes="100vw" className="object-cover" />
-          </motion.div>
-          {/* Out of the ripple's tone at the top, and a warm vignette so the marble stands off the stone. */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,var(--theme-linkedin-edge)_0%,transparent_14%),radial-gradient(ellipse_at_center,transparent_42%,rgba(60,36,18,0.45)_100%)]" />
-        </div>
         <div ref={stageRef} className="relative md:h-[min(72svh,42rem)]">
-          {/* Faint construction lines behind it all, after the hero's: the deepest layer. */}
+          {/* Faint construction lines behind it all, after the hero's: the deepest layer.
+              White on the red, whichever theme the navbar switch sets. */}
           <motion.div style={reduce ? undefined : { x: linesX, y: linesY }} className="pointer-events-none absolute inset-0 hidden md:block">
-            <SectionLines />
+            <SectionLines className="text-white!" />
           </motion.div>
           {/* The courier in marble, centred under the line and bobbing slowly, lifted off the
               red by a warm shadow; the posts fly across in front of him. Rises in as the
               section arrives, then drifts with the scroll and against the pointer. */}
           {/* Set right of centre; on desktop the laptop rides the heading instead, off the N. */}
-          <div aria-hidden className="pointer-events-none absolute right-[-6%] bottom-[-4%] z-0 hidden w-[min(90vw,70rem)] md:block">
+          <div ref={flightRef} aria-hidden className="pointer-events-none absolute top-0 right-[-6%] z-0 hidden w-[min(90vw,70rem)] md:block">
             <motion.div
-              style={reduce ? undefined : { x: statueX, y: statueY, scale: statueScale, rotate: statueRotate }}
+              // Scales and turns about the fingertip, so the near-touch holds through both.
+              style={
+                reduce
+                  ? undefined
+                  : { x: statueX, y: statueY, scale: statueScale, rotate: statueRotate, originX: FINGERTIP.x, originY: FINGERTIP.y }
+              }
               className="w-full"
             >
               <motion.div
@@ -206,6 +239,7 @@ export function ListTransition() {
                   {/* Shrunk to the line, so the laptop sits just off the N's top-left corner. */}
                   <span className="relative inline-block">
                     <span
+                      ref={laptopRef}
                       aria-hidden
                       style={{ "--dur": "5s", "--delay": "-2s" } as CSSProperties}
                       className="kw-float absolute right-[94%] bottom-[62%] hidden aspect-[1088/991] w-[clamp(6rem,9vw,9rem)] md:block"
@@ -245,7 +279,6 @@ export function ListTransition() {
       </div>
       {/* The pinned stretch: the name grows over the contact line. */}
       <div id="contact-pin" className="relative z-10 h-[150svh]">
-        <RippleEdge track="contact-pin" />
         <div ref={ref} aria-hidden className="pointer-events-none absolute inset-0" />
         {/* The panel runs full width; its content clears the top bar. */}
         <div data-nav-theme="light" className="sticky top-0 h-[100svh] overflow-hidden bg-background">
