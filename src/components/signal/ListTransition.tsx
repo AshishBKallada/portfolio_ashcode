@@ -20,8 +20,36 @@ const posts = site.signal.linkedin.posts.map((post) => ({
   src: optimizedSrc({ src: post.src, width: 180, height: 232 }, 70),
 }));
 const contact = site.contactStatement;
-/** The courier as a marble statue, cut out on transparency. */
-const COURIER_MARBLE = "/images/linkedin/courier-marble.png";
+/** The courier in flight, marble, reaching left (1376×768), cut out on transparency. */
+const FLIGHT_MARBLE = "/images/linkedin/flight-marble.png";
+/** The laptop he reaches for, winged and haloed in marble (1088×991). */
+const LAPTOP_ANGEL = "/images/linkedin/laptop-angel.png";
+
+/**
+ * The flight and the laptop as one piece, after the Creation of Adam: the figure spans
+ * the frame, the laptop floats just past his fingertip on its own, out-of-step bob.
+ */
+function Flight({ sizes, shadow, laptop = true }: { sizes: string; shadow: string; laptop?: boolean }) {
+  return (
+    // The figure takes the right 86%, the laptop the left 20%: a clear gap opens past the fingertip.
+    <div className="relative aspect-[1376/680] w-full">
+      <div
+        style={{ "--dur": "7s", "--delay": "0s" } as CSSProperties}
+        className="kw-float absolute right-0 bottom-0 aspect-[1376/768] w-[86%]"
+      >
+        <Image src={FLIGHT_MARBLE} alt="" fill sizes={`calc(${sizes} * 0.86)`} className={`object-contain ${shadow}`} />
+      </div>
+      {laptop && (
+        <div
+          style={{ "--dur": "5s", "--delay": "-2s" } as CSSProperties}
+          className="kw-float absolute top-[30%] left-0 aspect-[1088/991] w-[20%]"
+        >
+          <Image src={LAPTOP_ANGEL} alt="" fill sizes={`calc(${sizes} * 0.2)`} className={`object-contain ${shadow}`} />
+        </div>
+      )}
+    </div>
+  );
+}
 /** The section's ground: a sunlit classical hall. */
 const HALL = "/images/linkedin/hall.png";
 const [nameA, nameB] = ["Ash", "Code"];
@@ -131,27 +159,20 @@ export function ListTransition() {
           {/* The courier in marble, centred under the line and bobbing slowly, lifted off the
               red by a warm shadow; the posts fly across in front of him. Rises in as the
               section arrives, then drifts with the scroll and against the pointer. */}
-          <div aria-hidden className="pointer-events-none absolute bottom-[-6%] left-1/2 z-0 hidden aspect-square h-[108%] -translate-x-1/2 md:block">
+          {/* Set right of centre; on desktop the laptop rides the heading instead, off the N. */}
+          <div aria-hidden className="pointer-events-none absolute right-[-6%] bottom-[-4%] z-0 hidden w-[min(90vw,70rem)] md:block">
             <motion.div
               style={reduce ? undefined : { x: statueX, y: statueY, scale: statueScale, rotate: statueRotate }}
-              className="h-full w-full"
+              className="w-full"
             >
               <motion.div
                 initial={reduce ? false : { opacity: 0, y: 80 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                className="h-full w-full"
+                className="w-full"
               >
-                <div style={{ "--dur": "7s", "--delay": "0s" } as CSSProperties} className="kw-float relative h-full w-full">
-                  <Image
-                    src={COURIER_MARBLE}
-                    alt=""
-                    fill
-                    sizes="(min-width: 768px) 48rem, 0px"
-                    className="object-contain drop-shadow-[0_32px_40px_rgba(80,14,0,0.38)]"
-                  />
-                </div>
+                <Flight sizes="min(90vw, 70rem)" shadow="drop-shadow-[0_32px_40px_rgba(80,14,0,0.38)]" laptop={false} />
               </motion.div>
             </motion.div>
           </div>
@@ -182,7 +203,23 @@ export function ListTransition() {
                   </p>
                 </RevealItem>
                 <p className="font-headline text-[clamp(2.2rem,4.4vw,4rem)] leading-[0.92] tracking-[-0.045em]">
-                  <TextReveal text="Notes from the build," className="block" />
+                  {/* Shrunk to the line, so the laptop sits just off the N's top-left corner. */}
+                  <span className="relative inline-block">
+                    <span
+                      aria-hidden
+                      style={{ "--dur": "5s", "--delay": "-2s" } as CSSProperties}
+                      className="kw-float absolute right-[94%] bottom-[62%] hidden aspect-[1088/991] w-[clamp(6rem,9vw,9rem)] md:block"
+                    >
+                      <Image
+                        src={LAPTOP_ANGEL}
+                        alt=""
+                        fill
+                        sizes="9rem"
+                        className="object-contain drop-shadow-[0_24px_30px_rgba(80,14,0,0.38)]"
+                      />
+                    </span>
+                    <TextReveal text="Notes from the build," className="block" />
+                  </span>
                   <TextReveal text="shipped in public." delay={0.2} className="block font-narrative tracking-[-0.04em]" />
                 </p>
                 <RevealItem delay={0.4}>
@@ -198,14 +235,8 @@ export function ListTransition() {
                 </RevealItem>
               </motion.div>
               {/* Phones: the statue under the line, smaller. */}
-              <div aria-hidden className="relative mx-auto aspect-square w-[78%] md:hidden">
-                <Image
-                  src={COURIER_MARBLE}
-                  alt=""
-                  fill
-                  sizes="78vw"
-                  className="object-contain drop-shadow-[0_24px_30px_rgba(80,14,0,0.38)]"
-                />
+              <div aria-hidden className="relative mx-auto w-full md:hidden">
+                <Flight sizes="100vw" shadow="drop-shadow-[0_24px_30px_rgba(80,14,0,0.38)]" />
               </div>
             </div>
           </div>
