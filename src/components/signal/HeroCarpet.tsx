@@ -77,8 +77,23 @@ function bendMaterial(source: THREE.Material, bend: Bend) {
           transformed.z += radius * (1.0 - cos(theta)) * uStand;
         }`,
       );
+    // Its weave recarved in the courier statue's marble, by brightness: cool slate in the
+    // shadows, stone grey through the ground, near-white in the pattern and highlights.
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <map_fragment>",
+      `#include <map_fragment>
+      {
+        float l = pow(clamp(dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722)), 0.0, 1.0), 1.0 / 2.2);
+        vec3 slate = pow(vec3(0.353, 0.373, 0.400), vec3(2.2));
+        vec3 stone = pow(vec3(0.663, 0.678, 0.702), vec3(2.2));
+        vec3 marble = pow(vec3(0.914, 0.918, 0.925), vec3(2.2));
+        vec3 c = mix(slate, stone, smoothstep(0.1, 0.4, l));
+        c = mix(c, marble, smoothstep(0.42, 0.7, l));
+        diffuseColor.rgb = c;
+      }`,
+    );
   };
-  mat.customProgramCacheKey = () => "carpet-bend";
+  mat.customProgramCacheKey = () => "carpet-bend-marble";
   return mat;
 }
 

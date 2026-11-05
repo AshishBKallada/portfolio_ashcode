@@ -5,11 +5,11 @@ import { optimizedSrc } from "@/lib/images";
 /** Full-bleed photograph behind the home hero (SkyHero). */
 export const HERO_BG = { src: "/images/hero/hero-dunes.webp", width: 1352, height: 784 };
 
-/** Transparent cutout above the cumulus — Winged Courier (latest Photoroom export), as a WebP with lossless alpha. */
+/** Transparent cutout above the cumulus — the Winged Courier as a marble statue (Photoroom export), as a WebP with lossless alpha. */
 export const HERO_FIGURE = {
-  src: "/images/hero/hero-figure-winged-courier.webp",
-  width: 1303,
-  height: 1207,
+  src: "/images/hero/hero-figure-marble.webp",
+  width: 1024,
+  height: 1024,
 };
 
 /** Harp cutout, used in the résumé page's header. */

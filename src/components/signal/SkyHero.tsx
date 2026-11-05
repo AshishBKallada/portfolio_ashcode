@@ -17,7 +17,6 @@ import { HeroSky } from "@/components/sections/hero/HeroSky";
 import { site } from "@/data/site";
 import {
   HERO_FIGURE,
-  HERO_BG,
   HERO_FIGURE_HEIGHT,
   HERO_FIGURE_LIFT_CLASS,
   HERO_SEAT_CLOUD,
@@ -62,8 +61,6 @@ export function SkyHero() {
     const vh = typeof window !== "undefined" ? window.innerHeight : 800;
     return Math.min(1, Math.max(0, y / vh));
   });
-  const bgScrollY = useTransform(scrollT, [0, 1], [0, 28]);
-  const bgScrollScale = useTransform(scrollT, [0, 1], [1, 1.07]);
   const cloudScrollY = useTransform(scrollT, [0, 1], [0, -48]);
   const figureScrollY = useTransform(scrollT, [0, 1], [0, -72]);
   // After the nav card flips to About, the cloud parts left and the figure steps right.
@@ -81,9 +78,6 @@ export function SkyHero() {
   const rawY = useMotionValue(0);
   const mx = useSpring(rawX, { stiffness: 62, damping: 16, mass: 0.55 });
   const my = useSpring(rawY, { stiffness: 62, damping: 16, mass: 0.55 });
-  const bgX = useTransform(mx, (v) => v * -80);
-  const bgYPointer = useTransform(my, (v) => v * -50);
-  const bgY = useTransform([bgYPointer, bgScrollY], ([p, s]: number[]) => p + s);
   const cloudX = useTransform(mx, (v) => v * 80);
   const cloudYPointer = useTransform(my, (v) => v * 48);
   const cloudY = useTransform([cloudYPointer, cloudScrollY], ([p, s]: number[]) => p + s);
@@ -164,23 +158,8 @@ export function SkyHero() {
       >
         <div aria-hidden className="pointer-events-none absolute inset-0 z-0 bg-night" />
 
-        <div aria-hidden className="pointer-events-none absolute inset-0 z-[1]">
-        <motion.div
-          aria-hidden
-          style={reduce ? undefined : { x: bgX, y: bgY, scale: bgScrollScale }}
-          className="pointer-events-none absolute top-1/2 left-1/2 h-[122%] w-[122%] -translate-x-1/2 -translate-y-1/2 will-change-transform"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={HERO_BG.src}
-            alt=""
-            width={HERO_BG.width}
-            height={HERO_BG.height}
-            draggable={false}
-            className="h-full w-full select-none object-cover object-center"
-          />
-        </motion.div>
-        </div>
+        {/* The ground: plain brand red, the clouds and courier over it. */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] bg-brand" />
 
         {/* Scrims only where text sits: the top-right actions and the seam at the bottom.
             The chapters' paintings take the same (DissolvePainting), so every section shares one exposure. */}
