@@ -12,6 +12,9 @@ export const HERO_FIGURE = {
   height: 1024,
 };
 
+/** The courier as he was, in black, sized and placed to sit exactly under HERO_FIGURE: the pixel reveal's underlayer. */
+export const HERO_FIGURE_UNDER = "/images/hero/hero-figure-courier-under.webp";
+
 /** Harp cutout, used in the résumé page's header. */
 export const HERO_HARP = { src: "/images/hero/float-harp.png", width: 941, height: 1672 };
 

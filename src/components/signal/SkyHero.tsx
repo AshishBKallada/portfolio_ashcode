@@ -17,6 +17,7 @@ import { HeroSky } from "@/components/sections/hero/HeroSky";
 import { site } from "@/data/site";
 import {
   HERO_FIGURE,
+  HERO_FIGURE_UNDER,
   HERO_FIGURE_HEIGHT,
   HERO_FIGURE_LIFT_CLASS,
   HERO_SEAT_CLOUD,
@@ -25,6 +26,7 @@ import {
 import { heroPinPhases } from "@/lib/heroPinScroll";
 import { introEase } from "@/lib/motion";
 import { HeroLines } from "./HeroLines";
+import { PixelReveal } from "./PixelReveal";
 import { CARPET_FLY_DOWN_S, CARPET_FLY_IN_S, CARPET_PERCH_S, HeroCarpet } from "./HeroCarpet";
 import { HeroWireDecor } from "./HeroWireDecor";
 import { useHeroCovered } from "./useHeroCovered";
@@ -278,6 +280,8 @@ export function SkyHero() {
                     height={HERO_FIGURE.height}
                     className="absolute inset-0 h-full w-full object-contain object-bottom select-none [backface-visibility:hidden] [transform:translateZ(0)]"
                   />
+                  {/* Hovered, the marble breaks into pixels over the courier as he was, in black. */}
+                  {!reduce && <PixelReveal src={HERO_FIGURE_UNDER} className="absolute inset-0 h-full w-full" />}
                 </motion.div>
               </div>
             </motion.div>
