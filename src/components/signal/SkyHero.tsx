@@ -23,6 +23,9 @@ const CARPET_S = CARPET_FLY_IN_S + CARPET_PERCH_S + CARPET_FLY_DOWN_S;
 /** The carpet's three beats, in seconds of its entry clock: fly in, perch (held), fly down. */
 const CARPET_BEATS = [0, CARPET_FLY_IN_S, CARPET_FLY_IN_S + CARPET_PERCH_S, CARPET_S];
 const CARPET_EASE = [cubicBezier(0.3, 0, 0.2, 1), (v: number) => v, cubicBezier(0.45, 0, 0.2, 1)];
+/** The pull off to the right, in reveal progress: drift, dig in, yanked out, gone (held off-frame till the page covers). */
+const PULL_BEATS = [0, 0.3, 0.42, 0.62, 1];
+const PULL_EASE = [cubicBezier(0.25, 0.1, 0.25, 1), cubicBezier(0.45, 0, 0.55, 1), cubicBezier(0.6, 0, 0.85, 0.35), (v: number) => v];
 
 /**
  * The opener: 360° desert panorama, floating figure cutout,
@@ -49,9 +52,22 @@ export function SkyHero() {
     const { pinEnd } = heroPinPhases(y);
     return pinEnd <= 0 ? 1 : Math.min(1, Math.max(0, y / pinEnd));
   });
-  const vw = () => (typeof window !== "undefined" ? window.innerWidth : 1280);
-  const figureRevealX = useTransform(reveal, (r) => r * 0.42 * vw());
-  const figureRevealScale = useTransform(reveal, (r) => 1 + r * 0.1);
+  // Then something off to the right takes hold of him: he drifts that way, digs in and leans
+  // back against it, and is yanked out of frame, stretched along the pull. Transforms only, no blur:
+  // a filter would repaint the layer (and the mat's canvas) every frame and soften him.
+  // The mat rides the same layer, so it goes with him.
+  const pull = useSpring(reveal, { stiffness: 140, damping: 28, mass: 0.5, restDelta: 0.0005 });
+  const figureRevealX = useTransform(pull, PULL_BEATS, ["0vw", "12vw", "6vw", "125vw", "125vw"], { ease: PULL_EASE });
+  const figureRevealScaleX = useTransform(pull, PULL_BEATS, [1, 1.05, 0.95, 1.2, 1.2], { ease: PULL_EASE });
+  const figureRevealScaleY = useTransform(pull, PULL_BEATS, [1, 1.05, 1.05, 0.93, 0.93], { ease: PULL_EASE });
+  const figureRevealRotate = useTransform(pull, PULL_BEATS, [0, 0, -6, 10, 10], { ease: PULL_EASE });
+  const figureReveal = {
+    x: figureRevealX,
+    scaleX: figureRevealScaleX,
+    scaleY: figureRevealScaleY,
+    rotate: figureRevealRotate,
+    originX: 0.3,
+  };
   // The construction lines wind back off over the first stretch of the reveal.
   const linesErase = useTransform(reveal, [0, 0.35], [0, 1]);
   const decorScrollY = useTransform(scrollT, [0, 1], [0, -36]);
@@ -183,7 +199,7 @@ export function SkyHero() {
             Once the loader has gone and the model is in, it sweeps in from the
             top left, turning (HeroCarpet spins it), and settles under the feet. */}
         <motion.div
-          style={reduce ? undefined : { x: figureRevealX, scale: figureRevealScale }}
+          style={reduce ? undefined : figureReveal}
           className="pointer-events-none absolute inset-0 z-[4] will-change-transform max-md:hidden"
         >
           <motion.div style={reduce ? undefined : { x: figureX, y: figureY, rotate: figureRotate }} className="absolute inset-0">
@@ -224,7 +240,7 @@ export function SkyHero() {
         </motion.div>
 
         <motion.div
-          style={reduce ? undefined : { x: figureRevealX, scale: figureRevealScale }}
+          style={reduce ? undefined : figureReveal}
           className="pointer-events-none absolute inset-0 z-[4] will-change-transform"
         >
           <motion.div
