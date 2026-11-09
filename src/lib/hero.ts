@@ -12,6 +12,9 @@ export const HERO_FIGURE = {
   height: 1024,
 };
 
+/** The hero's courier, in colour: black robes, a red cape with gold trim, the case whole. */
+export const HERO_COURIER = { src: "/images/hero/hero-courier-cape.webp", width: 1000, height: 744 };
+
 /** The courier as he was, in black, sized and placed to sit exactly under HERO_FIGURE: the pixel reveal's underlayer. */
 export const HERO_FIGURE_UNDER = "/images/hero/hero-figure-courier-under.webp";
 

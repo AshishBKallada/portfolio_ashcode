@@ -1,39 +1,17 @@
 "use client";
 
-import {
-  animate,
-  cubicBezier,
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { animate, cubicBezier, motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
-import { ImageRippleEffect, type RippleImageItem } from "@/components/ui/image-ripple-effect";
-import { HeroSky } from "@/components/sections/hero/HeroSky";
 import { site } from "@/data/site";
-import {
-  HERO_FIGURE,
-  HERO_FIGURE_UNDER,
-  HERO_FIGURE_HEIGHT,
-  HERO_FIGURE_LIFT_CLASS,
-  HERO_SEAT_CLOUD,
-  HERO_SEAT_CLOUD_URL,
-} from "@/lib/hero";
+import { HERO_COURIER, HERO_FIGURE_HEIGHT, HERO_FIGURE_LIFT_CLASS } from "@/lib/hero";
 import { heroPinPhases } from "@/lib/heroPinScroll";
 import { introEase } from "@/lib/motion";
 import { HeroLines } from "./HeroLines";
-import { PixelReveal } from "./PixelReveal";
+import { HeroPanorama } from "./HeroPanorama";
 import { CARPET_FLY_DOWN_S, CARPET_FLY_IN_S, CARPET_PERCH_S, HeroCarpet } from "./HeroCarpet";
 import { HeroWireDecor } from "./HeroWireDecor";
 import { useHeroCovered } from "./useHeroCovered";
-
-const CLOUD_RIPPLE: RippleImageItem[] = [
-  { src: HERO_SEAT_CLOUD_URL, x: 0, y: 0, widthScale: 1, heightScale: HERO_SEAT_CLOUD.height / HERO_SEAT_CLOUD.width },
-];
 
 const START = 0.15;
 /** How long the painting waits after the loader, while the construction lines draw over the dark. */
@@ -47,7 +25,7 @@ const CARPET_BEATS = [0, CARPET_FLY_IN_S, CARPET_FLY_IN_S + CARPET_PERCH_S, CARP
 const CARPET_EASE = [cubicBezier(0.3, 0, 0.2, 1), (v: number) => v, cubicBezier(0.45, 0, 0.2, 1)];
 
 /**
- * The opener: hero photograph, cumulus with ripples, floating figure cutout,
+ * The opener: 360° desert panorama, floating figure cutout,
  * statement for screen readers (the visible title lives in the nav card).
  */
 export function SkyHero() {
@@ -63,13 +41,15 @@ export function SkyHero() {
     const vh = typeof window !== "undefined" ? window.innerHeight : 800;
     return Math.min(1, Math.max(0, y / vh));
   });
-  const cloudScrollY = useTransform(scrollT, [0, 1], [0, -48]);
   const figureScrollY = useTransform(scrollT, [0, 1], [0, -72]);
-  // After the nav card flips to About, the cloud parts left and the figure steps right.
+  // After the nav card flips to About, the figure steps right.
   const reveal = useTransform(scrollY, (y) => heroPinPhases(y).reveal);
+  // How far through the hero's pin, 0 to 1: the desert spins on out over the whole of it.
+  const pinT = useTransform(scrollY, (y) => {
+    const { pinEnd } = heroPinPhases(y);
+    return pinEnd <= 0 ? 1 : Math.min(1, Math.max(0, y / pinEnd));
+  });
   const vw = () => (typeof window !== "undefined" ? window.innerWidth : 1280);
-  const cloudRevealX = useTransform(reveal, (r) => r * -0.62 * vw());
-  const cloudRevealScale = useTransform(reveal, (r) => 1 + r * 0.35);
   const figureRevealX = useTransform(reveal, (r) => r * 0.42 * vw());
   const figureRevealScale = useTransform(reveal, (r) => 1 + r * 0.1);
   // The construction lines wind back off over the first stretch of the reveal.
@@ -80,9 +60,6 @@ export function SkyHero() {
   const rawY = useMotionValue(0);
   const mx = useSpring(rawX, { stiffness: 62, damping: 16, mass: 0.55 });
   const my = useSpring(rawY, { stiffness: 62, damping: 16, mass: 0.55 });
-  const cloudX = useTransform(mx, (v) => v * 80);
-  const cloudYPointer = useTransform(my, (v) => v * 48);
-  const cloudY = useTransform([cloudYPointer, cloudScrollY], ([p, s]: number[]) => p + s);
   const figureX = useTransform(mx, (v) => v * 130);
   const figureYPointer = useTransform(my, (v) => v * 76);
   // A small bob as the page scrolls: up and down 10px, twice a screen, over its own drift.
@@ -104,6 +81,15 @@ export function SkyHero() {
   }, [reduce, rawX, rawY]);
 
   const at = (delay: number) => (reduce ? 0 : START + delay);
+  // The carpet is hidden below md: don't mount its canvas there, or fetch its model.
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setWide(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
   // The carpet's model is heavy; its entry waits for it as well as the loader,
   // so it's never played out over an empty canvas.
   const [carpetLoaded, setCarpetLoaded] = useState(false);
@@ -116,10 +102,17 @@ export function SkyHero() {
   const carpetX = useTransform(carpetT, CARPET_BEATS, ["-52vw", "16vw", "16vw", "0vw"], { ease: CARPET_EASE });
   const carpetY = useTransform(carpetT, CARPET_BEATS, ["-46vh", "-40vh", "-40vh", "0vh"], { ease: CARPET_EASE });
   const carpetScale = useTransform(carpetT, CARPET_BEATS, [0.5, 1.55, 1.55, 1], { ease: CARPET_EASE });
-  const carpetRotate = useTransform(carpetT, CARPET_BEATS, [-14, 0, 0, 0], { ease: CARPET_EASE });
+  const carpetRotate = useTransform(carpetT, CARPET_BEATS, [-14, 0, 0, 0], {
+    ease: CARPET_EASE,
+  });
   const carpetOpacity = useTransform(carpetT, [0, 0.35], [0, 1]);
   // The mat's line: in once it has stood up at the perch, out before it lies back down.
-  const BUBBLE_BEATS = [CARPET_FLY_IN_S + 0.3, CARPET_FLY_IN_S + 0.7, CARPET_FLY_IN_S + CARPET_PERCH_S - 0.5, CARPET_FLY_IN_S + CARPET_PERCH_S - 0.1];
+  const BUBBLE_BEATS = [
+    CARPET_FLY_IN_S + 0.3,
+    CARPET_FLY_IN_S + 0.7,
+    CARPET_FLY_IN_S + CARPET_PERCH_S - 0.5,
+    CARPET_FLY_IN_S + CARPET_PERCH_S - 0.1,
+  ];
   const bubbleOpacity = useTransform(carpetT, BUBBLE_BEATS, [0, 1, 1, 0]);
   const bubbleScale = useTransform(carpetT, BUBBLE_BEATS, [0.6, 1, 1, 0.85]);
   useEffect(() => {
@@ -132,18 +125,14 @@ export function SkyHero() {
     });
     return () => run.stop();
   }, [carpetIn, reduce, carpetT]);
-  // The carpet is hidden below md: don't mount its canvas there, or fetch its model.
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const update = () => setWide(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
 
   return (
-    <section ref={sectionRef} aria-label="Introduction" data-nav-theme="dark" className="relative h-full w-full overflow-hidden bg-night text-cream">
+    <section
+      ref={sectionRef}
+      aria-label="Introduction"
+      data-nav-theme="dark"
+      className="relative h-full w-full overflow-hidden bg-night text-cream"
+    >
       <h1 className="sr-only">
         {site.name}: {site.hero.statementMain}
       </h1>
@@ -151,17 +140,36 @@ export function SkyHero() {
         initial={reduce ? false : { opacity: 0, scale: 1.06, filter: "blur(14px)" }}
         animate={
           ready
-            ? { opacity: 1, scale: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } }
+            ? {
+                opacity: 1,
+                scale: 1,
+                filter: "blur(0px)",
+                transitionEnd: { filter: "none" },
+              }
             : { opacity: 0, scale: 1.06, filter: "blur(14px)" }
         }
         // Held back a beat so the construction lines draw over the dark before the painting arrives.
-        transition={{ duration: 1.6, ease: settle, delay: reduce ? 0 : SCENE_DELAY }}
+        transition={{
+          duration: 1.6,
+          ease: settle,
+          delay: reduce ? 0 : SCENE_DELAY,
+        }}
         className="absolute inset-0 bg-night"
       >
         <div aria-hidden className="pointer-events-none absolute inset-0 z-0 bg-night" />
 
-        {/* The ground: plain brand red, the clouds and courier over it. */}
+        {/* The ground: a 360° desert with a gold portal, the camera whipping round to it as
+            the loader lifts (HeroPanorama); plain brand red under it until the photograph is in. */}
         <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] bg-brand" />
+        <HeroPanorama
+          mx={mx}
+          my={my}
+          scroll={pinT}
+          start={ready}
+          still={reduce}
+          paused={covered}
+          className="pointer-events-none absolute inset-0 z-[1]"
+        />
 
         {/* Scrims only where text sits: the top-right actions and the seam at the bottom.
             The chapters' paintings take the same (DissolvePainting), so every section shares one exposure. */}
@@ -170,12 +178,10 @@ export function SkyHero() {
           className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]"
         />
 
-        <HeroSky mx={mx} my={my} />
-
         {/* The carpet under the courier's feet, in a layer of its own that moves as the
-            figure's does (reveal, pointer), over the cloud and under the
-            figure. Once the loader has gone and the model is in, it sweeps in from the
-            top left over the cloud, turning (HeroCarpet spins it), and settles under the feet. */}
+            figure's does (reveal, pointer), under the figure.
+            Once the loader has gone and the model is in, it sweeps in from the
+            top left, turning (HeroCarpet spins it), and settles under the feet. */}
         <motion.div
           style={reduce ? undefined : { x: figureRevealX, scale: figureRevealScale }}
           className="pointer-events-none absolute inset-0 z-[4] will-change-transform max-md:hidden"
@@ -187,7 +193,13 @@ export function SkyHero() {
               style={
                 reduce
                   ? undefined
-                  : { x: carpetX, y: carpetY, scale: carpetScale, rotate: carpetRotate, opacity: carpetOpacity }
+                  : {
+                      x: carpetX,
+                      y: carpetY,
+                      scale: carpetScale,
+                      rotate: carpetRotate,
+                      opacity: carpetOpacity,
+                    }
               }
               className="pointer-events-auto absolute right-[10%] bottom-[-7%] left-[30%] h-[34%] lg:translate-x-[9%]"
             >
@@ -211,41 +223,6 @@ export function SkyHero() {
           </motion.div>
         </motion.div>
 
-        <motion.div style={reduce ? undefined : { x: cloudRevealX, scale: cloudRevealScale }} className="pointer-events-none absolute inset-0 z-[3] will-change-transform">
-          <motion.div style={reduce ? undefined : { x: cloudX, y: cloudY }} className="pointer-events-none absolute inset-0">
-            <motion.div
-              aria-hidden
-              initial={reduce ? false : { opacity: 0, y: 110, scale: 0.86 }}
-              animate={ready ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 110, scale: 0.86 }}
-              transition={{ duration: 1.1, delay: at(0.15), ease: [0.16, 1, 0.3, 1] }}
-              style={{ aspectRatio: `${HERO_SEAT_CLOUD.width} / ${HERO_SEAT_CLOUD.height}` }}
-              className="pointer-events-none absolute top-1/2 left-1/2 z-[3] w-[clamp(24rem,92vw,84rem)] max-w-none -translate-x-1/2 -translate-y-1/2 select-none max-md:top-auto max-md:bottom-[calc(32%+46vw)] max-md:w-[170vw] max-md:translate-y-1/2"
-            >
-              <ImageRippleEffect
-                images={CLOUD_RIPPLE}
-                trackWindow
-                still={reduce}
-                distortionStrength={0.06}
-                waveSize={80}
-                sepia={0.12}
-                saturation={1.15}
-                className="h-full w-full"
-                fallback={
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={HERO_SEAT_CLOUD_URL}
-                    alt=""
-                    draggable={false}
-                    width={HERO_SEAT_CLOUD.width}
-                    height={HERO_SEAT_CLOUD.height}
-                    className="h-full w-full select-none [filter:sepia(0.12)_saturate(1.15)]"
-                  />
-                }
-              />
-            </motion.div>
-          </motion.div>
-        </motion.div>
-
         <motion.div
           style={reduce ? undefined : { x: figureRevealX, scale: figureRevealScale }}
           className="pointer-events-none absolute inset-0 z-[4] will-change-transform"
@@ -257,31 +234,56 @@ export function SkyHero() {
             <motion.div
               className="absolute inset-0"
               animate={reduce ? undefined : covered ? { y: 0, rotate: 0 } : { y: [0, -12, 0], rotate: [0, -0.6, 0] }}
-              transition={covered ? { duration: 0 } : { duration: 6, ease: "easeInOut", repeat: Infinity, delay: at(1.6) }}
+              transition={
+                covered
+                  ? { duration: 0 }
+                  : {
+                      duration: 6,
+                      ease: "easeInOut",
+                      repeat: Infinity,
+                      delay: at(1.6),
+                    }
+              }
             >
               <div className={`absolute inset-0 lg:translate-x-[9%] ${HERO_FIGURE_LIFT_CLASS}`}>
                 <motion.div
                   initial={reduce ? false : { opacity: 0, y: "-55%", rotate: -5 }}
                   animate={ready ? { opacity: 1, y: 0, rotate: 0 } : { opacity: 0, y: "-55%", rotate: -5 }}
                   transition={{
-                    opacity: { duration: 0.45, delay: at(0.35), ease: introEase },
-                    y: { type: "spring", stiffness: 55, damping: 12, mass: 1.1, delay: at(0.35) },
-                    rotate: { type: "spring", stiffness: 55, damping: 12, delay: at(0.35) },
+                    opacity: {
+                      duration: 0.45,
+                      delay: at(0.35),
+                      ease: introEase,
+                    },
+                    y: {
+                      type: "spring",
+                      stiffness: 55,
+                      damping: 12,
+                      mass: 1.1,
+                      delay: at(0.35),
+                    },
+                    rotate: {
+                      type: "spring",
+                      stiffness: 55,
+                      damping: 12,
+                      delay: at(0.35),
+                    },
                   }}
-                  style={{ height: `${HERO_FIGURE_HEIGHT * 100}%`, bottom: "calc(var(--hero-lift) * 100%)" }}
+                  style={{
+                    height: `${HERO_FIGURE_HEIGHT * 100}%`,
+                    bottom: "calc(var(--hero-lift) * 100%)",
+                  }}
                   className="absolute inset-x-0 w-full"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={HERO_FIGURE.src}
+                    src={HERO_COURIER.src}
                     alt=""
                     draggable={false}
-                    width={HERO_FIGURE.width}
-                    height={HERO_FIGURE.height}
+                    width={HERO_COURIER.width}
+                    height={HERO_COURIER.height}
                     className="absolute inset-0 h-full w-full object-contain object-bottom select-none [backface-visibility:hidden] [transform:translateZ(0)]"
                   />
-                  {/* Hovered, the marble breaks into pixels over the courier as he was, in black. */}
-                  {!reduce && <PixelReveal src={HERO_FIGURE_UNDER} className="absolute inset-0 h-full w-full" />}
                 </motion.div>
               </div>
             </motion.div>
@@ -291,7 +293,6 @@ export function SkyHero() {
         <div className="pointer-events-none absolute inset-0 z-[6]">
           <HeroWireDecor mx={mx} my={my} scrollY={decorScrollY} still={reduce} ready={ready} />
         </div>
-
       </motion.div>
 
       {/* Construction lines round the nav card, outside the scene's fade: as the loader lifts they

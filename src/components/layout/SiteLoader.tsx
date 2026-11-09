@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { site } from "@/data/site";
-import { HERO_FIGURE_URL, HERO_SEAT_CLOUD_URL } from "@/lib/hero";
+import { HERO_COURIER } from "@/lib/hero";
 
 /**
  * Boot sequence, after Shopify Editions, all on one black screen:
@@ -34,7 +34,7 @@ const SLIDE_EASE = "cubic-bezier(.41,.19,.13,.95)";
 // Dismiss even if `load` or `fonts.ready` never resolve (a stalled asset).
 const MAX_WAIT_MS = 8000;
 
-const PRELOAD = [HERO_FIGURE_URL, HERO_SEAT_CLOUD_URL];
+const PRELOAD = [HERO_COURIER.src];
 
 export function SiteLoader() {
   const pathname = usePathname();
