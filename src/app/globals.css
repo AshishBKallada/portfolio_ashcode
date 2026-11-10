@@ -152,12 +152,6 @@ body {
   visibility: hidden;
 }
 
-/* Keep the head-turn frames sharp under motion/parallax transforms. */
-.hero-figure img {
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
 /* Route change: the new page wipes up over the old one; project images
    morph on their own named group. */
 @keyframes page-wipe-in {

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { site } from "@/data/site";
-import { HERO_COURIER } from "@/lib/hero";
+import { heroSkySrc } from "@/lib/hero";
 
 /**
  * Boot sequence, after Shopify Editions, all on one black screen:
@@ -33,8 +33,6 @@ const SLIDE_S = 0.6;
 const SLIDE_EASE = "cubic-bezier(.41,.19,.13,.95)";
 // Dismiss even if `load` or `fonts.ready` never resolve (a stalled asset).
 const MAX_WAIT_MS = 8000;
-
-const PRELOAD = [HERO_COURIER.src];
 
 export function SiteLoader() {
   const pathname = usePathname();
@@ -133,7 +131,8 @@ export function SiteLoader() {
       // Give the frame a moment to start drawing even on a warm cache.
       const minimum = new Promise<void>((resolve) => window.setTimeout(resolve, 1200));
 
-      Promise.all([minimum, waitForLoad(), waitForFonts(), ...PRELOAD.map(waitForImage)]).then(finish);
+      // The hero's sky, so the world paints the moment the loader lifts.
+      Promise.all([minimum, waitForLoad(), waitForFonts(), waitForImage(heroSkySrc())]).then(finish);
       cap = window.setTimeout(finish, MAX_WAIT_MS);
     });
 

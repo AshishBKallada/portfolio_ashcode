@@ -12,11 +12,14 @@ export const HERO_FIGURE = {
   height: 1024,
 };
 
-/** The hero's courier, in colour: black robes, a red cape with gold trim, the case whole. */
-export const HERO_COURIER = { src: "/images/hero/hero-courier-cape.webp", width: 1000, height: 744 };
-
-/** The courier as he was, in black, sized and placed to sit exactly under HERO_FIGURE: the pixel reveal's underlayer. */
-export const HERO_FIGURE_UNDER = "/images/hero/hero-figure-courier-under.webp";
+/**
+ * The hero's sky: the desert panorama with its own portal painted out
+ * (scripts/blender/paint_out_portal.py), on a dome round the modelled one (HeroWorld).
+ * Phones take the half-size copy.
+ */
+export const HERO_SKY = { wide: "/images/hero/pano/desert-4k-sky.webp", narrow: "/images/hero/pano/desert-2k-sky.webp" };
+export const heroSkySrc = () =>
+  typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches ? HERO_SKY.wide : HERO_SKY.narrow;
 
 /** Harp cutout, used in the résumé page's header. */
 export const HERO_HARP = { src: "/images/hero/float-harp.png", width: 941, height: 1672 };
@@ -51,16 +54,3 @@ export const HERO_STAGE_PIN_VH = HERO_EXIT_AT;
 /** The pre-encoded WebP as is: its alpha is lossless, so the cutout's edge stays clean. */
 export const HERO_FIGURE_URL = HERO_FIGURE.src;
 export const HERO_SEAT_CLOUD_URL = optimizedSrc(HERO_SEAT_CLOUD, CLOUD_QUALITY);
-
-/**
- * Height of the hero figure as a fraction of the hero. The img is
- * object-contain + bottom-aligned, so change it here only.
- */
-export const HERO_FIGURE_HEIGHT = 0.6;
-
-/**
- * How far the figure's feet sit above the hero's bottom edge, as a fraction
- * of the hero. Set as the `--hero-lift` CSS variable on the figure wrapper:
- * phones lift the figure clear of the headline and CTA below it.
- */
-export const HERO_FIGURE_LIFT_CLASS = "[--hero-lift:0.07] max-md:[--hero-lift:0.32]";
