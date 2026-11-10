@@ -15,6 +15,19 @@ export const HERO_FIGURE = {
 /** The hero's courier, in colour: black robes, a red cape with gold trim, the case whole. */
 export const HERO_COURIER = { src: "/images/hero/hero-courier-cape.webp", width: 1000, height: 744 };
 
+/**
+ * Flow mask for HeroCourierCloth: R = cape, G = hair, 0 where pinned, 1 at the free ends.
+ * Built from HERO_COURIER by scripts/blender/make_courier_flow.py.
+ */
+export const HERO_COURIER_FLOW = "/images/hero/hero-courier-flow.png";
+
+/**
+ * The biplane that crosses the hero's sky (HeroPlane): Hunyuan 3D, cut to 80k triangles with
+ * 2048 JPEG base colour + normal, Draco (decoder in public/draco). 0.9 MB.
+ * Rebuild with scripts/blender/optimize_glb.py.
+ */
+export const HERO_PLANE_MODEL = "/models/plane/plane.glb";
+
 /** The courier as he was, in black, sized and placed to sit exactly under HERO_FIGURE: the pixel reveal's underlayer. */
 export const HERO_FIGURE_UNDER = "/images/hero/hero-figure-courier-under.webp";
 

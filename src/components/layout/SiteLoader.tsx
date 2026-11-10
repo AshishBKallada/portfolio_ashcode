@@ -7,12 +7,16 @@ import { useEffect, useRef, useState } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
 import { site } from "@/data/site";
 import { HERO_COURIER } from "@/lib/hero";
+import { getSound, setSound } from "@/lib/sound";
 
 /**
  * Boot sequence, after Shopify Editions, all on one black screen:
  *   1. a hairline frame, the size and place of the nav card, draws itself
  *      round to about 80% while the page, fonts and hero images load, and the
- *      wordmark fades in at the frame's vertical centre;
+ *      wordmark fades in at the frame's vertical centre. A third of the way
+ *      round it stops and asks for sound (lib/sound): on plays the record and
+ *      the hero's plane, wind and sand; off keeps the site silent. The frame
+ *      only draws on, and the load only finishes, once that's answered;
  *   2. once they're in, the frame closes the last stretch and the wordmark
  *      slides up to where the nav card's title sits;
  *   3. the screen lifts off, leaving the nav card in the same spot over the
@@ -31,8 +35,10 @@ const FADE_EASE = "cubic-bezier(.25,.46,.45,.94)";
 const FADE_DELAY_S = 0.2;
 const SLIDE_S = 0.6;
 const SLIDE_EASE = "cubic-bezier(.41,.19,.13,.95)";
-// Dismiss even if `load` or `fonts.ready` never resolve (a stalled asset).
+// Dismiss even if `load` or `fonts.ready` never resolve (a stalled asset); counted from the sound answer.
 const MAX_WAIT_MS = 8000;
+// Where in the load stroke the sound question comes up, as a fraction of LOAD_S.
+const ASK_AT = 0.3;
 
 const PRELOAD = [HERO_COURIER.src];
 
@@ -46,6 +52,10 @@ export function SiteLoader() {
   const rootRef = useRef<HTMLDivElement>(null);
   const rectRef = useRef<SVGRectElement>(null);
   const titleRef = useRef<HTMLParagraphElement>(null);
+  const askRef = useRef<HTMLDivElement>(null);
+  const askOnRef = useRef<HTMLButtonElement>(null);
+  /** Set by the effect while the question is up; the buttons call it inside their click. */
+  const answerRef = useRef<((on: boolean) => void) | null>(null);
   // Read at outro time, so a late reduced-motion value never restarts the draw.
   const reduceRef = useRef(reduce);
   useEffect(() => {
@@ -56,7 +66,8 @@ export function SiteLoader() {
     const root = rootRef.current;
     const rect = rectRef.current;
     const title = titleRef.current;
-    if (!root || !rect || !title) return;
+    const ask = askRef.current;
+    if (!root || !rect || !title || !ask) return;
 
     let cancelled = false;
     let finishing = false;
@@ -67,11 +78,30 @@ export function SiteLoader() {
     const release = () => delete html.dataset.siteLoading;
 
     const ctx = gsap.context(() => {
-      const load = gsap.fromTo(
-        rect,
-        { strokeDashoffset: 1 },
-        { strokeDashoffset: 0.2, duration: LOAD_S, ease: LOAD_EASE },
-      );
+      // Sound is asked on the home page (where the record and the hero's sound are), once.
+      const asking = isHome && getSound() === null;
+      let answered!: () => void;
+      const answer = asking ? new Promise<void>((resolve) => (answered = resolve)) : Promise.resolve();
+
+      const load = gsap
+        .timeline()
+        .fromTo(rect, { strokeDashoffset: 1 }, { strokeDashoffset: 0.2, duration: LOAD_S, ease: LOAD_EASE });
+      if (asking) {
+        // The stroke holds where it is while the question is up.
+        load.addPause(LOAD_S * ASK_AT, () => {
+          gsap.fromTo(ask, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: FADE_S, ease: FADE_EASE });
+          askOnRef.current?.focus({ preventScroll: true });
+        });
+        answerRef.current = (on) => {
+          answerRef.current = null;
+          // Inside the click: this is what lets the audio start.
+          setSound(on);
+          gsap.to(ask, { autoAlpha: 0, duration: 0.3, ease: FADE_EASE });
+          load.resume();
+          answered();
+          cap = window.setTimeout(finish, MAX_WAIT_MS);
+        };
+      }
       // The wordmark starts at the frame's vertical centre, where it fades in while loading.
       const box = title.parentElement!;
       const centre = box.clientHeight / 2 - title.offsetTop - title.offsetHeight / 2;
@@ -133,13 +163,14 @@ export function SiteLoader() {
       // Give the frame a moment to start drawing even on a warm cache.
       const minimum = new Promise<void>((resolve) => window.setTimeout(resolve, 1200));
 
-      Promise.all([minimum, waitForLoad(), waitForFonts(), ...PRELOAD.map(waitForImage)]).then(finish);
-      cap = window.setTimeout(finish, MAX_WAIT_MS);
+      Promise.all([minimum, answer, waitForLoad(), waitForFonts(), ...PRELOAD.map(waitForImage)]).then(finish);
+      if (!asking) cap = window.setTimeout(finish, MAX_WAIT_MS);
     });
 
     return () => {
       cancelled = true;
       window.clearTimeout(cap);
+      answerRef.current = null;
       release();
       ctx.revert();
     };
@@ -181,6 +212,37 @@ export function SiteLoader() {
         >
           {site.name}
         </p>
+
+        {/* The sound question, at the foot of the frame; hidden until the stroke stops for it. */}
+        <div
+          ref={askRef}
+          role="group"
+          aria-label="Sound"
+          style={{ visibility: "hidden", opacity: 0 }}
+          className="absolute inset-x-5 bottom-5 flex flex-col gap-3"
+        >
+          <p className="text-[15px] leading-snug">
+            Sound on?
+            <span className="block text-[12px] text-cream/60">The record, the plane, the desert wind.</span>
+          </p>
+          <div className="flex gap-2">
+            <button
+              ref={askOnRef}
+              type="button"
+              onClick={() => answerRef.current?.(true)}
+              className="flex-1 border border-cream px-3 py-2 text-[13px] uppercase tracking-[0.12em] transition-colors hover:bg-cream hover:text-black focus-visible:bg-cream focus-visible:text-black focus-visible:outline-none"
+            >
+              On
+            </button>
+            <button
+              type="button"
+              onClick={() => answerRef.current?.(false)}
+              className="flex-1 border border-cream/40 px-3 py-2 text-[13px] uppercase tracking-[0.12em] text-cream/70 transition-colors hover:border-cream hover:text-cream focus-visible:border-cream focus-visible:text-cream focus-visible:outline-none"
+            >
+              Off
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

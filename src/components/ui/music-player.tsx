@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { onSound } from "@/lib/sound";
 
 export interface MusicPlayerProps extends React.HTMLAttributes<HTMLDivElement> {
   /** The source URL of the audio file or YouTube video */
@@ -52,6 +53,24 @@ export function MusicPlayer({
       }
     }
   }, [isPlaying, youtubeId]);
+
+  // Turning sound on at the boot screen starts the record. play() is called right here,
+  // inside that click, as browsers require.
+  useEffect(() => {
+    if (youtubeId) return;
+    return onSound((on) => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      if (on) {
+        audio
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch(() => setIsPlaying(false));
+      } else {
+        setIsPlaying(false);
+      }
+    });
+  }, [youtubeId]);
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying);

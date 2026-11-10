@@ -10,6 +10,8 @@ import { introEase } from "@/lib/motion";
 import { HeroLines } from "./HeroLines";
 import { HeroPanorama } from "./HeroPanorama";
 import { CARPET_FLY_DOWN_S, CARPET_FLY_IN_S, CARPET_PERCH_S, HeroCarpet } from "./HeroCarpet";
+import { HeroCourierCloth } from "./HeroCourierCloth";
+import { HeroPlane } from "./HeroPlane";
 import { HeroWireDecor } from "./HeroWireDecor";
 import { useHeroCovered } from "./useHeroCovered";
 
@@ -194,6 +196,14 @@ export function SkyHero() {
           className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]"
         />
 
+        {/* The biplane crossing the sky behind everything but the panorama, trailing smoke;
+            on scroll it dives at us and climbs out over the top left. */}
+        {wide ? (
+          <div aria-hidden className="pointer-events-none absolute inset-0 z-[3]">
+            <HeroPlane still={reduce} scroll={scrollT} />
+          </div>
+        ) : null}
+
         {/* The carpet under the courier's feet, in a layer of its own that moves as the
             figure's does (reveal, pointer), under the figure.
             Once the loader has gone and the model is in, it sweeps in from the
@@ -291,15 +301,23 @@ export function SkyHero() {
                   }}
                   className="absolute inset-x-0 w-full"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={HERO_COURIER.src}
-                    alt=""
-                    draggable={false}
-                    width={HERO_COURIER.width}
-                    height={HERO_COURIER.height}
-                    className="absolute inset-0 h-full w-full object-contain object-bottom select-none [backface-visibility:hidden] [transform:translateZ(0)]"
-                  />
+                  {/* Wide: the picture on a plane, its cape and hair streaming in the wind
+                      (HeroCourierCloth). Phones keep the plain cutout: no second canvas. */}
+                  {wide ? (
+                    <div className="absolute inset-0">
+                      <HeroCourierCloth still={reduce} />
+                    </div>
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={HERO_COURIER.src}
+                      alt=""
+                      draggable={false}
+                      width={HERO_COURIER.width}
+                      height={HERO_COURIER.height}
+                      className="absolute inset-0 h-full w-full object-contain object-bottom select-none [backface-visibility:hidden] [transform:translateZ(0)]"
+                    />
+                  )}
                 </motion.div>
               </div>
             </motion.div>
