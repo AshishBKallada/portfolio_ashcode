@@ -3,7 +3,6 @@ import { EditionWork } from "@/components/signal/EditionSections";
 import { HeroAboutMobile } from "@/components/signal/HeroAboutMobile";
 import { ClosingEdition } from "@/components/signal/ClosingEdition";
 import { BackToTop } from "@/components/signal/BackToTop";
-import { CornerPlayer } from "@/components/signal/CornerPlayer";
 import { ListTransition } from "@/components/signal/ListTransition";
 import { HeroStage } from "@/components/signal/SignalAbout";
 import { SignalNav } from "@/components/signal/SignalNav";
@@ -17,7 +16,6 @@ export default function Home() {
   return (
     <>
       <SignalNav />
-      <CornerPlayer />
       <BackToTop />
       {/* A second hero, HeroSection2 (components/hero2: the holographic cloth), is kept but not shown. */}
       {/* Work follows the Editions chapter layout; About copy lives in the hero nav card (flip). */}

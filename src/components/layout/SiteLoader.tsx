@@ -14,8 +14,8 @@ import { getSound, setSound } from "@/lib/sound";
  *   1. a hairline frame, the size and place of the nav card, draws itself
  *      round to about 80% while the page, fonts and hero images load, and the
  *      wordmark fades in at the frame's vertical centre. A third of the way
- *      round it stops and asks for sound (lib/sound): on plays the record and
- *      the hero's plane, wind and sand; off keeps the site silent. The frame
+ *      round it stops and asks for sound (lib/sound): on plays the record;
+ *      off keeps the site silent. The frame
  *      only draws on, and the load only finishes, once that's answered;
  *   2. once they're in, the frame closes the last stretch and the wordmark
  *      slides up to where the nav card's title sits;
@@ -223,7 +223,7 @@ export function SiteLoader() {
         >
           <p className="text-[15px] leading-snug">
             Sound on?
-            <span className="block text-[12px] text-cream/60">The record, the plane, the desert wind.</span>
+            <span className="block text-[12px] text-cream/60">The record.</span>
           </p>
           <div className="flex gap-2">
             <button

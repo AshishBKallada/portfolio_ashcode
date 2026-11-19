@@ -4,6 +4,7 @@ import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { LinearFilter, NoColorSpace, ShaderMaterial, TextureLoader, type Mesh } from "three";
 import { HERO_COURIER, HERO_COURIER_FLOW } from "@/lib/hero";
+import { duelFx } from "@/lib/heroDuel";
 import { useHeroCovered } from "./useHeroCovered";
 
 /*
@@ -127,12 +128,22 @@ function Cloth({ still, wind }: { still: boolean; wind: React.MutableRefObject<{
   const h = w / ASPECT;
   const y = -size.height / 2 + h / 2;
 
-  useFrame(({ clock }) => {
-    u.current.uTime.value = clock.getElapsedTime();
+  // The cloth's own clock: it runs faster in the wyverns' blast, so the cape snaps and flutters.
+  const phase = useRef(0);
+  useFrame((_, delta) => {
+    // The blast wind from the wyverns' clash (lib/heroDuel), from up behind him on the left:
+    // it streams the cape and hair out to the right and a little down, then lets them settle.
+    const gust = still ? 0 : duelFx.gust;
+    phase.current += Math.min(delta, 1 / 20) * (1 + gust * 2.6);
+    u.current.uTime.value = phase.current;
+    if (!still) u.current.uAmp.value = 0.028 + gust * 0.05;
     const w = u.current.uWind.value;
-    // Ease toward the pointer's wind, so a gust fades in and out.
-    w[0] += (wind.current.x - w[0]) * 0.05;
-    w[1] += (wind.current.y - w[1]) * 0.05;
+    const tx = wind.current.x - gust * 1.7;
+    const ty = wind.current.y + gust * 0.55;
+    // Ease toward the wind, so a gust fades in and out; the blast arrives fast.
+    const k = 0.05 + gust * 0.3;
+    w[0] += (tx - w[0]) * k;
+    w[1] += (ty - w[1]) * k;
   });
 
   return (

@@ -14,7 +14,7 @@ What it does, and why each step matters for on-screen clarity:
   - Drops the metallic/roughness texture for constants (cloth and leather read
     the same at hero scale) and writes textures as JPEG: base colour and
     normal at 2048 come to ~1.5 MB instead of ~11 MB as PNG.
-  - Exports GLB with Draco compression (decoded in the browser from /draco).
+  - Exports GLB with Draco compression.
 """
 
 import os

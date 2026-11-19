@@ -5,8 +5,7 @@
  * start inside a gesture, so `setSound(true)` is called from the click
  * itself: it creates and resumes the one shared AudioContext there, and tells
  * listeners synchronously, still inside that click, so the music player can
- * call play() and the hero's synthesized sound (lib/planeEngine) can build on
- * a running context.
+ * call play() and any synthesized sound can build on a running context.
  */
 
 type Listener = (on: boolean) => void;

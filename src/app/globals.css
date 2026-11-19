@@ -359,16 +359,39 @@ body {
   display: flex;
   flex-direction: column;
   padding: var(--card-pad);
-  border: 1px solid rgb(255 255 255 / 0.35);
-  background: rgb(21 19 15 / 0.56);
-  backdrop-filter: blur(8px);
+  /* A card of deep oxblood red, the courier's cape colour, white type on it: a bevel of
+     light on its top and left edges, darker on the others. */
+  border: 1px solid rgb(255 255 255 / 0.16);
+  background:
+    radial-gradient(120% 70% at 15% 0%, rgb(236 71 38 / 0.28), transparent 60%),
+    linear-gradient(165deg, #8a2414, #6b1a0e 50%, #4e1209);
+  box-shadow:
+    0 30px 70px -20px rgb(20 2 0 / 0.7),
+    0 6px 18px rgb(20 2 0 / 0.35),
+    inset 1px 1px 0 rgb(255 255 255 / 0.18),
+    inset -1px -1px 0 rgb(0 0 0 / 0.35);
   backface-visibility: hidden;
-  color: var(--theme-cream);
-  text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+  color: #fff;
   overflow: hidden;
 }
 .edition-nav__face--back {
   transform: rotateY(-180deg);
+}
+/* The polish: a soft highlight that follows the cursor across the card
+   (--sheen-x/y, set by HeroNavFlipCard), over a fixed glancing band of light. */
+.edition-nav__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at var(--sheen-x, 30%) var(--sheen-y, 20%), rgb(255 255 255 / 0.11), transparent 45%),
+    linear-gradient(118deg, transparent 30%, rgb(255 255 255 / 0.05) 42%, transparent 54%);
+  mix-blend-mode: screen;
+}
+.edition-nav__face > * {
+  position: relative;
+  z-index: 1;
 }
 .edition-nav[data-state="hero"] .edition-nav__title,
 .edition-nav[data-state="hero"] .edition-nav__list {

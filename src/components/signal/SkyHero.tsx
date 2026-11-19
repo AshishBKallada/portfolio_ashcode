@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { animate, cubicBezier, motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHeroIntro } from "@/components/motion/HeroIntroProvider";
@@ -11,9 +12,11 @@ import { HeroLines } from "./HeroLines";
 import { HeroPanorama } from "./HeroPanorama";
 import { CARPET_FLY_DOWN_S, CARPET_FLY_IN_S, CARPET_PERCH_S, HeroCarpet } from "./HeroCarpet";
 import { HeroCourierCloth } from "./HeroCourierCloth";
-import { HeroPlane } from "./HeroPlane";
 import { HeroWireDecor } from "./HeroWireDecor";
 import { useHeroCovered } from "./useHeroCovered";
+
+// The sky (weather and the wyverns) is WebGL and heavy: browser only, loaded in its own chunk.
+const HeroDragons = dynamic(() => import("./dragon/HeroDragons").then((m) => m.HeroDragons), { ssr: false });
 
 const START = 0.15;
 /** How long the painting waits after the loader, while the construction lines draw over the dark. */
@@ -40,6 +43,8 @@ export function SkyHero() {
   // Once the page covers the pinned hero, its idle bob stops.
   const sectionRef = useRef<HTMLElement>(null);
   const covered = useHeroCovered(sectionRef);
+  // The storm's tint over the courier and his mat, driven by the sky's weather.
+  const stormTintRef = useRef<HTMLDivElement>(null);
 
   const { scrollY } = useScroll();
   const scrollT = useTransform(scrollY, (y) => {
@@ -196,11 +201,11 @@ export function SkyHero() {
           className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(to_bottom,rgba(21,19,15,0.42)_0%,transparent_22%),linear-gradient(to_top,rgba(21,19,15,0.28)_0%,transparent_30%)]"
         />
 
-        {/* The biplane crossing the sky behind everything but the panorama, trailing smoke;
-            on scroll it dives at us and climbs out over the top left. */}
+        {/* The sky's weather, dawn to storm and back (dragon/HeroDragons), over the panorama and
+            under the courier. Wide screens only. */}
         {wide ? (
           <div aria-hidden className="pointer-events-none absolute inset-0 z-[3]">
-            <HeroPlane still={reduce} scroll={scrollT} />
+            <HeroDragons mx={mx} my={my} start={ready} still={reduce} paused={covered} tintRef={stormTintRef} />
           </div>
         ) : null}
 
@@ -323,6 +328,16 @@ export function SkyHero() {
             </motion.div>
           </motion.div>
         </motion.div>
+
+        {/* As the storm closes in, the courier and his mat darken with the sky. */}
+        {wide ? (
+          <div
+            ref={stormTintRef}
+            aria-hidden
+            style={{ opacity: 0 }}
+            className="pointer-events-none absolute inset-0 z-[5] bg-[linear-gradient(to_bottom,rgba(28,32,42,0.7),rgba(36,38,46,0.55))] mix-blend-multiply"
+          />
+        ) : null}
 
         <div className="pointer-events-none absolute inset-0 z-[6]">
           <HeroWireDecor mx={mx} my={my} scrollY={decorScrollY} still={reduce} ready={ready} />

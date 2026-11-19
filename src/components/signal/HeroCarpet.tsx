@@ -5,6 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import type { MotionValue } from "motion/react";
 import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject, type PointerEvent } from "react";
 import * as THREE from "three";
+import { duelFx } from "@/lib/heroDuel";
 import { useHeroCovered } from "./useHeroCovered";
 
 /*
@@ -36,6 +37,8 @@ type Bend = {
   uFold: { value: number };
   /** Signed flap of the top's two corners while it talks, like hands as it speaks. */
   uTalk: { value: number };
+  /** The wyverns' blast wind passing under the rider (lib/heroDuel): a fast ripple and shake, 0..1. */
+  uGust: { value: number };
 };
 
 /** Bends the flat carpet (it lies in its own xy plane, long along y, ±5.4). */
@@ -44,14 +47,16 @@ function bendMaterial(source: THREE.Material, bend: Bend) {
   mat.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, bend);
     shader.vertexShader = shader.vertexShader
-      .replace("#include <common>", "#include <common>\nuniform float uTime;\nuniform float uLift;\nuniform float uStand;\nuniform float uFold;\nuniform float uTalk;")
+      .replace("#include <common>", "#include <common>\nuniform float uTime;\nuniform float uLift;\nuniform float uStand;\nuniform float uFold;\nuniform float uTalk;\nuniform float uGust;")
       .replace(
         "#include <begin_vertex>",
         `#include <begin_vertex>
         float along = transformed.y / 5.43;
         // A slow billow running tail to nose, a lighter ripple across, and the ends curled up.
         float wave = (sin(transformed.y * 0.62 - uTime * 2.1) * (0.32 + uLift * 0.35)
-                   + sin(transformed.x * 0.9 + uTime * 1.4) * 0.12) * (1.0 - uStand * 0.75);
+                   + sin(transformed.x * 0.9 + uTime * 1.4) * 0.12) * (1.0 - uStand * 0.75)
+                   // The blast: a quick ripple racing along it and a shiver across.
+                   + (sin(transformed.y * 1.7 - uTime * 17.0) * 0.55 + sin(transformed.x * 2.3 + uTime * 13.0) * 0.25) * uGust;
         float curl = (along * along * (0.9 + uLift * 0.5) + max(-along, 0.0) * 0.35) * (1.0 - uStand);
         transformed.z += wave * (0.45 + 0.55 * abs(along)) + curl;
         // Stood up, only its top bows concave across its width: the vertical centre line
@@ -122,7 +127,7 @@ function Carpet({
     materials: Record<string, THREE.Material>;
   };
   const { mats, uniforms } = useMemo(() => {
-    const uniforms: Bend = { uTime: { value: 0 }, uLift: { value: 0 }, uStand: { value: 0 }, uFold: { value: 0 }, uTalk: { value: 0 } };
+    const uniforms: Bend = { uTime: { value: 0 }, uLift: { value: 0 }, uStand: { value: 0 }, uFold: { value: 0 }, uTalk: { value: 0 }, uGust: { value: 0 } };
     return {
       uniforms,
       mats: { carpet: bendMaterial(materials.CARPET, uniforms), tassels: bendMaterial(materials.TASSELS, uniforms) },
@@ -221,6 +226,14 @@ function Carpet({
       g.rotation.z =
         Math.sin(t * 0.8) * 0.05 + left * 0.5 + Math.sin(spin * Math.PI) * 0.3 + hoverTurn.current * 0.12 + sway;
       g.position.y = Math.sin(t * 1.3) * 0.12 + hop + 0.25 * stand;
+      // The wyverns' blast passing under it: it shakes and bucks, then settles.
+      const gust = duelFx.gust;
+      bend.current.uGust.value = gust;
+      if (gust > 0.002) {
+        g.rotation.z += (Math.sin(t * 37) * 0.05 + Math.sin(t * 23) * 0.03) * gust;
+        g.rotation.x = Math.sin(t * 29) * 0.06 * gust;
+        g.position.y += Math.sin(t * 31) * 0.1 * gust;
+      } else g.rotation.x = 0;
     }
   });
 
