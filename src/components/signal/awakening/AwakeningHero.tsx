@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { site } from "@/data/site";
-import { ThornField } from "./ThornField";
 
 const RED = "#d3141f";
 /** The Cursed King, walking in on a cracked-marble body (scripts/art/cutout_marble_king.py). */
@@ -72,8 +71,7 @@ function SkillIcon({ i }: { i: number }) {
 }
 
 /**
- * The home hero, set as a character-select screen. The Cursed King stands among red thorns in
- * a pale hall: a menu down the left, his name in red brush on the right, the roster of work
+ * The home hero, set as a character-select screen. The Cursed King stands in a plain pale room: a menu down the left, his name in red brush on the right, the roster of work
  * along the bottom. HomeLayout holds it while the page below slides up over it.
  */
 export function AwakeningHero() {
@@ -118,8 +116,6 @@ export function AwakeningHero() {
           <feDisplacementMap in="SourceGraphic" scale="7" />
         </filter>
       </svg>
-
-      <ThornField className="pointer-events-none absolute inset-0 h-full w-full translate-y-[30%] md:translate-y-0" />
 
       {/* eslint-disable-next-line @next/next/no-img-element -- one cutout, sized to the screen's height */}
       <img
