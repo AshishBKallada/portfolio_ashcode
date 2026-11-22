@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useInView, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { motion, useInView, useReducedMotion, useTransform } from "motion/react";
+import { useInTrack, useSectionProgress } from "./HorizontalTrack";
 import { useRef, type ReactNode } from "react";
 import { introEase } from "@/lib/motion";
 
@@ -31,8 +32,10 @@ export function ParallaxImage({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion() ?? false;
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [`-${amount}%`, `${amount}%`]);
+  // Down the page it drifts up and down; on the sideways row, side to side against the slide.
+  const across = useInTrack();
+  const scrollYProgress = useSectionProgress(ref, ["start end", "end start"]);
+  const drift = useTransform(scrollYProgress, [0, 1], [`-${amount}%`, `${amount}%`]);
   // Oversized just enough that the drift never shows the frame's edge.
   const scale = 1 + (amount * 2.4) / 100;
   const wipe = reveal && !reduce;
@@ -47,7 +50,7 @@ export function ParallaxImage({
         animate={wipe ? { clipPath: shown ? "inset(0% 0% 0% 0%)" : "inset(100% 0% 0% 0%)" } : undefined}
         transition={{ duration: 1.1, ease: introEase }}
       >
-        <motion.div style={reduce ? undefined : { y, scale }} className="absolute inset-0 will-change-transform">
+        <motion.div style={reduce ? undefined : across ? { x: drift, scale } : { y: drift, scale }} className="absolute inset-0 will-change-transform">
           {/* The zoom settle sits on its own layer so it doesn't fight the drift's scale. */}
           <motion.div
             className="absolute inset-0"

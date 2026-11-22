@@ -1,13 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Geist_Mono, Pinyon_Script } from "next/font/google";
+import { Anton, Geist_Mono, Pinyon_Script, Yuji_Syuku } from "next/font/google";
 import localFont from "next/font/local";
-import { SiteLoader } from "@/components/layout/SiteLoader";
+import { IntroSplash } from "@/components/layout/IntroSplash";
 import { HeroIntroProvider } from "@/components/motion/HeroIntroProvider";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { NavChromeProvider } from "@/components/signal/nav-chrome";
 import { site } from "@/data/site";
-import { pageModeScript } from "@/theme/mode-script";
 import "./globals.css";
 
 const generalSans = localFont({
@@ -22,8 +21,16 @@ const generalSans = localFont({
 
 const editorial = localFont({
   src: [
-    { path: "./fonts/PPEditorialNew-Ultralight.woff2", weight: "200", style: "normal" },
-    { path: "./fonts/PPEditorialNew-UltralightItalic.woff2", weight: "200", style: "italic" },
+    {
+      path: "./fonts/PPEditorialNew-Ultralight.woff2",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "./fonts/PPEditorialNew-UltralightItalic.woff2",
+      weight: "200",
+      style: "italic",
+    },
   ],
   variable: "--font-editorial",
   display: "swap",
@@ -65,6 +72,15 @@ const pinyon = Pinyon_Script({
   display: "swap",
 });
 
+// A Japanese brush face for the hero's kanji and kana. No Japanese subset to name: Google
+// serves its glyphs in unicode-range slices, so nothing is preloaded and only what's used loads.
+const yuji = Yuji_Syuku({
+  weight: "400",
+  variable: "--font-yuji",
+  display: "swap",
+  preload: false,
+});
+
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
@@ -96,7 +112,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "light",
-  themeColor: "#ec4726",
+  themeColor: "#d1201b",
 };
 
 const personJsonLd = {
@@ -114,13 +130,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} ${geistMono.variable} ${neueMontreal.variable} ${cigars.variable} ${imperial.variable} h-full antialiased`}
+      // The page is always red (the red branch has no switch).
+      data-theme="red"
+      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} ${geistMono.variable} ${yuji.variable} ${neueMontreal.variable} ${cigars.variable} ${imperial.variable} h-full antialiased`}
       // Browser extensions often add attributes to <html> before React hydrates.
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans">
-        {/* Before anything paints: a saved red page (the navbar switch) never flashes cream. */}
-        <script dangerouslySetInnerHTML={{ __html: pageModeScript }} />
         {/* Structured data as a plain script tag, as the Next.js docs recommend for JSON-LD. */}
         <script
           id="person-jsonld"
@@ -136,9 +152,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <HeroIntroProvider>
-          <SiteLoader />
           <MotionProvider>
             <SmoothScroll>
+              <IntroSplash />
               <NavChromeProvider>
                 <main id="main" className="relative flex-1">
                   {children}

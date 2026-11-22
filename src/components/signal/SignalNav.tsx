@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { site } from "@/data/site";
 import { introEase } from "@/lib/motion";
-import { setPageMode, usePageMode } from "@/theme/mode";
+import { usePageMode } from "@/theme/mode";
 import { HeroNavFlipCard } from "./HeroNavFlipCard";
 import { Dot } from "./primitives";
 
@@ -21,7 +21,20 @@ const links = [
   { href: "/#contact", label: "Contact" },
 ] as const;
 
-const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"] as const;
+const ROMAN = [
+  "I",
+  "II",
+  "III",
+  "IV",
+  "V",
+  "VI",
+  "VII",
+  "VIII",
+  "IX",
+  "X",
+  "XI",
+  "XII",
+] as const;
 
 const pill =
   "pointer-events-auto rounded-[5px] border border-white/10 bg-ink/90 text-bone shadow-[0_8px_30px_rgba(0,0,0,0.25)] backdrop-blur-md";
@@ -33,12 +46,11 @@ const pill =
  */
 export function SignalNav() {
   const pathname = usePathname();
-  const { phase, morphRail, completeMorph } = useNavChrome();
+  const { morphRail } = useNavChrome();
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const year = new Date().getFullYear();
 
   useEffect(() => {
     if (!open) return;
@@ -59,27 +71,42 @@ export function SignalNav() {
     };
   }, [open]);
 
-  const crumb = pathname === "/" ? "Home" : pathname.startsWith("/projects") ? "Work" : "Résumé";
+  const crumb =
+    pathname === "/"
+      ? "Home"
+      : pathname.startsWith("/projects")
+        ? "Work"
+        : "Résumé";
 
   return (
     <>
-      {/* Desktop home: framed card centred on the hero that settles into the left rail on scroll. */}
-      {pathname === "/" ? <EditionsNav rail={morphRail} phase={phase} onSettled={completeMorph} year={year} /> : null}
+      {/* Desktop home: no card on the hero (red branch); the top bar slides in on the first scroll.
+          The framed card (EditionsNav) is kept below but not shown. */}
 
-      {/* Desktop top bar: past the hero on home, always on other pages. */}
-      <TopBar visible={pathname === "/" ? morphRail : true} />
+      {/* Desktop top bar: always, the hero included. */}
+      <TopBar visible />
 
       {/* Top-left pill: phones. */}
-      <div ref={rootRef} className="pointer-events-none fixed top-3 left-3 z-50 md:hidden">
-        <div className={`${pill} pointer-events-auto flex items-center gap-1 p-1 pl-3`}>
+      <div
+        ref={rootRef}
+        className="pointer-events-none fixed top-3 left-3 z-50 md:hidden"
+      >
+        <div
+          className={`${pill} pointer-events-auto flex items-center gap-1 p-1 pl-3`}
+        >
           <div className="flex items-center gap-1">
-            <Link href="/" className="font-headline text-[17px] leading-none tracking-[-0.02em]">
+            <Link
+              href="/"
+              className="font-headline text-[17px] leading-none tracking-[-0.02em]"
+            >
               {site.name}
             </Link>
             <span aria-hidden className="mx-1.5 text-bone/40">
               /
             </span>
-            <span className={`${smallLabel} hidden text-bone/60 sm:inline`}>{crumb}</span>
+            <span className={`${smallLabel} hidden text-bone/60 sm:inline`}>
+              {crumb}
+            </span>
           </div>
 
           <button
@@ -121,17 +148,15 @@ export function SignalNav() {
                         className="group flex min-h-12 items-center justify-between rounded-[3px] px-3 font-headline text-[24px] tracking-[-0.03em] transition-colors hover:bg-white/8"
                       >
                         {link.label}
-                        <span className={`${smallLabel} text-bone/40 group-hover:text-gold`}>
+                        <span
+                          className={`${smallLabel} text-bone/40 group-hover:text-gold`}
+                        >
                           [{String(i + 1).padStart(2, "0")}]
                         </span>
                       </Link>
                     </li>
                   ))}
                 </ul>
-                <div className="mt-2 flex items-center justify-between border-t border-white/10 px-3 pt-3 pb-1">
-                  <span className={`${smallLabel} text-bone/70`}>Background</span>
-                  <PageModeSwitch />
-                </div>
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-white/10 px-3 pt-3 pb-1">
                   {site.socials.map((s) => (
                     <a
@@ -151,25 +176,17 @@ export function SignalNav() {
         </div>
       </div>
 
-      {/* Top-right actions: the hero, and phones elsewhere (the top bar has its own). */}
+      {/* Top-right actions: phones only (on desktop the top bar has its own). */}
       <motion.header
         initial={false}
         animate={{ opacity: morphRail ? 0 : 1, y: morphRail ? -8 : 0 }}
         transition={{ duration: 0.35, ease: introEase }}
-        className={`pointer-events-none fixed inset-x-0 top-0 z-50 flex items-start justify-end gap-3 p-3 sm:p-4 ${morphRail ? "md:pointer-events-none" : ""} ${pathname === "/" ? "" : "md:hidden"}`}
+        className={`pointer-events-none fixed inset-x-0 top-0 z-50 flex items-start justify-end gap-3 p-3 sm:p-4 md:hidden`}
       >
-        {/* Availability beside one CTA; the stack lives in the work, not the chrome. */}
+        {/* One CTA; the stack lives in the work, not the chrome. */}
         <div
           className={`pointer-events-auto flex items-center gap-x-5 text-cream [text-shadow:0_2px_16px_rgba(0,0,0,0.45)] ${morphRail ? "md:pointer-events-none md:opacity-0" : ""}`}
         >
-          <PageModeSwitch />
-          <p className="hidden items-center gap-2 font-sans text-[13px] leading-none tracking-[-0.01em] text-cream/85 lg:inline-flex">
-            <span aria-hidden className="relative inline-flex size-[7px]">
-              <span className="absolute inset-0 animate-ping rounded-full bg-gold/70 motion-reduce:hidden" />
-              <span className="relative size-[7px] rounded-full bg-gold" />
-            </span>
-            {site.signal.availability}
-          </p>
           <a
             href={`mailto:${site.email}`}
             className="group inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-cream px-5 font-sans text-[14px] font-medium tracking-[-0.01em] text-ink [text-shadow:none] shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-colors hover:bg-bone"
@@ -196,7 +213,6 @@ export function SignalNav() {
  */
 function TopBar({ visible }: { visible: boolean }) {
   const ref = useRef<HTMLElement>(null);
-  const red = usePageMode() === "red";
 
   // Written to a data attribute, not state, so scrolling doesn't re-render.
   useEffect(() => {
@@ -207,12 +223,19 @@ function TopBar({ visible }: { visible: boolean }) {
       raf = 0;
       const r = bar.getBoundingClientRect();
       const y = r.top + r.height / 2;
-      const under = [...document.querySelectorAll<HTMLElement>("[data-nav-theme]")].findLast((el) => {
+      // Across the sideways row every section spans the bar's height, so test across too,
+      // at the links (the bar's right side).
+      const x = r.left + r.width * 0.75;
+      const under = [
+        ...document.querySelectorAll<HTMLElement>("[data-nav-theme]"),
+      ].findLast((el) => {
         const box = el.getBoundingClientRect();
-        return box.top <= y && box.bottom >= y;
+        return (
+          box.top <= y && box.bottom >= y && box.left <= x && box.right >= x
+        );
       });
-      // The red page is dark enough that its light regions read cream too.
-      const tone = under?.dataset.navTheme === "dark" || red ? "cream" : "ink";
+      // The page is white throughout: ink, except over regions marked dark.
+      const tone = under?.dataset.navTheme === "dark" ? "cream" : "ink";
       if (bar.dataset.tone !== tone) bar.dataset.tone = tone;
     };
     const onScroll = () => {
@@ -226,7 +249,7 @@ function TopBar({ visible }: { visible: boolean }) {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [red]);
+  }, []);
 
   return (
     <motion.header
@@ -236,13 +259,17 @@ function TopBar({ visible }: { visible: boolean }) {
       animate={{ opacity: visible ? 1 : 0, y: visible ? 0 : -12 }}
       transition={{ duration: 0.4, ease: introEase }}
       inert={!visible}
-      className="group/bar pointer-events-none fixed inset-x-0 top-0 z-50 hidden md:block"
+      className="group/bar pointer-events-none fixed inset-x-0 top-0 z-[60] hidden md:block"
     >
       <div className="pointer-events-auto mx-auto flex w-full max-w-[1480px] items-center justify-between gap-6 px-5 py-4 text-ink transition-colors duration-300 group-data-[tone=cream]/bar:text-cream sm:px-10">
-        <Link href="/" className="font-headline text-[20px] leading-none tracking-[-0.03em]">
+        <Link
+          href="/"
+          className="font-headline text-[20px] leading-none tracking-[-0.03em]"
+        >
           {site.name}
         </Link>
-        <nav aria-label="Primary">
+        {/* The links sit on the right, just before Get in touch. */}
+        <nav aria-label="Primary" className="ml-auto">
           <ul className="flex items-center gap-7">
             {links.map((link, i) => (
               <li key={link.href}>
@@ -251,14 +278,14 @@ function TopBar({ visible }: { visible: boolean }) {
                   className="nav-link group inline-flex items-baseline gap-1.5 font-headline text-[15px] leading-none tracking-[-0.02em]"
                 >
                   {link.label}
-                  <span className="font-narrative text-[12px] tracking-normal opacity-50 group-hover:opacity-100">{ROMAN[i]}</span>
+                  <span className="font-narrative text-[12px] tracking-normal opacity-50 group-hover:opacity-100">
+                    {ROMAN[i]}
+                  </span>
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
-        <div className="flex items-center gap-4">
-        <PageModeSwitch />
         <a
           href={`mailto:${site.email}`}
           className="inline-flex min-h-9 items-center gap-2 rounded-[4px] bg-ink px-4 font-sans text-[13px] font-medium tracking-[-0.01em] text-cream transition-colors duration-300 hover:bg-ink/85 group-data-[tone=cream]/bar:bg-cream group-data-[tone=cream]/bar:text-ink group-data-[tone=cream]/bar:hover:bg-cream/85"
@@ -266,7 +293,6 @@ function TopBar({ visible }: { visible: boolean }) {
           <Dot className="bg-gold" />
           Get in touch
         </a>
-        </div>
       </div>
     </motion.header>
   );
@@ -277,7 +303,7 @@ function TopBar({ visible }: { visible: boolean }) {
  * title, list and frame sit centred on the viewport in the hero and translate
  * back into the rail when `rail` flips (geometry and timing in globals.css).
  */
-function EditionsNav({
+export function EditionsNav({
   rail,
   phase,
   onSettled,
@@ -308,7 +334,9 @@ function EditionsNav({
       raf = 0;
       // Faded out past the hero (the top bar takes over): nothing to tone.
       if (aside.dataset.state === "rail") return;
-      const regions = [...document.querySelectorAll<HTMLElement>("[data-nav-theme]")].map((el) => ({
+      const regions = [
+        ...document.querySelectorAll<HTMLElement>("[data-nav-theme]"),
+      ].map((el) => ({
         rect: el.getBoundingClientRect(),
         theme: el.dataset.navTheme,
       }));
@@ -317,11 +345,17 @@ function EditionsNav({
         if (!el) return null;
         const r = el.getBoundingClientRect();
         const y = r.top + r.height / 2;
-        const under = regions.findLast((region) => region.rect.top <= y && region.rect.bottom >= y);
-        return [`${key}Tone`, under?.theme === "dark" || red ? "cream" : "ink"] as const;
+        const under = regions.findLast(
+          (region) => region.rect.top <= y && region.rect.bottom >= y,
+        );
+        return [
+          `${key}Tone`,
+          under?.theme === "dark" ? "cream" : "ink",
+        ] as const;
       });
       for (const tone of tones) {
-        if (tone && aside.dataset[tone[0]] !== tone[1]) aside.dataset[tone[0]] = tone[1];
+        if (tone && aside.dataset[tone[0]] !== tone[1])
+          aside.dataset[tone[0]] = tone[1];
       }
     };
     const onScroll = () => {
@@ -346,7 +380,12 @@ function EditionsNav({
       inert={rail}
       className="edition-nav pointer-events-none fixed inset-y-0 left-0 z-[1] hidden w-[var(--nav-sidebar-w)] md:block"
       onTransitionEnd={(e) => {
-        if (e.target === e.currentTarget && e.propertyName === "color" && phase === "morphing") onSettled();
+        if (
+          e.target === e.currentTarget &&
+          e.propertyName === "color" &&
+          phase === "morphing"
+        )
+          onSettled();
       }}
     >
       <HeroNavFlipCard visible={phase === "hero"} />
@@ -396,33 +435,5 @@ function EditionsNav({
         </p>
       </div>
     </aside>
-  );
-}
-
-/**
- * Flips the page between the cream ground and red (theme/mode.ts). Takes the
- * colour of whatever chrome it sits in: the knob and label are currentColor.
- */
-function PageModeSwitch() {
-  const red = usePageMode() === "red";
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={red}
-      aria-label="Red background"
-      onClick={() => setPageMode(red ? "cream" : "red")}
-      className="pointer-events-auto inline-flex min-h-9 items-center gap-2 rounded-[3px] focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-current"
-    >
-      <span
-        aria-hidden
-        className={`relative h-[18px] w-8 rounded-full border border-current/30 transition-colors duration-300 ${red ? "bg-flame" : "bg-section"}`}
-      >
-        <span
-          className={`absolute top-1/2 left-[2px] size-3 -translate-y-1/2 rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.3)] transition-[translate] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${red ? "translate-x-[14px]" : ""}`}
-        />
-      </span>
-      <span className={`${smallLabel} hidden w-[2.75rem] text-left lg:inline`}>{red ? "Red" : "Cream"}</span>
-    </button>
   );
 }

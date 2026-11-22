@@ -3,6 +3,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Scan every component folder explicitly, new ones included, without a dev-server restart. */
+@source "../components";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

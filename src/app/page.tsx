@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { EditionWork } from "@/components/signal/EditionSections";
-import { HeroAboutMobile } from "@/components/signal/HeroAboutMobile";
-import { ClosingEdition } from "@/components/signal/ClosingEdition";
 import { BackToTop } from "@/components/signal/BackToTop";
-import { CornerPlayer } from "@/components/signal/CornerPlayer";
-import { ListTransition } from "@/components/signal/ListTransition";
-import { HeroStage } from "@/components/signal/SignalAbout";
+import { HomeLayout } from "@/components/signal/HomeLayout";
 import { SignalNav } from "@/components/signal/SignalNav";
-import { SkyHero } from "@/components/signal/SkyHero";
+import { TunnelHero } from "@/components/signal/TunnelHero";
+import { AboutSection } from "@/components/signal/home/AboutSection";
+import { ContactSection } from "@/components/signal/home/ContactSection";
+import { LinkedInSection } from "@/components/signal/home/LinkedInSection";
+import { QuietFooter } from "@/components/signal/home/QuietFooter";
+import { WorkSection } from "@/components/signal/home/WorkSection";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -17,17 +17,15 @@ export default function Home() {
   return (
     <>
       <SignalNav />
-      <CornerPlayer />
       <BackToTop />
-      {/* A second hero, HeroSection2 (components/hero2: the holographic cloth), is kept but not shown. */}
-      {/* Work follows the Editions chapter layout; About copy lives in the hero nav card (flip). */}
-      <HeroStage hero={<SkyHero />}>
-        <HeroAboutMobile />
-        <EditionWork />
-        <ListTransition />
-        {/* Contact lives in the Index's about view (ListTransition); then the footer. */}
-        <ClosingEdition />
-      </HeroStage>
+      {/* The earlier heroes (SkyHero) and sections (EditionWork, ListTransition, ClosingEdition) are kept but not shown. */}
+      <HomeLayout hero={<TunnelHero />}>
+        <AboutSection />
+        <WorkSection />
+        <LinkedInSection />
+        <ContactSection />
+        <QuietFooter />
+      </HomeLayout>
     </>
   );
 }

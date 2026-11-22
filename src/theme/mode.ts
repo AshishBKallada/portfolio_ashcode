@@ -25,7 +25,7 @@ export function setPageMode(mode: PageMode) {
   }
 }
 
-/** The current page mode, kept live as the switch flips it. Cream on the server. */
+/** The current page mode, kept live if anything flips it. Red on the server: the page is always red. */
 export function usePageMode(): PageMode {
-  return useSyncExternalStore(subscribe, read, () => "cream");
+  return useSyncExternalStore(subscribe, read, () => "red");
 }

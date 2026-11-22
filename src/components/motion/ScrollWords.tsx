@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
+import { motion, useReducedMotion, useTransform, type MotionValue } from "motion/react";
+import { useSectionProgress } from "./HorizontalTrack";
 import { useRef, type ReactNode } from "react";
 
 /** How faint a word sits before the scroll reaches it. */
@@ -14,8 +15,9 @@ const DIM = 0.18;
 export function ScrollWords({ text, className }: { text: string; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const reduce = useReducedMotion() ?? false;
-  // From the line's top entering low on the screen to its end passing a little above the middle.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.9", "end 0.55"] });
+  // From the line's start entering near the screen's far edge to its end passing a little past
+  // the middle (down the page, or across the sideways row).
+  const scrollYProgress = useSectionProgress(ref, ["start 0.9", "end 0.55"]);
   const words = text.split(" ");
   return (
     <span ref={ref} className={className}>

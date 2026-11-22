@@ -36,6 +36,7 @@ export function HeroIntroProvider({ children }: { children: React.ReactNode }) {
     isHomeRef.current = isHome;
   }, [isHome]);
 
+  // Held at "loading" until the intro (IntroSplash) lifts, or is skipped.
   const [phase, setPhase] = useState<IntroPhase>("loading");
   const timersRef = useRef<number[]>([]);
   const startedRef = useRef(false);
