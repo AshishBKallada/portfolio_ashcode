@@ -6,8 +6,8 @@ import { site } from "@/data/site";
 import { ThornField } from "./ThornField";
 
 const RED = "#d3141f";
-/** The Cursed King, palms joined (scripts/art/cutout_cursed_king.py). */
-const FIGURE = "/images/awakening/01-clasp.webp";
+/** The Cursed King, walking in on a cracked-marble body (scripts/art/cutout_marble_king.py). */
+const FIGURE = "/images/awakening/marble-king.webp";
 
 const MENU = [
   { label: "Home", href: "/", active: true },
@@ -32,7 +32,7 @@ const dummy = (seed: string, w: number, h: number) => `https://picsum.photos/see
 /** The roster along the bottom: work either side of him, the selected card his. */
 const CARDS = [
   { src: dummy("neon-alley", 480, 320), label: "Project one", href: "/#index", pos: "50% 50%" },
-  { src: FIGURE, label: "The Cursed King", href: "/#about", pos: "50% 0%", selected: true },
+  { src: FIGURE, label: "The Cursed King", href: "/#about", pos: "50% 4%", selected: true },
   { src: dummy("night-tokyo", 480, 320), label: "Project two", href: "/#index", pos: "50% 50%" },
   { src: dummy("red-studio", 480, 320), label: "Project three", href: "/#index", pos: "50% 50%" },
 ] as const;
@@ -119,7 +119,7 @@ export function AwakeningHero() {
         </filter>
       </svg>
 
-      <ThornField className="pointer-events-none absolute inset-0 h-full w-full" />
+      <ThornField className="pointer-events-none absolute inset-0 h-full w-full translate-y-[30%] md:translate-y-0" />
 
       {/* eslint-disable-next-line @next/next/no-img-element -- one cutout, sized to the screen's height */}
       <img
@@ -128,7 +128,7 @@ export function AwakeningHero() {
         aria-hidden
         draggable={false}
         fetchPriority="high"
-        className="pointer-events-none absolute bottom-0 left-1/2 aspect-[816/551] w-[150vw] max-w-none -translate-x-1/2 translate-y-[18%] md:top-[7%] md:bottom-auto md:left-[44%] md:w-auto md:h-[min(104svh,calc(102vw*551/816))] md:translate-y-0"
+        className="pointer-events-none absolute top-[47%] left-1/2 aspect-[472/975] w-[88vw] max-w-none -translate-x-1/2 md:top-[5%] md:left-[44%] md:h-[138svh] md:w-auto"
       />
 
       {/* Mark, top left */}
@@ -243,7 +243,7 @@ export function AwakeningHero() {
               <img
                 src={c.src}
                 alt=""
-                className={`h-full w-full object-cover ${"selected" in c ? "origin-[50%_6%] scale-[2.1] bg-[#1a1515]" : ""}`}
+                className={`h-full w-full object-cover ${"selected" in c ? "origin-[50%_0%] scale-[1.6] bg-[#e4e4e4]" : ""}`}
                 style={{ objectPosition: c.pos }}
               />
             </Link>
