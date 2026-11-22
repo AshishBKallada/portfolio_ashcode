@@ -259,7 +259,7 @@ function TopBar({ visible }: { visible: boolean }) {
       animate={{ opacity: visible ? 1 : 0, y: visible ? 0 : -12 }}
       transition={{ duration: 0.4, ease: introEase }}
       inert={!visible}
-      className="group/bar pointer-events-none fixed inset-x-0 top-0 z-[60] hidden md:block"
+      className="signal-topbar group/bar pointer-events-none fixed inset-x-0 top-0 z-[60] hidden transition-opacity duration-300 md:block"
     >
       <div className="pointer-events-auto mx-auto flex w-full max-w-[1480px] items-center justify-between gap-6 px-5 py-4 text-ink transition-colors duration-300 group-data-[tone=cream]/bar:text-cream sm:px-10">
         <Link

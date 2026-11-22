@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Geist_Mono, Pinyon_Script, Yuji_Syuku } from "next/font/google";
+import { Anton, Geist_Mono, Permanent_Marker, Pinyon_Script, Yuji_Syuku } from "next/font/google";
 import localFont from "next/font/local";
 import { IntroSplash } from "@/components/layout/IntroSplash";
 import { HeroIntroProvider } from "@/components/motion/HeroIntroProvider";
@@ -81,6 +81,14 @@ const yuji = Yuji_Syuku({
   preload: false,
 });
 
+// The dry-brush title on the awakening hero.
+const marker = Permanent_Marker({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-brush",
+  display: "swap",
+});
+
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
@@ -132,7 +140,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       // The page is always red (the red branch has no switch).
       data-theme="red"
-      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} ${geistMono.variable} ${yuji.variable} ${neueMontreal.variable} ${cigars.variable} ${imperial.variable} h-full antialiased`}
+      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} ${geistMono.variable} ${marker.variable} ${yuji.variable} ${neueMontreal.variable} ${cigars.variable} ${imperial.variable} h-full antialiased`}
       // Browser extensions often add attributes to <html> before React hydrates.
       suppressHydrationWarning
     >
