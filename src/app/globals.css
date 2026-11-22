@@ -521,13 +521,6 @@ html[data-site-loading] .edition-nav__flip-scene {
   animation-play-state: paused;
 }
 
-/* Awakening hero: the scroll cue's tick sliding down the mouse. */
-@keyframes awaken-cue {
-  0% { transform: translate(-50%, 0); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: translate(-50%, 10px); opacity: 0; }
-}
-
 /* The awakening hero carries its own menu; the top bar stands aside while that menu is up. */
 html[data-hero-hud="on"] .signal-topbar {
   opacity: 0 !important;
