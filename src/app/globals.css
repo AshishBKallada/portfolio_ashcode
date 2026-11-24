@@ -548,7 +548,7 @@ html:has(.single-screen) body {
   left: 20px;
   top: 20px;
   bottom: 20px;
-  width: clamp(170px, 14vw, 220px);
+  width: clamp(118px, 9vw, 148px);
 }
 
 .sg-rail--right {
@@ -621,6 +621,24 @@ html:has(.single-screen) body {
 .sg-project {
   padding-top: 6px;
   padding-bottom: 26px;
+}
+
+.sg-project__img {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.sg-project__img img {
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sg-project a:hover .sg-project__img img,
+.sg-project a:focus-visible .sg-project__img img {
+  transform: scale(1.06);
 }
 
 .sg-contact {
@@ -746,7 +764,11 @@ html:has(.single-screen) body {
     width: 260px;
   }
 
-  .sg-project a > span:nth-child(3) {
+  .sg-project a > span:nth-child(4) {
+    display: none;
+  }
+
+  .sg-project .sg-project__img {
     display: none;
   }
 }

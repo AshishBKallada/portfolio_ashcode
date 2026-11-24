@@ -1,22 +1,12 @@
 "use client";
 
-import {
-  motion,
-  useMotionValue,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "motion/react";
+import { animate, motion, useMotionValue, useReducedMotion } from "motion/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { site } from "@/data/site";
-import { heroPinPhases } from "@/lib/heroPinScroll";
 import { DropCap } from "./Editions";
 
 const about = site.aboutEdition;
-/** The card's height (globals.css --card-h). */
-const CARD_H = 464;
-
 const smallLabel = "font-headline text-[14px] leading-none tracking-[-0.01em]";
 
 const links = [
@@ -28,53 +18,53 @@ const links = [
 
 const ROMAN = ["I", "II", "III", "IV"] as const;
 
+/** Seconds each face holds before the card turns: the nav, then About. */
+const HOLD_FRONT_S = 5;
+const HOLD_BACK_S = 8;
+
 /**
- * Centred hero nav card: front is site chrome, back is About copy. Scroll drives
- * a horizontal flip before the cloud/figure reveal runs.
+ * Centred hero nav card: front is site chrome, back is About copy. On the single-screen
+ * home it turns over by itself on an interval, and holds still while the pointer or
+ * keyboard focus is on it so either face can be read and used.
  */
 export function HeroNavFlipCard({ visible }: { visible: boolean }) {
   const reduce = useReducedMotion() ?? false;
-  const { scrollY } = useScroll();
-  const flip = useTransform(scrollY, (y) => heroPinPhases(y).flip);
-  const rotateY = useTransform(flip, (v) => v * -180);
+  const rotateY = useMotionValue(0);
+  const [back, setBack] = useState(false);
+  const [held, setHeld] = useState(false);
 
-  // Leaving: as Work rises over the hero, the card is sucked down into its torn edge,
-  // faster and faster, stretching tall and thin. The nav's layer sits between the
-  // hero and Work (SignalNav), so Work's edge swallows it. Nothing fades; scrolling
-  // back up plays it in reverse.
-  const pullY = useMotionValue(0);
-  const scaleX = useMotionValue(1);
-  const scaleY = useMotionValue(1);
-  useMotionValueEvent(scrollY, "change", () => {
-    const work = document.getElementById("index");
-    if (!work || reduce) return;
-    const vh = window.innerHeight;
-    // Work's torn edge runs about 0.4vh ahead of the section's top. The pull starts as it
-    // reaches the card's bottom edge and is done by the time it would cover the card.
-    const front = work.getBoundingClientRect().top - vh * 0.4;
-    const cardBottom = vh / 2 + CARD_H / 2;
-    const t = Math.min(1, Math.max(0, (cardBottom - front) / (CARD_H * 0.9)));
-    pullY.set(t * t * t * vh * 0.7);
-    scaleY.set(1 + t * t * 0.4);
-    scaleX.set(1 - t * t * 0.5);
-  });
+  useEffect(() => {
+    if (!visible || held) return;
+    const id = window.setTimeout(() => setBack((b) => !b), (back ? HOLD_BACK_S : HOLD_FRONT_S) * 1000);
+    return () => window.clearTimeout(id);
+  }, [visible, held, back]);
 
-  // Kept mounted once hidden, so it stays in place until Work pulls it down.
+  useEffect(() => {
+    const target = back ? -180 : 0;
+    if (reduce) {
+      rotateY.set(target);
+      return;
+    }
+    const run = animate(rotateY, target, { type: "spring", stiffness: 55, damping: 13, mass: 1 });
+    return () => run.stop();
+  }, [back, reduce, rotateY]);
+
   return (
     <div
       aria-hidden={!visible}
       inert={!visible}
       className="edition-nav__flip-scene pointer-events-none"
     >
-      <motion.div
-        style={{ y: pullY, scaleX, scaleY }}
-        className="h-full w-full origin-bottom"
-      >
+      <div className="h-full w-full">
         <motion.div
-          style={reduce ? undefined : { rotateY }}
+          style={{ rotateY }}
+          onPointerEnter={() => setHeld(true)}
+          onPointerLeave={() => setHeld(false)}
+          onFocus={() => setHeld(true)}
+          onBlur={() => setHeld(false)}
           className="edition-nav__flipper pointer-events-auto"
         >
-          <div className="edition-nav__face edition-nav__face--front">
+          <div className="edition-nav__face edition-nav__face--front" aria-hidden={back} inert={back}>
             <Link
               href="/"
               className="block font-headline text-[32px] leading-[0.95] tracking-[-0.03em] focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-current"
@@ -107,6 +97,8 @@ export function HeroNavFlipCard({ visible }: { visible: boolean }) {
             id="about"
             aria-label="About"
             className="edition-nav__face edition-nav__face--back flex flex-col"
+            aria-hidden={!back}
+            inert={!back}
           >
             <p className={`${smallLabel} text-gold/90`}>{about.kicker}</p>
             <h2 className="mt-3 font-narrative text-[22px] leading-[0.95] tracking-[-0.04em] text-balance">
@@ -124,7 +116,7 @@ export function HeroNavFlipCard({ visible }: { visible: boolean }) {
             </Link>
           </section>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 }

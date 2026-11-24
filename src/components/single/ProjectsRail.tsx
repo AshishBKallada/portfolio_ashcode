@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { projects } from "@/data/projects";
 import { site } from "@/data/site";
 import { Marquee } from "./Marquee";
@@ -30,7 +31,10 @@ export function ProjectsRail() {
               rel="noreferrer"
               className="group block"
             >
-              <span className="flex items-baseline justify-between gap-3">
+              <span className="sg-project__img">
+                <Image src={p.image} alt={`${p.title}: ${p.summary}`} fill sizes="270px" />
+              </span>
+              <span className="mt-3 flex items-baseline justify-between gap-3">
                 <span className="font-headline text-[26px] leading-none tracking-[-0.03em] transition-transform duration-300 group-hover:translate-x-1">
                   {p.title}
                 </span>
