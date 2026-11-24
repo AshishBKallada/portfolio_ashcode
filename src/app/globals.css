@@ -1,528 +1,1252 @@
-@import "tailwindcss";
-@import "../theme/tokens.css";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+/* Kinetic: charcoal and sage, Panchang over Switzer. Every colour and size is a token below. */
 
-/* Scan every component folder explicitly, new ones included, without a dev-server restart. */
-@source "../components";
+:root {
+  --bg: #f4f4f1;
+  --surface: #e6e6e1;
+  --ink: #111111;
+  --muted: #5d5d58;
+  --accent: #1f6b4a;
+  --accent-ink: #ffffff;
+  --field: #163f2e;
+  --field-ink: #f4f4f1;
+  --field-muted: #a8c3b4;
+  --paper: #ffffff;
+  --paper-ink: #111111;
 
-@custom-variant dark (&:is(.dark *));
+  --font-display: "Panchang", "Arial Black", sans-serif;
+  --font-text: "Switzer", "Helvetica Neue", Arial, sans-serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-subtle: var(--subtle);
-  --color-surface: var(--surface);
-  --color-border: var(--border);
-  --color-accent: var(--accent);
-  --color-brand: var(--theme-brand);
-  --color-oxblood: var(--theme-oxblood);
-  --color-ink: var(--theme-ink);
-  --color-night: var(--theme-night);
-  --color-panel: var(--theme-panel);
-  --color-ash: var(--theme-ash);
-  --color-cream: var(--theme-cream);
-  --color-bone: var(--theme-bone);
-  --color-flame: var(--theme-flame);
-  --color-script: var(--theme-script);
-  --color-signal: var(--theme-flame);
-  --color-gold: var(--theme-gold);
-  --color-paper: var(--theme-paper);
-  --color-editions: var(--theme-editions);
-  --color-page: var(--theme-page-bg);
-  --color-page-fg: var(--theme-page-fg);
-  --color-about: var(--theme-about-bg);
-  --color-about-fg: var(--theme-about-fg);
-  --color-about-muted: var(--theme-about-muted);
-  --color-about-accent: var(--theme-about-accent);
-  --font-sans: var(--font-general-sans);
-  --font-serif: var(--font-editorial);
-  --font-display: var(--font-anton);
-  --font-script: var(--font-pinyon);
-  --color-section: var(--theme-section-bg);
-  --font-mono: var(--font-geist-mono);
-  --font-headline: var(--font-neue-montreal), Helvetica, Arial, sans-serif;
-  --font-narrative: var(--font-cigars), Georgia, "Times New Roman", serif;
-  --font-flourish: var(--font-imperial), cursive;
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  --step-head: clamp(1.5rem, 0.9rem + 1.9vw, 2.75rem);
+  --step-display: clamp(4.5rem, 1rem + 11vw, 11.25rem);
+
+  --margin: clamp(16px, 2.2vw, 32px);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-  overflow-x: clip;
-  background: var(--background);
-  /* No native scrollbar: StoryProgress draws a thin bar across the top. */
-  scrollbar-width: none;
-}
-
-html::-webkit-scrollbar {
-  display: none;
-}
-
-/* Lock scroll while the intro loader is mounted. The loader renders in SSR,
-   so this applies from the first paint. */
-html:has(.site-loader),
-body:has(.site-loader) {
-  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--step-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: clip;
-  background: var(--theme-page-bg);
-  color: var(--theme-page-fg);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  font-weight: 400;
 }
 
-/* Base heading face; in the base layer so a heading's own font utilities win. */
-@layer base {
-  h1,
-  h2,
-  h3 {
-    font-family: var(--font-serif), ui-serif, Georgia, serif;
-    font-weight: 200;
-    letter-spacing: -0.02em;
-  }
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+ul,
+ol {
+  list-style: none;
 }
 
 ::selection {
-  background: var(--color-ink);
-  color: var(--color-bone);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 :focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 4px;
 }
 
-/* Underline draws in from the left on hover — used by text links. */
-.nav-link {
-  position: relative;
+.kx-skip {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 14px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  transform: translateY(-200%);
 }
-.nav-link::after {
+
+.kx-skip:focus-visible {
+  transform: none;
+}
+
+.kx-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* A line of type that rises out of its own mask. */
+.kx-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.06em;
+}
+
+.kx-mask > span {
+  display: inline-block;
+}
+
+/* ---------- Button and links ---------- */
+
+.kx-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  min-height: 52px;
+  padding: 0 26px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 500;
+  font-size: var(--step-body);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.25s var(--ease-out), color 0.35s var(--ease-out);
+}
+
+/* The fill wipes up from the bottom on hover. */
+.kx-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg);
+  transform: translateY(101%);
+  transition: transform 0.45s var(--ease-out);
+}
+
+.kx-button:hover {
+  color: var(--ink);
+}
+
+.kx-button:hover::before {
+  transform: none;
+}
+
+.kx-button:active {
+  transform: scale(0.97);
+}
+
+.kx-button__arrow {
+  display: inline-block;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.kx-button:hover .kx-button__arrow {
+  transform: translateX(4px);
+}
+
+.kx-link {
+  position: relative;
+  padding-bottom: 2px;
+}
+
+/* An underline that draws in from the left. */
+.kx-link::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -3px;
-  height: 1px;
-  width: 100%;
+  right: 0;
+  bottom: 0;
+  height: 2px;
   background: currentColor;
   transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: 100% 50%;
+  transition: transform 0.4s var(--ease-out);
 }
-.nav-link:hover::after,
-.nav-link:focus-visible::after {
+
+.kx-link:hover::after,
+.kx-link:focus-visible::after {
   transform: scaleX(1);
+  transform-origin: 0 50%;
 }
 
-/* Once the hero has scrolled fully away, stop painting it. */
-.hero-stage[data-covered="true"] .hero-pin {
-  visibility: hidden;
-}
+/* ---------- Hero: the name parts and the river opens between it ---------- */
 
-/* Keep the head-turn frames sharp under motion/parallax transforms. */
-.hero-figure img {
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-/* Route change: the new page wipes up over the old one; project images
-   morph on their own named group. */
-@keyframes page-wipe-in {
-  from { clip-path: inset(100% 0 0 0); }
-  to { clip-path: inset(0 0 0 0); }
-}
-@keyframes page-sink-out {
-  to { transform: translateY(-4%); opacity: 0.5; }
-}
-::view-transition-old(root) {
-  animation: 520ms cubic-bezier(0.76, 0, 0.24, 1) both page-sink-out;
-}
-::view-transition-new(root) {
-  animation: 640ms cubic-bezier(0.76, 0, 0.24, 1) both page-wipe-in;
-}
-::view-transition-group(.morph) {
-  animation-duration: 640ms;
-  animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
-}
-::view-transition-image-pair(.morph) {
-  animation-name: morph-blur;
-}
-@keyframes morph-blur {
-  30% { filter: blur(3px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root),
-  ::view-transition-new(root),
-  ::view-transition-group(.morph) {
-    animation: none;
-  }
-}
-
-:root {
-  /* Shadcn tokens — follow site section grey (#ddddd1), not default white. */
-  --background: var(--theme-page-bg);
-  --foreground: var(--theme-page-fg);
-  --card: var(--theme-page-bg);
-  --card-foreground: var(--theme-page-fg);
-  --popover: var(--theme-page-bg);
-  --popover-foreground: var(--theme-page-fg);
-  --primary: var(--theme-ink);
-  --primary-foreground: var(--theme-cream);
-  --secondary: color-mix(in oklch, var(--theme-page-bg) 88%, var(--theme-ink));
-  --secondary-foreground: var(--theme-page-fg);
-  --muted: color-mix(in oklch, var(--theme-page-bg) 92%, var(--theme-ink));
-  --muted-foreground: var(--theme-page-fg-muted);
-  --accent: color-mix(in oklch, var(--theme-page-bg) 90%, var(--theme-ink));
-  --accent-foreground: var(--theme-page-fg);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: var(--theme-page-border);
-  --input: var(--theme-page-border);
-  --ring: color-mix(in oklch, var(--theme-ink) 35%, transparent);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
-  }
-}
-/* Editions side nav (desktop home). One fixed aside the width of the rail;
-   in the hero its pieces are translated out to a 340×464 card centred on
-   the viewport, and on scroll they translate back into the rail. Only
-   translate, scale and opacity animate. */
-.edition-nav {
-  --card-w: 340px;
-  --card-h: 464px;
-  --card-pad: 20px;
-  --rail-pad: 24px;
-  --foot-h: 112px;
-  --nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --nav-dur: 620ms;
-  /* Card origin relative to the aside (which sits at the viewport's left edge),
-     set a little left of centre by --nav-card-shift. */
-  --card-x: calc(50vw - var(--nav-card-shift) - var(--card-w) / 2);
-  --card-y: calc(50svh - var(--card-h) / 2);
-  color: var(--theme-cream);
-  transition: color var(--nav-dur) var(--nav-ease);
-}
-/* Fires the transitionend that ends the morph; the parts set their own tone. Past
-   the hero there is no rail: the card fades away and the top bar takes over. */
-.edition-nav[data-state="rail"] {
-  color: var(--theme-bone);
-  transition: color var(--nav-dur) var(--nav-ease);
-}
-/* Past the morph the card stays put until Work's torn edge rises and sucks it
-   down (HeroNavFlipCard); the rail's own pieces stay hidden, the top bar is the nav. */
-.edition-nav[data-state="rail"] .edition-nav__title,
-.edition-nav[data-state="rail"] .edition-nav__list,
-.edition-nav[data-state="rail"] .edition-nav__foot {
-  visibility: hidden;
-}
-.edition-nav__title,
-.edition-nav__list,
-.edition-nav__foot {
-  color: var(--theme-cream);
-  text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
-}
-.edition-nav[data-title-tone="ink"] .edition-nav__title,
-.edition-nav[data-list-tone="ink"] .edition-nav__list,
-.edition-nav[data-foot-tone="ink"] .edition-nav__foot {
-  color: var(--theme-ink);
-  text-shadow: none;
-}
-
-.edition-nav__frame {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--card-w);
-  height: var(--card-h);
-  border: 1px solid rgb(255 255 255 / 0.35);
-  /* Dark enough that the cream tagline holds 4.5:1 over the bright cloud. */
-  background: rgb(21 19 15 / 0.56);
-  backdrop-filter: blur(8px);
-  translate: var(--card-x) var(--card-y);
-  transition: opacity calc(var(--nav-dur) * 0.5) var(--nav-ease);
-}
-.edition-nav[data-state="rail"] .edition-nav__frame {
-  opacity: 0;
-  /* Invisible in the rail, so drop the blur rather than keep paying for it. */
-  backdrop-filter: none;
-}
-
-/* Hero card flip: front nav, back About, before the cloud/figure reveal. */
-.edition-nav__flip-scene {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--card-w);
-  height: var(--card-h);
-  translate: var(--card-x) var(--card-y);
-  perspective: 1400px;
-  z-index: 2;
-}
-.edition-nav__flipper {
+.kx-hero {
   position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
+  height: 210svh;
 }
-.edition-nav__face {
+
+.kx-hero__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.kx-hero__bar {
+  position: absolute;
+  top: var(--margin);
+  left: var(--margin);
+  right: var(--margin);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  animation: kx-fade-down 0.9s 0.2s var(--ease-out) both;
+}
+
+.kx-hero__mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: var(--step-body);
+}
+
+.kx-hero__nav {
+  display: flex;
+  gap: 28px;
+}
+
+.kx-button--small {
+  min-height: 44px;
+  padding: 0 18px;
+}
+
+.kx-hero__photo {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  padding: var(--card-pad);
-  border: 1px solid rgb(255 255 255 / 0.35);
-  background: rgb(21 19 15 / 0.56);
-  backdrop-filter: blur(8px);
-  backface-visibility: hidden;
-  color: var(--theme-cream);
-  text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+  z-index: 1;
   overflow: hidden;
+  clip-path: inset(20svh var(--margin) 40svh 58vw);
 }
-.edition-nav__face--back {
-  transform: rotateY(-180deg);
+
+.kx-hero__photo img {
+  object-fit: cover;
+  object-position: 50% 62%;
 }
-.edition-nav[data-state="hero"] .edition-nav__title,
-.edition-nav[data-state="hero"] .edition-nav__list {
-  opacity: 0;
-  visibility: hidden;
+
+/* The box the river starts in; the photograph's clip is measured from it. */
+.kx-hero__window {
+  position: absolute;
+  top: 20svh;
+  right: var(--margin);
+  bottom: 40svh;
+  left: 58vw;
   pointer-events: none;
 }
-.edition-nav[data-state="hero"] .edition-nav__frame {
-  opacity: 0;
-  backdrop-filter: none;
+
+/* Lifts off the river on load, like a blind going up. */
+.kx-hero__curtain {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  transform-origin: 50% 0;
+  animation: kx-window-in 1.4s 0.35s var(--ease-in-out) both;
 }
 
-.edition-nav__title {
+.kx-hero__title {
   position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  font-size: clamp(4rem, 0.5rem + 11.4vw, 12.5rem);
+  line-height: 0.84;
+  letter-spacing: -0.035em;
+}
+
+.kx-hero__line {
+  position: absolute;
+  display: block;
+  will-change: transform;
+}
+
+.kx-hero__line--first {
+  left: var(--margin);
+  top: calc(var(--margin) + 72px);
+}
+
+.kx-hero__line--last {
+  left: var(--margin);
+  top: 60svh;
+  transform: translateY(-100%);
+}
+
+.kx-hero__line .kx-mask > span {
+  animation: kx-rise 1.1s var(--ease-out) both;
+}
+
+.kx-hero__line--first .kx-mask > span { animation-delay: 0.45s; }
+.kx-hero__line--last .kx-mask > span { animation-delay: 0.58s; }
+
+.kx-hero__foot {
+  position: absolute;
+  left: var(--margin);
+  right: var(--margin);
+  bottom: var(--margin);
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: end;
+  animation: kx-fade-up 0.9s 0.85s var(--ease-out) both;
+}
+
+.kx-hero__facts,
+.kx-hero__sentence {
+  font-size: var(--step-lead);
+  line-height: 1.2;
+}
+
+.kx-hero__sentence {
+  max-width: 30ch;
+  justify-self: end;
+}
+
+.kx-hero__facts span {
+  display: block;
+}
+
+.kx-hero__live::before {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  margin-right: 0.4em;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: 0.08em;
+  animation: kx-pulse 2.4s ease-in-out infinite;
+}
+
+.kx-hero__caption {
+  position: absolute;
+  left: var(--margin);
+  bottom: var(--margin);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #fff;
+  font-size: var(--step-lead);
+  visibility: hidden;
+}
+
+.kx-hero__caption .kx-display {
+  font-size: var(--step-head);
+}
+
+@keyframes kx-window-in {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(0); }
+}
+
+@keyframes kx-rise {
+  from { transform: translateY(105%); }
+  to { transform: none; }
+}
+
+@keyframes kx-fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes kx-fade-down {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes kx-pulse {
+  50% { opacity: 0.35; }
+}
+
+/* ---------- Stub: the hero card, shrunk to a ticket, follows the page ---------- */
+
+.kx-stub {
+  position: fixed;
+  left: var(--margin);
+  bottom: var(--margin);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 12px 12px 16px;
+  background: var(--field);
+  color: var(--field-ink);
+  font-size: var(--step-small);
+  line-height: 1.25;
+  transform: translateY(calc(100% + 40px));
+  transition: transform 0.6s var(--ease-out);
+}
+
+.kx-stub[data-shown="true"] {
+  transform: none;
+}
+
+.kx-stub__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.kx-stub .kx-button {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: var(--step-small);
+  background: var(--field-ink);
+  color: var(--field);
+}
+
+.kx-stub .kx-button::before {
+  background: var(--accent);
+}
+
+.kx-stub .kx-button:hover {
+  color: var(--accent-ink);
+}
+
+/* ---------- About: the name pinned, the work passing under it ---------- */
+
+.kx-about,
+.kx-about__hold {
+  position: relative;
+}
+
+.kx-about__pinwrap {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.kx-about__pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.kx-about__pin {
+  mix-blend-mode: difference;
+}
+
+/* White under difference: black on the page, inverted over the greyscale portraits. */
+.kx-about__heading {
+  font-size: var(--step-display);
+  line-height: 0.85;
+  text-align: center;
+  color: #fff;
+}
+
+.kx-about__heading .kx-mask {
+  display: block;
+}
+
+.kx-about__run {
+  position: relative;
+  z-index: 1;
+  padding: 40svh var(--margin) 30svh;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 24px;
+}
+
+.kx-portrait {
+  grid-column: 2 / span 4;
+  margin-top: 4svh;
+}
+
+.kx-portrait:first-child {
+  margin-top: 0;
+}
+
+.kx-portrait:nth-child(even) {
+  grid-column: 8 / span 4;
+}
+
+.kx-portrait__frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.kx-portrait__frame img {
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+  transform: scale(1.16);
+}
+
+.kx-portrait__caption {
+  margin-top: 16px;
+  max-width: 300px;
+}
+
+.kx-portrait__title {
+  font-size: var(--step-body);
+  font-weight: 500;
+}
+
+.kx-portrait__role {
+  font-size: var(--step-small);
+  color: var(--muted);
+}
+
+.kx-portrait__text {
+  margin-top: 8px;
+  font-size: var(--step-body);
+}
+
+.kx-about__release {
+  position: relative;
+  z-index: 3;
+  padding: 0 var(--margin) clamp(120px, 14vw, 200px);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 24px;
+  row-gap: 64px;
+}
+
+.kx-about__intro {
+  grid-column: 2 / -2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.kx-about__statement {
+  font-size: var(--step-lead);
+  line-height: 1.3;
+  max-width: 34ch;
+}
+
+.kx-toolkit {
+  grid-column: 2 / -2;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.kx-toolkit h3 {
+  font-size: var(--step-body);
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.kx-toolkit li {
+  font-size: var(--step-body);
+  line-height: 1.6;
+}
+
+/* ---------- LinkedIn: a held stage, one post and one comment per step ---------- */
+
+.kx-li {
+  position: relative;
+  height: 320svh;
+}
+
+.kx-li__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--bg);
+  transition: background-color 0.7s var(--ease-out);
+}
+
+.kx-li__heading {
+  position: absolute;
+  top: var(--margin);
+  left: 0;
+  right: 0;
+  z-index: 3;
+  text-align: center;
+  font-size: clamp(3.5rem, 0.5rem + 9vw, 9.5rem);
+  line-height: 0.85;
+}
+
+.kx-li__step {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s 0.9s;
+}
+
+.kx-li__step[data-active="true"] {
+  visibility: visible;
+  transition: none;
+}
+
+.kx-li__figure {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--margin) + 36px);
+  width: min(28vw, calc((100svh - clamp(3.5rem, 0.5rem + 9vw, 9.5rem) - 120px) * 0.8));
+  transform: translateX(-50%);
+}
+
+.kx-li__frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--surface);
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0.9s var(--ease-in-out);
+}
+
+.kx-li__frame img {
+  object-fit: cover;
+  transform: scale(1.12);
+  transition: transform 1.4s var(--ease-out);
+}
+
+.kx-li__step[data-active="true"] .kx-li__frame {
+  clip-path: inset(0 0 0 0);
+}
+
+.kx-li__step[data-active="true"] .kx-li__frame img {
+  transform: none;
+}
+
+.kx-li__step[data-past="true"] .kx-li__frame {
+  clip-path: inset(0 0 100% 0);
+}
+
+.kx-li__figure figcaption {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding-top: 12px;
+  font-size: var(--step-small);
+  color: var(--muted);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.kx-li__step[data-active="true"] figcaption {
+  opacity: 1;
+  transition-delay: 0.4s;
+}
+
+.kx-li__quote {
+  position: absolute;
+  width: 280px;
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.5s var(--ease-out), transform 0.7s var(--ease-out);
+}
+
+.kx-li__step[data-active="true"] .kx-li__quote {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.35s;
+}
+
+.kx-li__quote blockquote {
+  font-size: var(--step-lead);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.kx-li__quote p {
+  margin-top: 12px;
+  font-size: var(--step-small);
+  color: var(--muted);
+}
+
+.kx-li__step:nth-child(4n + 1) .kx-li__quote { right: calc(var(--margin) + 4vw); top: 30%; }
+.kx-li__step:nth-child(4n + 2) .kx-li__quote { left: calc(var(--margin) + 4vw); top: 48%; }
+.kx-li__step:nth-child(4n + 3) .kx-li__quote { right: calc(var(--margin) + 4vw); top: 64%; }
+.kx-li__step:nth-child(4n + 4) .kx-li__quote { left: calc(var(--margin) + 4vw); top: 36%; }
+
+.kx-li__aside {
+  position: absolute;
+  left: var(--margin);
+  bottom: calc(var(--margin) + 96px);
+  z-index: 3;
+  max-width: 300px;
+}
+
+.kx-li__aside p {
+  font-size: var(--step-body);
+}
+
+.kx-li__aside a {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.kx-li__count {
+  position: absolute;
+  right: var(--margin);
+  bottom: var(--margin);
+  z-index: 3;
+  display: flex;
+  gap: 6px;
+}
+
+.kx-li__count span {
+  width: 28px;
+  height: 4px;
+  background: var(--surface);
+  transition: background-color 0.4s var(--ease-out);
+}
+
+.kx-li__count span[data-on="true"] {
+  background: var(--accent);
+}
+
+/* ---------- Contact: a visit card on the river ---------- */
+
+.kx-contact {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+.kx-contact__photo {
+  position: absolute;
+  inset: -8% 0;
+}
+
+.kx-contact__photo img {
+  object-fit: cover;
+  filter: brightness(0.8);
+}
+
+.kx-card {
+  position: relative;
+  z-index: 1;
+  width: 400px;
+  margin: 60px var(--margin) 60px auto;
+  margin-right: max(var(--margin), 60px);
+  padding: 32px;
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+
+.kx-card h2 {
+  font-size: var(--step-head);
+  line-height: 1;
+}
+
+.kx-card__place {
+  margin-top: 20px;
+  font-size: var(--step-body);
+}
+
+.kx-hours {
+  margin-top: 24px;
+}
+
+.kx-hours__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: var(--step-small);
+  color: var(--muted);
+}
+
+.kx-hours__toggle {
+  font-size: var(--step-small);
+  color: var(--paper-ink);
+  font-weight: 500;
+  padding: 6px 0;
+}
+
+.kx-hours__toggle:hover {
+  text-decoration: underline;
+}
+
+.kx-hours__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.kx-hours__row + .kx-hours__row {
+  background: none;
+}
+
+.kx-hours__now {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: var(--surface);
+  font-size: var(--step-small);
+  line-height: 1.4;
+}
+
+.kx-card__email {
+  display: inline-block;
+  margin-top: 20px;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.kx-card .kx-button {
+  display: flex;
+  width: calc(100% + 64px);
+  margin: 28px -32px -32px;
+  min-height: 56px;
+}
+
+/* ---------- Footer: the bridge, larger than anywhere above, and the menu ---------- */
+
+.kx-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100svh;
+  background: var(--field);
+  color: var(--field-ink);
+}
+
+.kx-footer__photo {
+  position: relative;
+  overflow: hidden;
+  min-height: 50svh;
+}
+
+.kx-footer__photo img {
+  object-fit: cover;
+  object-position: 22% 40%;
+  transform: scale(1.15);
+}
+
+.kx-footer__side {
+  display: flex;
+  flex-direction: column;
+  padding: 80px var(--margin) var(--margin) clamp(24px, 8vw, 140px);
+}
+
+.kx-footer__mark {
+  font-size: var(--step-small);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.kx-footer__heading {
+  position: absolute;
+  width: 1px;
+  height: 1px; /* taste-skill-ignore: visually hidden heading, not a rule */
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.kx-menu {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.kx-menu a {
+  display: inline-block;
+  font-size: var(--step-head);
+  transition: transform 0.4s var(--ease-out), color 0.3s var(--ease-out);
+}
+
+.kx-menu:hover a,
+.kx-menu:focus-within a {
+  color: var(--field-muted);
+}
+
+.kx-menu a:hover,
+.kx-menu a:focus-visible {
+  color: var(--field-ink);
+  transform: translateX(12px);
+}
+
+.kx-footer__blocks {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  font-size: var(--step-body);
+}
+
+.kx-footer__blocks h3 {
+  font-size: var(--step-small);
+  font-weight: 500;
+  color: var(--field-muted);
+  margin-bottom: 6px;
+}
+
+.kx-footer__caption {
+  margin-top: 40px;
+  font-size: var(--step-body);
+  max-width: 36ch;
+}
+
+.kx-footer__legal {
+  margin-top: auto;
+  padding-top: 48px;
+  font-size: var(--step-small);
+  color: var(--field-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.kx-footer__legal a:hover {
+  color: var(--field-ink);
+}
+
+/* ---------- Cursor ---------- */
+
+.kx-cursor {
+  position: fixed;
   top: 0;
   left: 0;
-  transform-origin: top left;
-  translate: calc(var(--card-x) + var(--card-pad)) calc(var(--card-y) + var(--card-pad));
-  transition:
-    translate var(--nav-dur) var(--nav-ease),
-    scale var(--nav-dur) var(--nav-ease),
-    color 0.3s ease;
-}
-.edition-nav[data-state="rail"] .edition-nav__title {
-  translate: var(--rail-pad) 32px;
-  scale: 0.75;
+  z-index: 90;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  opacity: 0;
+  transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), margin 0.3s var(--ease-out),
+    opacity 0.3s;
 }
 
-.edition-nav__subtitle {
-  transition: opacity calc(var(--nav-dur) * 0.5) var(--nav-ease);
-}
-.edition-nav[data-state="rail"] .edition-nav__subtitle {
-  opacity: 0;
-}
-
-/* The list keeps the rail's width in both states; only its position moves. */
-.edition-nav__list {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: calc(var(--nav-sidebar-w) - var(--rail-pad) * 2);
-  translate: 0 calc(-1 * (var(--card-y) + var(--card-pad)));
-  transition:
-    translate var(--nav-dur) var(--nav-ease),
-    color 0.3s ease;
-}
-.edition-nav[data-state="rail"] .edition-nav__list {
-  translate: 0 calc(-1 * var(--foot-h));
-}
-.edition-nav__list li {
-  translate: calc(var(--card-x) + var(--card-pad)) 0;
-  transition:
-    translate var(--nav-dur) var(--nav-ease) calc(var(--i) * 28ms),
-    opacity 0.6s cubic-bezier(0.41, 0.19, 0.13, 0.95) calc(0.075s + var(--i) * 75ms);
-}
-/* Held back under the boot screen (SiteLoader), then staggered in as it lifts. */
-html[data-site-loading] .edition-nav__subtitle,
-html[data-site-loading] .edition-nav__list li,
-html[data-site-loading] .edition-nav__flip-scene {
-  opacity: 0;
-}
-.edition-nav[data-state="rail"] .edition-nav__list li {
-  translate: var(--rail-pad) 0;
-}
-.edition-nav[data-state="rail"] .edition-nav__link {
-  opacity: 0.6;
-  transition: opacity 0.25s ease;
-}
-.edition-nav[data-state="rail"] .edition-nav__link:hover,
-.edition-nav[data-state="rail"] .edition-nav__link:focus-visible {
+.kx-cursor[data-on="true"] {
   opacity: 1;
 }
 
-.edition-nav__foot {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 20px var(--rail-pad);
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.3s var(--nav-ease),
-    visibility 0s linear 0.3s,
-    color 0.3s ease;
+.kx-cursor[data-hover="true"] {
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  opacity: 0.45;
 }
 
+@media (pointer: coarse) {
+  .kx-cursor {
+    display: none;
+  }
+}
+
+/* ---------- 404 ---------- */
+
+.kx-lost {
+  min-height: 100svh;
+  display: grid;
+  place-content: center;
+  justify-items: start;
+  gap: 24px;
+  padding: var(--margin);
+}
+
+.kx-lost__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: var(--step-display);
+  line-height: 0.9;
+}
+
+/* ---------- Tablet and phone ---------- */
+
+@media (max-width: 1023px) {
+  /* On touch screens the hero's button and the contact card are enough; the stub would sit on content. */
+  .kx-stub {
+    display: none;
+  }
+
+  /* LinkedIn: no pinning, one block per post. */
+  .kx-li {
+    height: auto;
+    padding-bottom: 96px;
+  }
+
+  .kx-li__stage {
+    position: static;
+    height: auto;
+    overflow: visible;
+    background: var(--bg) !important;
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--margin);
+  }
+
+  .kx-li__heading {
+    position: static;
+    font-size: 12.5vw;
+    padding-top: 72px;
+    text-align: left;
+  }
+
+  .kx-li__aside {
+    position: static;
+    order: -1;
+    margin: 0;
+  }
+
+  .kx-li__heading {
+    order: -2;
+  }
+
+  .kx-li__aside {
+    margin-top: 16px;
+  }
+
+  .kx-li__step {
+    visibility: visible;
+    position: static;
+    margin-top: 72px;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kx-li__step:nth-of-type(even) {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .kx-li__figure {
+    position: static;
+    width: 72%;
+    transform: none;
+  }
+
+  .kx-li__frame,
+  .kx-li__step[data-past="true"] .kx-li__frame {
+    clip-path: none;
+  }
+
+  .kx-li__frame img {
+    transform: none;
+  }
+
+  .kx-li__figure figcaption {
+    position: static;
+    opacity: 1;
+    text-align: inherit;
+  }
+
+  .kx-li__quote,
+  .kx-li__step:nth-child(n) .kx-li__quote {
+    position: static;
+    width: auto;
+    max-width: 85%;
+    margin-top: 16px;
+    opacity: 1;
+    transform: none;
+  }
+
+  .kx-li__count {
+    display: none;
+  }
+
+  .kx-toolkit {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kx-about__intro {
+    grid-column: 1 / -1;
+  }
+
+  .kx-toolkit {
+    grid-column: 1 / -1;
+  }
+
+  .kx-portrait {
+    grid-column: 1 / span 6;
+  }
+
+  .kx-portrait:nth-child(even) {
+    grid-column: 7 / span 6;
+  }
+}
+
+@media (max-width: 767px) {
+  .kx-hero__nav {
+    display: none;
+  }
+
+  .kx-hero__photo {
+    clip-path: inset(46svh var(--margin) 30svh var(--margin));
+  }
+
+  .kx-hero__window {
+    top: 46svh;
+    bottom: 30svh;
+    left: var(--margin);
+  }
+
+  .kx-hero__title {
+    font-size: 12.5vw;
+  }
+
+  .kx-hero__line--first {
+    top: calc(var(--margin) + 80px);
+  }
+
+  .kx-hero__line--last {
+    top: calc(var(--margin) + 80px + 11vw);
+    transform: none;
+  }
+
+  .kx-hero__foot {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .kx-hero__facts,
+  .kx-hero__sentence {
+    font-size: var(--step-body);
+  }
+
+  .kx-hero__sentence {
+    justify-self: start;
+  }
+
+  .kx-about__pin {
+    place-items: start center;
+    padding-top: 16px;
+  }
+
+  .kx-about__heading {
+    font-size: 17vw;
+  }
+
+  .kx-about__run {
+    display: flex;
+    flex-direction: column;
+    padding-top: 42svh;
+  }
+
+  .kx-portrait,
+  .kx-portrait:nth-child(even) {
+    width: 72%;
+    margin-top: 48px;
+  }
+
+  .kx-portrait:nth-child(even) {
+    align-self: flex-end;
+  }
+
+  .kx-about__release {
+    display: flex;
+    flex-direction: column;
+    row-gap: 40px;
+  }
+
+  .kx-toolkit {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 16px;
+  }
+
+  .kx-contact {
+    min-height: 0;
+    padding-top: 70svh;
+  }
+
+  .kx-contact__photo {
+    inset: 0 0 auto;
+    height: calc(70svh + 80px);
+  }
+
+  .kx-card {
+    width: auto;
+    margin: -80px var(--margin) 0;
+    padding: 24px;
+  }
+
+  .kx-card .kx-button {
+    width: calc(100% + 48px);
+    margin: 24px -24px -24px;
+  }
+
+  .kx-contact {
+    padding-bottom: 96px;
+    background: var(--bg);
+  }
+
+  .kx-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .kx-footer__side {
+    padding: 48px var(--margin) var(--margin);
+  }
+
+  .kx-menu a {
+    font-size: 8vw;
+  }
+
+  .kx-footer__blocks {
+    grid-template-columns: 1fr;
+  }
+
+  .kx-stub {
+    left: 12px;
+    bottom: 12px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .kx-stub__text {
+    display: none;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .edition-nav,
-  .edition-nav * {
-    transition-duration: 0s !important;
-    transition-delay: 0s !important;
+  .kx-hero__caption {
+    display: none;
   }
-}
 
-/* Hero construction lines: drawn in bright, then settled to a faint hairline
-   (stroke 75% → 15% white), each group a beat after the last. */
-.hero-lines :is(path, circle) {
-  fill: none;
-  stroke: rgb(255 255 255 / 0.15);
-  stroke-width: 0.4px;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  vector-effect: non-scaling-stroke;
-}
-/* As the reference: every line draws at once over 3s, bright, then fades to a hairline over 4s. */
-.hero-lines[data-active="true"] :is(path, circle) {
-  animation:
-    hero-lines-draw 3s cubic-bezier(0.34, 0.22, 0.47, 0.84) forwards,
-    hero-lines-fade 4s ease-out forwards;
-}
-/* After the intro, scroll owns the stroke: --erase 0 → 1 winds each line back off. */
-.hero-lines[data-drawn="true"] :is(path, circle) {
-  animation: none;
-  stroke: rgb(255 255 255 / 0.15);
-  stroke-dashoffset: var(--erase, 0);
-}
-@keyframes hero-lines-draw {
-  to { stroke-dashoffset: 0; }
-}
-@keyframes hero-lines-fade {
-  from { stroke: rgb(255 255 255 / 0.75); }
-  to { stroke: rgb(255 255 255 / 0.15); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-lines :is(path, circle) {
-    stroke-dashoffset: 0;
-    animation: none !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-}
-
-/* A slow bob: Kind words' cloud cards (paused off screen) and the LinkedIn statue. */
-@keyframes kw-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-.kw-float {
-  animation: kw-float var(--dur) ease-in-out var(--delay) infinite;
-}
-.kw-cloud[data-paused="true"] .kw-float {
-  animation-play-state: paused;
-}
-
-/* The awakening hero carries its own menu; the top bar stands aside while that menu is up. */
-html[data-hero-hud="on"] .signal-topbar {
-  opacity: 0 !important;
-  visibility: hidden;
 }
