@@ -16,7 +16,7 @@ import { useNavChrome, type NavChromePhase } from "./nav-chrome";
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/#index", label: "Work" },
+  { href: "/#projects", label: "Work" },
   { href: "/resume", label: "Résumé" },
   { href: "/#contact", label: "Contact" },
 ] as const;

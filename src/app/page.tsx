@@ -1,33 +1,27 @@
 import type { Metadata } from "next";
-import { EditionWork } from "@/components/signal/EditionSections";
-import { HeroAboutMobile } from "@/components/signal/HeroAboutMobile";
-import { ClosingEdition } from "@/components/signal/ClosingEdition";
-import { BackToTop } from "@/components/signal/BackToTop";
 import { CornerPlayer } from "@/components/signal/CornerPlayer";
-import { ListTransition } from "@/components/signal/ListTransition";
-import { HeroStage } from "@/components/signal/SignalAbout";
 import { SignalNav } from "@/components/signal/SignalNav";
 import { SkyHero } from "@/components/signal/SkyHero";
+import { MiniContact } from "@/components/single/MiniContact";
+import { PostsRail } from "@/components/single/PostsRail";
+import { ProjectsRail } from "@/components/single/ProjectsRail";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+// A single screen: the desert hero, LinkedIn posts running up the left edge, projects running
+// down the right, and a small contact panel in the bottom right. Nothing below it.
 export default function Home() {
   return (
-    <>
+    <div className="single-screen relative h-[100svh] min-h-[600px] overflow-hidden">
+      {/* The scene first, so the nav card and player paint over it. */}
+      <SkyHero />
       <SignalNav />
       <CornerPlayer />
-      <BackToTop />
-      {/* A second hero, HeroSection2 (components/hero2: the holographic cloth), is kept but not shown. */}
-      {/* Work follows the Editions chapter layout; About copy lives in the hero nav card (flip). */}
-      <HeroStage hero={<SkyHero />}>
-        <HeroAboutMobile />
-        <EditionWork />
-        <ListTransition />
-        {/* Contact lives in the Index's about view (ListTransition); then the footer. */}
-        <ClosingEdition />
-      </HeroStage>
-    </>
+      <PostsRail />
+      <ProjectsRail />
+      <MiniContact />
+    </div>
   );
 }

@@ -517,3 +517,255 @@ html[data-site-loading] .edition-nav__flip-scene {
 .kw-cloud[data-paused="true"] .kw-float {
   animation-play-state: paused;
 }
+
+/* ---------- Single screen: rails and contact over the desert hero ---------- */
+
+html:has(.single-screen),
+html:has(.single-screen) body {
+  overflow: hidden;
+  height: 100%;
+}
+
+.sg-rail,
+.sg-contact {
+  position: absolute;
+  z-index: 40;
+  color: var(--theme-cream, #f3ead8);
+  background: rgba(21, 19, 15, 0.34);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  animation: sg-in 1.1s 2.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.sg-rail {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 14px 0;
+}
+
+.sg-rail--left {
+  left: 20px;
+  top: 20px;
+  bottom: 20px;
+  width: clamp(170px, 14vw, 220px);
+}
+
+.sg-rail--right {
+  right: 20px;
+  top: 76px;
+  bottom: 250px;
+  width: clamp(220px, 17vw, 270px);
+  animation-delay: 2.75s;
+}
+
+.sg-rail__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+}
+
+.sg-marquee {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+}
+
+.sg-marquee__track {
+  display: flex;
+  flex-direction: column;
+  animation: sg-up var(--sg-speed, 40s) linear infinite;
+  will-change: transform;
+}
+
+.sg-marquee[data-direction="down"] .sg-marquee__track {
+  animation-name: sg-down;
+}
+
+.sg-marquee:hover .sg-marquee__track,
+.sg-marquee:focus-within .sg-marquee__track {
+  animation-play-state: paused;
+}
+
+/* Each item carries its own gap, so one set is exactly half the track. */
+.sg-post,
+.sg-project {
+  padding-bottom: 18px;
+}
+
+.sg-post__img {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.sg-post__img img {
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s;
+  filter: saturate(0.85);
+}
+
+.sg-post a:hover .sg-post__img img,
+.sg-post a:focus-visible .sg-post__img img {
+  transform: scale(1.06);
+  filter: none;
+}
+
+.sg-project {
+  padding-top: 6px;
+  padding-bottom: 26px;
+}
+
+.sg-contact {
+  right: 150px;
+  bottom: 20px;
+  width: clamp(260px, 22vw, 330px);
+  padding: 16px;
+  animation-delay: 2.9s;
+}
+
+.sg-contact__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7bd389;
+  animation: sg-pulse 2.2s ease-in-out infinite;
+}
+
+.sg-contact__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  margin-right: 6px;
+  background: var(--theme-cream, #f3ead8);
+  color: #15130f;
+  transition: transform 0.25s, background-color 0.25s;
+}
+
+.sg-contact__cta:hover {
+  background: #fff;
+}
+
+.sg-contact__cta:active {
+  transform: scale(0.97);
+}
+
+@keyframes sg-up {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, -50%, 0); }
+}
+
+@keyframes sg-down {
+  from { transform: translate3d(0, -50%, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes sg-left {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes sg-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sg-pulse {
+  50% { opacity: 0.35; }
+}
+
+/* Under the nav card's width the rails turn into strips: posts across the top, projects and
+   contact along the bottom. */
+@media (max-width: 1023px) {
+  .sg-rail--left {
+    left: 12px;
+    right: 12px;
+    top: 64px;
+    bottom: auto;
+    width: auto;
+    height: 150px;
+    padding: 10px 10px 0;
+  }
+
+  .sg-rail--right {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: 196px;
+    width: auto;
+    height: 112px;
+    padding: 10px 10px 0;
+  }
+
+  .sg-contact {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    padding: 14px;
+  }
+
+  .sg-marquee {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  }
+
+  .sg-marquee__track,
+  .sg-marquee[data-direction="down"] .sg-marquee__track {
+    flex-direction: row;
+    width: max-content;
+    animation-name: sg-left;
+  }
+
+  .sg-marquee__set {
+    display: flex;
+  }
+
+  .sg-post,
+  .sg-project {
+    padding: 0 12px 0 0;
+  }
+
+  .sg-post {
+    width: 78px;
+  }
+
+  .sg-post a > span:last-child {
+    display: none;
+  }
+
+  .sg-project {
+    width: 260px;
+  }
+
+  .sg-project a > span:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-rail,
+  .sg-contact {
+    animation: none;
+  }
+
+  .sg-marquee {
+    overflow: auto;
+  }
+
+  .sg-marquee__track {
+    animation: none;
+  }
+
+  .sg-marquee__set[aria-hidden="true"] {
+    display: none;
+  }
+}
