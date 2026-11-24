@@ -5,9 +5,10 @@ won't do. Instead the background is grown from the border: a pixel joins it when
 is close to the backdrop colour sampled near it, and the ink outline around the figure stops
 the fill. The floor shadow under his feet is kept as a soft, semi-transparent shadow.
 
-    python scripts/art/cutout_marble_king.py
+    python scripts/art/cutout_figure.py [raw-name out-name]
 """
 
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -15,8 +16,9 @@ from PIL import Image
 from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parents[2]
-SRC = ROOT / "art/cursed-king/raw/08-marble-king.png"
-OUT = ROOT / "public/images/awakening/marble-king.webp"
+# Defaults to the marble king; pass `<raw name> <output name>` for another figure on a plain backdrop.
+SRC = ROOT / "art/cursed-king/raw" / f"{sys.argv[1] if len(sys.argv) > 1 else '08-marble-king'}.png"
+OUT = ROOT / "public/images/awakening" / f"{sys.argv[2] if len(sys.argv) > 2 else 'marble-king'}.webp"
 
 TOLERANCE = 13  # max colour distance from the local backdrop
 POCKET = 80  # enclosed backdrop patches bigger than this (px) are holes, not eye whites
@@ -60,7 +62,9 @@ def main() -> None:
         if region.sum() < 30:
             continue
         ring = ndimage.binary_dilation(region, iterations=2) & ~region
-        if (lum[sl][ring] < 70).mean() > 0.45:
+        dark = (lum[sl][ring] < 70).mean()
+        # Around the head the slivers also touch skin, so the bar is lower there.
+        if dark > 0.45 or (sl[0].stop < h * 0.35 and dark > 0.25):
             bg[sl] |= region
     # Close pinholes in the backdrop, then keep only the largest solid piece: the figure.
     bg = ndimage.binary_opening(bg, iterations=1) | bg
