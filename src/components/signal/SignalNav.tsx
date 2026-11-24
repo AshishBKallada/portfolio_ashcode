@@ -106,11 +106,7 @@ export function SignalNav() {
                 transition={{ duration: 0.45, ease: introEase }}
                 className={`${pill} absolute top-full left-0 z-50 mt-2 w-[min(20rem,calc(100vw-1.5rem))] p-2`}
               >
-                <div className="flex items-center justify-between px-3 pt-2 pb-1">
-                  <span className={`${smallLabel} text-bone/70`}>Background</span>
-                  <PageModeSwitch />
-                </div>
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-white/10 px-3 pt-3 pb-1">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 px-3 pt-2 pb-1">
                   {site.socials.map((s) => (
                     <a
                       key={s.href}
@@ -140,14 +136,20 @@ export function SignalNav() {
         <div
           className={`pointer-events-auto flex items-center gap-x-5 text-cream [text-shadow:0_2px_16px_rgba(0,0,0,0.45)] ${morphRail ? "md:pointer-events-none md:opacity-0" : ""}`}
         >
-          <PageModeSwitch />
-          <p className="hidden items-center gap-2 font-sans text-[13px] leading-none tracking-[-0.01em] text-cream/85 lg:inline-flex">
-            <span aria-hidden className="relative inline-flex size-[7px]">
-              <span className="absolute inset-0 animate-ping rounded-full bg-gold/70 motion-reduce:hidden" />
-              <span className="relative size-[7px] rounded-full bg-gold" />
-            </span>
-            {site.signal.availability}
-          </p>
+          {site.socials
+            .filter((s) => s.label === "LinkedIn" || s.label === "GitHub")
+            .sort((a, b) => (a.label === "LinkedIn" ? -1 : b.label === "LinkedIn" ? 1 : 0))
+            .map((s) => (
+              <a
+                key={s.href}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link hidden font-sans text-[14px] leading-none tracking-[-0.01em] text-cream/90 transition-colors hover:text-cream sm:inline"
+              >
+                {s.label} ↗
+              </a>
+            ))}
           <a
             href={`mailto:${site.email}`}
             className="group inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-cream px-5 font-sans text-[14px] font-medium tracking-[-0.01em] text-ink [text-shadow:none] shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-colors hover:bg-bone"

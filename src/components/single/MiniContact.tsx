@@ -19,15 +19,9 @@ export function MiniContact() {
 
   return (
     <section id="contact" className="sg-contact" aria-labelledby="contact-title">
-      <div className="flex items-center justify-between gap-3">
-        <h2 id="contact-title" className="font-headline text-[15px] leading-none tracking-[-0.01em]">
-          Contact
-        </h2>
-        <span className="flex items-center gap-1.5 font-headline text-[12px] leading-none text-cream/75">
-          <span className="sg-contact__dot" aria-hidden />
-          {site.signal.availability}
-        </span>
-      </div>
+      <h2 id="contact-title" className="font-headline text-[15px] leading-none tracking-[-0.01em]">
+        Contact
+      </h2>
       <p className="mt-3 font-narrative text-[16px] leading-[1.3] text-cream/90">{site.signal.contact}</p>
       <button
         type="button"
