@@ -562,11 +562,12 @@ html:has(.single-screen) body {
 }
 
 .sg-rail--left {
-  padding: 12px 8px 0;
+  --sg-head: 34px;
+  padding: 12px 7px 0;
   left: 20px;
   top: 20px;
   bottom: 20px;
-  width: clamp(78px, 5.6vw, 94px);
+  width: clamp(62px, 4.5vw, 74px);
 }
 
 .sg-rail--right {
@@ -614,6 +615,10 @@ html:has(.single-screen) body {
 .sg-post,
 .sg-project {
   padding-bottom: 18px;
+}
+
+.sg-post {
+  padding-bottom: 8px;
 }
 
 .sg-post__img {
