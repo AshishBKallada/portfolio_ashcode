@@ -1,104 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Geist_Mono, Permanent_Marker, Pinyon_Script, Yuji_Syuku } from "next/font/google";
-import localFont from "next/font/local";
-import { IntroSplash } from "@/components/layout/IntroSplash";
-import { HeroIntroProvider } from "@/components/motion/HeroIntroProvider";
-import { MotionProvider } from "@/components/motion/MotionProvider";
-import { SmoothScroll } from "@/components/motion/SmoothScroll";
-import { NavChromeProvider } from "@/components/signal/nav-chrome";
+import { Inter_Tight } from "next/font/google";
+import { SmoothScroll } from "@/components/sheet/SmoothScroll";
 import { site } from "@/data/site";
 import "./globals.css";
 
-const generalSans = localFont({
-  src: [
-    { path: "./fonts/GeneralSans-Variable.woff2", style: "normal" },
-    { path: "./fonts/GeneralSans-VariableItalic.woff2", style: "italic" },
-  ],
-  variable: "--font-general-sans",
-  display: "swap",
-  weight: "200 700",
-});
-
-const editorial = localFont({
-  src: [
-    {
-      path: "./fonts/PPEditorialNew-Ultralight.woff2",
-      weight: "200",
-      style: "normal",
-    },
-    {
-      path: "./fonts/PPEditorialNew-UltralightItalic.woff2",
-      weight: "200",
-      style: "italic",
-    },
-  ],
-  variable: "--font-editorial",
-  display: "swap",
-});
-
-// Editions faces: Neue Montreal Bold (headlines, nav), HW Cigars (narrative), Imperial Script.
-const neueMontreal = localFont({
-  src: "./fonts/editions/NeueMontreal-Bold.woff2",
-  weight: "700",
-  variable: "--font-neue-montreal",
-  display: "swap",
-});
-
-const cigars = localFont({
-  src: "./fonts/editions/HWCigars-Regular.woff2",
-  weight: "400",
-  variable: "--font-cigars",
-  display: "swap",
-});
-
-const imperial = localFont({
-  src: "./fonts/editions/ImperialScript-Regular.woff2",
-  weight: "400",
-  variable: "--font-imperial",
-  display: "swap",
-});
-
-const anton = Anton({
+// One grotesk for everything, the way a printed portfolio would set it.
+const grotesk = Inter_Tight({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-anton",
-  display: "swap",
-});
-
-const pinyon = Pinyon_Script({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-pinyon",
-  display: "swap",
-});
-
-// A Japanese brush face for the hero's kanji and kana. No Japanese subset to name: Google
-// serves its glyphs in unicode-range slices, so nothing is preloaded and only what's used loads.
-const yuji = Yuji_Syuku({
-  weight: "400",
-  variable: "--font-yuji",
-  display: "swap",
-  preload: false,
-});
-
-// The dry-brush title on the awakening hero.
-const marker = Permanent_Marker({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-brush",
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
+  weight: ["400", "500", "700", "800"],
+  variable: "--font-grotesk",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: site.name,
+    default: `${site.signal.fullName} — Developer portfolio`,
     template: `%s — ${site.name}`,
   },
   description: site.tagline,
@@ -119,14 +36,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "light",
-  themeColor: "#d1201b",
+  colorScheme: "dark",
+  themeColor: "#1b1b1b",
 };
 
 const personJsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: site.name,
+  name: site.signal.fullName,
+  alternateName: site.name,
   jobTitle: site.role,
   description: site.tagline,
   email: `mailto:${site.email}`,
@@ -134,17 +52,10 @@ const personJsonLd = {
   sameAs: site.socials.map((social) => social.href),
 } as const;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      // The page is always red (the red branch has no switch).
-      data-theme="red"
-      className={`${generalSans.variable} ${editorial.variable} ${anton.variable} ${pinyon.variable} ${geistMono.variable} ${marker.variable} ${yuji.variable} ${neueMontreal.variable} ${cigars.variable} ${imperial.variable} h-full antialiased`}
-      // Browser extensions often add attributes to <html> before React hydrates.
-      suppressHydrationWarning
-    >
-      <body className="min-h-full flex flex-col font-sans">
+    <html lang="en" className={grotesk.variable} suppressHydrationWarning>
+      <body>
         {/* Structured data as a plain script tag, as the Next.js docs recommend for JSON-LD. */}
         <script
           id="person-jsonld"
@@ -153,24 +64,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c"),
           }}
         />
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-ink focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-bone"
-        >
+        <a href="#main" className="sh-skip">
           Skip to content
         </a>
-        <HeroIntroProvider>
-          <MotionProvider>
-            <SmoothScroll>
-              <IntroSplash />
-              <NavChromeProvider>
-                <main id="main" className="relative flex-1">
-                  {children}
-                </main>
-              </NavChromeProvider>
-            </SmoothScroll>
-          </MotionProvider>
-        </HeroIntroProvider>
+        <SmoothScroll>
+          <main id="main">{children}</main>
+        </SmoothScroll>
       </body>
     </html>
   );
