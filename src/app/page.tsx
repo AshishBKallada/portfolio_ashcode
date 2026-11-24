@@ -5,6 +5,7 @@ import { SkyHero } from "@/components/signal/SkyHero";
 import { MiniContact } from "@/components/single/MiniContact";
 import { PostsRail } from "@/components/single/PostsRail";
 import { ProjectsRail } from "@/components/single/ProjectsRail";
+import { TapToCollapse } from "@/components/single/TapToCollapse";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -22,6 +23,7 @@ export default function Home() {
       <PostsRail />
       <ProjectsRail />
       <MiniContact />
+      <TapToCollapse />
     </div>
   );
 }

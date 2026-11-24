@@ -539,9 +539,26 @@ html:has(.single-screen) body {
 }
 
 .sg-rail {
+  --sg-head: 42px;
   display: flex;
   flex-direction: column;
   padding: 14px 14px 0;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.7s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.sg-rail .sg-marquee {
+  transition: opacity 0.4s ease;
+}
+
+/* Folded: each rail is cut down to its title bar; the list fades under the fold. */
+.single-screen[data-collapsed="true"] .sg-rail {
+  clip-path: inset(0 0 calc(100% - var(--sg-head)) 0);
+  cursor: pointer;
+}
+
+.single-screen[data-collapsed="true"] .sg-rail .sg-marquee {
+  opacity: 0;
 }
 
 .sg-rail--left {
@@ -703,6 +720,10 @@ html:has(.single-screen) body {
 /* Under the nav card's width the rails turn into strips: posts across the top, projects and
    contact along the bottom. */
 @media (max-width: 1023px) {
+  .sg-rail {
+    --sg-head: 36px;
+  }
+
   .sg-rail--left {
     left: 12px;
     right: 12px;
