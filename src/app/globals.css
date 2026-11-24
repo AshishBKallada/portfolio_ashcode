@@ -627,7 +627,8 @@ html:has(.single-screen) body {
 .sg-post__img img {
   object-fit: cover;
   transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s;
-  filter: saturate(0.85);
+  /* Greyed out until hovered, so the posts sit back against the desert. */
+  filter: grayscale(1) contrast(1.05) brightness(0.92);
 }
 
 .sg-post a:hover .sg-post__img img,
