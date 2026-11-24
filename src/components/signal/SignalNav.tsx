@@ -59,8 +59,6 @@ export function SignalNav() {
     };
   }, [open]);
 
-  const crumb = pathname === "/" ? "Home" : pathname.startsWith("/projects") ? "Work" : "Résumé";
-
   return (
     <>
       {/* Desktop home: framed card centred on the hero that settles into the left rail on scroll. */}
@@ -76,10 +74,6 @@ export function SignalNav() {
             <Link href="/" className="font-headline text-[17px] leading-none tracking-[-0.02em]">
               {site.name}
             </Link>
-            <span aria-hidden className="mx-1.5 text-bone/40">
-              /
-            </span>
-            <span className={`${smallLabel} hidden text-bone/60 sm:inline`}>{crumb}</span>
           </div>
 
           <button
@@ -112,23 +106,7 @@ export function SignalNav() {
                 transition={{ duration: 0.45, ease: introEase }}
                 className={`${pill} absolute top-full left-0 z-50 mt-2 w-[min(20rem,calc(100vw-1.5rem))] p-2`}
               >
-                <ul>
-                  {links.map((link, i) => (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        onClick={() => setOpen(false)}
-                        className="group flex min-h-12 items-center justify-between rounded-[3px] px-3 font-headline text-[24px] tracking-[-0.03em] transition-colors hover:bg-white/8"
-                      >
-                        {link.label}
-                        <span className={`${smallLabel} text-bone/40 group-hover:text-gold`}>
-                          [{String(i + 1).padStart(2, "0")}]
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-2 flex items-center justify-between border-t border-white/10 px-3 pt-3 pb-1">
+                <div className="flex items-center justify-between px-3 pt-2 pb-1">
                   <span className={`${smallLabel} text-bone/70`}>Background</span>
                   <PageModeSwitch />
                 </div>
@@ -363,24 +341,6 @@ function EditionsNav({
           {site.tagline}
         </p>
       </div>
-
-      <nav aria-label="Primary" className="edition-nav__list">
-        <ul>
-          {links.map((link, i) => (
-            <li key={link.href} style={{ "--i": i } as React.CSSProperties}>
-              <Link
-                href={link.href}
-                className="edition-nav__link group pointer-events-auto flex items-end justify-between gap-2 py-2 font-headline text-[18px] leading-[0.95] tracking-[-0.02em] focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-current"
-              >
-                <span>{link.label}</span>
-                <span className="font-narrative text-[15px] tracking-normal tabular-nums opacity-60 group-hover:opacity-100">
-                  {ROMAN[i]}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
 
       <div className="edition-nav__foot space-y-4">
         <a
