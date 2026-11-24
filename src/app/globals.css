@@ -562,10 +562,11 @@ html:has(.single-screen) body {
 }
 
 .sg-rail--left {
+  padding: 12px 10px 0;
   left: 20px;
   top: 20px;
   bottom: 20px;
-  width: clamp(118px, 9vw, 148px);
+  width: clamp(92px, 6.8vw, 112px);
 }
 
 .sg-rail--right {

@@ -26,9 +26,9 @@ export function PostsRail() {
           <li key={post.src} className="sg-post">
             <a href={linkedin} target="_blank" rel="noreferrer" className="group block">
               <span className="sg-post__img">
-                <Image src={post.src} alt={`LinkedIn post: ${post.title}`} fill sizes="150px" />
+                <Image src={post.src} alt={`LinkedIn post: ${post.title}`} fill sizes="112px" />
               </span>
-              <span className="mt-1.5 block font-headline text-[12px] leading-[1.15] tracking-[-0.01em] text-cream/85 group-hover:text-cream">
+              <span className="mt-1 block font-headline text-[11px] leading-[1.15] tracking-[-0.01em] text-cream/85 group-hover:text-cream">
                 {post.title}
               </span>
             </a>
