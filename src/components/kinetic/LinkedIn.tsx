@@ -6,8 +6,9 @@ import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 import { linkedin } from "@/data/portfolio";
 
-// A held stage: the title stays across the top while each scroll step brings one post into
-// the centre and one comment into a gutter. On a phone the stage lets go and the posts stack.
+// A held stage: the title stays across the top and the posts run past as a strip of film,
+// while each scroll step lights one frame and brings its comment in. On a phone the stage
+// lets go: the tape still runs and the comments stack under it.
 export function LinkedIn() {
   const root = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
@@ -58,31 +59,46 @@ export function LinkedIn() {
           </span>
         </h2>
 
+        {/* The posts run past as a strip of film; the frame for the current step is lit. */}
+        <div className="kx-li__tape" aria-label="LinkedIn posts">
+          <div className="kx-li__reel">
+            {[0, 1].map((copy) =>
+              steps.map((step, i) => (
+                <figure
+                  key={`${copy}-${step.src}`}
+                  className="kx-li__frame"
+                  data-active={i === active}
+                  aria-hidden={copy === 1 || undefined}
+                >
+                  <div className="kx-li__shot">
+                    <Image
+                      src={step.src}
+                      alt={copy === 0 ? step.alt : ""}
+                      fill
+                      sizes="(max-width: 767px) 52vw, 22vw"
+                      style={
+                        "fit" in step ? { objectFit: "contain" } : undefined
+                      }
+                    />
+                  </div>
+                  <figcaption>{step.title}</figcaption>
+                </figure>
+              )),
+            )}
+          </div>
+        </div>
+
         {steps.map((step, i) => (
-          <article
+          <div
             key={step.src}
-            className="kx-li__step"
+            className="kx-li__quote"
             data-active={i === active}
-            data-past={i < active}
-            aria-label={`Post: ${step.title}`}
           >
-            <figure className="kx-li__figure">
-              <div className="kx-li__frame">
-                <Image
-                  src={step.src}
-                  alt={step.alt}
-                  fill
-                  sizes="(max-width: 767px) 72vw, 28vw"
-                  style={"fit" in step ? { objectFit: "contain" } : undefined}
-                />
-              </div>
-              <figcaption>{step.title}</figcaption>
-            </figure>
-            <div className="kx-li__quote">
-              <blockquote>“{step.quote}”</blockquote>
-              <p>{step.name}, in the comments</p>
-            </div>
-          </article>
+            <blockquote>“{step.quote}”</blockquote>
+            <p>
+              {step.name}, in the comments on {step.title}
+            </p>
+          </div>
         ))}
 
         <div className="kx-li__aside">
