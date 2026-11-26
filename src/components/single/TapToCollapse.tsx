@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const IGNORE = "a, button, input, .sg-contact, .edition-nav, [data-no-collapse]";
+const IGNORE = "a, button, input, .sg-contact, .sg-full, .sg-full-backdrop, .edition-nav, [data-no-collapse]";
 
 /**
  * A tap on the open desert folds the LinkedIn and Projects rails down to their titles, and

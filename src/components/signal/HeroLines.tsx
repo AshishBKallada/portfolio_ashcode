@@ -7,7 +7,17 @@ const CARD_W = 340;
 /** Fraction of the viewport width the card sits left of centre (--nav-card-shift). */
 const NAV_CARD_SHIFT = 0.12;
 
-type Size = { w: number; h: number };
+type Size = { w: number; h: number; cx?: number; cy?: number };
+
+/** The card's centre on screen, read from the card itself, relative to the lines' own box. */
+function cardCentre(svg: SVGSVGElement) {
+  const card = document.querySelector(".edition-nav__flip-scene");
+  if (!card) return null;
+  const c = card.getBoundingClientRect();
+  const s = svg.getBoundingClientRect();
+  if (!c.width) return null;
+  return { cx: c.left - s.left + c.width / 2, cy: c.top - s.top + c.height / 2 };
+}
 
 /** When the intro draw + fade has finished and scroll can take over the stroke. */
 const DRAWN_MS = 5200;
@@ -41,12 +51,20 @@ export function HeroLines({ active, erase }: { active: boolean; erase: MotionVal
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      setSize({ w: Math.round(width), h: Math.round(height) });
-    });
+    // The card's place is set in CSS (and differs per page), so measure it rather than assume it.
+    const measure = () => {
+      const { width, height } = el.getBoundingClientRect();
+      setSize({ w: Math.round(width), h: Math.round(height), ...cardCentre(el) });
+    };
+    const ro = new ResizeObserver(measure);
     ro.observe(el);
-    return () => ro.disconnect();
+    const card = document.querySelector(".edition-nav__flip-scene");
+    if (card) ro.observe(card);
+    const raf = requestAnimationFrame(measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
   }, []);
 
   return (
@@ -78,10 +96,11 @@ const REF_CX = 720;
 const REF_CY = 440;
 
 /** Maps the reference's space onto the card: centred on it, scaled with it on narrow phones. */
-function placeOnCard({ w, h }: Size) {
-  // Phones keep the card dead centre; the shift only applies from md up.
-  const cx = w / 2 - (w >= 768 ? w * NAV_CARD_SHIFT : 0);
-  const cy = h / 2;
+function placeOnCard({ w, h, cx: cardX, cy: cardY }: Size) {
+  // Centred on the card as measured; without one, where the card sits by default
+  // (phones keep it dead centre; the shift only applies from md up).
+  const cx = cardX ?? w / 2 - (w >= 768 ? w * NAV_CARD_SHIFT : 0);
+  const cy = cardY ?? h / 2;
   const k = Math.min(CARD_W, w - 24) / CARD_W;
   return `translate(${cx} ${cy}) scale(${k}) translate(${-REF_CX} ${-REF_CY})`;
 }

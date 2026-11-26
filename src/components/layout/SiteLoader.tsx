@@ -186,7 +186,7 @@ export function SiteLoader() {
       aria-label="Loading"
     >
       {/* Same box as the nav card: 340×464, a little left of centre from md up. */}
-      <div className="absolute top-1/2 left-1/2 aspect-[340/464] md:left-[calc(50%-var(--nav-card-shift))] w-[min(340px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 p-5">
+      <div className="site-loader__card absolute top-1/2 left-1/2 aspect-[340/464] md:left-[calc(50%-var(--nav-card-shift))] w-[min(340px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 p-5">
         <svg aria-hidden viewBox="0 0 340 464" className="absolute inset-0 h-full w-full overflow-visible">
           <rect
             ref={rectRef}

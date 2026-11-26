@@ -535,7 +535,8 @@ html:has(.single-screen) body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
-  animation: sg-in 1.1s 2.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* backwards, not both: a held end state would override the rail's layout animation. */
+  animation: sg-in 1.1s 2.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .sg-rail {
@@ -561,18 +562,110 @@ html:has(.single-screen) body {
   opacity: 0;
 }
 
+/* LinkedIn: a narrow column down the left edge, the full height of the screen, the posts
+   running up it. */
 .sg-rail--left {
-  padding: 12px 8px 0;
   left: 20px;
-  top: 20px;
-  bottom: 20px;
-  width: clamp(78px, 5.6vw, 94px);
+  top: 0;
+  bottom: 0;
+  width: auto;
+  /* No glass panel: the film stands on the desert by itself. */
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* On desktop the title stands up beside the film, at its top, reading upward (the L at the
+   bottom), with the profile arrow above it kept upright. */
+@media (min-width: 1024px) {
+  /* The film meets the top of the screen as it does the bottom; only the title keeps a margin. */
+  .sg-rail--left {
+    flex-direction: row;
+    gap: 10px;
+    padding-top: 0;
+  }
+
+  .sg-rail--left .sg-rail__head {
+    align-self: flex-start;
+    margin-top: 14px;
+    gap: 10px;
+    padding: 0;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+
+  .sg-rail--left .sg-rail__head a {
+    transform: rotate(90deg);
+  }
+
+  .sg-rail--left .sg-marquee {
+    min-width: 0;
+  }
+}
+
+/* With the film hung from the hero's plane (FilmRibbon), this strip stays only for screen
+   readers: out of sight and out of the pointer's way. */
+html[data-ribbon="on"] .sg-rail--left {
+  clip-path: inset(50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Over the hung film: a small link that follows the pointer, marked with the post under it. */
+.sg-ribbon-hit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 28px;
+  height: 28px;
+  pointer-events: auto;
+}
+
+/* The film runs right to the column's ends: no fade at the top or bottom. */
+.sg-rail--left .sg-marquee {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* Tall, narrow crops: a strip of portraits. */
+.sg-rail--left .sg-post__img {
+  aspect-ratio: 3 / 4;
+}
+
+/* Each post is one frame of black film: sprocket holes down both long edges, the picture in
+   between. The frames butt together and are a whole number of holes tall (60px picture, 80px
+   tall, plus 5px above and below: 90px), so the holes run on unbroken across the loop.
+   FilmRibbon paints the same film for the strip hung from the hero's plane. */
+.sg-rail--left .sg-post {
+  --sg-band: 12px;
+  width: calc(60px + var(--sg-band) * 2);
+  padding: 5px var(--sg-band);
+  background-color: #0b0b0b;
+  background-image:
+    /* A perforation: a small rectangle with softened corners, as on 35mm stock. */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10'%3E%3Crect x='3' y='3' width='6' height='4' rx='1' fill='%23f3ead8' fill-opacity='0.85'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10'%3E%3Crect x='3' y='3' width='6' height='4' rx='1' fill='%23f3ead8' fill-opacity='0.85'/%3E%3C/svg%3E");
+  background-size: var(--sg-band) 10px, var(--sg-band) 10px;
+  background-repeat: repeat-y, repeat-y;
+  background-position: 0 0, 100% 0;
+}
+
+.sg-rail--left .sg-post__img {
+  filter: grayscale(0.6) brightness(0.85);
+  transition: filter 0.4s ease;
+}
+
+.sg-rail--left .sg-post a:hover .sg-post__img,
+.sg-rail--left .sg-post a:focus-visible .sg-post__img {
+  filter: none;
 }
 
 .sg-rail--right {
   right: 20px;
   top: 76px;
-  bottom: 250px;
+  bottom: 20px;
   width: clamp(220px, 17vw, 270px);
   animation-delay: 2.75s;
 }
@@ -736,11 +829,23 @@ html:has(.single-screen) body {
     padding: 10px 10px 0;
   }
 
+  /* Across the top, the film runs sideways: holes along the top and bottom edges. */
+  .sg-rail--left .sg-post {
+    width: 70px;
+    padding: var(--sg-band) 4px;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='12'%3E%3Crect x='3' y='3' width='4' height='6' rx='1' fill='%23f3ead8' fill-opacity='0.85'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='12'%3E%3Crect x='3' y='3' width='4' height='6' rx='1' fill='%23f3ead8' fill-opacity='0.85'/%3E%3C/svg%3E");
+    background-size: 10px var(--sg-band), 10px var(--sg-band);
+    background-repeat: repeat-x, repeat-x;
+    background-position: 0 0, 0 100%;
+  }
+
   .sg-rail--right {
     left: 12px;
     right: 12px;
     top: auto;
-    bottom: 196px;
+    bottom: 12px;
     width: auto;
     height: 112px;
     padding: 10px 10px 0;
@@ -779,10 +884,6 @@ html:has(.single-screen) body {
     width: 78px;
   }
 
-  .sg-post a > span:last-child {
-    display: none;
-  }
-
   .sg-project {
     width: 260px;
   }
@@ -813,4 +914,258 @@ html:has(.single-screen) body {
   .sg-marquee__set[aria-hidden="true"] {
     display: none;
   }
+}
+
+/* The card on the single screen sits higher, just under the top bar. */
+html:has(.single-screen) .edition-nav {
+  --card-y: max(84px, calc(50svh - var(--card-h) / 2 - 12svh));
+  /* A little further left than the hero's own setting. */
+  --card-x: calc(50vw - var(--nav-card-shift) - var(--card-w) / 2 - 6vw);
+}
+
+/* ---------- Hover previews: a project or a post opened large beside its rail ---------- */
+
+.sg-preview-blur {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  background: rgba(10, 9, 7, 0.36);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sg-preview-blur[data-on="true"] {
+  opacity: 1;
+}
+
+.sg-preview {
+  position: fixed;
+  z-index: 45;
+  pointer-events: none;
+  padding: 20px;
+  color: var(--theme-cream, #f3ead8);
+  background: rgba(21, 19, 15, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    0 30px 80px rgba(0, 0, 0, 0.35);
+}
+
+/* Projects open to the left of their rail, level with its top. */
+.sg-preview--project {
+  top: 76px;
+  right: calc(20px + clamp(220px, 17vw, 270px) + 24px);
+  width: min(560px, 40vw);
+  transform-origin: 100% 20%;
+}
+
+/* Posts open to the right of the LinkedIn column, just under its title. */
+.sg-preview--post {
+  left: 170px;
+  top: 56px;
+  width: min(340px, 26vw, calc((100svh - 120px) * 0.8));
+  transform-origin: 0 10%;
+}
+
+.sg-preview__img {
+  position: relative;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.sg-preview__img--wide {
+  aspect-ratio: 16 / 10;
+}
+
+.sg-preview__img--tall {
+  aspect-ratio: 4 / 5;
+}
+
+.sg-preview__img img {
+  object-fit: cover;
+}
+
+@media (max-width: 1023px), (hover: none) {
+  .sg-preview,
+  .sg-preview-blur {
+    display: none;
+  }
+}
+
+/* ---------- Projects, opened full screen from the rail ---------- */
+
+/* Behind the open panel the whole screen goes soft, the same way it does for a preview. */
+.sg-full-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  background: rgba(10, 9, 7, 0.4);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+}
+
+.sg-full {
+  position: fixed;
+  inset: 16px;
+  z-index: 70;
+  overflow: auto;
+  padding: clamp(20px, 3vw, 40px);
+  color: var(--theme-cream, #f3ead8);
+  background: rgba(21, 19, 15, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    0 40px 120px rgba(0, 0, 0, 0.45);
+}
+
+.sg-full__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 2.6vw, 40px);
+  margin-top: clamp(24px, 4vh, 48px);
+}
+
+.sg-full__img {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.sg-full__img img {
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sg-full a:hover .sg-full__img img,
+.sg-full a:focus-visible .sg-full__img img {
+  transform: scale(1.04);
+}
+
+@media (max-width: 1023px) {
+  .sg-full {
+    inset: 8px;
+  }
+
+  .sg-full__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Everything clickable shows the hand. (Tailwind v4's reset leaves buttons on the arrow.) */
+a[href],
+button:not(:disabled),
+[role="button"],
+summary,
+label[for] {
+  cursor: pointer;
+}
+
+/* The boot screen's frame and wordmark land where the single screen's card now sits
+   (moved up and left; see the .edition-nav override above), so the hand-off still lines up. */
+@media (min-width: 768px) {
+  html:has(.single-screen) .site-loader__card {
+    left: calc(50% - var(--nav-card-shift) - 6vw);
+    top: max(316px, 38svh);
+  }
+}
+
+/* ---------- The hero as an oil painting (SkyHero) ---------- */
+
+/* No z-index here: a stacking context would isolate the layers, and their blend modes would
+   mix with nothing but each other. Each layer takes the level instead, so it blends straight
+   into the scene under it. */
+.hero-paint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-paint > div {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+}
+
+/* A little of the colour drained, as varnish and age do. */
+.hero-paint__fade {
+  background: #808080;
+  mix-blend-mode: saturation;
+  opacity: 0.1;
+}
+
+/* Warm, as old varnish: a deep ochre that warms and deepens, never lightens. */
+.hero-paint__grade {
+  background: linear-gradient(to bottom, #8a5f30, #6b4422);
+  mix-blend-mode: soft-light;
+  opacity: 0.35;
+}
+
+/* The canvas under the paint: a fine diagonal weave, only just there. */
+.hero-paint__weave {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(40, 24, 10, 0.07) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(-45deg, rgba(255, 240, 215, 0.05) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+
+/* Paint grain: fractal noise, overlaid. */
+.hero-paint__grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  mix-blend-mode: overlay;
+  opacity: 0.28;
+}
+
+/* Edges darkened toward umber, as a painting in low light. */
+.hero-paint__vignette {
+  background: radial-gradient(ellipse 75% 70% at 50% 45%, transparent 60%, rgba(38, 22, 10, 0.4) 100%);
+}
+
+/* ---------- The hand cursor (HandCursor) ---------- */
+
+html.has-hand,
+html.has-hand * {
+  cursor: none !important;
+}
+
+.hand-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transform-origin: 0 0;
+  transition: opacity 0.2s;
+  will-change: transform;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* ---------- The glove cursor ---------- */
+
+html.has-glove,
+html.has-glove * {
+  cursor: none !important;
+}
+
+.glove3d {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  will-change: transform;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.3));
 }

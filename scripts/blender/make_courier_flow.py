@@ -3,6 +3,12 @@ Build the flow mask HeroCourierCloth.tsx warps the courier by:
   R = cape weight, G = hair weight (0 where pinned, 1 where free to float).
 Run: blender -b -P scripts/blender/make_courier_flow.py
 Reads public/images/hero/hero-courier-cape.webp, writes public/images/hero/hero-courier-flow.png (512 wide).
+For another courier in the same frame, set FLOW_SRC / FLOW_DST (paths under public/images/hero),
+FLOW_NO_CAPE=1 when he wears none, and FLOW_SCALP_X if his crown sits elsewhere along x.
+FLOW_PAD_X: px the frame was widened by on each side (key_courier_street.py's frame width);
+positions below stay fractions of the 1000-wide frame inside it. FLOW_CAPE_FROM: the same
+courier without his cape (same frame); the cape is then what differs from it, not what is red,
+for a cape in any colour.
 """
 import os
 
@@ -10,8 +16,12 @@ import bpy
 import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-SRC = os.path.join(ROOT, "public/images/hero/hero-courier-cape.webp")
-DST = os.path.join(ROOT, "public/images/hero/hero-courier-flow.png")
+SRC = os.path.join(ROOT, "public/images/hero", os.environ.get("FLOW_SRC", "hero-courier-cape.webp"))
+DST = os.path.join(ROOT, "public/images/hero", os.environ.get("FLOW_DST", "hero-courier-flow.png"))
+NO_CAPE = os.environ.get("FLOW_NO_CAPE") == "1"
+SCALP_X = float(os.environ.get("FLOW_SCALP_X", "0.69"))
+PAD = int(os.environ.get("FLOW_PAD_X", "0"))
+CAPE_FROM = os.environ.get("FLOW_CAPE_FROM")
 
 img = bpy.data.images.load(SRC)
 w, h = img.size
@@ -19,7 +29,10 @@ px = np.array(img.pixels[:], dtype=np.float32).reshape(h, w, 4)
 px = px[::-1]  # Blender rows run bottom-up; work top-down like the picture.
 r, g, b, a = px[..., 0], px[..., 1], px[..., 2], px[..., 3]
 ys, xs = np.mgrid[0:h, 0:w]
-fx, fy = xs / w, ys / h
+# Fractions of the 1000-wide frame inside any padding; `aspect` corrects distances for it.
+bw = w - 2 * PAD
+fx, fy = (xs - PAD) / bw, ys / h
+aspect = bw / h
 
 
 def box_blur(m, k):
@@ -43,18 +56,30 @@ def smoothstep(e0, e1, x):
 # Cape: the reds and the gold trim, left of the body; the gold is low-saturation so take it by hue window.
 red = (a > 0.5) & (r > 0.25) & (r > g * 1.5) & (r > b * 1.5)
 gold = (a > 0.5) & (r > 0.45) & (g > 0.3) & (b < g * 0.8) & (r > g)
+if CAPE_FROM:
+    base_img = bpy.data.images.load(os.path.join(ROOT, "public/images/hero", CAPE_FROM))
+    bp = np.array(base_img.pixels[:], dtype=np.float32).reshape(h, w, 4)[::-1]
+    # Cape: drawn now where he was not, or plainly changed from how he was.
+    changed = np.abs(px[..., :3] - bp[..., :3]).sum(axis=2) > 0.3
+    red = (a > 0.5) & ((bp[..., 3] < 0.5) | changed)
+    gold = np.zeros_like(red)
 # Past the shoulders only the cape's upper sweep is cape; lower right is sleeve and harness.
 cape = (red | gold) & (fx < 0.72) & ~((fx > 0.40) & (fy > 0.28))
+if CAPE_FROM:
+    # The difference is the cape already; only keep it off the reaching arm's side.
+    cape = (red | gold) & (fx < 0.72)
 cape = box_blur(cape.astype(np.float32), 6) > 0.25  # close small holes
+if NO_CAPE:
+    cape[:] = False
 # Pinned at the clasp on his shoulders: the weight grows with distance from there.
-anchor = np.hypot((fx - 0.62) * (w / h), fy - 0.17)
+anchor = np.hypot((fx - 0.62) * aspect, fy - 0.17)
 cape_w = cape.astype(np.float32) * smoothstep(0.06, 0.42, anchor)
 
 # Hair: the dark mass above the visor, top right.
 dark = (a > 0.5) & (np.maximum(np.maximum(r, g), b) < 0.32)
 hair = dark & (fx > 0.52) & (fx < 0.8) & (fy < 0.19)
 hair = box_blur(hair.astype(np.float32), 3) > 0.3
-scalp = np.hypot((fx - 0.69) * (w / h), fy - 0.12)
+scalp = np.hypot((fx - SCALP_X) * aspect, fy - 0.12)
 hair_w = hair.astype(np.float32) * smoothstep(0.015, 0.09, scalp)
 
 # Soften and let the weight spill a little past the silhouette, so edges can move out into the alpha.

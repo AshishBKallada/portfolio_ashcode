@@ -4,7 +4,9 @@ import { Marquee } from "./Marquee";
 
 const linkedin = site.socials.find((s) => s.label === "LinkedIn")?.href ?? "https://www.linkedin.com";
 
-// Left edge: the LinkedIn posts running upward past the desert, each one a link to the profile.
+// Left edge: the LinkedIn posts running upward past the desert on a strip of film, each one a
+// link to the profile. On wide screens the film hangs from the hero's plane instead
+// (FilmRibbon) and this strip stays only for screen readers.
 export function PostsRail() {
   return (
     <aside className="sg-rail sg-rail--left" aria-labelledby="posts-title">
@@ -23,14 +25,11 @@ export function PostsRail() {
         </a>
       </div>
       <Marquee label="LinkedIn posts" direction="up" seconds={46}>
-        {site.signal.linkedin.posts.map((post) => (
-          <li key={post.src} className="sg-post">
+        {site.signal.linkedin.posts.map((post, i) => (
+          <li key={post.src} className="sg-post" data-preview-kind="post" data-preview-index={i}>
             <a href={linkedin} target="_blank" rel="noreferrer" className="group block">
               <span className="sg-post__img">
-                <Image src={post.src} alt={`LinkedIn post: ${post.title}`} fill sizes="94px" />
-              </span>
-              <span className="mt-1 block font-headline text-[10px] leading-[1.15] tracking-[-0.01em] text-cream/85 group-hover:text-cream">
-                {post.title}
+                <Image src={post.src} alt={`LinkedIn post: ${post.title}`} fill sizes="64px" />
               </span>
             </a>
           </li>

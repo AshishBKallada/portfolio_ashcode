@@ -9,7 +9,7 @@ import { site } from "@/data/site";
  */
 export function CornerPlayer() {
   return (
-    <div className="pointer-events-none fixed right-8 bottom-4 z-[60] sm:right-12 sm:bottom-6">
+    <div className="corner-player pointer-events-none fixed right-8 bottom-4 z-[60] sm:right-12 sm:bottom-6">
       <div className="pointer-events-auto origin-bottom-right scale-[0.26] sm:scale-[0.34] md:scale-[0.36]">
         <MusicPlayer src={site.music.src} aria-label="Music player" />
       </div>

@@ -2,6 +2,8 @@
 
 import { useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { planeAnchor } from "@/lib/planeAnchor";
+import { SMOKE_FIELD_MAX, smokeField } from "@/lib/smokeField";
 import type { MotionValue } from "motion/react";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
@@ -37,13 +39,22 @@ import { useHeroCovered } from "./useHeroCovered";
  * desert's wind and blown sand. Plays only if sound was turned on at the boot
  * screen (lib/sound); off under reduced motion.
  *
- * Clarity: dpr up to 2, textures at 2048, the model lit like the painting.
+ * Clarity: dpr up to 1.25 (its canvas fills the hero, and it's small in it), textures at 2048,
+ * the model lit like the painting.
+ *
+ * Parked (PARKED): for now the plane doesn't cross. It holds its place in the sky above the
+ * courier's head, a little to his right, rising and falling gently on the air with its propeller
+ * turning: no sputters, no smoke, a steady engine. The LinkedIn film hangs from its belly (planeAnchor, FilmRibbon).
  */
 
 const DRACO_PATH = "/draco/";
 /** Seconds to cross, and to wait off screen before the next pass. */
 const CROSS_S = 22;
 const PAUSE_S = 7;
+/** Hold the plane still at PARK instead of flying the pass. */
+const PARKED = true;
+/** Where it holds, as fractions of the view from its centre: right of middle, high. */
+const PARK = { x: 0.24, y: 0.25 };
 /** Wingspan as a fraction of the view's width at the plane's depth. */
 const SPAN = 0.17;
 
@@ -131,11 +142,14 @@ function Plane({
   onLoad?: () => void;
 }) {
   const { scene } = useGLTF(HERO_PLANE_MODEL, DRACO_PATH);
-  const { camera, viewport, size } = useThree();
+  const { camera, viewport, size, gl } = useThree();
   const group = useRef<THREE.Group>(null);
+  const canvasRect = useRef<DOMRect | null>(null);
+  const frameNo = useRef(0);
+  const proj = useMemo(() => new THREE.Vector3(), []);
   const smoke = useRef<THREE.Points>(null);
 
-  const { model, span, tail, prop } = useMemo(() => {
+  const { model, span, tail, belly, prop } = useMemo(() => {
     const m = scene.clone(true);
     m.traverse((o) => {
       const mesh = o as THREE.Mesh;
@@ -158,7 +172,14 @@ function Plane({
     // The tail is the far end of its length (the long axis before the turn is z).
     // The propeller: its own node, origin on the hub, spinning about its local z (forward).
     const prop = m.getObjectByName("prop") ?? null;
-    return { model: holder, span: sz.x, tail: new THREE.Vector3(-sz.z / 2, sz.y * 0.05, 0), prop };
+    return {
+      model: holder,
+      span: sz.x,
+      tail: new THREE.Vector3(-sz.z / 2, sz.y * 0.05, 0),
+      // Under the belly, between the wheels: where the film is tied on.
+      belly: new THREE.Vector3(0, -sz.y * 0.42, 0),
+      prop,
+    };
   }, [scene]);
 
   useEffect(() => {
@@ -219,11 +240,13 @@ function Plane({
     // The pass: a parameter 0..1 across the sky, then a pause out of view.
     const period = CROSS_S + PAUSE_S;
     const k = still ? 0.42 : (t % period) / CROSS_S;
-    const on = k <= 1;
-    const x = THREE.MathUtils.lerp(-v.width * 0.62, v.width * 0.62, k);
+    const on = PARKED || k <= 1;
+    const x = PARKED ? v.width * PARK.x : THREE.MathUtils.lerp(-v.width * 0.62, v.width * 0.62, k);
     // Level across the upper sky at the height it came in at, with one long gentle swell.
-    const y = v.height * 0.17 + Math.sin(k * Math.PI * 1.6) * v.height * 0.035;
-    const lean = still ? 0 : hoverX.current * 0.12;
+    // Parked, it rides the air: a slow rise and fall, never far from its spot.
+    const bob = PARKED && !still ? Math.sin(t * 0.9) * 0.6 + Math.sin(t * 0.37 + 1.2) * 0.4 : 0;
+    const y = PARKED ? v.height * (PARK.y + bob * 0.035) : v.height * 0.17 + Math.sin(k * Math.PI * 1.6) * v.height * 0.035;
+    const lean = still || PARKED ? 0 : hoverX.current * 0.12;
     // The dive: from wherever the pass has it, toward the camera (z up to 8.8 of the camera's
     // 10) and off past the top left corner, nose swinging to us then up and left.
     dive.current = THREE.MathUtils.lerp(dive.current, still ? 0 : scroll.get(), 0.07);
@@ -231,11 +254,12 @@ function Plane({
     const dz = d * 8.8;
     // Sputter: only on the pass, not in the dive. The plane sinks (lagging the choke, so it
     // keeps dropping a moment after, then climbs back) and shudders while it lasts.
-    const sp = still || !on ? 0 : sputterAt(Math.floor(t / period), t % period) * (1 - Math.min(1, d * 4));
+    const sp = still || !on || PARKED ? 0 : sputterAt(Math.floor(t / period), t % period) * (1 - Math.min(1, d * 4));
     sink.current = THREE.MathUtils.lerp(sink.current, sp, sp > sink.current ? 0.035 : 0.02);
     const shake = sp * (Math.sin(t * 41) * 0.6 + Math.sin(t * 67 + 1.3) * 0.4);
     const dip = sink.current * v.height * 0.07 + shake * v.height * 0.006;
-    bank.current = THREE.MathUtils.lerp(bank.current, Math.sin(k * Math.PI * 1.6) * 0.22 + lean, 0.04);
+    // Parked, the wings rock a touch with the bob.
+    bank.current = PARKED ? Math.cos(t * 0.9) * 0.06 : THREE.MathUtils.lerp(bank.current, Math.sin(k * Math.PI * 1.6) * 0.22 + lean, 0.04);
     // It swings left early in the dive, so by the time it's close it's already over our left shoulder.
     g.position.set(THREE.MathUtils.lerp(x, -1.6, Math.pow(d, 0.5)), THREE.MathUtils.lerp(y - dip, 1.2, d), dz);
     g.rotation.set(
@@ -256,7 +280,8 @@ function Plane({
     if (engine.current) {
       const nx = Math.abs(x) / (v.width * 0.5);
       const near = on ? Math.max(0, 1 - nx / 1.22) : 0;
-      const passLevel = 0.75 * near ** 1.3;
+      // Parked, it idles at a steady low hum.
+      const passLevel = PARKED ? 0.3 : 0.75 * near ** 1.3;
       const diveLevel = Math.sin(d * Math.PI) * 1.0;
       const level = Math.max(passLevel, diveLevel);
       const doppler = on ? 1 + 0.06 * (0.5 - k) : 1;
@@ -271,7 +296,7 @@ function Plane({
     const born = geo.getAttribute("aBorn") as THREE.BufferAttribute;
     const dark = geo.getAttribute("aDark") as THREE.BufferAttribute;
     // Thicker while it sputters: puffs come faster, in black gouts.
-    if (g.visible && !still && t - lastSpawn.current > (sp > 0.1 ? 0.016 : 0.028)) {
+    if (g.visible && !still && !PARKED && t - lastSpawn.current > (sp > 0.1 ? 0.016 : 0.028)) {
       lastSpawn.current = t;
       const i = puffs.current++ % SMOKE_N;
       tmp.copy(tail).multiplyScalar(s).applyEuler(g.rotation).add(g.position);
@@ -301,6 +326,36 @@ function Plane({
     pos.needsUpdate = true;
     born.needsUpdate = true;
     dark.needsUpdate = true;
+
+    // Publish the live puffs in screen pixels, so the card's letters can be blown by them.
+    {
+      const rect = canvasRect.current;
+      if (!rect || frameNo.current++ % 30 === 0) canvasRect.current = gl.domElement.getBoundingClientRect();
+      const r0 = canvasRect.current!;
+      const pxPerUnit = size.height / (2 * Math.tan(((camera as THREE.PerspectiveCamera).fov * Math.PI) / 360));
+      let n = 0;
+      for (let i = 0; i < SMOKE_N && n < SMOKE_FIELD_MAX; i += 2) {
+        const age = t - born.getX(i);
+        if (age < 0 || age > SMOKE_LIFE) continue;
+        proj.set(pos.getX(i), pos.getY(i), pos.getZ(i));
+        const depth = camera.position.z - proj.z;
+        proj.project(camera);
+        const k = n * 3;
+        smokeField.puffs[k] = r0.left + ((proj.x + 1) / 2) * size.width;
+        smokeField.puffs[k + 1] = r0.top + ((1 - proj.y) / 2) * size.height;
+        // The puff's drawn radius, as smokeVert sizes it: swelling with age, wider when black.
+        const world = (0.07 + 0.53 * Math.pow(age / SMOKE_LIFE, 0.6)) * (1 + dark.getX(i) * 0.7) * 0.5;
+        smokeField.puffs[k + 2] = (world * pxPerUnit) / Math.max(0.5, depth);
+        n++;
+      }
+      smokeField.count = g.visible ? n : 0;
+
+      // The belly, in client pixels, for the film hung from it.
+      tmp.copy(belly).multiplyScalar(s).applyEuler(g.rotation).add(g.position).project(camera);
+      planeAnchor.x = r0.left + ((tmp.x + 1) / 2) * size.width;
+      planeAnchor.y = r0.top + ((1 - tmp.y) / 2) * size.height;
+      planeAnchor.ok = g.visible;
+    }
     su.current.uTime.value = t;
     // Point size is in device pixels: CSS height times the pixel ratio.
     su.current.uPx.value = size.height * viewport.dpr * (camera as THREE.PerspectiveCamera).projectionMatrix.elements[5] * 0.5;
@@ -365,7 +420,7 @@ export function HeroPlane({ still, scroll, onLoad }: { still: boolean; scroll: M
       <Canvas
         frameloop={running ? "always" : "never"}
         resize={{ offsetSize: true }}
-        dpr={[1, 2]}
+        dpr={[1, 1.25]}
         gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
         camera={{ fov: 30, position: [0, 0, 10], near: 0.1, far: 60 }}
       >

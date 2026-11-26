@@ -21,8 +21,8 @@ export const site = {
   },
   /** About panel — editorial headline, kicker, and floating prompt cards. */
   aboutEdition: {
-    dropCap: "W",
-    headline: "ork that feels carved, not assembled.",
+    dropCap: "O",
+    headline: "bsession beats talent.",
     kicker: "Full-stack development",
     body: "I'm Ashish, a full-stack developer building products remotely. I care about how things feel, not only how they work, and I build them to stay standing long after launch.",
     cta: { label: "Read the résumé", href: "/resume" },

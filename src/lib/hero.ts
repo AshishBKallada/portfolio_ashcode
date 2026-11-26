@@ -12,14 +12,25 @@ export const HERO_FIGURE = {
   height: 1024,
 };
 
-/** The hero's courier, in colour: black robes, a red cape with gold trim, the case whole. */
-export const HERO_COURIER = { src: "/images/hero/hero-courier-cape.webp", width: 1000, height: 744 };
+/**
+ * The hero's courier, in colour: street wear (white wrap top, black and grey cargo trousers,
+ * chains) under a matte black cape with a grey lining, silver clasps and a chain, white winged
+ * sneakers, curly hair and the silver visor, mid-leap with the case. A Gemini render cut from
+ * green by scripts/blender/key_courier_street.py into a frame 1240 wide (the 1000-wide frame
+ * the earlier couriers used, widened 120px each side so the cape fits; he sits where they did).
+ * Earlier: hero-courier-street-cape.webp (crimson cape), hero-courier-street.webp (no cape),
+ * hero-courier-cape.webp (the courier in robes), all 1000 wide.
+ */
+export const HERO_COURIER = { src: "/images/hero/hero-courier-street-blackcape.webp", width: 1240, height: 744 };
 
 /**
  * Flow mask for HeroCourierCloth: R = cape, G = hair, 0 where pinned, 1 at the free ends.
- * Built from HERO_COURIER by scripts/blender/make_courier_flow.py.
+ * Built from HERO_COURIER by scripts/blender/make_courier_flow.py with
+ * FLOW_SRC=hero-courier-street-blackcape.webp FLOW_DST=hero-courier-street-blackcape-flow.png
+ * FLOW_SCALP_X=0.64 FLOW_PAD_X=120 FLOW_CAPE_FROM=hero-courier-street-wings.webp (the same
+ * courier without the cape: the cape is what differs).
  */
-export const HERO_COURIER_FLOW = "/images/hero/hero-courier-flow.png";
+export const HERO_COURIER_FLOW = "/images/hero/hero-courier-street-blackcape-flow.png";
 
 /**
  * The biplane that crosses the hero's sky (HeroPlane): Hunyuan 3D, cut to 80k triangles with
